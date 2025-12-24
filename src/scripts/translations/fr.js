@@ -53,8 +53,8 @@
       "impressum": "Mentions légales",
       "privacy": "Politique de confidentialité",
       "setupManageHeading": "Vue d’ensemble du projet",
-      "deviceSelectionHeading": "Configurer les appareils",
-      "overviewDeviceSelectionHeading": "Équipements de la configuration caméra",
+      "deviceSelectionHeading": "Pack caméra",
+      "overviewDeviceSelectionHeading": "Appareils du pack caméra",
       "resultsHeading": "Résumé de puissance",
       "pdfWarningsHeading": "Avertissements",
       "deviceManagerHeading": "Bibliothèque d’appareils",
@@ -64,19 +64,19 @@
       "batteryComparisonTableHelp": "Chaque ligne présente une batterie compatible. L’autonomie estimée intègre la consommation calculée et la barre colorée compare les durées d’un coup d’œil.",
       "setupDiagramHeading": "Schéma de connexion",
       "diagramPdfNote": "Le schéma de connexion n’est pas inclus dans l’export PDF. Ouvrez la vue d’impression pour vérifier la mise en page.",
-      "projectRequirementsNav": "Exigences du projet",
-      "projectRequirementsNavHelp": "Accéder à la sortie Exigences du projet une fois générée.",
-      "gearListNav": "Liste du matériel",
-      "gearListNavHelp": "Voir la liste du matériel générée avec tous les éléments et catégories.",
+      "projectRequirementsNav": "Exigences de production",
+      "projectRequirementsNavHelp": "Accéder à la sortie Exigences de production une fois générée.",
+      "gearListNav": "Liste de kit",
+      "gearListNavHelp": "Voir la liste de kit générée avec tous les éléments et catégories.",
       "ownGearNav": "Matériel personnel",
       "ownGearNavHelp": "Consignez le matériel que vous avez déjà sous la main et réutilisez-le dans vos projets.",
-      "overviewExportTitleSuffix": "Liste du matériel et exigences du projet",
+      "overviewExportTitleSuffix": "Liste de kit et exigences de production",
       "openSettingsNav": "Paramètres",
       "openSettingsNavHelp": "Ouvrir les paramètres pour régler la langue, les thèmes, l’accessibilité et les sauvegardes.",
       "openHelpNav": "Centre d’aide",
       "openHelpNavHelp": "Ouvrir l’aide intégrée avec tutoriels, conseils de dépannage et raccourcis.",
       "setupManageHeadingHelp": "Gérez les configurations enregistrées : sauvegarder, charger ou effacer.",
-      "deviceSelectionHeadingHelp": "Choisissez les caméras, moniteurs et accessoires de votre équipement.",
+      "deviceSelectionHeadingHelp": "Choisissez les caméras, moniteurs et accessoires de votre pack caméra.",
       "resultsHeadingHelp": "Affiche la consommation, l’autonomie estimée et le nombre de batteries.",
       "resultsPlainSummaryTitle": "Résumé rapide",
       "resultsPlainSummaryHelp": "Explique le résumé de puissance avec des mots simples et aide à planifier l’autonomie.",
@@ -657,11 +657,11 @@
       "alertDeviceName": "Le nom de l'appareil ne peut être vide.",
       "alertInvalidCameraJSON": "JSON caméra invalide",
       "generateOverviewBtn": "Générer un résumé",
-      "generateGearListBtn": "Générer la liste du matériel et les exigences du projet",
+      "generateGearListBtn": "Générer la liste de kit et les exigences de production",
       "addExtraGearBtn": "Ajouter un extra temporaire",
-      "editProjectBtn": "Modifier les exigences du projet",
+      "editProjectBtn": "Modifier les exigences de production",
       "projectForm": {
-        "heading": "Exigences du projet",
+        "heading": "Exigences de production",
         "projectName": "Nom du projet :",
         "productionCompany": "Société de production :",
         "productionCompanyAddress": "Adresse de la société de production (facultatif) :",
@@ -958,10 +958,10 @@
       "autoGearHighlightToggleHelp": "Active ou désactive une surbrillance temporaire pour le matériel ajouté par les règles automatiques. Utile pour déboguer le comportement des règles.",
       "autoGearHighlightToggleStateOn": "Activé",
       "autoGearHighlightToggleStateOff": "Désactivé",
-      "deleteGearListBtn": "Supprimer la liste du matériel",
-      "deleteGearListBtnHelp": "Supprime la liste du matériel enregistrée du projet et masque le tableau.",
-      "confirmDeleteGearList": "Supprimer la liste du matériel ?",
-      "confirmDeleteGearListAgain": "Cela supprimera définitivement la liste du matériel. Êtes-vous sûr ?",
+      "deleteGearListBtn": "Supprimer la liste de kit",
+      "deleteGearListBtnHelp": "Supprime la liste de kit enregistrée du projet et masque le tableau.",
+      "confirmDeleteGearList": "Supprimer la liste de kit ?",
+      "confirmDeleteGearListAgain": "Cela supprimera définitivement la liste de kit. Êtes-vous sûr ?",
       "ownGearDialogTitle": "Matériel personnel",
       "ownGearDialogDescription": "Enregistrez le matériel que vous possédez pour planifier à partir de ce qui est déjà dans votre kit.",
       "ownGearAddHeading": "Ajouter du matériel",
@@ -1005,8 +1005,8 @@
       "printOptionsLayoutLabel": "Mise en page",
       "printOptionsLayoutStandard": "Mise en page standard",
       "printOptionsLayoutRental": "Mise en page location",
-      "rentalPrintSectionProject": "Exigences du projet",
-      "rentalPrintSectionDevices": "Équipements configurés",
+      "rentalPrintSectionProject": "Exigences de production",
+      "rentalPrintSectionDevices": "Appareils du rig/pack",
       "rentalPrintSectionPower": "Résumé d'alimentation",
       "rentalPrintSectionDiagram": "Schéma caméra",
       "rentalPrintSectionGearList": "Liste de matériel",
@@ -1047,8 +1047,8 @@
           "content": "Utilisez **Export Project** pour télécharger un JSON (incluez en option les règles automatiques et les marquages de matériel personnel). Utilisez **Share Project** pour créer un paquet de partage pour l'importation hors ligne ; les destinataires l'ouvrent avec **Import Project** et rien n'écrase leur configuration actuelle tant qu'ils ne confirment pas l'enregistrement. **Backup & Restore** fournit des sauvegardes complètes, des répétitions de restauration, la comparaison de versions et le coffre local quand les téléchargements automatiques sont bloqués."
         },
         "deviceConfiguration": {
-          "title": "Configuration des appareils",
-          "content": "Commencez par une **Caméra**, puis ajoutez **Moniteurs**, **Émetteurs sans fil** et systèmes **FIZ**. Utilisez la bibliothèque d'appareils pour importer ou exporter du matériel personnalisé afin de conserver les modifications hors ligne."
+          "title": "Pack caméra",
+          "content": "Construisez votre pack caméra en commençant par une **Caméra**, puis ajoutez **Moniteurs**, **Émetteurs sans fil** et systèmes **FIZ**. Utilisez la bibliothèque d'appareils pour importer ou exporter du matériel personnalisé afin de conserver les modifications hors ligne."
         },
         "powerCalculation": {
           "title": "Calcul de puissance",
@@ -1059,8 +1059,8 @@
           "content": "Le **Schéma de connexion** visualise les branchements. Faites glisser pour organiser, zoomez/panoramique pour les détails et téléchargez des instantanés SVG ou JPG."
         },
         "gearList": {
-          "title": "Liste du matériel",
-          "content": "Générez une **liste du matériel** détaillée à partir des appareils et des exigences. Modifiez quantités, fournisseurs, extras temporaires et marquages de matériel personnel, puis imprimez ou exportez."
+          "title": "Liste de kit",
+          "content": "Générez une **liste de kit** détaillée à partir des appareils du pack caméra et des exigences de production. Modifiez quantités, fournisseurs, extras temporaires et marquages de matériel personnel, puis imprimez ou exportez."
         },
         "contacts": {
           "title": "Contacts",
@@ -1068,7 +1068,7 @@
         },
         "ownGear": {
           "title": "Matériel personnel",
-          "content": "Suivez votre inventaire dans **Matériel personnel**. Marquez les éléments pour que les listes et exports affichent ces annotations."
+          "content": "Suivez votre inventaire dans **Matériel personnel**. Marquez les éléments pour que les listes de kit et exports affichent ces annotations."
         },
         "settings": {
           "title": "Paramètres",
@@ -1498,7 +1498,7 @@
       "autoGearDraftImpactConflictOne": "Des suppressions sont aussi actives dans %s règle.",
       "autoGearDraftImpactConflictOther": "Des suppressions sont aussi actives dans %s règles.",
       "autoGearDraftWarningHeading": "Alertes",
-      "autoGearDraftWarningCritical": "%s serait retiré de la liste du matériel.",
+      "autoGearDraftWarningCritical": "%s serait retiré de la liste de kit.",
       "autoGearDraftWarningConflict": "%s possède des instructions d’ajout et de retrait contradictoires.",
       "autoGearDraftWarningRedundant": "%s est ajouté par plusieurs règles sans augmenter les totaux.",
       "autoGearDraftWarningConfirm": "Enregistrer quand même ? Vérifiez les alertes d’impact ci-dessous avant de confirmer.",
@@ -1729,7 +1729,7 @@
       "storageAutoBackupsCountOne": "%s sauvegarde automatique",
       "storageAutoBackupsCountOther": "%s sauvegardes automatiques",
       "storageKeyGearLists": "Instantanés des listes de matériel",
-      "storageKeyGearListsDesc": "Aperçus imprimables et exigences du projet.",
+      "storageKeyGearListsDesc": "Aperçus imprimables et exigences de production.",
       "storageGearListsCountOne": "%s entrée",
       "storageGearListsCountOther": "%s entrées",
       "storageKeyDevices": "Appareils personnalisés ou modifiés",
@@ -1868,7 +1868,7 @@
         "userProfileInteractionSkipHint": "Appuyez sur Suivant quand vous êtes prêt : Contacts dans la barre latérale affiche toujours ces informations sauvegardées sans réinitialiser la progression du tutoriel.",
         "userProfileAvatarAction": "Ajouter une photo de profil",
         "userProfileAvatarEditAction": "Modifier la photo",
-        "projectRequirementsMiniIntro": "Renseignez ces champs proxy pendant que la boîte de dialogue Exigences du projet reste ouverte.",
+        "projectRequirementsMiniIntro": "Renseignez ces champs proxy pendant que la boîte de dialogue Exigences de production reste ouverte.",
         "projectRequirementsMiniOfflineHint": "Chaque modification est enregistrée immédiatement hors ligne ; utilisez Précédent/Suivant ici sans perdre de données.",
         "unitsPreferencesLanguageLabel": "Langue",
         "unitsPreferencesThemeLabel": "Thème",
@@ -2026,7 +2026,7 @@
           },
           "projectRequirementsBrief": {
             "title": "Capturer le brief du projet",
-            "body": "Ouvrez Générer la liste et les exigences du projet, consignez la société de production, l'adresse complète, les préférences du loueur, les livrables et les notes de planning. Ces données alimentent les PDF prêts pour la location, restent en cache hors ligne et préparent les sections suivantes."
+            "body": "Ouvrez Générer la liste de kit et les exigences de production, consignez la société de production, l'adresse complète, les préférences du loueur, les livrables et les notes de planning. Ces données alimentent les PDF prêts pour la location, restent en cache hors ligne et préparent les sections suivantes."
           },
           "projectRequirementsCrew": {
             "title": "Cartographier la couverture équipe et les contacts",
@@ -2037,8 +2037,8 @@
             "body": "Parcourez les autres sections : spécifications caméra, workflow optiques, scénarios de rigging, quantités de stockage/médias, préférences de mattebox et de monitoring. Chaque champ alimente les règles automatiques, le calcul de stockage et la checklist générée."
           },
           "generateGearAndRequirements": {
-            "title": "Générez exigences et liste du matériel",
-            "body": "Utilisez Générer liste du matériel et exigences du projet pour reconstruire la checklist après chaque modification. Le planner enregistre la sortie avec le projet afin que PDF, exports et sauvegardes reflètent toujours les dernières sélections."
+            "title": "Générez exigences et liste de kit",
+            "body": "Utilisez Générer liste de kit et exigences de production pour reconstruire la checklist après chaque modification. Le planner enregistre la sortie avec le projet afin que PDF, exports et sauvegardes reflètent toujours les dernières sélections."
           },
           "autoGearRulesAccess": {
             "title": "Ouvrir les règles d’équipement automatiques",
@@ -2053,8 +2053,8 @@
             "body": "Cliquez sur Ajouter une règle pour créer une automatisation personnalisée. Nommez-la, ajoutez des conditions et le matériel requis, puis enregistrez. Le planificateur applique la nouvelle règle hors ligne à chaque régénération du kit et l’inclut dans les exports, partages et sauvegardes."
           },
           "gearList": {
-            "title": "Auditez la liste du matériel générée",
-            "body": "Vérifiez la liste du matériel classée par catégorie pour repérer doublons, quantités et accessoires ajoutés automatiquement. Les modifications sont sauvegardées instantanément, intégrées aux lots de partage et visibles dans les impressions et PDF."
+            "title": "Auditez la liste de kit générée",
+            "body": "Vérifiez la liste de kit classée par catégorie pour repérer doublons, quantités et accessoires ajoutés automatiquement. Les modifications sont sauvegardées instantanément, intégrées aux lots de partage et visibles dans les impressions et PDF."
           },
           "exportImport": {
             "title": "Exportez et importez des projets",
@@ -2135,7 +2135,7 @@
       "deleteSetupHelp": "Supprime la configuration enregistrée sélectionnée.",
       "saveSetupHelp": "Capturez un instantané complet du projet en cours—appareils, exigences, notes, journaux d’autonomie et mise en page du schéma—et enregistrez-le dans votre bibliothèque locale. Le point d’état d’enregistrement automatique à côté de Nom du projet pulse pendant l’écriture, et la file des sauvegardes automatiques planifie juste après la même capture horodatée pour garder la redondance à jour. Appuyez sur Entrée ou Ctrl+S (⌘S sur Mac) pour le même résultat ; le bouton Enregistrer reste désactivé tant que vous n’avez pas saisi de nom de projet. L’enregistrement ne remplace aucun autre projet tant que vous n’avez pas confirmé le nom, vos données précédentes restent protégées.",
       "generateOverviewHelp": "Reconstruit le résumé prêt à l'impression du projet enregistré sélectionné et ouvre la fenêtre d'aperçu pour examiner les détails d'alimentation et de connexion avant d'imprimer quand vous êtes prêt. La section optiques affiche marque, monture, diamètre, focus, poids, support de rods et notes afin que les exports couvrent les contrôles sensibles aux spécifications.",
-      "generateGearListHelp": "Génère un tableau catégorisé combinant le matériel sélectionné et les exigences du projet. La liste se met à jour à chaque changement, fusionne les doublons avec leur quantité et ajoute automatiquement câbles, rigging, supports d'objectif, éléments de matte box, nombre de batteries avec matériel de hotswap, moniteurs par rôle et accessoires spécifiques aux scénarios. Chaque entrée est triée alphabétiquement et offre une description au survol.",
+      "generateGearListHelp": "Génère une liste de kit catégorisée combinant le matériel sélectionné et les exigences de production. La liste se met à jour à chaque changement, fusionne les doublons avec leur quantité et ajoute automatiquement câbles, rigging, supports d'objectif, éléments de matte box, nombre de batteries avec matériel de hotswap, moniteurs par rôle et accessoires spécifiques aux scénarios. Chaque entrée est triée alphabétiquement et offre une description au survol.",
       "shareSetupHelp": "Téléchargez un paquet JSON de sécurité du projet en cours—avec accessoires personnalisés, favoris, retours d’autonomie et appareils—prêt à archiver ou à partager hors ligne. Rangez le fichier avec les sauvegardes redondantes de l’équipe avant de fermer le planner afin que chaque poste puisse le restaurer sans connexion. L’export n’altère pas votre projet actuel, rien n’est perdu pendant la création du lot.",
       "applySharedLinkHelp": "Chargez la configuration depuis une sauvegarde JSON exportée via Enregistrer & partager ou Sauvegarder & restaurer. Vérifiez l’aperçu comparatif avant d’appliquer : rien n’écrase votre projet actuel tant que vous ne confirmez pas Enregistrer, et le planner planifie en amont une nouvelle sauvegarde automatique pour que vous puissiez revenir en arrière immédiatement. Les imports sans nom sont automatiquement enregistrés avec un titre “-imported” afin que les données arrivent même lorsque le lot n’indiquait aucun nom de projet. Le projet importé reste local et disponible hors ligne dès que vous enregistrez.",
       "sharedLinkHelp": "Choisissez un fichier JSON de projet exporté depuis Enregistrer & partager ou Sauvegarder & restaurer. Conservez l’original dans vos sauvegardes après l’import : le planner ne lit qu’une copie et journalise la tentative dans le diagnostic afin de pouvoir auditer chaque restauration.",

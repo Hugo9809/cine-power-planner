@@ -13,10 +13,10 @@
         "layoutRentalLabel": "Rental Friendly",
         "layoutRentalDescription": "Optimizes layout for rental by grouping items by category.",
         "sectionsTitle": "Sections",
-        "sectionProject": "Project Requirements",
-        "sectionDevices": "Device List",
+        "sectionProject": "Production Requirements",
+        "sectionDevices": "Rig/Package Devices",
         "sectionDiagram": "Power Diagram",
-        "sectionGearList": "Gear List",
+        "sectionGearList": "Kit List",
         "sectionBattery": "Battery Comparison",
         "exportPdfButton": "Export PDF",
         "printButton": "Print",
@@ -24,12 +24,12 @@
         "generatedProjectNameLabel": "Project Name:",
         "generatedProductionLabel": "Production:",
         "generatedDateLabel": "Date:",
-        "generatedNoProjectRequirements": "No project requirements data.",
-        "generatedDeviceSelectionTitle": "Device Selection",
+        "generatedNoProjectRequirements": "No production requirements data.",
+        "generatedDeviceSelectionTitle": "Camera Package Devices",
         "generatedNoDevicesSelected": "No devices selected.",
         "generatedPowerDiagramTitle": "Power Diagram",
         "generatedPowerSummaryTitle": "Power Summary",
-        "generatedGearListTitle": "Gear List",
+        "generatedGearListTitle": "Kit List",
         "generatedTotalLoad": "Total Load",
         "generatedPeak": "Peak:",
         "generatedEstRuntime": "Est. Runtime",
@@ -85,8 +85,8 @@
       "impressum": "Imprint",
       "privacy": "Privacy Policy",
       "setupManageHeading": "Project Overview",
-      "deviceSelectionHeading": "Configure Devices",
-      "overviewDeviceSelectionHeading": "Camera Setup Devices",
+      "deviceSelectionHeading": "Camera Package",
+      "overviewDeviceSelectionHeading": "Camera Package Devices",
       "resultsHeading": "Power Summary",
       "deviceManagerHeading": "Device Library",
       "batteryComparisonHeading": "Battery Comparison",
@@ -95,19 +95,19 @@
       "batteryComparisonTableHelp": "Rows show compatible batteries. Runtime includes current draw calculations, and the colored bar compares runtime length at a glance.",
       "setupDiagramHeading": "Connection Diagram",
       "diagramPdfNote": "The visual connection diagram is not included in the PDF export. Open the print view to review the layout.",
-      "projectRequirementsNav": "Project Requirements",
-      "projectRequirementsNavHelp": "Jump to the Project Requirements output once generated.",
-      "gearListNav": "Gear List",
-      "gearListNavHelp": "View the generated gear list with all items and categories.",
+      "projectRequirementsNav": "Production Requirements",
+      "projectRequirementsNavHelp": "Jump to the Production Requirements output once generated.",
+      "gearListNav": "Kit List",
+      "gearListNavHelp": "View the generated kit list with all items and categories.",
       "ownGearNav": "Own Gear",
       "ownGearNavHelp": "Track personal gear you already have on hand and reuse it across projects.",
-      "overviewExportTitleSuffix": "Gear List and Project Requirements",
+      "overviewExportTitleSuffix": "Kit List and Production Requirements",
       "openSettingsNav": "Settings",
       "openSettingsNavHelp": "Open Settings to adjust language, themes, accessibility options and backups.",
       "openHelpNav": "Help Center",
       "openHelpNavHelp": "Open the in-app help guide with tutorials, troubleshooting tips and shortcuts.",
       "setupManageHeadingHelp": "Manage saved projects: save, load, or clear configurations.",
-      "deviceSelectionHeadingHelp": "Choose cameras, monitors, and accessories for your rig.",
+      "deviceSelectionHeadingHelp": "Choose cameras, monitors, and accessories for your camera package.",
       "resultsHeadingHelp": "See power consumption, estimated runtime, and battery counts.",
       "resultsPlainSummaryTitle": "Quick summary",
       "resultsPlainSummaryHelp": "Explains the power summary in plain language so you can confirm runtime and battery needs without reading every table.",
@@ -378,8 +378,8 @@
           "content": "Use **Export Project** to download a JSON bundle (optionally include automatic gear rules and owned-gear markers). Use **Share Project** to create a share bundle for offline import; recipients open it with **Import Project** and nothing overwrites their current setup until they confirm Save. Use **Backup & Restore** for full-app backups, restore rehearsals, version comparisons, and the local backup vault when automatic downloads are blocked."
         },
         "deviceConfiguration": {
-          "title": "Device Configuration",
-          "content": "Build your rig by selecting devices. Start with a **Camera**, then add **Monitors**, **Wireless Transmitters**, and **FIZ** systems. Use the Device Library to import or export custom gear so offline edits stay with your projects."
+          "title": "Camera Package",
+          "content": "Build your camera package by selecting devices. Start with a **Camera**, then add **Monitors**, **Wireless Transmitters**, and **FIZ** systems. Use the Device Library to import or export custom gear so offline edits stay with your projects."
         },
         "powerCalculation": {
           "title": "Power Calculation",
@@ -390,8 +390,8 @@
           "content": "The **Connection Diagram** visualizes how devices are connected. Drag to arrange nodes, zoom and pan to inspect details, and download SVG or JPG snapshots for sharing."
         },
         "gearList": {
-          "title": "Gear List",
-          "content": "Generate a detailed **Gear List** from devices and project requirements. Edit quantities, providers, temporary extras and owned-gear badges, then print or export it for rental or crew."
+          "title": "Kit List",
+          "content": "Generate a detailed **Kit List** from camera package devices and production requirements. Edit quantities, providers, temporary extras and owned-gear badges, then print or export it for rental or crew."
         },
         "contacts": {
           "title": "Contacts",
@@ -399,7 +399,7 @@
         },
         "ownGear": {
           "title": "Own Gear",
-          "content": "Track your personal inventory in **Own Gear**. Mark items you own so gear list rows can be flagged and exported with those annotations."
+          "content": "Track your personal inventory in **Own Gear**. Mark items you own so kit list rows can be flagged and exported with those annotations."
         },
         "settings": {
           "title": "Settings",
@@ -515,8 +515,8 @@
       "logoSettingHelp": "Upload an SVG logo to brand printable overviews and include it in backups.",
       "logoFormatError": "Unsupported logo format. Please choose an SVG file.",
       "autoGearHeading": "Automatic Gear Rules",
-      "autoGearHeadingHelp": "Adjust which Project Requirements scenarios automatically add or remove gear items.",
-      "autoGearDescription": "Create scenario-based rules that tweak the generated gear list. Rules apply after the default planner suggestions.",
+      "autoGearHeadingHelp": "Adjust which Production Requirements scenarios automatically add or remove kit items.",
+      "autoGearDescription": "Create scenario-based rules that tweak the generated kit list. Rules apply after the default planner suggestions.",
       "autoGearPresetDescription": "Save and reuse complete sets of automatic gear rules.",
       "autoGearPresetLabel": "Preset",
       "autoGearPresetPlaceholder": "Custom rules",
@@ -598,7 +598,7 @@
       "autoGearConditionLogicMultiplier": "Multiply by matched values",
       "autoGearConditionRepeatHint": "Condition already added. Existing inputs for {condition} are highlighted so you can add more selections.",
       "autoGearAlwaysLabel": "Always include",
-      "autoGearAlwaysHelp": "Apply this rule to every gear list.",
+      "autoGearAlwaysHelp": "Apply this rule to every kit list.",
       "autoGearAlwaysMeta": "Always active",
       "autoGearScenariosLabel": "Required scenarios",
       "autoGearScenariosHelp": "Pick every scenario that must be selected for this rule to apply. Hold Ctrl (Cmd on Mac) to choose multiple.",
@@ -659,7 +659,7 @@
       "autoGearCameraWeightValueRequired": "Enter a camera weight threshold before saving.",
       "autoGearMonitorLabel": "Onboard monitors",
       "autoGearMonitorDefaultsHeading": "Monitor defaults",
-      "autoGearMonitorDefaultsDescription": "Choose which monitors should be preselected for new gear lists.",
+      "autoGearMonitorDefaultsDescription": "Choose which monitors should be preselected for new kit lists.",
       "autoGearDefaultFocusMonitorLabel": "Focus monitor",
       "autoGearDefaultHandheldMonitorLabel": "7\" handheld monitor",
       "autoGearDefaultComboMonitorLabel": "Combo monitor 15-21\"",
@@ -796,7 +796,7 @@
       "autoGearDraftImpactConflictOne": "Removals also active in %s rule.",
       "autoGearDraftImpactConflictOther": "Removals also active in %s rules.",
       "autoGearDraftWarningHeading": "Warnings",
-      "autoGearDraftWarningCritical": "%s would drop out of the gear list.",
+      "autoGearDraftWarningCritical": "%s would drop out of the kit list.",
       "autoGearDraftWarningConflict": "%s has conflicting add and remove instructions.",
       "autoGearDraftWarningRedundant": "%s is added by multiple rules without increasing totals.",
       "autoGearDraftWarningConfirm": "Save anyway? Review the impact warnings below before confirming.",
@@ -1059,8 +1059,8 @@
       "storageKeyAutoBackupsDesc": "Timestamped safety copies saved every 10 minutes or after 50 tracked changes. Switching projects, importing, exporting or preparing to reload triggers an immediate snapshot even if that cadence hasn't elapsed.",
       "storageAutoBackupsCountOne": "%s auto backup",
       "storageAutoBackupsCountOther": "%s auto backups",
-      "storageKeyGearLists": "Gear list snapshots",
-      "storageKeyGearListsDesc": "Printable overviews and project requirements.",
+      "storageKeyGearLists": "Kit list snapshots",
+      "storageKeyGearListsDesc": "Printable overviews and production requirements.",
       "storageGearListsCountOne": "%s entry",
       "storageGearListsCountOther": "%s entries",
       "storageKeyDevices": "Custom or modified devices",
@@ -1479,11 +1479,11 @@
       "alertDeviceName": "Device name cannot be empty.",
       "alertInvalidCameraJSON": "Invalid JSON for camera details",
       "generateOverviewBtn": "Generate Overview",
-      "generateGearListBtn": "Generate Gear List and Project Requirements",
+      "generateGearListBtn": "Generate Kit List and Production Requirements",
       "addExtraGearBtn": "Add temporary extra gear",
       "editProjectBtn": "Edit Project requirements",
       "projectForm": {
-        "heading": "Project Requirements",
+        "heading": "Production Requirements",
         "projectName": "Project Name:",
         "productionCompany": "Production Company:",
         "productionCompanyAddress": "Production Company Address (optional):",
@@ -1781,10 +1781,10 @@
       "autoGearHighlightToggleHelp": "Toggle a temporary color overlay for gear added by automatic rules. Useful while debugging gear rule behavior.",
       "autoGearHighlightToggleStateOn": "On",
       "autoGearHighlightToggleStateOff": "Off",
-      "deleteGearListBtn": "Delete Gear List",
-      "deleteGearListBtnHelp": "Remove the saved gear list from this project and hide the table.",
-      "confirmDeleteGearList": "Delete gear list?",
-      "confirmDeleteGearListAgain": "This will permanently delete the gear list. Are you sure?",
+      "deleteGearListBtn": "Delete Kit List",
+      "deleteGearListBtnHelp": "Remove the saved kit list from this project and hide the table.",
+      "confirmDeleteGearList": "Delete kit list?",
+      "confirmDeleteGearListAgain": "This will permanently delete the kit list. Are you sure?",
       "ownGearDialogTitle": "Own gear",
       "ownGearDialogDescription": "Capture the equipment you personally own so you can plan around what's already in your kit.",
       "ownGearAddHeading": "Add gear",
@@ -1809,7 +1809,7 @@
       "ownGearEditButton": "Edit",
       "ownGearEditButtonAria": "Edit “%s”",
       "ownGearDeleteButton": "Remove",
-      "ownGearDeleteButtonAria": "Remove “%s” from your gear list",
+      "ownGearDeleteButtonAria": "Remove “%s” from your own gear list",
       "ownGearDeleteConfirm": "Remove “%s” from your own gear list? This only removes it from your inventory.",
       "ownGearQuantityInvalid": "Enter a non-negative quantity or leave the field blank.",
       "ownGearNameRequired": "Enter the item name to save it.",
@@ -1828,11 +1828,11 @@
       "printOptionsLayoutLabel": "Layout",
       "printOptionsLayoutStandard": "Standard layout",
       "printOptionsLayoutRental": "Rental-friendly layout",
-      "rentalPrintSectionProject": "Project Requirements",
-      "rentalPrintSectionDevices": "Camera Setup Devices",
+      "rentalPrintSectionProject": "Production Requirements",
+      "rentalPrintSectionDevices": "Rig/Package Devices",
       "rentalPrintSectionPower": "Power Summary",
       "rentalPrintSectionDiagram": "Camera Diagram",
-      "rentalPrintSectionGearList": "Gear List",
+      "rentalPrintSectionGearList": "Kit List",
       "rentalPrintSectionBattery": "Battery Comparison",
       "pdfWarningsHeading": "Warnings",
       "exportAndRevertBtn": "Export and revert to default database",
@@ -1880,7 +1880,7 @@
         "userProfileInteractionSkipHint": "Press Next when you are ready—Contacts in the sidebar always shows these saved details without resetting tutorial progress.",
         "userProfileAvatarAction": "Add profile photo",
         "userProfileAvatarEditAction": "Edit photo",
-        "projectRequirementsMiniIntro": "Fill these proxy fields while the Project Requirements dialog stays open.",
+        "projectRequirementsMiniIntro": "Fill these proxy fields while the Production Requirements dialog stays open.",
         "projectRequirementsMiniOfflineHint": "Every edit saves offline instantly—use Back/Next here without risking data loss.",
         "unitsPreferencesLanguageLabel": "Language",
         "unitsPreferencesThemeLabel": "Theme",
@@ -1918,7 +1918,7 @@
             "hero": {
               "heading": "Welcome to Cine Power Planner!",
               "subheading": "Safeguard every camera setup with power checks, AutoGear kits, and rental-ready handoffs—kept fully offline.",
-              "summary": "Plan safe camera setups, verify power limits, auto-build gear lists from project requirements, and export rental-ready PDFs—every save stays local before call time.",
+            "summary": "Plan safe camera setups, verify power limits, auto-build kit lists from production requirements, and export rental-ready PDFs—every save stays local before call time.",
               "badgeIcon": "",
               "badgeLabel": "Crew-first · Offline forever",
               "badgeDescription": "No servers, no accounts, no subscriptions. Every save, autosave, backup, restore, share, and import lives on this device.",
@@ -1931,7 +1931,7 @@
                 {
                   "icon": "",
                   "title": "AutoGear builds reusable kits",
-                  "body": "Generate full gear lists from shooting scenarios with AutoGear rules, adjust those rules for the day, and reuse the presets."
+                  "body": "Generate full kit lists from shooting scenarios with AutoGear rules, adjust those rules for the day, and reuse the presets."
                 },
                 {
                   "icon": "",
@@ -2028,7 +2028,7 @@
           },
           "ownGearAccess": {
             "title": "Open the Own Gear dialog",
-            "body": "Press the Own Gear button in the sidebar to launch your inventory dialog, then review the summary banner and the Your gear list so you know where saved items, edit buttons and counts live. Finish by exploring the Add gear form—item search, quantity, notes, plus the Save and Reset controls—so you can add equipment instantly once the tour ends."
+            "body": "Press the Own Gear button in the sidebar to launch your inventory dialog, then review the summary banner and your own gear list so you know where saved items, edit buttons and counts live. Finish by exploring the Add gear form—item search, quantity, notes, plus the Save and Reset controls—so you can add equipment instantly once the tour ends."
           },
           "ownGearAddDevice": {
             "title": "Add your first owned device",
@@ -2036,7 +2036,7 @@
           },
           "projectRequirementsBrief": {
             "title": "Capture the project brief",
-            "body": "Open the Project Requirements dialog from Generate Gear List and Project Requirements, then document production company, address, rental preferences, deliverables and schedule notes. These entries auto-fill rental-ready PDFs, stay cached offline and prepare the next sections."
+            "body": "Open the Production Requirements dialog from Generate Kit List and Production Requirements, then document production company, address, rental preferences, deliverables and schedule notes. These entries auto-fill rental-ready PDFs, stay cached offline and prepare the next sections."
           },
           "projectRequirementsCrew": {
             "title": "Map crew coverage and contacts",
@@ -2048,7 +2048,7 @@
           },
           "generateGearAndRequirements": {
             "title": "Save and rebuild the outputs",
-            "body": "Press OK inside the Project Requirements dialog to store every entry, regenerate the requirements summary and rebuild the categorized gear list. The planner snapshots the result with the active project so exports, backups and shares stay current."
+            "body": "Press OK inside the Production Requirements dialog to store every entry, regenerate the requirements summary and rebuild the categorized kit list. The planner snapshots the result with the active project so exports, backups and shares stay current."
           },
           "autoGearRulesAccess": {
             "title": "Open Automatic Gear Rules",
@@ -2063,12 +2063,12 @@
             "body": "Press Add rule to create a custom automation. Name it, add conditions and required gear, then save. The planner runs new rules offline each time you regenerate the kit and includes them in exports, shares and backups."
           },
           "projectRequirements": {
-            "title": "Refine project requirements boxes",
-            "body": "Review the regenerated Project Requirements summary beside the gear list. Confirm the brief, crew coverage and logistics boxes mirror the data you just saved, then rerun exports or backups so downstream teams get the updated context with every share."
+            "title": "Refine production requirements boxes",
+            "body": "Review the regenerated Production Requirements summary beside the kit list. Confirm the brief, crew coverage and logistics boxes mirror the data you just saved, then rerun exports or backups so downstream teams get the updated context with every share."
           },
           "gearList": {
-            "title": "Audit the generated gear list",
-            "body": "Check the categorized gear list for duplicates, counts and auto-added accessories. Edits save instantly, are included in share bundles and appear in printouts and PDFs."
+            "title": "Audit the generated kit list",
+            "body": "Check the categorized kit list for duplicates, counts and auto-added accessories. Edits save instantly, are included in share bundles and appear in printouts and PDFs."
           },
           "exportImport": {
             "title": "Export and import projects",
@@ -2149,7 +2149,7 @@
       "deleteSetupHelp": "Remove the highlighted saved project permanently from your browser.",
       "saveSetupHelp": "Capture a full snapshot of the current project—devices, requirements, notes, runtime logs and diagram layout—and store it in your local library. The autosave status dot beside Project Name pulses while the write finishes, and the background auto-backup queue schedules the matching timestamped snapshot right after the save so redundancy stays current. Press Enter or Ctrl+S (⌘S on Mac) for the same result; the Save button stays disabled until you enter a project name. Saving never overwrites other projects until you confirm the name, so your prior data remains protected.",
       "generateOverviewHelp": "Rebuilds the print-ready summary for the selected saved project and opens the overview dialog so you can review power and connection details before printing when ready. Lens selections render with brand, mount, diameter, focus, weight, rod support and notes so exports cover spec-sensitive checkouts.",
-      "generateGearListHelp": "Build a categorized table that combines selected gear with project requirements. The list refreshes on every change, merges duplicate items with counts and auto-adds required cables, rigging, lens supports, matte box parts, battery counts with hotswap hardware, default monitors for each role and scenario-specific accessories. Entries are sorted alphabetically and include hover descriptions.",
+      "generateGearListHelp": "Build a categorized kit list that combines selected gear with production requirements. The list refreshes on every change, merges duplicate items with counts and auto-adds required cables, rigging, lens supports, matte box parts, battery counts with hotswap hardware, default monitors for each role and scenario-specific accessories. Entries are sorted alphabetically and include hover descriptions.",
       "shareSetupHelp": "Download a JSON safety bundle of the current project—covering custom gear, favorites, runtime feedback and devices—ready to archive or share offline. Store the file with your redundant crew backups before closing the planner so every workstation can restore it without network access. The export leaves your current project unchanged, so nothing is lost while you create the share bundle.",
       "applySharedLinkHelp": "Load the configuration from a JSON backup exported via Save & Share or Backup & Restore. Review the preview diff before applying—nothing overwrites your current project until you confirm Save, and the planner schedules a fresh auto-backup beforehand so you can roll back instantly. Unnamed imports are saved automatically under an “-imported” title so the data lands even when the bundle omitted a project name. The imported project remains local and offline-ready immediately after you save.",
       "sharedLinkHelp": "Choose a project JSON exported from Save & Share or Backup & Restore. Keep the original file in your backups after import—the planner only reads a copy and logs the attempt in diagnostics for your records so you can audit every restore.",

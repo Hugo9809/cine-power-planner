@@ -53,8 +53,8 @@
       "impressum": "Aviso legal",
       "privacy": "Política de privacidad",
       "setupManageHeading": "Resumen del proyecto",
-      "deviceSelectionHeading": "Configurar dispositivos",
-      "overviewDeviceSelectionHeading": "Dispositivos de la configuración de la cámara",
+      "deviceSelectionHeading": "Paquete de cámara",
+      "overviewDeviceSelectionHeading": "Dispositivos del paquete de cámara",
       "resultsHeading": "Resumen de potencia",
       "pdfWarningsHeading": "Avisos",
       "deviceManagerHeading": "Biblioteca de dispositivos",
@@ -64,19 +64,19 @@
       "batteryComparisonTableHelp": "Cada fila muestra una batería compatible. El tiempo estimado incluye el consumo calculado, y la barra de color compara la duración de un vistazo.",
       "setupDiagramHeading": "Diagrama de conexiones",
       "diagramPdfNote": "El diagrama de conexiones no se incluye en la exportación PDF. Abre la vista de impresión para ver el diseño.",
-      "projectRequirementsNav": "Requisitos del proyecto",
-      "projectRequirementsNavHelp": "Ir a la sección Requisitos del proyecto en cuanto esté disponible.",
-      "gearListNav": "Lista de equipo",
-      "gearListNavHelp": "Consulta la lista de equipo generada con todos los elementos y categorías.",
+      "projectRequirementsNav": "Requisitos de producción",
+      "projectRequirementsNavHelp": "Ir a la sección Requisitos de producción en cuanto esté disponible.",
+      "gearListNav": "Lista de kit",
+      "gearListNavHelp": "Consulta la lista de kit generada con todos los elementos y categorías.",
       "ownGearNav": "Equipo propio",
       "ownGearNavHelp": "Registra el equipo que ya tienes a mano y reutilízalo en tus proyectos.",
-      "overviewExportTitleSuffix": "Lista de equipo y requisitos del proyecto",
+      "overviewExportTitleSuffix": "Lista de kit y requisitos de producción",
       "openSettingsNav": "Ajustes",
       "openSettingsNavHelp": "Abrir Ajustes para cambiar idioma, temas, opciones de accesibilidad y copias de seguridad.",
       "openHelpNav": "Centro de ayuda",
       "openHelpNavHelp": "Abrir la guía de ayuda integrada con tutoriales, consejos para resolver problemas y atajos.",
       "setupManageHeadingHelp": "Gestiona los proyectos guardados: guárdalos, cárgalos o borra la configuración actual.",
-      "deviceSelectionHeadingHelp": "Elige cámaras, monitores y accesorios para tu equipo.",
+      "deviceSelectionHeadingHelp": "Elige cámaras, monitores y accesorios para tu paquete de cámara.",
       "resultsHeadingHelp": "Consulta el consumo de energía, la autonomía estimada y la cantidad de baterías.",
       "resultsPlainSummaryTitle": "Resumen rápido",
       "resultsPlainSummaryHelp": "Explica el resumen de potencia con un lenguaje sencillo y te ayuda a planificar la autonomía.",
@@ -659,11 +659,11 @@
       "alertDeviceName": "El nombre no puede estar vacío.",
       "alertInvalidCameraJSON": "JSON de cámara no válido",
       "generateOverviewBtn": "Generar resumen",
-      "generateGearListBtn": "Generar lista de equipo y requisitos del proyecto",
+      "generateGearListBtn": "Generar lista de kit y requisitos de producción",
       "addExtraGearBtn": "Añadir extra temporal",
-      "editProjectBtn": "Editar requisitos del proyecto",
+      "editProjectBtn": "Editar requisitos de producción",
       "projectForm": {
-        "heading": "Requisitos del proyecto",
+        "heading": "Requisitos de producción",
         "projectName": "Nombre del proyecto:",
         "productionCompany": "Productora:",
         "productionCompanyAddress": "Dirección de la productora (opcional):",
@@ -960,10 +960,10 @@
       "autoGearHighlightToggleHelp": "Activa o desactiva un color temporal para el equipo añadido por reglas automáticas. Útil para depurar el comportamiento de las reglas.",
       "autoGearHighlightToggleStateOn": "Activado",
       "autoGearHighlightToggleStateOff": "Desactivado",
-      "deleteGearListBtn": "Eliminar lista de equipo",
-      "deleteGearListBtnHelp": "Elimina la lista de equipo guardada de este proyecto y oculta la tabla.",
-      "confirmDeleteGearList": "¿Eliminar lista de equipo?",
-      "confirmDeleteGearListAgain": "Esto eliminará permanentemente la lista de equipo. ¿Estás seguro?",
+      "deleteGearListBtn": "Eliminar lista de kit",
+      "deleteGearListBtnHelp": "Elimina la lista de kit guardada de este proyecto y oculta la tabla.",
+      "confirmDeleteGearList": "¿Eliminar lista de kit?",
+      "confirmDeleteGearListAgain": "Esto eliminará permanentemente la lista de kit. ¿Estás seguro?",
       "ownGearDialogTitle": "Equipo propio",
       "ownGearDialogDescription": "Registra el equipo que posees para planificar en torno a lo que ya está en tu kit.",
       "ownGearAddHeading": "Añadir equipo",
@@ -988,7 +988,7 @@
       "ownGearEditButton": "Editar",
       "ownGearEditButtonAria": "Editar “%s”",
       "ownGearDeleteButton": "Eliminar",
-      "ownGearDeleteButtonAria": "Eliminar “%s” de tu lista de equipo",
+      "ownGearDeleteButtonAria": "Eliminar “%s” de tu lista de equipo propio",
       "ownGearDeleteConfirm": "¿Eliminar “%s” de tu lista de equipo propio? Solo se quitará de tu inventario.",
       "ownGearQuantityInvalid": "Introduce una cantidad mayor o igual que cero o deja el campo en blanco.",
       "ownGearNameRequired": "Introduce el nombre del elemento para guardarlo.",
@@ -1007,11 +1007,11 @@
       "printOptionsLayoutLabel": "Diseño",
       "printOptionsLayoutStandard": "Diseño estándar",
       "printOptionsLayoutRental": "Diseño para rental",
-      "rentalPrintSectionProject": "Requisitos del proyecto",
-      "rentalPrintSectionDevices": "Dispositivos configurados",
+      "rentalPrintSectionProject": "Requisitos de producción",
+      "rentalPrintSectionDevices": "Dispositivos del rig/paquete",
       "rentalPrintSectionPower": "Resumen de energía",
       "rentalPrintSectionDiagram": "Esquema de cámara",
-      "rentalPrintSectionGearList": "Lista de equipo",
+      "rentalPrintSectionGearList": "Lista de kit",
       "rentalPrintSectionBattery": "Comparativa de baterías",
       "exportAndRevertBtn": "Exportar y Restaurar por Defecto",
       "exportAndRevertBtnHelp": "Exporta la base y restaura los datos por defecto.",
@@ -1049,8 +1049,8 @@
           "content": "Usa **Export Project** para descargar un JSON (opcionalmente incluye reglas automáticas y marcas de equipo propio). Usa **Share Project** para crear un paquete de compartición para importación offline; quien lo reciba lo abre con **Import Project** y nada sobrescribe su configuración actual hasta confirmar Guardar. **Backup & Restore** ofrece copias completas, ensayo de restauración, comparación de versiones y la bóveda local cuando se bloquean las descargas automáticas."
         },
         "deviceConfiguration": {
-          "title": "Configuración de dispositivos",
-          "content": "Empieza con una **Cámara** y añade **Monitores**, **Transmisores inalámbricos** y sistemas **FIZ**. Usa la biblioteca de dispositivos para importar o exportar equipo personalizado y conservar los cambios offline."
+          "title": "Paquete de cámara",
+          "content": "Construye tu paquete de cámara empezando con una **Cámara** y añadiendo **Monitores**, **Transmisores inalámbricos** y sistemas **FIZ**. Usa la biblioteca de dispositivos para importar o exportar equipo personalizado y conservar los cambios offline."
         },
         "powerCalculation": {
           "title": "Cálculo de energía",
@@ -1061,8 +1061,8 @@
           "content": "El **Diagrama de conexiones** muestra cómo se conectan los dispositivos. Arrastra para ordenar, haz zoom y desplázate, y descarga instantáneas SVG o JPG para compartir."
         },
         "gearList": {
-          "title": "Lista de equipo",
-          "content": "Genera una **Lista de equipo** detallada a partir de dispositivos y requisitos. Edita cantidades, proveedores, extras temporales y marcas de equipo propio, luego imprime o exporta."
+          "title": "Lista de kit",
+          "content": "Genera una **Lista de kit** detallada a partir de dispositivos del paquete de cámara y requisitos de producción. Edita cantidades, proveedores, extras temporales y marcas de equipo propio, luego imprime o exporta."
         },
         "contacts": {
           "title": "Contactos",
@@ -1070,7 +1070,7 @@
         },
         "ownGear": {
           "title": "Equipo propio",
-          "content": "Controla tu inventario en **Equipo propio**. Marca artículos para que las listas de equipo y exportaciones reflejen esas anotaciones."
+          "content": "Controla tu inventario en **Equipo propio**. Marca artículos para que las listas de kit y exportaciones reflejen esas anotaciones."
         },
         "settings": {
           "title": "Ajustes",
@@ -1467,7 +1467,7 @@
       "autoGearDraftImpactConflictOne": "Las retiradas también están activas en %s regla.",
       "autoGearDraftImpactConflictOther": "Las retiradas también están activas en %s reglas.",
       "autoGearDraftWarningHeading": "Advertencias",
-      "autoGearDraftWarningCritical": "%s desaparecería de la lista de equipo.",
+      "autoGearDraftWarningCritical": "%s desaparecería de la lista de kit.",
       "autoGearDraftWarningConflict": "%s tiene instrucciones de añadir y quitar en conflicto.",
       "autoGearDraftWarningRedundant": "%s se añade con varias reglas sin aumentar los totales.",
       "autoGearDraftWarningConfirm": "¿Guardar igualmente? Revisa las advertencias de impacto antes de confirmar.",
@@ -1731,7 +1731,7 @@
       "storageAutoBackupsCountOne": "%s copia automática",
       "storageAutoBackupsCountOther": "%s copias automáticas",
       "storageKeyGearLists": "Capturas de listas de equipo",
-      "storageKeyGearListsDesc": "Resúmenes imprimibles y requisitos del proyecto.",
+      "storageKeyGearListsDesc": "Resúmenes imprimibles y requisitos de producción.",
       "storageGearListsCountOne": "%s entrada",
       "storageGearListsCountOther": "%s entradas",
       "storageKeyDevices": "Dispositivos personalizados o modificados",
@@ -1870,7 +1870,7 @@
         "userProfileInteractionSkipHint": "Pulsa Siguiente cuando estés listo: Contactos en la barra lateral siempre muestra estos datos guardados sin reiniciar el progreso del tutorial.",
         "userProfileAvatarAction": "Añadir foto de perfil",
         "userProfileAvatarEditAction": "Editar foto",
-        "projectRequirementsMiniIntro": "Completa estos campos proxy mientras el cuadro de diálogo Requisitos del proyecto permanece abierto.",
+        "projectRequirementsMiniIntro": "Completa estos campos proxy mientras el cuadro de diálogo Requisitos de producción permanece abierto.",
         "projectRequirementsMiniOfflineHint": "Cada cambio se guarda al instante sin conexión; usa Atrás/Siguiente aquí sin arriesgar tus datos.",
         "unitsPreferencesLanguageLabel": "Idioma",
         "unitsPreferencesThemeLabel": "Tema",
@@ -1910,7 +1910,7 @@
             "hero": {
               "heading": "Bienvenida a Cine Power Planner!",
               "subheading": "Protege cada set de cámara con comprobaciones de potencia, kits AutoGear y entregas listas para alquiler—todo se mantiene sin conexión.",
-              "summary": "Planifica configuraciones de cámara seguras, verifica límites de potencia, genera automáticamente listas de equipo desde los requisitos del proyecto y exporta PDF listos para renta—cada guardado permanece local antes del llamado.",
+            "summary": "Planifica configuraciones de cámara seguras, verifica límites de potencia, genera automáticamente listas de kit desde los requisitos de producción y exporta PDF listos para renta—cada guardado permanece local antes del llamado.",
               "badgeIcon": "",
               "badgeLabel": "Crew-first · Siempre sin conexión",
               "badgeDescription": "Sin servidores, sin cuentas, sin suscripciones. Cada guardado, autosave, copia de seguridad, restauración, compartición e importación permanece en este dispositivo.",
@@ -1927,7 +1927,7 @@
                 },
                 {
                   "icon": "",
-                  "title": "Requisitos del proyecto listos para el handoff",
+                  "title": "Requisitos de producción listos para el handoff",
                   "body": "Controla requisitos, cobertura del equipo y notas de alquiler; después exporta paquetes PDF listos para el equipo, las casas de renta y producción."
                 },
                 {
@@ -2028,7 +2028,7 @@
           },
           "projectRequirementsBrief": {
             "title": "Registrar el brief del proyecto",
-            "body": "Abre Generar lista de equipo y Requisitos del proyecto y documenta la productora, la dirección completa, las preferencias del rental, los entregables y las notas de agenda. Estos datos rellenan los PDF de alquiler, permanecen en caché sin conexión y preparan las siguientes secciones."
+            "body": "Abre Generar lista de kit y Requisitos de producción y documenta la productora, la dirección completa, las preferencias del rental, los entregables y las notas de agenda. Estos datos rellenan los PDF de alquiler, permanecen en caché sin conexión y preparan las siguientes secciones."
           },
           "projectRequirementsCrew": {
             "title": "Mapear la cobertura del equipo y contactos",
@@ -2039,8 +2039,8 @@
             "body": "Recorre el resto de secciones: especificaciones de cámara, flujo de lentes, escenarios de rigging, cantidades de almacenamiento/medios, preferencias de mattebox y monitorización. Cada campo alimenta las reglas automáticas, el cálculo de almacenamiento y la lista final."
           },
           "generateGearAndRequirements": {
-            "title": "Genera requisitos y lista de equipo",
-            "body": "Usa Generar lista de equipo y requisitos del proyecto para reconstruir la checklist de rodaje tras cada ajuste. El planner guarda el resultado con el proyecto para que los PDF, exportaciones y backups reflejen siempre las selecciones más recientes."
+            "title": "Genera requisitos y lista de kit",
+            "body": "Usa Generar lista de kit y requisitos de producción para reconstruir la checklist de rodaje tras cada ajuste. El planner guarda el resultado con el proyecto para que los PDF, exportaciones y backups reflejen siempre las selecciones más recientes."
           },
           "autoGearRulesAccess": {
             "title": "Abre las reglas automáticas de equipo",
@@ -2055,8 +2055,8 @@
             "body": "Pulsa Añadir regla para crear una automatización personalizada. Ponle nombre, agrega condiciones y el equipo necesario y guarda. El planificador ejecuta la nueva regla sin conexión cada vez que regeneras el kit y la incluye en exportaciones, compartidos y copias de seguridad."
           },
           "gearList": {
-            "title": "Audita la lista de equipo generada",
-            "body": "Revisa la lista de equipo categorizada en busca de duplicados, cantidades y accesorios autoañadidos. Las ediciones se guardan al instante, se incluyen en los paquetes para compartir y aparecen en impresiones y PDF."
+            "title": "Audita la lista de kit generada",
+            "body": "Revisa la lista de kit categorizada en busca de duplicados, cantidades y accesorios autoañadidos. Las ediciones se guardan al instante, se incluyen en los paquetes para compartir y aparecen en impresiones y PDF."
           },
           "exportImport": {
             "title": "Exporta e importa proyectos",
@@ -2137,7 +2137,7 @@
       "deleteSetupHelp": "Elimina la configuración guardada seleccionada.",
       "saveSetupHelp": "Captura una instantánea completa del proyecto actual—dispositivos, requisitos, notas, registros de autonomía y diseño del diagrama—y guárdala en tu biblioteca local. El punto de estado junto a Nombre del proyecto pulsa mientras termina la escritura, y la cola de copias de seguridad automáticas programa a continuación la instantánea con marca de tiempo para mantener la redundancia actualizada. Pulsa Intro o Ctrl+S (Cmd+S en Mac) para lograr lo mismo; el botón Guardar permanece desactivado hasta que introduzcas un nombre de proyecto. Guardar no sobrescribe otros proyectos hasta que confirmes el nombre, así tus datos anteriores quedan protegidos.",
       "generateOverviewHelp": "Reconstruye el resumen listo para imprimir del proyecto guardado seleccionado y abre la ventana de overview para que revises los detalles de alimentación y conexión antes de imprimir cuando quieras. Las ópticas seleccionadas se muestran con marca, montura, diámetro, enfoque, peso, soporte de varillas y notas para que las exportaciones cubran chequeos sensibles a especificaciones.",
-      "generateGearListHelp": "Genera una tabla categorizada que combina el equipo seleccionado con los requisitos del proyecto. La lista se actualiza con cada cambio, fusiona duplicados con sus cantidades y añade automáticamente cables, rigging, soportes de lente, piezas de matte box, recuentos de baterías con hotswap, monitores predeterminados para cada rol y accesorios específicos de los escenarios. Los elementos se ordenan alfabéticamente e incluyen descripciones al pasar el cursor.",
+      "generateGearListHelp": "Genera una lista de kit categorizada que combina el equipo seleccionado con los requisitos de producción. La lista se actualiza con cada cambio, fusiona duplicados con sus cantidades y añade automáticamente cables, rigging, soportes de lente, piezas de matte box, recuentos de baterías con hotswap, monitores predeterminados para cada rol y accesorios específicos de los escenarios. Los elementos se ordenan alfabéticamente e incluyen descripciones al pasar el cursor.",
       "shareSetupHelp": "Descarga un paquete JSON de seguridad del proyecto actual—incluye equipo personalizado, favoritos, retroalimentación de autonomía y dispositivos—listo para archivarse o compartirse sin conexión. Guarda el archivo junto a las copias de seguridad redundantes del equipo antes de cerrar el planificador para que cualquier estación pueda restaurarlo sin acceso a la red. La exportación no altera tu proyecto actual, así que no se pierde nada al crear el paquete.",
       "applySharedLinkHelp": "Carga la configuración desde un respaldo JSON exportado mediante Guardar y compartir o Copia de seguridad y restaurar. Revisa la vista previa con el diff antes de aplicarla: nada sobrescribe tu proyecto actual hasta que confirmas Guardar, y el planificador programa previamente una nueva copia de seguridad automática para que puedas deshacerla al instante. Las importaciones sin nombre se guardan automáticamente con un título “-imported” para que los datos se conserven incluso cuando el paquete no incluía un nombre de proyecto. El proyecto importado queda local y disponible sin conexión en cuanto guardas.",
       "sharedLinkHelp": "Elige un JSON de proyecto exportado desde Guardar y compartir o desde Copia de seguridad y restaurar. Conserva el archivo original en tus respaldos tras la importación: el planificador solo lee una copia y deja constancia del intento en los registros de diagnóstico para que puedas auditar cada restauración.",

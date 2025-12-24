@@ -13,10 +13,10 @@
         "layoutRentalLabel": "Verleih-optimiert",
         "layoutRentalDescription": "Optimiert das Layout für den Kameraverleih durch Gruppierung nach Kategorien.",
         "sectionsTitle": "Abschnitte",
-        "sectionProject": "Projektanforderungen",
-        "sectionDevices": "Equipmentliste",
+        "sectionProject": "Produktionsanforderungen",
+        "sectionDevices": "Rig-/Paketgeräte",
         "sectionDiagram": "Verkabelungsplan",
-        "sectionGearList": "Equipmentliste",
+        "sectionGearList": "Kit-Liste",
         "sectionBattery": "Akku-Vergleich",
         "exportPdfButton": "PDF exportieren",
         "printButton": "Drucken",
@@ -24,12 +24,12 @@
         "generatedProjectNameLabel": "Projektname:",
         "generatedProductionLabel": "Produktion:",
         "generatedDateLabel": "Datum:",
-        "generatedNoProjectRequirements": "Keine Projektanforderungen.",
-        "generatedDeviceSelectionTitle": "Geräteauswahl",
+        "generatedNoProjectRequirements": "Keine Produktionsanforderungen.",
+        "generatedDeviceSelectionTitle": "Kamera-Paketgeräte",
         "generatedNoDevicesSelected": "Keine Geräte ausgewählt.",
         "generatedPowerDiagramTitle": "Verkabelungsplan",
         "generatedPowerSummaryTitle": "Stromübersicht",
-        "generatedGearListTitle": "Equipmentliste",
+        "generatedGearListTitle": "Kit-Liste",
         "generatedTotalLoad": "Gesamtlast",
         "generatedPeak": "Spitze:",
         "generatedEstRuntime": "Geschätzte Laufzeit",
@@ -85,8 +85,8 @@
       "impressum": "Impressum",
       "privacy": "Datenschutz",
       "setupManageHeading": "Projektübersicht",
-      "deviceSelectionHeading": "Geräte konfigurieren",
-      "overviewDeviceSelectionHeading": "Geräte im Kamera-Setup",
+      "deviceSelectionHeading": "Kamera-Paket",
+      "overviewDeviceSelectionHeading": "Kamera-Paketgeräte",
       "resultsHeading": "Leistungsübersicht",
       "pdfWarningsHeading": "Warnungen",
       "deviceManagerHeading": "Gerätebibliothek",
@@ -96,19 +96,19 @@
       "batteryComparisonTableHelp": "Jede Zeile zeigt einen kompatiblen Akku. Die Laufzeit basiert auf dem berechneten Verbrauch und der farbige Balken vergleicht die Dauer auf einen Blick.",
       "setupDiagramHeading": "Verkabelungsplan",
       "diagramPdfNote": "Das Verbindungsdiagramm ist nicht im PDF-Export enthalten. Öffnen Sie die Druckansicht, um das Layout zu sehen.",
-      "projectRequirementsNav": "Projektanforderungen",
-      "projectRequirementsNavHelp": "Zur Ausgabe Projektanforderungen springen, sobald sie erstellt wurde.",
-      "gearListNav": "Equipmentliste",
-      "gearListNavHelp": "Die erzeugte Equipmentliste mit allen Geräten und Kategorien ansehen.",
+      "projectRequirementsNav": "Produktionsanforderungen",
+      "projectRequirementsNavHelp": "Zur Ausgabe Produktionsanforderungen springen, sobald sie erstellt wurde.",
+      "gearListNav": "Kit-Liste",
+      "gearListNavHelp": "Die erzeugte Kit-Liste mit allen Geräten und Kategorien ansehen.",
       "ownGearNav": "Eigenes Equipment",
       "ownGearNavHelp": "Halte fest, welches Equipment du bereits besitzt, und nutze es projektübergreifend.",
-      "overviewExportTitleSuffix": "Equipmentliste und Projektanforderungen",
+      "overviewExportTitleSuffix": "Kit-Liste und Produktionsanforderungen",
       "openSettingsNav": "Einstellungen",
       "openSettingsNavHelp": "Einstellungen öffnen, um Sprache, Designs, Barrierefreiheit und Backups anzupassen.",
       "openHelpNav": "Hilfe-Center",
       "openHelpNavHelp": "Die integrierte Hilfe mit Anleitungen, Tipps zur Fehlerbehebung und Tastenkürzeln öffnen.",
       "setupManageHeadingHelp": "Gespeicherte Projekte verwalten: Projekte speichern, laden oder löschen.",
-      "deviceSelectionHeadingHelp": "Wähle Kameras, Monitore und Zubehör für dein Setup.",
+      "deviceSelectionHeadingHelp": "Wähle Kameras, Monitore und Zubehör für dein Kamera-Paket.",
       "resultsHeadingHelp": "Zeigt Stromverbrauch, geschätzte Laufzeit und benötigte Akkus.",
       "resultsPlainSummaryTitle": "Schnellüberblick",
       "resultsPlainSummaryHelp": "Erläutert die Leistungsübersicht in Alltagssprache und unterstützt die Laufzeitplanung.",
@@ -679,11 +679,11 @@
       "alertDeviceName": "Der Gerätename darf nicht leer sein.",
       "alertInvalidCameraJSON": "Ungültiges JSON für Kameradetails",
       "generateOverviewBtn": "Übersicht erstellen",
-      "generateGearListBtn": "Gear-Liste und Projektanforderungen erstellen",
+      "generateGearListBtn": "Kit-Liste und Produktionsanforderungen erstellen",
       "addExtraGearBtn": "Temporäres Extra hinzufügen",
-      "editProjectBtn": "Projektanforderungen bearbeiten",
+      "editProjectBtn": "Produktionsanforderungen bearbeiten",
       "projectForm": {
-        "heading": "Projektanforderungen",
+        "heading": "Produktionsanforderungen",
         "projectName": "Projektname:",
         "productionCompany": "Produktionsfirma:",
         "productionCompanyAddress": "Adresse der Produktionsfirma (optional):",
@@ -989,10 +989,10 @@
       "autoGearHighlightToggleHelp": "Schaltet eine temporäre Farbmarkierung für durch automatische Regeln hinzugefügtes Equipment um. Nützlich zum Debuggen des Regelverhaltens.",
       "autoGearHighlightToggleStateOn": "Aktiv",
       "autoGearHighlightToggleStateOff": "Deaktiviert",
-      "deleteGearListBtn": "Gear-Liste löschen",
-      "deleteGearListBtnHelp": "Entfernt die gespeicherte Gear-Liste aus diesem Projekt und blendet die Tabelle aus.",
-      "confirmDeleteGearList": "Gear-Liste löschen?",
-      "confirmDeleteGearListAgain": "Dies wird die Gear-Liste dauerhaft löschen. Bist du sicher?",
+      "deleteGearListBtn": "Kit-Liste löschen",
+      "deleteGearListBtnHelp": "Entfernt die gespeicherte Kit-Liste aus diesem Projekt und blendet die Tabelle aus.",
+      "confirmDeleteGearList": "Kit-Liste löschen?",
+      "confirmDeleteGearListAgain": "Dies wird die Kit-Liste dauerhaft löschen. Bist du sicher?",
       "ownGearDialogTitle": "Eigenes Equipment",
       "ownGearDialogDescription": "Halte fest, welches Equipment du besitzt, um mit dem zu planen, was bereits in deinem Kit steckt.",
       "ownGearAddHeading": "Equipment hinzufügen",
@@ -1036,11 +1036,11 @@
       "printOptionsLayoutLabel": "Layout",
       "printOptionsLayoutStandard": "Standard-Layout",
       "printOptionsLayoutRental": "Rental-Layout",
-      "rentalPrintSectionProject": "Projektanforderungen",
-      "rentalPrintSectionDevices": "Konfigurierte Geräte",
+      "rentalPrintSectionProject": "Produktionsanforderungen",
+      "rentalPrintSectionDevices": "Rig-/Paketgeräte",
       "rentalPrintSectionPower": "Leistungsübersicht",
       "rentalPrintSectionDiagram": "Kameraschema",
-      "rentalPrintSectionGearList": "Equipmentliste",
+      "rentalPrintSectionGearList": "Kit-Liste",
       "rentalPrintSectionBattery": "Batterievergleich",
       "exportAndRevertBtn": "Exportieren und auf Standarddatenbank zurücksetzen",
       "exportAndRevertBtnHelp": "Datenbank exportieren und auf Standarddaten zurücksetzen.",
@@ -1078,8 +1078,8 @@
           "content": "Mit **Export Project** lädst du ein JSON-Bundle herunter (optional automatische Gear-Regeln und Besitz-Markierungen). Nutze **Share Project**, um ein Share-Bundle für den Offline-Import zu erstellen; Empfänger öffnen es mit **Import Project**, und nichts überschreibt das aktuelle Setup, bis sie Speichern bestätigen. **Backup & Restore** liefert Komplettsicherungen, Wiederherstellungsprobe, Versionsvergleich und den lokalen Backup-Tresor, wenn automatische Downloads blockiert werden."
         },
         "deviceConfiguration": {
-          "title": "Geräte konfigurieren",
-          "content": "Starte mit einer **Kamera** und ergänze **Monitore**, **Funkstrecken** und **FIZ**-Systeme. Nutze die Gerätebibliothek, um eigenes Gear zu importieren oder zu exportieren, damit Offline-Änderungen erhalten bleiben."
+          "title": "Kamera-Paket",
+          "content": "Baue dein Kamera-Paket auf, beginnend mit einer **Kamera**, und ergänze **Monitore**, **Funkstrecken** und **FIZ**-Systeme. Nutze die Gerätebibliothek, um eigenes Gear zu importieren oder zu exportieren, damit Offline-Änderungen erhalten bleiben."
         },
         "powerCalculation": {
           "title": "Leistungsberechnung",
@@ -1090,8 +1090,8 @@
           "content": "Das **Verbindungsdiagramm** zeigt die Geräteverkabelung. Ziehe Knoten zum Anordnen, zoome und schwenke für Details und lade SVG- oder JPG-Snapshots herunter."
         },
         "gearList": {
-          "title": "Gear-Liste",
-          "content": "Erstelle eine detaillierte **Gear-Liste** aus Geräten und Anforderungen. Bearbeite Mengen, Anbieter, temporäre Extras und Besitz-Markierungen, dann drucke oder exportiere sie."
+          "title": "Kit-Liste",
+          "content": "Erstelle eine detaillierte **Kit-Liste** aus Kamera-Paketgeräten und Produktionsanforderungen. Bearbeite Mengen, Anbieter, temporäre Extras und Besitz-Markierungen, dann drucke oder exportiere sie."
         },
         "contacts": {
           "title": "Kontakte",
@@ -1099,7 +1099,7 @@
         },
         "ownGear": {
           "title": "Eigenes Equipment",
-          "content": "Eigenes Inventar in **Eigenes Equipment** verwalten. Markiere Eigentum, damit Gear-Listen diese Kennzeichnung auch im Export tragen."
+          "content": "Eigenes Inventar in **Eigenes Equipment** verwalten. Markiere Eigentum, damit Kit-Listen diese Kennzeichnung auch im Export tragen."
         },
         "settings": {
           "title": "Einstellungen",
@@ -1215,7 +1215,7 @@
       "logoSettingHelp": "Lade ein SVG-Logo hoch, das in Druckübersichten und Sicherungen verwendet wird.",
       "logoFormatError": "Nicht unterstütztes Logo-Format. Bitte eine SVG-Datei wählen.",
       "autoGearHeading": "Automatische Gear-Regeln",
-      "autoGearHeadingHelp": "Lege fest, welche Projektanforderungen automatisch Geräte hinzufügen oder entfernen.",
+      "autoGearHeadingHelp": "Lege fest, welche Produktionsanforderungen automatisch Kit-Items hinzufügen oder entfernen.",
       "autoGearDescription": "Erstelle szenariobasierte Regeln, um die erzeugte Packliste nach den Standardvorschlägen anzupassen.",
       "autoGearPresetDescription": "Speichere komplette Sets automatischer Gear-Regeln zur Wiederverwendung.",
       "autoGearPresetLabel": "Voreinstellung",
@@ -1298,7 +1298,7 @@
       "autoGearConditionLogicMultiplier": "Mit passenden Werten multiplizieren",
       "autoGearConditionRepeatHint": "Bedingung bereits hinzugefügt. Die vorhandenen Eingaben für {condition} sind markiert, damit du weitere Auswahlmöglichkeiten setzen kannst.",
       "autoGearAlwaysLabel": "Immer einschließen",
-      "autoGearAlwaysHelp": "Wendet diese Regel auf jede Geräteliste an.",
+      "autoGearAlwaysHelp": "Wendet diese Regel auf jede Kit-Liste an.",
       "autoGearAlwaysMeta": "Immer aktiv",
       "autoGearScenarioModeLabel": "Szenarioabgleich",
       "autoGearScenarioModeHelp": "Legt fest, wie die ausgewählten Szenarien zusammenwirken, bevor die Regel aktiv wird.",
@@ -1359,7 +1359,7 @@
       "autoGearCameraWeightValueRequired": "Geben Sie vor dem Speichern einen Kameragewichts-Schwellenwert ein.",
       "autoGearMonitorLabel": "Onboard-Monitore",
       "autoGearMonitorDefaultsHeading": "Monitor-Vorgaben",
-      "autoGearMonitorDefaultsDescription": "Wähle, welche Monitore für neue Gear-Listen vorab ausgewählt werden sollen.",
+      "autoGearMonitorDefaultsDescription": "Wähle, welche Monitore für neue Kit-Listen vorab ausgewählt werden sollen.",
       "autoGearDefaultFocusMonitorLabel": "Fokusmonitor",
       "autoGearDefaultHandheldMonitorLabel": "7\" Handmonitor",
       "autoGearDefaultComboMonitorLabel": "Combo-Monitor 15-21\"",
@@ -1519,7 +1519,7 @@
       "autoGearListEdit": "Bearbeiten",
       "autoGearEmptyList": "Noch keine Geräte.",
       "autoGearDraftImpactHeading": "Entwurfs-Auswirkungs-Vorschau",
-      "autoGearDraftImpactDescription": "Simulierte Summen, die zeigen, wie dieser Entwurf die gemeinsame Geräteliste verändern würde.",
+      "autoGearDraftImpactDescription": "Simulierte Summen, die zeigen, wie dieser Entwurf die gemeinsame Kit-Liste verändern würde.",
       "autoGearDraftImpactEmpty": "Noch keine Änderungen erkannt. Füge Geräte hinzu oder passe sie an, um die Auswirkung zu sehen.",
       "autoGearDraftImpactUnavailable": "Die Vorschau wird verfügbar, sobald diese Regel mindestens ein Element enthält.",
       "autoGearDraftImpactTotals": "Aktueller Gesamtwert: %s → Nach dem Speichern: %s",
@@ -1529,7 +1529,7 @@
       "autoGearDraftImpactConflictOne": "Entfernungen sind auch in %s Regel aktiv.",
       "autoGearDraftImpactConflictOther": "Entfernungen sind auch in %s Regeln aktiv.",
       "autoGearDraftWarningHeading": "Warnungen",
-      "autoGearDraftWarningCritical": "%s würde aus der Geräteliste verschwinden.",
+      "autoGearDraftWarningCritical": "%s würde aus der Kit-Liste verschwinden.",
       "autoGearDraftWarningConflict": "%s enthält widersprüchliche Anweisungen zum Hinzufügen und Entfernen.",
       "autoGearDraftWarningRedundant": "%s wird von mehreren Regeln hinzugefügt, ohne die Gesamtmenge zu erhöhen.",
       "autoGearDraftWarningConfirm": "Trotzdem speichern? Prüfe die folgenden Auswirkungswarnungen, bevor du bestätigst.",
@@ -1759,8 +1759,8 @@
       "storageKeyAutoBackupsDesc": "Zeitgestempelte Sicherungskopien alle 10 Minuten oder nach rund 50 protokollierten Änderungen. Projektwechsel, Importe, Exporte und Reloads erstellen zusätzlich sofort eine neue Aufnahme, auch wenn dieser Takt noch läuft.",
       "storageAutoBackupsCountOne": "%s Auto-Backup",
       "storageAutoBackupsCountOther": "%s Auto-Backups",
-      "storageKeyGearLists": "Gear-Listen-Snapshots",
-      "storageKeyGearListsDesc": "Druckbare Übersichten und Projektanforderungen.",
+      "storageKeyGearLists": "Kit-Listen-Snapshots",
+      "storageKeyGearListsDesc": "Druckbare Übersichten und Produktionsanforderungen.",
       "storageGearListsCountOne": "%s Eintrag",
       "storageGearListsCountOther": "%s Einträge",
       "storageKeyDevices": "Eigene oder geänderte Geräte",
@@ -1899,7 +1899,7 @@
         "userProfileInteractionSkipHint": "Drücke Weiter, sobald du bereit bist – Kontakte in der Seitenleiste zeigt diese gespeicherten Details jederzeit an, ohne den Tutorial-Fortschritt zurückzusetzen.",
         "userProfileAvatarAction": "Profilfoto hinzufügen",
         "userProfileAvatarEditAction": "Foto bearbeiten",
-        "projectRequirementsMiniIntro": "Fülle diese Proxy-Felder aus, während der Dialog Projektanforderungen geöffnet bleibt.",
+        "projectRequirementsMiniIntro": "Fülle diese Proxy-Felder aus, während der Dialog Produktionsanforderungen geöffnet bleibt.",
         "projectRequirementsMiniOfflineHint": "Jede Eingabe wird sofort offline gespeichert – nutze Zurück/Weiter hier, ohne Daten zu verlieren.",
         "unitsPreferencesLanguageLabel": "Sprache",
         "unitsPreferencesThemeLabel": "Design",
@@ -1939,7 +1939,7 @@
             "hero": {
               "heading": "Willkommen bei Cine Power Planner!",
               "subheading": "Schütze jedes Kamera-Setup mit Leistungschecks, AutoGear-Kits und übergabefertigen Unterlagen—alles bleibt offline.",
-              "summary": "Plane sichere Kamera-Setups, prüfe Leistungsgrenzen, erstelle Gear-Listen automatisch aus Projektanforderungen und exportiere übergabefertige PDFs—jeder Speicherstand bleibt vor Drehbeginn lokal.",
+              "summary": "Plane sichere Kamera-Setups, prüfe Leistungsgrenzen, erstelle Kit-Listen automatisch aus Produktionsanforderungen und exportiere übergabefertige PDFs—jeder Speicherstand bleibt vor Drehbeginn lokal.",
               "badgeIcon": "",
               "badgeLabel": "Crew-first · Dauerhaft offline",
               "badgeDescription": "Keine Server, keine Konten, keine Abos. Jeder Speicherstand, jedes Autosave, jedes Backup, Restore, Teilen und Import bleibt auf diesem Gerät.",
@@ -1952,11 +1952,11 @@
                 {
                   "icon": "",
                   "title": "AutoGear baut wiederverwendbare Kits",
-                  "body": "Vollständige Gear-Listen aus Drehszenarien mit AutoGear-Regeln erzeugen, Regeln für den Tag anpassen und Presets wiederverwenden."
+                  "body": "Vollständige Kit-Listen aus Drehszenarien mit AutoGear-Regeln erzeugen, Regeln für den Tag anpassen und Presets wiederverwenden."
                 },
                 {
                   "icon": "",
-                  "title": "Projektanforderungen übergabebereit",
+                  "title": "Produktionsanforderungen übergabebereit",
                   "body": "Anforderungen, Crew-Abdeckung und Vermietnotizen verfolgen und PDF-Pakete für Crew, Verleih und Produktion bereitstellen."
                 },
                 {
@@ -2057,7 +2057,7 @@
           },
           "projectRequirementsBrief": {
             "title": "Projekt-Steckbrief erfassen",
-            "body": "Öffne den Dialog Gear-Liste und Projektanforderungen, protokolliere Produktionsfirma, Adresse, Verleihpräferenzen, Deliverables und Terminhinweise. Die Angaben füllen PDF-Pakete automatisch, bleiben offline im Cache und bereiten die nächsten Abschnitte vor."
+            "body": "Öffne den Dialog Kit-Liste und Produktionsanforderungen, protokolliere Produktionsfirma, Adresse, Verleihpräferenzen, Deliverables und Terminhinweise. Die Angaben füllen PDF-Pakete automatisch, bleiben offline im Cache und bereiten die nächsten Abschnitte vor."
           },
           "projectRequirementsCrew": {
             "title": "Crew-Abdeckung und Kontakte planen",
@@ -2068,8 +2068,8 @@
             "body": "Arbeite die übrigen Sektionen durch – Kameraspezifikationen, Linsen-Workflow, Rigging-Szenarien, Speicher-/Medienmengen, Mattebox- und Monitoring-Präferenzen. Jede Eingabe speist automatische Gear-Regeln, Speicherberechnung und die finale Checkliste."
           },
           "generateGearAndRequirements": {
-            "title": "Anforderungen und Gear-Liste erzeugen",
-            "body": "Nutze Gear-Liste und Projektanforderungen generieren, um die Checkliste nach jeder Änderung neu zu erstellen. Der Planner speichert das Ergebnis beim Projekt, sodass PDFs, Exporte und Backups stets den neuesten Stand abbilden."
+            "title": "Anforderungen und Kit-Liste erzeugen",
+            "body": "Nutze Kit-Liste und Produktionsanforderungen generieren, um die Checkliste nach jeder Änderung neu zu erstellen. Der Planner speichert das Ergebnis beim Projekt, sodass PDFs, Exporte und Backups stets den neuesten Stand abbilden."
           },
           "autoGearRulesAccess": {
             "title": "Automatische Gear-Regeln öffnen",
@@ -2084,8 +2084,8 @@
             "body": "Klicke auf Regel hinzufügen, um eine eigene Automatisierung zu erstellen. Vergib einen Namen, ergänze Bedingungen und benötigtes Equipment und speichere. Der Planner führt die neue Regel offline bei jedem Neuaufbau des Kits aus und nimmt sie in Exporte, Freigaben und Sicherungen auf."
           },
           "gearList": {
-            "title": "Generierte Gear-Liste prüfen",
-            "body": "Prüfe die kategorisierte Gear-Liste auf Duplikate, Mengen und automatisch hinzugefügtes Zubehör. Änderungen werden sofort gespeichert, in Share-Bundles aufgenommen und erscheinen in Ausdrucken und PDFs."
+            "title": "Generierte Kit-Liste prüfen",
+            "body": "Prüfe die kategorisierte Kit-Liste auf Duplikate, Mengen und automatisch hinzugefügtes Zubehör. Änderungen werden sofort gespeichert, in Share-Bundles aufgenommen und erscheinen in Ausdrucken und PDFs."
           },
           "exportImport": {
             "title": "Projekte exportieren und importieren",
@@ -2166,7 +2166,7 @@
       "deleteSetupHelp": "Löscht das ausgewählte gespeicherte Projekt.",
       "saveSetupHelp": "Erfasse eine vollständige Momentaufnahme des aktuellen Projekts—Geräte, Anforderungen, Notizen, Laufzeitprotokolle und Diagrammlayout—und lege sie in deiner lokalen Bibliothek ab. Der Autosave-Statuspunkt neben Projektname pulsiert, während der Schreibvorgang läuft, und die Hintergrundwarteschlange für automatische Backups plant direkt danach den gleichen Snapshot mit Zeitstempel, damit die Redundanz aktuell bleibt. Drücke Eingabe oder Strg+S (⌘S auf dem Mac), um dasselbe auszulösen; die Schaltfläche Speichern bleibt deaktiviert, bis du einen Projektnamen eingibst. Das Speichern überschreibt keine anderen Projekte, bevor du den Namen bestätigst, sodass deine bisherigen Daten geschützt bleiben.",
       "generateOverviewHelp": "Erstellt die druckfertige Übersicht für das ausgewählte gespeicherte Projekt neu und öffnet das Übersichtsfenster, damit du Strom- und Verbindungsdetails prüfen kannst, bevor du bei Bedarf druckst. Die Objektivsektion zeigt Marke, Mount, Durchmesser, Fokus, Gewicht, Rod-Support und Notizen, damit Exporte spezifikationskritische Checks abdecken.",
-      "generateGearListHelp": "Erstellt eine kategorisierte Tabelle aus ausgewähltem Equipment und Projektanforderungen. Die Liste aktualisiert sich bei jeder Änderung, fasst doppelte Einträge mit Anzahl zusammen und ergänzt automatisch benötigte Kabel, Rigging, Linsensupports, Matte-Box-Bauteile, Batteriezahlen mit Hotswap-Hardware, Standardmonitore pro Rolle sowie szenariospezifisches Zubehör. Alle Posten sind alphabetisch sortiert und zeigen beim Überfahren eine Beschreibung.",
+      "generateGearListHelp": "Erstellt eine kategorisierte Kit-Liste aus ausgewähltem Equipment und Produktionsanforderungen. Die Liste aktualisiert sich bei jeder Änderung, fasst doppelte Einträge mit Anzahl zusammen und ergänzt automatisch benötigte Kabel, Rigging, Linsensupports, Matte-Box-Bauteile, Batteriezahlen mit Hotswap-Hardware, Standardmonitore pro Rolle sowie szenariospezifisches Zubehör. Alle Posten sind alphabetisch sortiert und zeigen beim Überfahren eine Beschreibung.",
       "shareSetupHelp": "Lade ein JSON-Sicherheitspaket des aktuellen Projekts—inklusive individuellem Zubehör, Favoriten, Laufzeitrückmeldungen und Geräten—herunter, bereit zum Archivieren oder Offline-Teilen. Lege die Datei vor dem Schließen des Planners zusammen mit den redundanten Team-Backups ab, damit jeder Arbeitsplatz sie ohne Netzwerkzugang wiederherstellen kann. Der Export lässt dein aktuelles Projekt unverändert, sodass beim Erstellen des Pakets nichts verloren geht.",
       "applySharedLinkHelp": "Lade die Konfiguration aus einem JSON-Backup, das über Speichern & Teilen oder Sicherung & Wiederherstellung exportiert wurde. Prüfe den Vergleich in der Vorschau, bevor du fortfährst – nichts überschreibt dein aktuelles Projekt, bevor du Speichern bestätigst, und der Planner plant vorher ein frisches automatisches Backup ein, damit du sofort zurückrollen kannst. Unbenannte Importe werden automatisch mit einem “-imported”-Titel gespeichert, damit die Daten auch dann ankommen, wenn das Paket keinen Projektnamen enthielt. Das importierte Projekt bleibt lokal und ist sofort offline verfügbar, sobald du speicherst.",
       "sharedLinkHelp": "Wähle ein Projekt-JSON, das über Speichern & Teilen oder Sicherung & Wiederherstellung exportiert wurde. Bewahre die Originaldatei nach dem Import in deinen Backups auf – der Planner liest nur eine Kopie und protokolliert den Vorgang im Diagnostik-Log, damit du jede Wiederherstellung nachvollziehen kannst.",

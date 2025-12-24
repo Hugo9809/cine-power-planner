@@ -5,14 +5,14 @@
 Cine Power Planner ist eine eigenständige Web-App, mit der professionelle
 Kamera-Strompläne erstellt, geprüft und geteilt werden, ohne dass Daten das
 lokale Gerät verlassen. Plane V‑Mount-, B‑Mount- oder Gold‑Mount-Rigs, modelliere
-Laufzeit-Erwartungen, erfasse Projektanforderungen und exportiere teilbare
+Laufzeit-Erwartungen, erfasse Produktionsanforderungen und exportiere teilbare
 Bundles – vollständig im Browser und auch offline. Alle Abhängigkeiten liegen
 in diesem Repository, sodass dieselbe Erfahrung auf Set-Workstations,
 Feld-Laptops oder luftgetrennten Archiven funktioniert.
 
 ## Datenschutzversprechen
 
-- **Nur lokale Speicherung.** Projekte, Gear-Listen, Laufzeit-Feedback,
+- **Nur lokale Speicherung.** Projekte, Kit-Listen, Laufzeit-Feedback,
   Exporte und Backups bleiben auf deinem Rechner; die App benötigt keine
   externen Dienste.
 - **Mehrstufige Sicherheitsnetze.** Speichern, Autosave, Teilen, Importieren,
