@@ -83,6 +83,15 @@ describe('feature search normalization', () => {
     expect(normalize("12\t\t' lens")).toBe('12 ft lens');
   });
 
+  test('normalizes mark variants with roman numerals', () => {
+    loadModule();
+    expect(moduleApi).toBeDefined();
+    const normalize = moduleApi.normalizeSearchValue;
+    expect(normalize('Mk IV')).toBe('mk4');
+    expect(normalize('Mark V')).toBe('mk5');
+    expect(normalize('Mk iX')).toBe('mk9');
+  });
+
   test('removes conversational filler tokens from normalized queries', () => {
     loadModule();
     expect(moduleApi).toBeDefined();
