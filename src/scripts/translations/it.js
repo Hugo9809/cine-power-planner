@@ -114,8 +114,8 @@
       "resultsPlainSummaryHelp": "Spiega il riepilogo di potenza con termini semplici e supporta la pianificazione dell'autonomia.",
       "resultsPlainSummaryPrompt": "Aggiungi dispositivi e scegli una batteria per vedere un riepilogo in linguaggio semplice.",
       "resultsPlainSummaryNeedBattery": "Scegli una batteria per scoprire quanta autonomia avrai e quanti pacchi portare.",
-      "resultsPlainSummaryRuntime": "Con {batteryName} puoi aspettarti circa {hours} ore di autonomia. Per una giornata da 10 ore porta {batteryCount} batterie. Il tuo setup assorbe attualmente {totalPower} W.",
-      "resultsPlainSummaryUnlimited": "Con {batteryName} il tuo setup assorbe {totalPower} W, quindi l'autonomia rimane virtualmente illimitata. Tieni comunque collegata una batteria carica prima di girare.",
+      "resultsPlainSummaryRuntime": "Con {batteryName} puoi aspettarti circa {hours} ore di autonomia. Per una giornata da 10 ore porta {batteryCount} batterie. Il tuo assetto assorbe attualmente {totalPower} W.",
+      "resultsPlainSummaryUnlimited": "Con {batteryName} il tuo assetto assorbe {totalPower} W, quindi l'autonomia rimane virtualmente illimitata. Tieni comunque collegata una batteria carica prima di girare.",
       "resultsPlainSummaryNote": "Lo stato di pin e D-Tap si aggiorna mentre aggiungi attrezzatura.",
       "resultsPlainSummaryPinsZero": "Pin: nessun assorbimento 12V al momento.",
       "resultsPlainSummaryPinsOk": "Pin: {current}A entro il limite di {max}A.",
@@ -918,7 +918,7 @@
         "Battery Belt": "Cintura batterie"
       },
       "gearListNoteLabel": "Nota:",
-      "gearListAutosaveNote": "Salvato automaticamente a ogni modifica del setup così l'inventario offline riflette l'ultimo assetto camera.",
+      "gearListAutosaveNote": "Salvato automaticamente a ogni modifica dell'assetto così l'inventario offline riflette l'ultimo assetto camera.",
       "gearListAddCustomItem": "Aggiungi elemento personalizzato",
       "gearListAddCustomItemToCategory": "Aggiungi elemento personalizzato a {category}",
       "gearListRemoveCustomItem": "Rimuovi",
@@ -1889,7 +1889,7 @@
         "stepStatusUpcoming": "In arrivo",
         "resumeHint": "Riprendi esattamente da dove avevi interrotto. Usa il navigatore dei passaggi per rivedere i flussi precedenti senza cancellare i progressi salvati offline.",
         "resumeHintDetailed": "Riprendi al passaggio {current} di {total}. {completed} passaggi sono già completati e fissati nei tuoi salvataggi offline.",
-        "userProfileInteractionIntro": "Inserisci una volta i dettagli della troupe. Ogni aggiornamento si sincronizza subito con Contatti, resta salvato offline e confluisce nelle esportazioni così la troupe sa sempre chi possiede il setup.",
+        "userProfileInteractionIntro": "Inserisci una volta i dettagli della troupe. Ogni aggiornamento si sincronizza subito con Contatti, resta salvato offline e confluisce nelle esportazioni così la troupe sa sempre chi possiede la configurazione camera.",
         "userProfileInteractionSkipHint": "Premi Avanti quando sei pronto: la sezione Contatti nella barra laterale mostra sempre questi dettagli salvati senza azzerare i progressi del tutorial.",
         "userProfileAvatarAction": "Aggiungi foto profilo",
         "userProfileAvatarEditAction": "Modifica foto",
@@ -1932,8 +1932,8 @@
             "body": "Questo tour guidato presenta le salvaguardie offline, l’automazione orientata alla troupe e le prove di ripristino che mantengono ogni progetto pronto per la produzione.",
             "hero": {
               "heading": "Benvenuto in Cine Power Planner!",
-              "subheading": "Proteggi ogni setup camera con verifiche di potenza, kit AutoGear e handoff pronti al noleggio—tutto rimane offline.",
-              "summary": "Pianifica setup camera sicuri, verifica i limiti di potenza, genera automaticamente liste gear dai requisiti di progetto ed esporta PDF pronti per il noleggio—ogni salvataggio resta locale prima del ciak.",
+              "subheading": "Proteggi ogni configurazione camera con verifiche di potenza, kit AutoGear e handoff pronti al noleggio—tutto rimane offline.",
+              "summary": "Pianifica configurazioni camera sicure, verifica i limiti di potenza, genera automaticamente liste gear dai requisiti di progetto ed esporta PDF pronti per il noleggio—ogni salvataggio resta locale prima del ciak.",
               "badgeIcon": "",
               "badgeLabel": "Crew-first · Offline per sempre",
               "badgeDescription": "Nessun server, nessun account, nessun abbonamento. Ogni salvataggio, autosalvataggio, backup, ripristino, condivisione e importazione resta su questo dispositivo.",
@@ -1991,7 +1991,7 @@
           },
           "addMonitoring": {
             "title": "Aggiungi monitor, video wireless e FIZ",
-            "body": "Aggiungi monitor onboard, trasmettitori wireless e motori o controller FIZ. Ogni scelta alimenta i calcoli di autonomia, i diagrammi e le regole automatiche così il kit generato rispecchia l'intero setup."
+            "body": "Aggiungi monitor onboard, trasmettitori wireless e motori o controller FIZ. Ogni scelta alimenta i calcoli di autonomia, i diagrammi e le regole automatiche così il kit generato rispecchia l'intero assetto."
           },
           "selectBattery": {
             "title": "Scegli batterie",
@@ -2003,7 +2003,7 @@
           },
           "resultsBatteryPacks": {
             "title": "Power Summary: Autonomie delle batterie",
-            "body": "Esamina la proiezione di autonomia di ogni pacco sapendo che riflette uno scenario di consumo massimo, così la maggior parte dei setup durerà di più—ti aiuta a capire quante batterie portare, a sentirti tranquillo che il rig non richiederà cambi continui e ad aggiungere automaticamente i pacchi giusti insieme a ogni camera."
+            "body": "Esamina la proiezione di autonomia di ogni pacco sapendo che riflette uno scenario di consumo massimo, così la maggior parte degli assetti durerà di più—ti aiuta a capire quante batterie portare, a sentirti tranquillo che il rig non richiederà cambi continui e ad aggiungere automaticamente i pacchi giusti insieme a ogni camera."
           },
           "resultsChangeover": {
             "title": "Power Summary: Cambi turno",
