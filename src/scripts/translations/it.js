@@ -1064,7 +1064,7 @@
       "helpTopics": {
         "projectManagement": {
           "title": "Gestione progetti",
-          "content": "Assegna un nome ai progetti e premi **Salva** per creare istantanee in Progetti salvati. Autosalvataggio e auto-backup proteggono le bozze e **Elimina** crea prima una copia di sicurezza."
+          "content": "Assegna un nome ai progetti e premi **Salva** per creare istantanee in Progetti salvati. Il salvataggio non sovrascrive altri progetti finché non confermi il nome. Autosalvataggio e auto-backup proteggono le bozze e **Elimina** crea prima una copia di sicurezza."
         },
         "saveShareBackup": {
           "title": "Salva, condividi e backup",

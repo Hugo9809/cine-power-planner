@@ -1070,7 +1070,7 @@
       "helpTopics": {
         "projectManagement": {
           "title": "Projektverwaltung",
-          "content": "Projekte benennen und mit **Speichern** als Schnappschuss in Gespeicherte Projekte ablegen. Autospeichern und Auto-Backups schützen Entwürfe; **Löschen** erstellt vorher eine Sicherheitskopie."
+          "content": "Projekte benennen und mit **Speichern** als Schnappschuss in Gespeicherte Projekte ablegen. Speichern überschreibt keine anderen Projekte, bis du den Namen bestätigst. Autospeichern und Auto-Backups schützen Entwürfe; **Löschen** erstellt vorher eine Sicherheitskopie."
         },
         "saveShareBackup": {
           "title": "Speichern, Teilen & Backup",

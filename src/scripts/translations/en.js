@@ -371,7 +371,7 @@
       "helpTopics": {
         "projectManagement": {
           "title": "Project Management",
-          "content": "Name projects and press **Save** to capture snapshots in Saved Projects. Autosave and auto-backups protect drafts, and Delete removes entries only after a safety snapshot is created."
+          "content": "Name projects and press **Save** to capture snapshots in Saved Projects. Saving won’t overwrite other projects until you confirm the name. Autosave and auto-backups protect drafts, and Delete removes entries only after a safety snapshot is created."
         },
         "saveShareBackup": {
           "title": "Save, Share & Backup",

@@ -1039,7 +1039,7 @@
       "helpTopics": {
         "projectManagement": {
           "title": "Gestion de projet",
-          "content": "Nommez vos projets et cliquez sur **Enregistrer** pour créer des instantanés dans Projets enregistrés. L'enregistrement automatique et les sauvegardes auto protègent les brouillons, et **Supprimer** crée d'abord une copie de sécurité."
+          "content": "Nommez vos projets et cliquez sur **Enregistrer** pour créer des instantanés dans Projets enregistrés. L’enregistrement n’écrase pas les autres projets tant que vous n’avez pas confirmé le nom. L'enregistrement automatique et les sauvegardes auto protègent les brouillons, et **Supprimer** crée d'abord une copie de sécurité."
         },
         "saveShareBackup": {
           "title": "Enregistrer, partager & sauvegarder",
