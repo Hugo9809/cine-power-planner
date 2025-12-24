@@ -882,7 +882,7 @@
         "Gaffer": "Elettricista",
         "Best Boy Electric": "Aiuto capo elettricista",
         "Electrician": "Elettricista",
-        "Rigging Gaffer": "Rigging Gaffer",
+        "Rigging Gaffer": "Capo elettricista rigging",
         "Key Grip": "Capo macchinista",
         "Best Boy Grip": "Assistente capo macchinista",
         "Grip": "Macchinista",
