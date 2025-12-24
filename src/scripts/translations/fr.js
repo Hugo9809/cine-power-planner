@@ -1622,6 +1622,7 @@
       "preDeleteBackupSuccess": "Copie de sécurité automatique créée avant la suppression. Recherchez l’entrée auto-backup correspondante dans Projets enregistrés et renommez-la si vous souhaitez la conserver définitivement.",
       "preDeleteBackupFailed": "La sauvegarde automatique a échoué. L’action a été annulée.",
       "restoreBackupFailed": "Échec de la sauvegarde. Restauration annulée.",
+      "restoreBackupQueuedConfirm": "La sauvegarde de sécurité attend dans le coffre local. Continuer la restauration maintenant ?",
       "manualDownloadFallback": "Le téléchargement ne s’est pas lancé automatiquement. Un nouvel onglet s’est ouvert avec le contenu du fichier pour que vous puissiez le copier ou l’enregistrer manuellement.",
       "manualDownloadCopyHint": "Sélectionnez tout le texte ci-dessous et copiez-le pour conserver le fichier en lieu sûr.",
       "dataHeading": "Données et stockage",

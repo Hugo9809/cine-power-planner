@@ -953,6 +953,7 @@
       "preDeleteBackupSuccess": "Automatic safety copy stored before deletion. Find the matching auto-backup entry under Saved Projects and rename it if you plan to keep it permanently.",
       "preDeleteBackupFailed": "Automatic backup failed. The action was cancelled.",
       "restoreBackupFailed": "Backup failed. Restore cancelled.",
+      "restoreBackupQueuedConfirm": "The safety backup is waiting in the local vault. Continue with the restore now?",
       "manualDownloadFallback": "The download didn't start automatically. A new tab opened with the file contents so you can copy or save them manually.",
       "manualDownloadCopyHint": "Select all the text below and copy it to keep the file safe.",
       "dataHeading": "Data & Storage",
