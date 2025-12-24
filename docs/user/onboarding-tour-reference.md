@@ -19,11 +19,12 @@ The tour logic is encapsulated in `src/scripts/modules/features/onboarding-tour.
 
 The tour uses a multi-layered persistence strategy to remember if a user has completed or skipped the tour:
 
-1.  **`localStorage`**: Key `cinePowerPlanner_onboardingTutorial:skip`.
+1.  **`localStorage` primary key**: `cinePowerPlanner_onboardingTutorial` (the main onboarding state key).
+2.  **Derived skip key**: `cinePowerPlanner_onboardingTutorial:skip`.
     -   `true`: Tour is skipped/completed.
     -   `false` (or missing): Tour should be shown (if not previously completed).
-2.  **Legacy Keys**: Checks keys like `cameraPowerPlanner_onboardingTutorial` for backward compatibility with older versions of the app.
-3.  **`window.name`**: As a fallback for stateless/incognito modes where `localStorage` might be wiped or unavailable, a flag is embedded in `window.name` (`cinePowerPlanner_onboardingTutorial:skip=true`).
+3.  **Legacy keys**: The module still checks `cameraPowerPlanner_onboardingTutorial` for backward compatibility with older versions of the app.
+4.  **`window.name`**: As a fallback for stateless/incognito modes where `localStorage` might be wiped or unavailable, a flag is embedded in `window.name` (`cinePowerPlanner_onboardingTutorial:skip=true`).
 
 ## Step Configuration
 
@@ -43,7 +44,10 @@ The module initializes automatically and checks the persistence layer.
 
 To reset the tour state for testing:
 1.  Open Chrome DevTools.
-2.  Run `localStorage.removeItem('cinePowerPlanner_onboardingTutorial:skip')`.
+2.  Run:
+    -   `localStorage.removeItem('cinePowerPlanner_onboardingTutorial')`
+    -   `localStorage.removeItem('cinePowerPlanner_onboardingTutorial:skip')`
+    -   (Optional legacy cleanup) `localStorage.removeItem('cameraPowerPlanner_onboardingTutorial')`
 3.  Reload the page.
 
 To inspect the current configuration:
