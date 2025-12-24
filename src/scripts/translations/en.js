@@ -86,15 +86,15 @@
       "privacy": "Privacy Policy",
       "setupManageHeading": "Project Overview",
       "deviceSelectionHeading": "Configure Devices",
-      "overviewDeviceSelectionHeading": "Camera Setup Devices",
+      "overviewDeviceSelectionHeading": "Camera Package Devices",
       "resultsHeading": "Power Summary",
       "deviceManagerHeading": "Device Library",
       "batteryComparisonHeading": "Battery Comparison",
-      "batteryComparisonDescription": "Review every compatible battery to see runtime estimates for your current setup.",
-      "batteryComparisonDescriptionHelp": "This table lists every compatible battery and updates as you change your setup. Hover any heading to learn what the numbers represent.",
+      "batteryComparisonDescription": "Review every compatible battery to see runtime estimates for your current rig.",
+      "batteryComparisonDescriptionHelp": "This table lists every compatible battery and updates as you change your rig. Hover any heading to learn what the numbers represent.",
       "batteryComparisonTableHelp": "Rows show compatible batteries. Runtime includes current draw calculations, and the colored bar compares runtime length at a glance.",
-      "setupDiagramHeading": "Connection Diagram",
-      "diagramPdfNote": "The visual connection diagram is not included in the PDF export. Open the print view to review the layout.",
+      "setupDiagramHeading": "Power Diagram",
+      "diagramPdfNote": "The power diagram is not included in the PDF export. Open the print view to review the layout.",
       "projectRequirementsNav": "Project Requirements",
       "projectRequirementsNavHelp": "Jump to the Project Requirements output once generated.",
       "gearListNav": "Gear List",
@@ -131,16 +131,16 @@
       "resultsPlainSummaryUnnamedBattery": "your selected battery",
       "deviceManagerHeadingHelp": "Add, edit or remove entries from the device database, including categories, subcategories and attributes.",
       "batteryComparisonHeadingHelp": "Compare runtimes for all compatible batteries.",
-      "batteryTableBatteryHelp": "Battery name and mount that can power your current build.",
+      "batteryTableBatteryHelp": "Battery name and mount that can power your current rig.",
       "batteryTableRuntimeHelp": "Estimated runtime in hours plus which outputs supply enough current.",
       "batteryTableGraphLabel": "Runtime comparison bar",
       "batteryTableGraphHelp": "Bar length compares runtime across batteries. Green covers pins and D-Tap, orange means only main pins, and blue marks infinite runtime estimates.",
-      "setupDiagramHeadingHelp": "View a visual diagram of how selected devices connect.",
-      "setupDiagramPlaceholder": "Select devices to visualize the project.",
+      "setupDiagramHeadingHelp": "View the power diagram of how selected devices connect.",
+      "setupDiagramPlaceholder": "Select devices to visualize the power diagram.",
       "diagramLegendPower": "Power",
       "diagramLegendVideo": "Video",
       "diagramLegendFIZ": "FIZ",
-      "downloadDiagramBtn": "Download Diagram",
+      "downloadDiagramBtn": "Download Power Diagram",
       "gridSnapToggle": "Snap to Grid",
       "existingDevicesHeading": "Existing Devices",
       "deviceLibrarySearchLabel": "Search entire library",
@@ -225,7 +225,7 @@
       },
       "featureSearchPlaceholder": "Search features or devices...",
       "featureSearchLabel": "Search features, devices and help",
-      "featureSearchHelp": "Type to jump to features, devices, quick actions like Save or Backup, or help topics. Suggestions prioritize direct feature and device matches before help topics so navigation lands on controls first. Each entry shows whether it opens a Feature, Action, Device or Help topic so you know what happens before pressing Enter. Exact matches and items you've used recently jump to the top automatically, so your go-to controls stay first. Every suggestion also includes a short description so you can confirm what it will do at a glance. Search also reads the same tooltip and help text shown around controls, so words like \"JSON\" or \"autosave\" still land on the right button even if the label differs. Small typos are forgiven too, so \"bakcup\" still finds Backup or Save. Connector and media abbreviations like \"USB-C\", \"Micro-HDMI\", \"SDXC\", \"CFexpress\", \"V-Mount\" or \"D-Tap\" automatically match their full names, so type whichever version you remember. Exposure and color vocabulary is linked the same way—ISO, EI, ASA, exposure index, ND or neutral density, and WB, white balance or color temperature terms all resolve together so any phrasing points to the right controls. Press Enter to navigate, / or Ctrl+K (Cmd+K on Mac) to focus the search from anywhere, use Escape or × to clear the query, and notice how clearing the field floats your most recently used matches to the top for faster repeats. Prefix your query with \"feature\", \"action\", \"device\" or \"help\" (or your localized equivalents) (for example, \"help: battery\") to filter suggestions to that type. Start with \"recent\" or \"history\" (or your localized equivalents) (for example, \"recent iso\") to search only items you've used lately before scanning the full catalog. Wrap any phrase in double quotes to force an exact match, so typing \"battery health\" with quotes jumps ahead of broader matches. Common filler words are ignored automatically, so conversational questions like \"how do I back up\" still surface the important keywords.",
+      "featureSearchHelp": "Type to jump to features, devices, quick actions like Save or Backup, or help topics. Suggestions prioritize direct feature and device matches before help topics so navigation lands on controls first. Each entry shows whether it opens a Feature, Action, Device or Help topic so you know what happens before pressing Enter. Exact matches and items you've used recently jump to the top automatically, so your go-to controls stay first. Every suggestion also includes a short description so you can confirm what it will do at a glance. Search also reads the same tooltip and help text shown around controls, so words like \"JSON\" or \"autosave\" still land on the right button even if the label differs. Small typos are forgiven too, so \"bakcup\" still finds Backup or Save. Connector and media abbreviations like \"USB-C\", \"Micro-HDMI\", \"SDXC\", \"CFexpress\", \"B-Mount\", \"V-Mount\" or \"D-Tap\" automatically match their full names, so type whichever version you remember. Exposure and color vocabulary is linked the same way—ISO, EI, ASA, exposure index, ND or neutral density, and WB, white balance or color temperature terms all resolve together so any phrasing points to the right controls. Press Enter to navigate, / or Ctrl+K (Cmd+K on Mac) to focus the search from anywhere, use Escape or × to clear the query, and notice how clearing the field floats your most recently used matches to the top for faster repeats. Prefix your query with \"feature\", \"action\", \"device\" or \"help\" (or your localized equivalents) (for example, \"help: battery\") to filter suggestions to that type. Start with \"recent\" or \"history\" (or your localized equivalents) (for example, \"recent iso\") to search only items you've used lately before scanning the full catalog. Wrap any phrase in double quotes to force an exact match, so typing \"battery health\" with quotes jumps ahead of broader matches. Common filler words are ignored automatically, so conversational questions like \"how do I back up\" still surface the important keywords.",
       "featureSearchFilterAliases": {
         "feature": [
           "feature",
@@ -457,7 +457,7 @@
       "pinkModeSetting": "Pink mode",
       "settingsPinkModeHelp": "Enable the playful pink accent theme from Settings.",
       "accentColorSetting": "Accent color",
-      "accentColorHelp": "Pick the accent color used for buttons, highlights and diagrams. The choice is saved with your settings.",
+      "accentColorHelp": "Pick the accent color used for buttons, highlights and the power diagram. The choice is saved with your settings.",
       "cameraColorSettingDescription": "Assign a highlight color to each camera letter so linked gear stays coordinated across your lists.",
       "cameraColorInputHelp": "Choose the highlight color for camera %s.",
       "cameraColorALabel": "Camera A color",
@@ -1716,7 +1716,7 @@
         "Battery Belt": "Battery Belt"
       },
       "gearListNoteLabel": "Note:",
-      "gearListAutosaveNote": "Autosaved after each rig tweak so the offline gear manifest mirrors your latest camera build.",
+      "gearListAutosaveNote": "Autosaved after each rig tweak so the offline gear list mirrors your latest camera package.",
       "gearListAddCustomItem": "Add custom item",
       "gearListAddCustomItemToCategory": "Add custom item to {category}",
       "gearListRemoveCustomItem": "Remove",
@@ -1829,9 +1829,9 @@
       "printOptionsLayoutStandard": "Standard layout",
       "printOptionsLayoutRental": "Rental-friendly layout",
       "rentalPrintSectionProject": "Project Requirements",
-      "rentalPrintSectionDevices": "Camera Setup Devices",
+      "rentalPrintSectionDevices": "Camera Package Devices",
       "rentalPrintSectionPower": "Power Summary",
-      "rentalPrintSectionDiagram": "Camera Diagram",
+      "rentalPrintSectionDiagram": "Power Diagram",
       "rentalPrintSectionGearList": "Gear List",
       "rentalPrintSectionBattery": "Battery Comparison",
       "pdfWarningsHeading": "Warnings",
@@ -1917,8 +1917,8 @@
           "intro": {
             "hero": {
               "heading": "Welcome to Cine Power Planner!",
-              "subheading": "Safeguard every camera setup with power checks, AutoGear kits, and rental-ready handoffs—kept fully offline.",
-              "summary": "Plan safe camera setups, verify power limits, auto-build gear lists from project requirements, and export rental-ready PDFs—every save stays local before call time.",
+              "subheading": "Safeguard every camera package with power checks, AutoGear kits, and rental-ready handoffs—kept fully offline.",
+              "summary": "Plan safe camera packages, verify power limits, auto-build gear lists from project requirements, and export rental-ready PDFs—every save stays local before call time.",
               "badgeIcon": "",
               "badgeLabel": "Crew-first · Offline forever",
               "badgeDescription": "No servers, no accounts, no subscriptions. Every save, autosave, backup, restore, share, and import lives on this device.",
@@ -1972,11 +1972,11 @@
           },
           "addCamera": {
             "title": "Select the primary camera",
-            "body": "Choose the camera body you are planning. Offline search works inside the menu. That selection unlocks matching accessories, power draws and diagrams."
+            "body": "Choose the camera body you are planning. Offline search works inside the menu. That selection unlocks matching accessories, power draws and the power diagram."
           },
           "addMonitoring": {
             "title": "Add monitors, wireless video and FIZ",
-            "body": "Pick onboard monitors, wireless transmitters and FIZ motors or controllers. Each selection feeds runtime math, diagrams and automatic gear rules so the generated kit reflects the full build."
+            "body": "Pick onboard monitors, wireless transmitters and FIZ motors or controllers. Each selection feeds runtime math, the power diagram and automatic gear rules so the generated kit reflects the full build."
           },
           "selectBattery": {
             "title": "Choose batteries",
@@ -2007,12 +2007,12 @@
             "body": "Use the runtime feedback button to log real-world results. Entries sync with the current project, strengthen future estimates and remain available offline for audits."
           },
           "connectionDiagram": {
-            "title": "Inspect the connection diagram",
-            "body": "The interactive diagram shows how power, video and control gear connect. Drag nodes to plan rig layout, double-click devices to open hover details, then save so the arrangement and annotations persist across exports and restores."
+            "title": "Inspect the power diagram",
+            "body": "The interactive power diagram shows how power, video and control gear connect. Drag nodes to plan rig layout, double-click devices to open hover details, then save so the arrangement and annotations persist across exports and restores."
           },
           "connectionDiagramDetails": {
             "title": "Open device hover details",
-            "body": "Double-click any device node in the diagram to reveal its hover detail popup. Review draw notes, connector callouts and saved annotations, then close it to keep arranging the layout before saving."
+            "body": "Double-click any device node in the power diagram to reveal its hover detail popup. Review draw notes, connector callouts and saved annotations, then close it to keep arranging the layout before saving."
           },
           "editDeviceDataAdd": {
             "title": "Add a device to the library",
@@ -2044,7 +2044,7 @@
           },
           "projectRequirementsLogistics": {
             "title": "Log lenses, rigging and monitoring plans",
-            "body": "Work through camera specs, the lens workflow, rigging scenarios, storage/media counts, matte box preferences and monitoring layouts. These entries feed automatic gear rules and storage math so the generated checklist reflects the full shoot plan."
+            "body": "Work through camera specs, the lens workflow, rigging scenarios, storage/media counts, matte box preferences and monitoring layouts. These entries feed automatic gear rules and storage math so the generated gear list reflects the full shoot plan."
           },
           "generateGearAndRequirements": {
             "title": "Save and rebuild the outputs",
@@ -2147,7 +2147,7 @@
       "setupSelectHelp": "Pick a previously saved configuration or select '-- New Project --' to start from scratch.",
       "setupNameHelp": "Enter a descriptive name for the current project so you can recognize it later.",
       "deleteSetupHelp": "Remove the highlighted saved project permanently from your browser.",
-      "saveSetupHelp": "Capture a full snapshot of the current project—devices, requirements, notes, runtime logs and diagram layout—and store it in your local library. The autosave status dot beside Project Name pulses while the write finishes, and the background auto-backup queue schedules the matching timestamped snapshot right after the save so redundancy stays current. Press Enter or Ctrl+S (⌘S on Mac) for the same result; the Save button stays disabled until you enter a project name. Saving never overwrites other projects until you confirm the name, so your prior data remains protected.",
+      "saveSetupHelp": "Capture a full snapshot of the current project—devices, requirements, notes, runtime logs and power diagram layout—and store it in your local library. The autosave status dot beside Project Name pulses while the write finishes, and the background auto-backup queue schedules the matching timestamped snapshot right after the save so redundancy stays current. Press Enter or Ctrl+S (⌘S on Mac) for the same result; the Save button stays disabled until you enter a project name. Saving never overwrites other projects until you confirm the name, so your prior data remains protected.",
       "generateOverviewHelp": "Rebuilds the print-ready summary for the selected saved project and opens the overview dialog so you can review power and connection details before printing when ready. Lens selections render with brand, mount, diameter, focus, weight, rod support and notes so exports cover spec-sensitive checkouts.",
       "generateGearListHelp": "Build a categorized table that combines selected gear with project requirements. The list refreshes on every change, merges duplicate items with counts and auto-adds required cables, rigging, lens supports, matte box parts, battery counts with hotswap hardware, default monitors for each role and scenario-specific accessories. Entries are sorted alphabetically and include hover descriptions.",
       "shareSetupHelp": "Download a JSON safety bundle of the current project—covering custom gear, favorites, runtime feedback and devices—ready to archive or share offline. Store the file with your redundant crew backups before closing the planner so every workstation can restore it without network access. The export leaves your current project unchanged, so nothing is lost while you create the share bundle.",
@@ -2162,19 +2162,19 @@
       "batteryPlateSelectHelp": "Choose the battery plate or adapter that connects the battery to the camera.",
       "batteryHotswapSelectHelp": "Select the hot-swap buffer that keeps power during battery changes.",
       "runtimeFeedbackBtnHelp": "Open a form where you can submit real-world runtime data for this configuration.",
-      "zoomOutHelp": "Zoom out of the project diagram to view more of the layout.",
-      "zoomInHelp": "Zoom in on the project diagram for a closer look at connections.",
-      "downloadDiagramHelp": "Download the current project diagram as an SVG or JPG image.",
-      "gridSnapToggleHelp": "Turn grid snapping on or off to help align items in the diagram.",
+      "zoomOutHelp": "Zoom out of the power diagram to view more of the layout.",
+      "zoomInHelp": "Zoom in on the power diagram for a closer look at connections.",
+      "downloadDiagramHelp": "Download the current power diagram as an SVG or JPG image.",
+      "gridSnapToggleHelp": "Turn grid snapping on or off to help align items in the power diagram.",
       "resetViewBtn": "Reset View",
-      "resetViewHelp": "Reset zoom and pan to their defaults.",
+      "resetViewHelp": "Reset zoom and pan for the power diagram.",
       "toggleDeviceManagerHelp": "Open the editor where you can add, modify, export or import device data.",
       "hideDeviceManagerHelp": "Close the device database editor and return to normal mode.",
       "zoomInLabel": "Zoom in",
       "zoomOutLabel": "Zoom out",
       "diagramHoverNotice": "Double click for details",
       "diagramDetailBackLabel": "Back",
-      "diagramDetailDefaultHeading": "Diagram details",
+      "diagramDetailDefaultHeading": "Power diagram details",
       "diagramMoveHint": "Drag nodes to rearrange; drag empty space to pan."
     },
     "categoryNames": {

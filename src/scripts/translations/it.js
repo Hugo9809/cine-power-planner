@@ -15,7 +15,7 @@
         "sectionsTitle": "Sezioni",
         "sectionProject": "Requisiti di Progetto",
         "sectionDevices": "Lista Dispositivi",
-        "sectionDiagram": "Diagramma delle Connessioni",
+        "sectionDiagram": "Diagramma di alimentazione",
         "sectionGearList": "Lista Attrezzatura",
         "sectionBattery": "Confronto Batterie",
         "exportPdfButton": "Esporta PDF",
@@ -27,7 +27,7 @@
         "generatedNoProjectRequirements": "Nessun dato sui requisiti di progetto.",
         "generatedDeviceSelectionTitle": "Selezione Dispositivi",
         "generatedNoDevicesSelected": "Nessun dispositivo selezionato.",
-        "generatedPowerDiagramTitle": "Diagramma delle Connessioni",
+        "generatedPowerDiagramTitle": "Diagramma di alimentazione",
         "generatedPowerSummaryTitle": "Riepilogo Potenza",
         "generatedGearListTitle": "Lista Attrezzatura",
         "generatedTotalLoad": "Carico Totale",
@@ -86,16 +86,16 @@
       "privacy": "Informativa sulla privacy",
       "setupManageHeading": "Panoramica del progetto",
       "deviceSelectionHeading": "Configura dispositivi",
-      "overviewDeviceSelectionHeading": "Dispositivi della configurazione della camera",
+      "overviewDeviceSelectionHeading": "Dispositivi del pacchetto camera",
       "resultsHeading": "Riepilogo potenza",
       "pdfWarningsHeading": "Avvisi",
       "deviceManagerHeading": "Libreria dispositivi",
       "batteryComparisonHeading": "Confronto batterie",
-      "batteryComparisonDescription": "Esamina tutte le batterie compatibili per vedere le stime di autonomia con la configurazione attuale.",
-      "batteryComparisonDescriptionHelp": "Questa tabella elenca tutte le batterie compatibili e si aggiorna quando modifichi la configurazione. Passa il puntatore sulle intestazioni per capire i valori.",
+      "batteryComparisonDescription": "Esamina tutte le batterie compatibili per vedere le stime di autonomia con il rig attuale.",
+      "batteryComparisonDescriptionHelp": "Questa tabella elenca tutte le batterie compatibili e si aggiorna quando modifichi il rig. Passa il puntatore sulle intestazioni per capire i valori.",
       "batteryComparisonTableHelp": "Ogni riga mostra una batteria compatibile. L'autonomia include il consumo stimato e la barra colorata confronta la durata a colpo d'occhio.",
-      "setupDiagramHeading": "Diagramma delle connessioni",
-      "diagramPdfNote": "Il diagramma delle connessioni non è incluso nell'esportazione PDF. Apri la vista di stampa per consultare il layout.",
+      "setupDiagramHeading": "Diagramma di alimentazione",
+      "diagramPdfNote": "Il diagramma di alimentazione non è incluso nell'esportazione PDF. Apri la vista di stampa per consultare il layout.",
       "projectRequirementsNav": "Requisiti di progetto",
       "projectRequirementsNavHelp": "Vai all'output Requisiti di progetto quando è stato generato.",
       "gearListNav": "Lista attrezzatura",
@@ -108,14 +108,14 @@
       "openHelpNav": "Centro assistenza",
       "openHelpNavHelp": "Apri la guida in-app con tutorial, suggerimenti per la risoluzione dei problemi e scorciatoie.",
       "setupManageHeadingHelp": "Gestisci le configurazioni salvate: salva, carica o cancella configurazioni.",
-      "deviceSelectionHeadingHelp": "Scegli fotocamere, monitor e accessori per la tua configurazione.",
+      "deviceSelectionHeadingHelp": "Scegli fotocamere, monitor e accessori per il tuo rig.",
       "resultsHeadingHelp": "Vedi il consumo di energia, la durata stimata e il numero di batterie.",
       "resultsPlainSummaryTitle": "Riepilogo rapido",
       "resultsPlainSummaryHelp": "Spiega il riepilogo di potenza con termini semplici e supporta la pianificazione dell'autonomia.",
       "resultsPlainSummaryPrompt": "Aggiungi dispositivi e scegli una batteria per vedere un riepilogo in linguaggio semplice.",
       "resultsPlainSummaryNeedBattery": "Scegli una batteria per scoprire quanta autonomia avrai e quanti pacchi portare.",
-      "resultsPlainSummaryRuntime": "Con {batteryName} puoi aspettarti circa {hours} ore di autonomia. Per una giornata da 10 ore porta {batteryCount} batterie. Il tuo assetto assorbe attualmente {totalPower} W.",
-      "resultsPlainSummaryUnlimited": "Con {batteryName} il tuo assetto assorbe {totalPower} W, quindi l'autonomia rimane virtualmente illimitata. Tieni comunque collegata una batteria carica prima di girare.",
+      "resultsPlainSummaryRuntime": "Con {batteryName} puoi aspettarti circa {hours} ore di autonomia. Per una giornata da 10 ore porta {batteryCount} batterie. Il tuo rig assorbe attualmente {totalPower} W.",
+      "resultsPlainSummaryUnlimited": "Con {batteryName} il tuo rig assorbe {totalPower} W, quindi l'autonomia rimane virtualmente illimitata. Tieni comunque collegata una batteria carica prima di girare.",
       "resultsPlainSummaryNote": "Lo stato di pin e D-Tap si aggiorna mentre aggiungi attrezzatura.",
       "resultsPlainSummaryPinsZero": "Pin: nessun assorbimento 12V al momento.",
       "resultsPlainSummaryPinsOk": "Pin: {current}A entro il limite di {max}A.",
@@ -132,16 +132,16 @@
       "resultsPlainSummaryUnnamedBattery": "la batteria selezionata",
       "deviceManagerHeadingHelp": "Aggiungi, modifica o rimuovi elementi dal database dei dispositivi, inclusi categorie, sottocategorie e attributi.",
       "batteryComparisonHeadingHelp": "Confronta le autonomie di tutte le batterie compatibili.",
-      "batteryTableBatteryHelp": "Nome della batteria e attacco che possono alimentare la tua configurazione.",
+      "batteryTableBatteryHelp": "Nome della batteria e attacco che possono alimentare il tuo rig.",
       "batteryTableRuntimeHelp": "Autonomia stimata in ore e quali uscite forniscono abbastanza corrente.",
       "batteryTableGraphLabel": "Barra di confronto autonomia",
       "batteryTableGraphHelp": "La lunghezza della barra confronta l'autonomia tra le batterie. Il verde copre pin e D-Tap, l'arancione indica solo i pin principali e il blu segnala autonomie teoricamente infinite.",
-      "setupDiagramHeadingHelp": "Mostra un diagramma visivo di come i dispositivi selezionati si collegano.",
-      "setupDiagramPlaceholder": "Seleziona i dispositivi per visualizzare la configurazione.",
+      "setupDiagramHeadingHelp": "Mostra il diagramma di alimentazione dei dispositivi selezionati.",
+      "setupDiagramPlaceholder": "Seleziona i dispositivi per visualizzare il diagramma di alimentazione.",
       "diagramLegendPower": "Energia",
       "diagramLegendVideo": "Video",
       "diagramLegendFIZ": "FIZ",
-      "downloadDiagramBtn": "Scarica il diagramma",
+      "downloadDiagramBtn": "Scarica il diagramma di alimentazione",
       "gridSnapToggle": "Aggancia alla griglia",
       "existingDevicesHeading": "Dispositivi esistenti",
       "deviceLibrarySearchLabel": "Cerca in tutta la libreria",
@@ -226,7 +226,7 @@
       },
       "featureSearchPlaceholder": "Cerca funzionalità o dispositivi...",
       "featureSearchLabel": "Cerca funzionalità, dispositivi e aiuto",
-      "featureSearchHelp": "Digita per andare alle funzionalità, ai dispositivi, alle azioni rapide come Salva o Backup o aprire gli argomenti di aiuto correlati. I suggerimenti danno priorità alle corrispondenze dirette di funzionalità e dispositivi prima degli argomenti di aiuto, così raggiungi subito i controlli. Ogni voce indica se aprirà una Funzione, un'Azione, un Dispositivo o un argomento di Supporto, così sai cosa succede prima di premere Invio. Le corrispondenze esatte e gli elementi usati di recente salgono automaticamente in cima, così i controlli che usi più spesso restano davanti. Ogni suggerimento mostra anche una breve descrizione così sai subito cosa succederà prima di selezionarlo. La ricerca analizza anche gli stessi testi di aiuto mostrati nelle descrizioni, quindi termini come \"JSON\" o \"salvataggio automatico\" portano comunque al pulsante giusto anche se l'etichetta è diversa. Gli errori di battitura minimi vengono ignorati, quindi \"bakcup\" trova comunque Backup o Salva. Le abbreviazioni di connettori e supporti come \"USB-C\", \"Micro-HDMI\", \"SDXC\", \"CFexpress\", \"V-Mount\" o \"D-Tap\" vengono collegate automaticamente al nome completo, così puoi digitare la versione che ricordi. Anche il vocabolario di esposizione e colore è collegato: ISO, EI, ASA, indice di esposizione, ND o neutral density e WB, bilanciamento del bianco o temperatura colore portano sempre allo stesso controllo indipendentemente da come li scrivi. Premi Invio per navigare, / o Ctrl+K (Cmd+K su Mac) per mettere a fuoco la ricerca ovunque, usa Esc o × per cancellare la ricerca e, quando svuoti il campo, i risultati usati più di recente salgono in cima così ripeti le azioni frequenti più velocemente. Anteponi \"feature\", \"action\", \"device\" o \"help\" (o le equivalenti localizzate) alla ricerca (ad esempio \"help: battery\") per filtrare i risultati su quel tipo. Inizia con \"recent\" o \"history\" (o le equivalenti localizzate) (ad esempio \"recent iso\") per limitarti agli elementi usati di recente prima di scorrere tutto il catalogo. Le frasi esatte salgono ora in cima, quindi digitando l'intera etichetta di un controllo come \"battery health\" trovi quella funzione prima delle corrispondenze più generiche. La ricerca ignora automaticamente le parole riempitive più comuni, così domande conversazionali come \"come faccio il backup\" continuano a mettere in evidenza le parole davvero importanti.",
+      "featureSearchHelp": "Digita per andare alle funzionalità, ai dispositivi, alle azioni rapide come Salva o Backup o aprire gli argomenti di aiuto correlati. I suggerimenti danno priorità alle corrispondenze dirette di funzionalità e dispositivi prima degli argomenti di aiuto, così raggiungi subito i controlli. Ogni voce indica se aprirà una Funzione, un'Azione, un Dispositivo o un argomento di Supporto, così sai cosa succede prima di premere Invio. Le corrispondenze esatte e gli elementi usati di recente salgono automaticamente in cima, così i controlli che usi più spesso restano davanti. Ogni suggerimento mostra anche una breve descrizione così sai subito cosa succederà prima di selezionarlo. La ricerca analizza anche gli stessi testi di aiuto mostrati nelle descrizioni, quindi termini come \"JSON\" o \"salvataggio automatico\" portano comunque al pulsante giusto anche se l'etichetta è diversa. Gli errori di battitura minimi vengono ignorati, quindi \"bakcup\" trova comunque Backup o Salva. Le abbreviazioni di connettori e supporti come \"USB-C\", \"Micro-HDMI\", \"SDXC\", \"CFexpress\", \"B-Mount\", \"V-Mount\" o \"D-Tap\" vengono collegate automaticamente al nome completo, così puoi digitare la versione che ricordi. Anche il vocabolario di esposizione e colore è collegato: ISO, EI, ASA, indice di esposizione, ND o neutral density e WB, bilanciamento del bianco o temperatura colore portano sempre allo stesso controllo indipendentemente da come li scrivi. Premi Invio per navigare, / o Ctrl+K (Cmd+K su Mac) per mettere a fuoco la ricerca ovunque, usa Esc o × per cancellare la ricerca e, quando svuoti il campo, i risultati usati più di recente salgono in cima così ripeti le azioni frequenti più velocemente. Anteponi \"feature\", \"action\", \"device\" o \"help\" (o le equivalenti localizzate) alla ricerca (ad esempio \"help: battery\") per filtrare i risultati su quel tipo. Inizia con \"recent\" o \"history\" (o le equivalenti localizzate) (ad esempio \"recent iso\") per limitarti agli elementi usati di recente prima di scorrere tutto il catalogo. Le frasi esatte salgono ora in cima, quindi digitando l'intera etichetta di un controllo come \"battery health\" trovi quella funzione prima delle corrispondenze più generiche. La ricerca ignora automaticamente le parole riempitive più comuni, così domande conversazionali come \"come faccio il backup\" continuano a mettere in evidenza le parole davvero importanti.",
       "featureSearchFilterAliases": {
         "feature": [
           "funzione",
@@ -682,7 +682,7 @@
       "alertDeviceName": "Il nome del dispositivo non può essere vuoto.",
       "alertInvalidCameraJSON": "JSON non valido per i dettagli della fotocamera",
       "generateOverviewBtn": "Genera panoramica",
-      "generateGearListBtn": "Genera elenco attrezzatura e requisiti del progetto",
+      "generateGearListBtn": "Genera lista attrezzatura e requisiti del progetto",
       "addExtraGearBtn": "Aggiungi extra temporaneo",
       "editProjectBtn": "Modifica requisiti del progetto",
       "projectForm": {
@@ -918,7 +918,7 @@
         "Battery Belt": "Cintura batterie"
       },
       "gearListNoteLabel": "Nota:",
-      "gearListAutosaveNote": "Salvato automaticamente a ogni modifica dell'assetto così l'inventario offline riflette l'ultimo assetto camera.",
+      "gearListAutosaveNote": "Salvato automaticamente a ogni modifica del rig così la lista attrezzatura offline riflette l'ultimo pacchetto camera.",
       "gearListAddCustomItem": "Aggiungi elemento personalizzato",
       "gearListAddCustomItemToCategory": "Aggiungi elemento personalizzato a {category}",
       "gearListRemoveCustomItem": "Rimuovi",
@@ -983,10 +983,10 @@
       "autoGearHighlightToggleHelp": "Attiva o disattiva una colorazione temporanea per l'attrezzatura aggiunta automaticamente dalle regole. Utile per il debug del comportamento delle regole.",
       "autoGearHighlightToggleStateOn": "Attivo",
       "autoGearHighlightToggleStateOff": "Disattivo",
-      "deleteGearListBtn": "Elimina elenco attrezzatura",
-      "deleteGearListBtnHelp": "Rimuovi l'elenco attrezzatura salvato dal progetto e nascondi la tabella.",
-      "confirmDeleteGearList": "Eliminare elenco attrezzatura?",
-      "confirmDeleteGearListAgain": "Questo eliminerà definitivamente l'elenco attrezzatura. Sei sicuro?",
+      "deleteGearListBtn": "Elimina lista attrezzatura",
+      "deleteGearListBtnHelp": "Rimuovi la lista attrezzatura salvata dal progetto e nascondi la tabella.",
+      "confirmDeleteGearList": "Eliminare lista attrezzatura?",
+      "confirmDeleteGearListAgain": "Questo eliminerà definitivamente la lista attrezzatura. Sei sicuro?",
       "ownGearDialogTitle": "Attrezzatura personale",
       "ownGearDialogDescription": "Registra l'attrezzatura che possiedi per pianificare in base a ciò che è già nel tuo kit.",
       "ownGearAddHeading": "Aggiungi attrezzatura",
@@ -1031,9 +1031,9 @@
       "printOptionsLayoutStandard": "Layout standard",
       "printOptionsLayoutRental": "Layout per rental",
       "rentalPrintSectionProject": "Requisiti del progetto",
-      "rentalPrintSectionDevices": "Dispositivi configurati",
+      "rentalPrintSectionDevices": "Dispositivi del pacchetto camera",
       "rentalPrintSectionPower": "Riepilogo alimentazione",
-      "rentalPrintSectionDiagram": "Schema camera",
+      "rentalPrintSectionDiagram": "Diagramma di alimentazione",
       "rentalPrintSectionGearList": "Lista attrezzatura",
       "rentalPrintSectionBattery": "Confronto batterie",
       "exportAndRevertBtn": "Esporta e ripristina il database predefinito",
@@ -1151,7 +1151,7 @@
       "pinkModeSetting": "Modalità rosa",
       "settingsPinkModeHelp": "Attiva il tema rosa giocoso dalle Impostazioni.",
       "accentColorSetting": "Colore evidenza",
-      "accentColorHelp": "Seleziona il colore d'accento per pulsanti, evidenziazioni e diagramma. La scelta viene salvata.",
+      "accentColorHelp": "Seleziona il colore d'accento per pulsanti, evidenziazioni e diagramma di alimentazione. La scelta viene salvata.",
       "cameraColorSettingDescription": "Assegna un colore evidenziatore a ogni lettera di camera così gli accessori collegati restano coordinati.",
       "cameraColorInputHelp": "Scegli il colore di evidenziazione per la camera %s.",
       "cameraColorALabel": "Colore camera A",
@@ -1480,7 +1480,7 @@
       "autoGearListEdit": "Modifica",
       "autoGearEmptyList": "Nessun elemento al momento.",
       "autoGearDraftImpactHeading": "Anteprima impatto bozza",
-      "autoGearDraftImpactDescription": "Totali simulati che mostrano come questa bozza modificherebbe l'uscita dell'elenco attrezzatura.",
+      "autoGearDraftImpactDescription": "Totali simulati che mostrano come questa bozza modificherebbe l'uscita della lista attrezzatura.",
       "autoGearDraftImpactEmpty": "Nessuna modifica rilevata. Aggiungi o modifica elementi per vedere l'impatto.",
       "autoGearDraftImpactUnavailable": "L'anteprima sarà disponibile quando questa regola include almeno un elemento.",
       "autoGearDraftImpactTotals": "Totale attuale: %s → Dopo il salvataggio: %s",
@@ -1490,7 +1490,7 @@
       "autoGearDraftImpactConflictOne": "Rimozioni attive anche in %s regola.",
       "autoGearDraftImpactConflictOther": "Rimozioni attive anche in %s regole.",
       "autoGearDraftWarningHeading": "Avvisi",
-      "autoGearDraftWarningCritical": "%s verrebbe rimosso dall'elenco attrezzatura.",
+      "autoGearDraftWarningCritical": "%s verrebbe rimosso dalla lista attrezzatura.",
       "autoGearDraftWarningConflict": "%s ha istruzioni di aggiunta e rimozione in conflitto.",
       "autoGearDraftWarningRedundant": "%s è aggiunto da più regole senza aumentare i totali.",
       "autoGearDraftWarningConfirm": "Salvare comunque? Controlla gli avvisi d'impatto qui sotto prima di confermare.",
@@ -1889,7 +1889,7 @@
         "stepStatusUpcoming": "In arrivo",
         "resumeHint": "Riprendi esattamente da dove avevi interrotto. Usa il navigatore dei passaggi per rivedere i flussi precedenti senza cancellare i progressi salvati offline.",
         "resumeHintDetailed": "Riprendi al passaggio {current} di {total}. {completed} passaggi sono già completati e fissati nei tuoi salvataggi offline.",
-        "userProfileInteractionIntro": "Inserisci una volta i dettagli della troupe. Ogni aggiornamento si sincronizza subito con Contatti, resta salvato offline e confluisce nelle esportazioni così la troupe sa sempre chi possiede la configurazione camera.",
+        "userProfileInteractionIntro": "Inserisci una volta i dettagli della troupe. Ogni aggiornamento si sincronizza subito con Contatti, resta salvato offline e confluisce nelle esportazioni così la troupe sa sempre chi possiede il pacchetto camera.",
         "userProfileInteractionSkipHint": "Premi Avanti quando sei pronto: la sezione Contatti nella barra laterale mostra sempre questi dettagli salvati senza azzerare i progressi del tutorial.",
         "userProfileAvatarAction": "Aggiungi foto profilo",
         "userProfileAvatarEditAction": "Modifica foto",
@@ -1932,8 +1932,8 @@
             "body": "Questo tour guidato presenta le salvaguardie offline, l’automazione orientata alla troupe e le prove di ripristino che mantengono ogni progetto pronto per la produzione.",
             "hero": {
               "heading": "Benvenuto in Cine Power Planner!",
-              "subheading": "Proteggi ogni configurazione camera con verifiche di potenza, kit AutoGear e handoff pronti al noleggio—tutto rimane offline.",
-              "summary": "Pianifica configurazioni camera sicure, verifica i limiti di potenza, genera automaticamente liste gear dai requisiti di progetto ed esporta PDF pronti per il noleggio—ogni salvataggio resta locale prima del ciak.",
+              "subheading": "Proteggi ogni pacchetto camera con verifiche di potenza, kit AutoGear e handoff pronti al noleggio—tutto rimane offline.",
+              "summary": "Pianifica pacchetti camera sicuri, verifica i limiti di potenza, genera automaticamente liste gear dai requisiti di progetto ed esporta PDF pronti per il noleggio—ogni salvataggio resta locale prima del ciak.",
               "badgeIcon": "",
               "badgeLabel": "Crew-first · Offline per sempre",
               "badgeDescription": "Nessun server, nessun account, nessun abbonamento. Ogni salvataggio, autosalvataggio, backup, ripristino, condivisione e importazione resta su questo dispositivo.",
@@ -1987,11 +1987,11 @@
           },
           "addCamera": {
             "title": "Aggiungi la camera principale",
-            "body": "Scegli il corpo macchina che stai pianificando. La ricerca all’interno del menu funziona offline. In questo modo si attivano accessori, assorbimenti e diagrammi corrispondenti."
+            "body": "Scegli il corpo macchina che stai pianificando. La ricerca all’interno del menu funziona offline. In questo modo si attivano accessori, assorbimenti e il diagramma di alimentazione corrispondente."
           },
           "addMonitoring": {
             "title": "Aggiungi monitor, video wireless e FIZ",
-            "body": "Aggiungi monitor onboard, trasmettitori wireless e motori o controller FIZ. Ogni scelta alimenta i calcoli di autonomia, i diagrammi e le regole automatiche così il kit generato rispecchia l'intero assetto."
+            "body": "Aggiungi monitor onboard, trasmettitori wireless e motori o controller FIZ. Ogni scelta alimenta i calcoli di autonomia, il diagramma di alimentazione e le regole automatiche così il kit generato rispecchia l'intero rig."
           },
           "selectBattery": {
             "title": "Scegli batterie",
@@ -2022,12 +2022,12 @@
             "body": "Usa il pulsante feedback runtime per registrare risultati reali. Le voci si sincronizzano con il progetto corrente, migliorano le stime future e restano disponibili offline per gli audit."
           },
           "connectionDiagram": {
-            "title": "Esamina il diagramma delle connessioni",
-            "body": "Il diagramma interattivo mostra come si collegano alimentazione, video e controllo. Trascina i nodi per pianificare il layout, fai doppio clic sui dispositivi per aprire i popup informativi e poi salva così disposizione e annotazioni restano in esportazioni e ripristini."
+            "title": "Esamina il diagramma di alimentazione",
+            "body": "Il diagramma di alimentazione interattivo mostra come si collegano alimentazione, video e controllo. Trascina i nodi per pianificare il layout, fai doppio clic sui dispositivi per aprire i popup informativi e poi salva così disposizione e annotazioni restano in esportazioni e ripristini."
           },
           "connectionDiagramDetails": {
             "title": "Apri i dettagli hover del dispositivo",
-            "body": "Fai doppio clic su qualsiasi nodo dispositivo nel diagramma per visualizzare il popup dei dettagli. Rivedi note su assorbimento, connettori e annotazioni salvate, quindi chiudilo per proseguire con l'organizzazione del layout prima di salvare."
+            "body": "Fai doppio clic su qualsiasi nodo dispositivo nel diagramma di alimentazione per visualizzare il popup dei dettagli. Rivedi note su assorbimento, connettori e annotazioni salvate, quindi chiudilo per proseguire con l'organizzazione del layout prima di salvare."
           },
           "editDeviceDataAdd": {
             "title": "Aggiungi un dispositivo alla libreria",
@@ -2051,7 +2051,7 @@
           },
           "projectRequirementsBrief": {
             "title": "Raccogliere il brief del progetto",
-            "body": "Apri Genera elenco attrezzatura e Requisiti del progetto e annota casa di produzione, indirizzo completo, preferenze del rental, deliverable e note di calendario. Queste voci compilano automaticamente i PDF per il noleggio, restano memorizzate offline e preparano le sezioni successive."
+            "body": "Apri Genera lista attrezzatura e Requisiti del progetto e annota casa di produzione, indirizzo completo, preferenze del rental, deliverable e note di calendario. Queste voci compilano automaticamente i PDF per il noleggio, restano memorizzate offline e preparano le sezioni successive."
           },
           "projectRequirementsCrew": {
             "title": "Mappare copertura crew e contatti",
@@ -2062,8 +2062,8 @@
             "body": "Prosegui con le altre sezioni: specifiche camera, workflow lenti, scenari di rigging, quantità di storage/media, preferenze per matte box e monitoraggio. Ogni campo alimenta le regole automatiche, il calcolo delle scorte e la checklist generata."
           },
           "generateGearAndRequirements": {
-            "title": "Genera requisiti e elenco attrezzatura",
-            "body": "Usa Genera elenco attrezzatura e requisiti del progetto per ricostruire la checklist dopo ogni modifica. Il planner salva l'output con il progetto così PDF, export e backup riflettono sempre le ultime scelte."
+            "title": "Genera requisiti e lista attrezzatura",
+            "body": "Usa Genera lista attrezzatura e requisiti del progetto per ricostruire la checklist dopo ogni modifica. Il planner salva l'output con il progetto così PDF, export e backup riflettono sempre le ultime scelte."
           },
           "autoGearRulesAccess": {
             "title": "Apri Regole gear automatiche",
@@ -2078,8 +2078,8 @@
             "body": "Premi Aggiungi regola per creare un'automazione personalizzata. Dai un nome, aggiungi condizioni e l'attrezzatura richiesta, quindi salva. Il planner applica la nuova regola offline ogni volta che rigeneri il kit e la include in esportazioni, condivisioni e backup."
           },
           "gearList": {
-            "title": "Verifica l'elenco attrezzatura generato",
-            "body": "Controlla l'elenco attrezzatura categorizzato per duplicati, quantità e accessori auto-aggiunti. Le modifiche si salvano all'istante, sono incluse nei pacchetti condivisi e appaiono in stampe e PDF."
+            "title": "Verifica la lista attrezzatura generata",
+            "body": "Controlla la lista attrezzatura categorizzata per duplicati, quantità e accessori auto-aggiunti. Le modifiche si salvano all'istante, sono incluse nei pacchetti condivisi e appaiono in stampe e PDF."
           },
           "exportImport": {
             "title": "Esporta e importa progetti",
@@ -2158,35 +2158,35 @@
       "setupSelectHelp": "Scegli una configurazione salvata da caricare o inizia una nuova.",
       "setupNameHelp": "Inserisci un nome per la configurazione corrente.",
       "deleteSetupHelp": "Elimina la configurazione salvata selezionata.",
-      "saveSetupHelp": "Acquisisci un'istantanea completa del progetto corrente—dispositivi, requisiti, note, registri di autonomia e layout del diagramma—e archiviala nella libreria locale. Il punto di stato del salvataggio automatico accanto a Nome progetto pulsa mentre la scrittura termina e la coda di backup automatico pianifica subito dopo la stessa istantanea con timestamp per mantenere aggiornata la ridondanza. Premi Invio o Ctrl+S (Cmd+S su Mac) per ottenere lo stesso risultato; il pulsante Salva resta disattivato finché non inserisci un nome progetto. Il salvataggio non sovrascrive altri progetti finché non confermi il nome, così i dati precedenti restano protetti.",
+      "saveSetupHelp": "Acquisisci un'istantanea completa del progetto corrente—dispositivi, requisiti, note, registri di autonomia e layout del diagramma di alimentazione—e archiviala nella libreria locale. Il punto di stato del salvataggio automatico accanto a Nome progetto pulsa mentre la scrittura termina e la coda di backup automatico pianifica subito dopo la stessa istantanea con timestamp per mantenere aggiornata la ridondanza. Premi Invio o Ctrl+S (Cmd+S su Mac) per ottenere lo stesso risultato; il pulsante Salva resta disattivato finché non inserisci un nome progetto. Il salvataggio non sovrascrive altri progetti finché non confermi il nome, così i dati precedenti restano protetti.",
       "generateOverviewHelp": "Ricostruisce il riepilogo pronto per la stampa del progetto salvato selezionato e apre la finestra panoramica così puoi rivedere i dettagli di alimentazione e connessione prima di stampare quando preferisci. La sezione obiettivi mostra marca, attacco, diametro, fuoco, peso, supporto aste e note così gli export coprono le verifiche sensibili alle specifiche.",
       "generateGearListHelp": "Genera una tabella categorizzata che combina l'attrezzatura selezionata con i requisiti del progetto. L'elenco si aggiorna a ogni modifica, unisce i duplicati con un conteggio e aggiunge automaticamente cavi, rigging, supporti lente, componenti matte box, conteggi batteria con hotswap, monitor predefiniti per ogni ruolo e accessori specifici per gli scenari. Gli elementi sono ordinati alfabeticamente e includono descrizioni al passaggio del mouse.",
       "shareSetupHelp": "Scarica un pacchetto JSON di sicurezza del progetto corrente—comprende accessori personalizzati, preferiti, feedback di autonomia e dispositivi—pronto da archiviare o condividere offline. Conserva il file insieme ai backup ridondanti della troupe prima di chiudere il planner così ogni postazione può ripristinarlo senza connessione. L'esportazione non modifica il progetto corrente, quindi nulla va perso mentre crei il pacchetto.",
       "applySharedLinkHelp": "Carica la configurazione da un backup JSON esportato tramite Salva e condividi o Backup e ripristino. Controlla il diff in anteprima prima di applicarla: nulla sovrascrive il progetto corrente finché non confermi Salva e il planner programma prima un nuovo backup automatico così puoi tornare indietro all’istante. Le importazioni senza nome vengono salvate automaticamente con un titolo “-imported” così i dati arrivano anche quando il bundle non includeva un nome progetto. Il progetto importato resta locale ed è subito disponibile offline dopo il salvataggio.",
       "sharedLinkHelp": "Scegli un JSON di progetto esportato da Salva e condividi o da Backup e ripristino. Conserva il file originale nei backup dopo l’importazione: il planner legge solo una copia e registra il tentativo nei log di diagnostica, così puoi verificare ogni ripristino.",
-      "cameraSelectHelp": "Seleziona la fotocamera per la tua configurazione.",
+      "cameraSelectHelp": "Seleziona la fotocamera per il tuo rig.",
       "monitorSelectHelp": "Seleziona un monitor da includere.",
       "videoSelectHelp": "Seleziona un sistema video wireless da includere.",
       "cageSelectHelp": "Seleziona una gabbia per la tua fotocamera.",
-      "distanceSelectHelp": "Seleziona un sensore di distanza per la tua configurazione.",
-      "batterySelectHelp": "Seleziona la batteria che alimenta la configurazione.",
+      "distanceSelectHelp": "Seleziona un sensore di distanza per il tuo rig.",
+      "batterySelectHelp": "Seleziona la batteria che alimenta il rig.",
       "batteryPlateSelectHelp": "Seleziona la piastra o l'adattatore della batteria.",
       "batteryHotswapSelectHelp": "Seleziona l'unità di hotswap che mantiene l'alimentazione durante il cambio batteria.",
-      "runtimeFeedbackBtnHelp": "Invia la durata di funzionamento misurata per questa configurazione.",
-      "zoomOutHelp": "Allontana il diagramma di configurazione.",
-      "zoomInHelp": "Avvicina il diagramma di configurazione.",
-      "downloadDiagramHelp": "Scarica il diagramma di configurazione come immagine.",
-      "gridSnapToggleHelp": "Attiva/disattiva l'allineamento alla griglia dei nodi del diagramma.",
+      "runtimeFeedbackBtnHelp": "Invia la durata di funzionamento misurata per questo rig.",
+      "zoomOutHelp": "Allontana il diagramma di alimentazione.",
+      "zoomInHelp": "Avvicina il diagramma di alimentazione.",
+      "downloadDiagramHelp": "Scarica il diagramma di alimentazione come immagine.",
+      "gridSnapToggleHelp": "Attiva/disattiva l'allineamento alla griglia dei nodi del diagramma di alimentazione.",
       "resetViewBtn": "Reimposta vista",
-      "resetViewHelp": "Ripristina lo zoom e il movimento del diagramma.",
+      "resetViewHelp": "Ripristina lo zoom e il movimento del diagramma di alimentazione.",
       "toggleDeviceManagerHelp": "Apri l'editor del database dei dispositivi.",
       "hideDeviceManagerHelp": "Nascondi l'editor del database dei dispositivi.",
       "zoomInLabel": "Ingrandisci",
       "zoomOutLabel": "Rimpicciolisci",
       "diagramHoverNotice": "Clicca per maggiori informazioni!",
       "diagramDetailBackLabel": "Indietro",
-      "diagramDetailDefaultHeading": "Dettagli del diagramma",
-      "diagramMoveHint": "Trascina i nodi per spostarli. Trascina uno spazio vuoto per spostare il diagramma."
+      "diagramDetailDefaultHeading": "Dettagli del diagramma di alimentazione",
+      "diagramMoveHint": "Trascina i nodi per spostarli. Trascina uno spazio vuoto per spostare il diagramma di alimentazione."
     },
     "categoryNames": {
       "cameras": "Camera",
