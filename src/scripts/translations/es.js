@@ -1041,7 +1041,7 @@
       "helpTopics": {
         "projectManagement": {
           "title": "Gestión de proyectos",
-          "content": "Ponle nombre a los proyectos y pulsa **Guardar** para crear instantáneas en Proyectos guardados. El guardado automático y las copias automáticas protegen los borradores, y **Eliminar** crea antes una copia de seguridad."
+          "content": "Ponle nombre a los proyectos y pulsa **Guardar** para crear instantáneas en Proyectos guardados. Guardar no sobrescribe otros proyectos hasta que confirmes el nombre. El guardado automático y las copias automáticas protegen los borradores, y **Eliminar** crea antes una copia de seguridad."
         },
         "saveShareBackup": {
           "title": "Guardar, compartir y copias",
