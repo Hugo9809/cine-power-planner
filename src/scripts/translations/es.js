@@ -1624,6 +1624,7 @@
       "preDeleteBackupSuccess": "Copia de seguridad automática guardada antes de borrar. Busca la entrada auto-backup equivalente en Proyectos guardados y cámbiale el nombre si quieres conservarla de forma permanente.",
       "preDeleteBackupFailed": "La copia de seguridad automática falló. La acción se canceló.",
       "restoreBackupFailed": "La copia de seguridad falló. Restauración cancelada.",
+      "restoreBackupQueuedConfirm": "La copia de seguridad está en espera en la bóveda local. ¿Continuar con la restauración ahora?",
       "manualDownloadFallback": "La descarga no se inició automáticamente. Se abrió una pestaña nueva con el contenido del archivo para que puedas copiarlo o guardarlo manualmente.",
       "manualDownloadCopyHint": "Selecciona todo el texto de abajo y cópialo para guardar el archivo de forma segura.",
       "dataHeading": "Datos y almacenamiento",

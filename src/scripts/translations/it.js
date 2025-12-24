@@ -1647,6 +1647,7 @@
       "preDeleteBackupSuccess": "Copia di sicurezza automatica salvata prima dell'eliminazione. Cerca la voce auto-backup corrispondente in Progetti salvati e rinominala se desideri conservarla in modo permanente.",
       "preDeleteBackupFailed": "Backup automatico non riuscito. L'operazione è stata annullata.",
       "restoreBackupFailed": "Backup non riuscito. Ripristino annullato.",
+      "restoreBackupQueuedConfirm": "La copia di sicurezza è in attesa nel vault locale. Continuare con il ripristino ora?",
       "manualDownloadFallback": "Il download non è partito automaticamente. Si è aperta una nuova scheda con il contenuto del file così puoi copiarlo o salvarlo manualmente.",
       "manualDownloadCopyHint": "Seleziona tutto il testo qui sotto e copialo per conservare il file in modo sicuro.",
       "dataHeading": "Dati e archiviazione",

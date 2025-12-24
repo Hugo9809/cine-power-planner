@@ -1653,6 +1653,7 @@
       "preDeleteBackupSuccess": "Automatische Sicherheitskopie vor dem Löschen gespeichert. Suche den passenden auto-backup-Eintrag unter Gespeicherte Projekte und benenne ihn um, wenn du ihn dauerhaft behalten möchtest.",
       "preDeleteBackupFailed": "Automatische Sicherung fehlgeschlagen. Die Aktion wurde abgebrochen.",
       "restoreBackupFailed": "Backup fehlgeschlagen. Wiederherstellung abgebrochen.",
+      "restoreBackupQueuedConfirm": "Die Sicherheitskopie wartet im lokalen Tresor. Jetzt mit der Wiederherstellung fortfahren?",
       "manualDownloadFallback": "Der Download wurde nicht automatisch gestartet. Ein neuer Tab mit dem Dateiinhalt wurde geöffnet, damit du ihn manuell kopieren oder speichern kannst.",
       "manualDownloadCopyHint": "Markiere den gesamten Text unten und kopiere ihn, um die Datei sicher zu speichern.",
       "dataHeading": "Daten & Speicherung",

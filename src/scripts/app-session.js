@@ -12633,13 +12633,16 @@ function handleRestoreSettingsInputChange() {
     || 'Restore failed. Check the backup file and try again.';
 
   let backupFileName = null;
+  let backupDownloadResult = null;
   try {
-    backupFileName = createSettingsBackup(false, new Date());
+    const backupResult = performSettingsBackup(false, new Date());
+    backupFileName = backupResult ? backupResult.fileName : null;
+    backupDownloadResult = backupResult ? backupResult.downloadResult : null;
   } catch (error) {
     console.error('Backup before restore failed', error);
   }
 
-  if (!backupFileName) {
+  if (!backupFileName || !backupDownloadResult || (!backupDownloadResult.success && !backupDownloadResult.queued)) {
     const failureMessage = langTexts.restoreBackupFailed
       || fallbackTexts.restoreBackupFailed
       || 'Backup failed. Restore cancelled.';
@@ -12649,7 +12652,27 @@ function handleRestoreSettingsInputChange() {
     return;
   }
 
-  showNotification('success', 'Full app backup downloaded');
+  if (backupDownloadResult.success) {
+    showNotification('success', 'Full app backup downloaded');
+  } else if (backupDownloadResult.queued) {
+    const queuedBackupMessage = backupDownloadResult.queueMessage
+      || fallbackTexts.queuedBackupDownloadDeferred
+      || 'Automatic downloads were blocked. The backup was saved to the local vault.';
+    const queuedConfirmMessage = langTexts.restoreBackupQueuedConfirm
+      || fallbackTexts.restoreBackupQueuedConfirm
+      || 'The safety backup is waiting in the local vault. Continue with the restore now?';
+    showNotification('warning', queuedBackupMessage);
+    let restoreConfirmed = false;
+    if (typeof confirm === 'function') {
+      restoreConfirmed = confirm(`${queuedBackupMessage}\n\n${queuedConfirmMessage}`);
+    } else if (typeof alert === 'function') {
+      alert(`${queuedBackupMessage}\n\n${queuedConfirmMessage}`);
+    }
+    if (!restoreConfirmed) {
+      restoreSettingsInput.value = '';
+      return;
+    }
+  }
 
   const safeStorage = resolveSafeLocalStorage();
   const storedSettingsSnapshot = captureStorageSnapshot(safeStorage);
