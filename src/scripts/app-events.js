@@ -4712,7 +4712,30 @@ function toggleDeviceManagerSection() {
 }
 
 // Toggle device manager visibility
-addSafeEventListener('toggleDeviceManager', 'click', toggleDeviceManagerSection);
+function bindDeviceManagerToggleHandler() {
+  if (bindDeviceManagerToggleHandler.bound) {
+    return;
+  }
+  bindDeviceManagerToggleHandler.bound = true;
+  if (typeof document !== 'undefined' && document && typeof document.addEventListener === 'function') {
+    document.addEventListener('click', (event) => {
+      if (!event) {
+        return;
+      }
+      const target = event.target;
+      if (!target || typeof target.closest !== 'function') {
+        return;
+      }
+      const button = target.closest('#toggleDeviceManager');
+      if (!button) {
+        return;
+      }
+      toggleDeviceManagerSection();
+    });
+  }
+}
+
+bindDeviceManagerToggleHandler();
 
 function getEventsLanguageTexts() {
   const scope =
