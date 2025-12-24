@@ -668,6 +668,7 @@
       "alertSetupNeedsDevice": "Puoi salvare un progetto anche se non hai ancora selezionato dispositivi.",
       "alertSetupSaved": "Setup \"{name}\" salvato nel browser. Rimane disponibile dopo aver chiuso o riaperto le schede finché non svuoti la cache del browser.",
       "alertSetupSavedNoDevices": "Setup \"{name}\" salvato nel browser senza dispositivi per ora. Potrai aggiungere l'attrezzatura e i requisiti in seguito: manterremo tutto al sicuro.",
+      "alertSetupRenameSaveFailed": "Non siamo riusciti a completare il salvataggio del progetto rinominato. Il progetto originale è ancora disponibile: salva di nuovo per mantenere tutto sincronizzato.",
       "alertNoSetupSelected": "Selezionare una configurazione salvata da eliminare.",
       "alertSetupDeleted": "Setup \"{name}\" eliminato.",
       "confirmDeleteSetup": "Elimina davvero setup \"{name}\"?",

@@ -645,6 +645,7 @@
       "alertSetupNeedsDevice": "Puedes guardar un proyecto aunque todavía no hayas seleccionado dispositivos.",
       "alertSetupSaved": "Proyecto \"{name}\" guardado en este navegador. Permanece disponible al cerrar o volver a abrir pestañas mientras no borres la caché del navegador.",
       "alertSetupSavedNoDevices": "Proyecto \"{name}\" guardado en este navegador sin dispositivos por ahora. Podrás añadir el equipo y los requisitos más tarde; mantendremos todo protegido.",
+      "alertSetupRenameSaveFailed": "No pudimos terminar de guardar el proyecto renombrado. Tu proyecto original sigue disponible; vuelve a guardar para mantener todo sincronizado.",
       "alertNoSetupSelected": "Selecciona un proyecto para eliminar.",
       "alertSetupDeleted": "Proyecto \"{name}\" eliminado.",
       "confirmDeleteSetup": "¿Eliminar el proyecto \"{name}\"?",

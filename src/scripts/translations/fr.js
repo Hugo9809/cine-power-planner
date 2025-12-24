@@ -643,6 +643,7 @@
       "alertSetupNeedsDevice": "Vous pouvez enregistrer un projet même si aucun appareil n’est encore sélectionné.",
       "alertSetupSaved": "Configuration \"{name}\" enregistrée dans ce navigateur. Elle reste disponible après avoir fermé ou rouvert des onglets tant que vous ne videz pas le cache du navigateur.",
       "alertSetupSavedNoDevices": "Configuration \"{name}\" enregistrée dans ce navigateur sans appareils pour l’instant. Vous pourrez ajouter le matériel et les exigences plus tard ; nous garderons tout en sécurité.",
+      "alertSetupRenameSaveFailed": "Nous n’avons pas pu terminer l’enregistrement du projet renommé. Votre projet d’origine reste disponible ; veuillez enregistrer à nouveau pour tout synchroniser.",
       "alertNoSetupSelected": "Sélectionnez une configuration à supprimer.",
       "alertSetupDeleted": "Configuration \"{name}\" supprimée.",
       "confirmDeleteSetup": "Supprimer la configuration \"{name}\" ?",

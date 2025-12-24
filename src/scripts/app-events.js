@@ -2631,8 +2631,13 @@ function handleSaveSetupClick(optionsOrEvent) {
     && typeof selectedName === 'string'
     && selectedName.startsWith('auto-backup-');
   let setups = getSetups();
+  const setupsBeforeRename = renamingExisting
+    ? JSON.parse(JSON.stringify(setups || {}))
+    : null;
   let finalName = typedName;
   let storedProjectSnapshot = null;
+  let didPersistProject = !renamingExisting;
+  let didAttemptProjectPersist = false;
 
   if (renamingExisting) {
     if (typeof loadProject === 'function') {
@@ -2669,13 +2674,48 @@ function handleSaveSetupClick(optionsOrEvent) {
   storeSetups(setups);
 
   if (renamingExisting && storedProjectSnapshot && typeof saveProject === 'function') {
+    didAttemptProjectPersist = true;
     try {
       if (renamingAutoBackup && finalIsAutoBackup) {
         markAutoBackupDataAsRenamed(storedProjectSnapshot);
       }
       saveProject(finalName, storedProjectSnapshot, { skipOverwriteBackup: true });
+      didPersistProject = true;
     } catch (error) {
+      didPersistProject = false;
       console.warn('Failed to preserve project data during setup rename', error);
+    }
+    if (didPersistProject && typeof loadProject === 'function') {
+      try {
+        const persistedProject = loadProject(finalName);
+        didPersistProject = Boolean(persistedProject && typeof persistedProject === 'object');
+      } catch (error) {
+        didPersistProject = false;
+        console.warn('Failed to confirm project data after setup rename', error);
+      }
+    }
+  } else if (renamingExisting && storedProjectSnapshot) {
+    didAttemptProjectPersist = true;
+    didPersistProject = false;
+  }
+
+  if (renamingExisting && didAttemptProjectPersist && !didPersistProject) {
+    if (setupsBeforeRename) {
+      storeSetups(setupsBeforeRename);
+      setups = setupsBeforeRename;
+    }
+    finalName = selectedName;
+    const warnMessage = langTexts.alertSetupRenameSaveFailed || fallbackTexts.alertSetupRenameSaveFailed;
+    if (typeof warnMessage === 'string' && warnMessage) {
+      if (typeof showNotification === 'function') {
+        try {
+          showNotification('warning', warnMessage);
+        } catch (notifyError) {
+          void notifyError;
+        }
+      } else {
+        alert(warnMessage);
+      }
     }
   }
 
@@ -2694,7 +2734,7 @@ function handleSaveSetupClick(optionsOrEvent) {
   // remain in sync with the automatically saved table.
   saveCurrentGearList();
 
-  if (renamingExisting && selectedName && selectedName !== finalName) {
+  if (renamingExisting && selectedName && selectedName !== finalName && didPersistProject) {
     if (typeof deleteProject === 'function') {
       try {
         deleteProject(selectedName);

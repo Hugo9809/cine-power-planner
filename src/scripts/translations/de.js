@@ -665,6 +665,7 @@
       "alertSetupNeedsDevice": "Du kannst ein Projekt speichern, auch wenn noch keine Geräte ausgewählt sind.",
       "alertSetupSaved": "Projekt \"{name}\" in diesem Browser gespeichert. Es bleibt verfügbar, wenn Sie Tabs oder den Browser schließen und erneut öffnen, solange Sie den Browsercache nicht löschen.",
       "alertSetupSavedNoDevices": "Projekt \"{name}\" wurde in diesem Browser ohne Geräte gespeichert. Du kannst Ausrüstung und Anforderungen später ergänzen – wir sichern weiterhin alle Daten.",
+      "alertSetupRenameSaveFailed": "Das umbenannte Projekt konnte nicht vollständig gespeichert werden. Dein ursprüngliches Projekt ist weiterhin verfügbar – bitte speichere erneut, damit alles synchron bleibt.",
       "alertNoSetupSelected": "Wählen Sie ein gespeichertes Projekt zum Löschen aus.",
       "alertSetupDeleted": "Projekt \"{name}\" gelöscht.",
       "confirmDeleteSetup": "Projekt \"{name}\" wirklich löschen?",
