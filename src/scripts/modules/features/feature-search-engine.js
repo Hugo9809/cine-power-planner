@@ -62,19 +62,20 @@
       return { cleaned: '', number: null };
     }
 
-    const cleaned = value.replace(/[^a-z0-9]+/g, '');
+    const cleaned = value.replace(/[^a-z0-9]+/gi, '');
     if (!cleaned) {
       return { cleaned: '', number: null };
     }
 
+    const normalized = cleaned.toLowerCase();
     let number = null;
     if (/^\d+$/.test(cleaned)) {
       number = parseInt(cleaned, 10);
-    } else if (ROMAN_NUMERAL_PATTERN.test(cleaned)) {
+    } else if (ROMAN_NUMERAL_PATTERN.test(normalized)) {
       let total = 0;
       let prev = 0;
-      for (let index = cleaned.length - 1; index >= 0; index -= 1) {
-        const char = cleaned[index];
+      for (let index = normalized.length - 1; index >= 0; index -= 1) {
+        const char = normalized[index];
         const current = ROMAN_NUMERAL_VALUES[char];
         if (!current) {
           total = 0;
@@ -92,7 +93,7 @@
       }
     }
 
-    return { cleaned, number };
+    return { cleaned: normalized, number };
   }
 
   function normaliseMarkVariants(str) {
