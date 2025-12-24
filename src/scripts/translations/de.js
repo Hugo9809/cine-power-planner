@@ -1074,7 +1074,7 @@
         },
         "saveShareBackup": {
           "title": "Speichern, Teilen & Backup",
-          "content": "Mit **Projekt exportieren** lädst du ein JSON-Bundle herunter (optional automatische Gear-Regeln und Besitz-Markierungen). **Projekt importieren** lädt eine Datei, ohne dein aktuelles Setup zu überschreiben, bis du Speichern bestätigst. **Backup & Wiederherstellen** liefert Komplettsicherungen, Wiederherstellungsprobe, Versionsvergleich und den lokalen Backup-Tresor, wenn automatische Downloads blockiert werden."
+          "content": "Mit **Export Project** lädst du ein JSON-Bundle herunter (optional automatische Gear-Regeln und Besitz-Markierungen). Nutze **Share Project**, um ein Share-Bundle für den Offline-Import zu erstellen; Empfänger öffnen es mit **Import Project**, und nichts überschreibt das aktuelle Setup, bis sie Speichern bestätigen. **Backup & Restore** liefert Komplettsicherungen, Wiederherstellungsprobe, Versionsvergleich und den lokalen Backup-Tresor, wenn automatische Downloads blockiert werden."
         },
         "deviceConfiguration": {
           "title": "Geräte konfigurieren",

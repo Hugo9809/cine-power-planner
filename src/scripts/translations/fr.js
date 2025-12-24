@@ -1043,7 +1043,7 @@
         },
         "saveShareBackup": {
           "title": "Enregistrer, partager & sauvegarder",
-          "content": "Utilisez **Exporter le projet** pour télécharger un JSON (incluez en option les règles automatiques et les marquages de matériel personnel). **Importer un projet** charge un fichier sans écraser votre configuration tant que vous ne confirmez pas l'enregistrement. **Sauvegarde & restauration** fournit des sauvegardes complètes, des répétitions de restauration, la comparaison de versions et le coffre local quand les téléchargements automatiques sont bloqués."
+          "content": "Utilisez **Export Project** pour télécharger un JSON (incluez en option les règles automatiques et les marquages de matériel personnel). Utilisez **Share Project** pour créer un paquet de partage pour l'importation hors ligne ; les destinataires l'ouvrent avec **Import Project** et rien n'écrase leur configuration actuelle tant qu'ils ne confirment pas l'enregistrement. **Backup & Restore** fournit des sauvegardes complètes, des répétitions de restauration, la comparaison de versions et le coffre local quand les téléchargements automatiques sont bloqués."
         },
         "deviceConfiguration": {
           "title": "Configuration des appareils",

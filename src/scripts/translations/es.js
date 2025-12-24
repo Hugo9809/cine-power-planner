@@ -1045,7 +1045,7 @@
         },
         "saveShareBackup": {
           "title": "Guardar, compartir y copias",
-          "content": "Usa **Exportar proyecto** para descargar un JSON (opcionalmente incluye reglas automáticas y marcas de equipo propio). **Importar proyecto** carga un archivo sin sobrescribir tu configuración actual hasta que confirmes Guardar. **Copia y restauración** ofrece copias completas, ensayo de restauración, comparación de versiones y la bóveda local cuando se bloquean las descargas automáticas."
+          "content": "Usa **Export Project** para descargar un JSON (opcionalmente incluye reglas automáticas y marcas de equipo propio). Usa **Share Project** para crear un paquete de compartición para importación offline; quien lo reciba lo abre con **Import Project** y nada sobrescribe su configuración actual hasta confirmar Guardar. **Backup & Restore** ofrece copias completas, ensayo de restauración, comparación de versiones y la bóveda local cuando se bloquean las descargas automáticas."
         },
         "deviceConfiguration": {
           "title": "Configuración de dispositivos",
