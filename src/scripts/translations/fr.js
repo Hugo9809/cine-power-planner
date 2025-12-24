@@ -1079,7 +1079,7 @@
         },
         "troubleshooting": {
           "title": "Dépannage",
-          "content": "Si quelque chose ne fonctionne pas comme prévu :\n\n- **Force reload** : Ouvrez le menu d’aide/état de la barre d’outils et choisissez **Force reload** pour rafraîchir l’app sans toucher à vos données.\n- **Exporter + sauvegarder** : Avant de vider le cache ou les données du site, **Exporter le projet** et lancer **Sauvegarde & restauration** afin d’enregistrer votre projet et une sauvegarde locale complète.\n- **Cache/données du site** : Uniquement si les problèmes persistent, videz le cache ou les données du site. **Avertissement :** vider les données du site peut supprimer des projets stockés localement."
+          "content": "Si quelque chose ne fonctionne pas comme prévu :\n\n- **Forcer le rechargement** : Ouvrez le menu d’aide/état de la barre d’outils et choisissez **Forcer le rechargement** pour rafraîchir l’app sans toucher à vos données.\n- **Exporter + sauvegarder** : Avant de vider le cache ou les données du site, **Exporter le projet** et lancer **Sauvegarde & restauration** afin d’enregistrer votre projet et une sauvegarde locale complète.\n- **Cache/données du site** : Uniquement si les problèmes persistent, videz le cache ou les données du site. **Avertissement :** vider les données du site peut supprimer des projets stockés localement."
         },
         "shortcuts": {
           "title": "Raccourcis clavier",
