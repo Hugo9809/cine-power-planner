@@ -803,6 +803,8 @@
         "productionCompanyCountry": "País",
         "productionCompanyCountryPlaceholder": "España",
         "rentalHouse": "Rental",
+        "rentalHouseContact": "Contacto de rental",
+        "rentalHouseAddress": "Dirección de rental",
         "crew": "Equipo de rodaje",
         "prepDays": "Días de preparación",
         "shootingDays": "Días de rodaje",

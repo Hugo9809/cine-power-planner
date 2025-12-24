@@ -2415,6 +2415,23 @@ function formatRentalHouseTooltip(entry) {
   return segments.join(' • ');
 }
 
+function resolveRentalHouseEntry(value) {
+  const rentalValue = typeof value === 'string' ? value.trim() : '';
+  if (!rentalValue) return null;
+  const runtime = getRentalHouseRuntime();
+  const lookup = runtime && runtime.lookup;
+  const lookupKey = normalizeRentalHouseKey(rentalValue);
+  if (lookup && lookupKey && lookup[lookupKey]) {
+    return lookup[lookupKey];
+  }
+  const normalizedValue = normalizeRentalHouseSearchValue(rentalValue);
+  if (!normalizedValue || !runtime || !Array.isArray(runtime.searchIndex)) {
+    return null;
+  }
+  const fallbackMatch = runtime.searchIndex.find(info => info && info.normalizedName === normalizedValue);
+  return fallbackMatch ? fallbackMatch.entry : null;
+}
+
 function resolveRentalHouseInput() {
   if (typeof document === 'undefined') return null;
   return document.getElementById('rentalHouse');
@@ -11855,6 +11872,43 @@ function gearListGenerateHtmlImpl(info = {}) {
   const projectInfo = { ...info };
   const projectFormTexts = texts[currentLang]?.projectForm || texts.en?.projectForm || {};
   const projectLabels = texts[currentLang]?.projectFields || texts.en?.projectFields || {};
+  const rentalHouseEntry = resolveRentalHouseEntry(info && info.rentalHouse ? info.rentalHouse : '');
+  if (rentalHouseEntry) {
+    const contactParts = [];
+    const contactText = [];
+    const rentalPhone = rentalHouseEntry.phone ? String(rentalHouseEntry.phone).trim() : '';
+    if (rentalPhone) {
+      const phoneHref = formatPhoneHref(rentalPhone);
+      const safePhone = escapeHtml(rentalPhone);
+      contactText.push(rentalPhone);
+      if (phoneHref) {
+        contactParts.push(`<a href="tel:${phoneHref}" class="req-contact-link">${safePhone}</a>`);
+      } else {
+        contactParts.push(safePhone);
+      }
+    }
+    const rentalEmail = rentalHouseEntry.email ? String(rentalHouseEntry.email).trim() : '';
+    if (rentalEmail) {
+      const emailHref = formatEmailHref(rentalEmail);
+      const safeEmail = escapeHtml(rentalEmail);
+      contactText.push(rentalEmail);
+      if (emailHref) {
+        contactParts.push(`<a href="mailto:${emailHref}" class="req-contact-link">${safeEmail}</a>`);
+      } else {
+        contactParts.push(safeEmail);
+      }
+    }
+    if (contactParts.length) {
+      projectInfo.rentalHouseContact = {
+        __html: contactParts.join('<br>'),
+        text: contactText.join('\n')
+      };
+    }
+    const rentalAddress = rentalHouseEntry.address ? String(rentalHouseEntry.address).trim() : '';
+    if (rentalAddress) {
+      projectInfo.rentalHouseAddress = rentalAddress;
+    }
+  }
   let hasCombinedProductionCompany = applyCombinedProductionCompanyDisplay(projectInfo, info, projectLabels);
   if (!hasCombinedProductionCompany) {
     const hasStructuredAddress = PRODUCTION_COMPANY_FIELD_ORDER.some((key) => {

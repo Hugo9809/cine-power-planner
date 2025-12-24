@@ -1625,6 +1625,8 @@
         "productionCompanyCountry": "Country",
         "productionCompanyCountryPlaceholder": "United States",
         "rentalHouse": "Rental",
+        "rentalHouseContact": "Rental contact",
+        "rentalHouseAddress": "Rental address",
         "crew": "Crew",
         "prepDays": "Prep Days",
         "shootingDays": "Shooting Days",

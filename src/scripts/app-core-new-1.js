@@ -11902,6 +11902,8 @@ var projectFieldIcons = {
   productionCompany: PRODUCTION_COMPANY_ICON,
   productionCompanyAddress: ICON_GLYPHS.pin,
   rentalHouse: RENTAL_HOUSE_ICON,
+  rentalHouseContact: ICON_GLYPHS.contacts,
+  rentalHouseAddress: ICON_GLYPHS.pin,
   crew: iconGlyph('\uF404', ICON_FONT_KEYS.UICONS),
   prepDays: iconGlyph('\uE312', ICON_FONT_KEYS.UICONS),
   returnDays: iconGlyph('\uE312', ICON_FONT_KEYS.UICONS),
@@ -20880,7 +20882,6 @@ if (typeof globalThis !== 'undefined') {
   globalThis.encodeSharedSetup = encodeSharedSetup;
   globalThis.decodeSharedSetup = decodeSharedSetup;
 }
-
 
 
 
