@@ -1105,7 +1105,7 @@
         },
         "troubleshooting": {
           "title": "Risoluzione dei problemi",
-          "content": "Se qualcosa non funziona come previsto:\n\n- **Force reload**: Apri il menu aiuto/stato nella barra superiore e scegli **Force reload** per aggiornare l'app senza toccare i tuoi dati.\n- **Esporta + backup**: Prima di cancellare cache o dati del sito, **Esporta progetto** ed esegui **Backup & ripristino** per salvare il progetto e un backup locale completo.\n- **Cache/dati del sito**: Solo se i problemi persistono, cancella cache o dati del sito. **Avviso:** cancellare i dati del sito può eliminare progetti salvati localmente."
+          "content": "Se qualcosa non funziona come previsto:\n\n- **Ricarica forzata**: Apri il menu aiuto/stato nella barra superiore e scegli **Ricarica forzata** per aggiornare l'app senza toccare i tuoi dati.\n- **Esporta + backup**: Prima di cancellare cache o dati del sito, **Esporta progetto** ed esegui **Backup & ripristino** per salvare il progetto e un backup locale completo.\n- **Cache/dati del sito**: Solo se i problemi persistono, cancella cache o dati del sito. **Avviso:** cancellare i dati del sito può eliminare progetti salvati localmente."
         },
         "shortcuts": {
           "title": "Scorciatoie da tastiera",

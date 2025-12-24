@@ -1111,7 +1111,7 @@
         },
         "troubleshooting": {
           "title": "Fehlerbehebung",
-          "content": "Wenn etwas nicht wie erwartet funktioniert:\n\n- **Force reload**: Öffne das Hilfe/Status-Menü in der Toolbar und wähle **Force reload**, um die App zu aktualisieren, ohne deine Daten anzutasten.\n- **Export + Backup**: Bevor du Browser-Cache oder Website-Daten löschst, **Projekt exportieren** und **Backup & Wiederherstellen** ausführen, um Projekt und vollständiges lokales Backup zu sichern.\n- **Browser-Cache/Website-Daten**: Nur wenn Probleme bleiben, Cache oder Website-Daten löschen. **Warnung:** Das Löschen von Website-Daten kann lokal gespeicherte Projekte entfernen."
+          "content": "Wenn etwas nicht wie erwartet funktioniert:\n\n- **Neu laden erzwingen**: Öffne das Hilfe/Status-Menü in der Toolbar und wähle **Neu laden erzwingen**, um die App zu aktualisieren, ohne deine Daten anzutasten.\n- **Export + Backup**: Bevor du Browser-Cache oder Website-Daten löschst, **Projekt exportieren** und **Backup & Wiederherstellen** ausführen, um Projekt und vollständiges lokales Backup zu sichern.\n- **Browser-Cache/Website-Daten**: Nur wenn Probleme bleiben, Cache oder Website-Daten löschen. **Warnung:** Das Löschen von Website-Daten kann lokal gespeicherte Projekte entfernen."
         },
         "shortcuts": {
           "title": "Tastenkürzel",
