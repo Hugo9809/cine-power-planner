@@ -1995,7 +1995,7 @@
           },
           "resultsWarnings": {
             "title": "Power Summary: Warnings and backups",
-            "body": "Check the connector warning boxes: green shows the pin or D-Tap battery feed is safe, yellow means the feed is near its limit, and red means the rig is pulling more than that line can supply. Change out batteries and devices to get both boxes to appear green again. Be assured to not break batteries with higher loads a battery can handle."
+            "body": "Check the connector warning boxes: green shows the pin or D-Tap battery feed is safe, yellow means the feed is near its limit, and red means the rig is pulling more than that line can supply. Change out batteries and devices to get both boxes to appear green again. Rest assured the warnings keep you from pushing higher loads than a battery can safely handle."
           },
           "batteryComparison": {
             "title": "Battery Comparison",
