@@ -12767,34 +12767,21 @@ function handleRestoreSettingsInputChange() {
         });
         alert(compatibilityMessage);
       }
-      if (restoredSettings && typeof restoredSettings === 'object') {
-        if (safeStorage && typeof safeStorage.setItem === 'function') {
-          restoreMutated = true;
-          Object.entries(restoredSettings).forEach(([k, v]) => {
-            if (typeof k !== 'string') return;
-            try {
-              if (v === null || v === undefined) {
-                if (typeof safeStorage.removeItem === 'function') {
-                  safeStorage.removeItem(k);
-                }
-              } else {
-                safeStorage.setItem(k, String(v));
-              }
-            } catch (storageError) {
-              console.warn('Failed to restore storage entry', k, storageError);
-            }
-          });
-        }
-      }
-      if (restoredSession && typeof sessionStorage !== 'undefined') {
+      const shouldRestoreSettings =
+        restoredSettings
+        && typeof restoredSettings === 'object'
+        && !Array.isArray(restoredSettings);
+      const shouldRestoreSession =
+        restoredSession
+        && typeof restoredSession === 'object'
+        && !Array.isArray(restoredSession);
+      if (shouldRestoreSettings) {
         restoreMutated = true;
-        Object.entries(restoredSession).forEach(([key, value]) => {
-          try {
-            sessionStorage.setItem(key, value);
-          } catch (sessionError) {
-            console.warn('Failed to restore sessionStorage entry', key, sessionError);
-          }
-        });
+        restoreLocalStorageSnapshot(safeStorage, restoredSettings);
+      }
+      if (shouldRestoreSession) {
+        restoreMutated = true;
+        restoreSessionStorageSnapshot(restoredSession);
       }
       try {
         safeLoadStoredLogoPreview();
@@ -12831,14 +12818,8 @@ function handleRestoreSettingsInputChange() {
           }
         }
       }
-      if (restoredSession && typeof sessionStorage !== 'undefined') {
-        Object.entries(restoredSession).forEach(([key, value]) => {
-          try {
-            sessionStorage.setItem(key, value);
-          } catch (sessionError) {
-            console.warn('Failed to refresh sessionStorage entry after restore', key, sessionError);
-          }
-        });
+      if (shouldRestoreSession) {
+        restoreSessionStorageSnapshot(restoredSession);
       }
 
       let verificationResult = null;

@@ -1547,7 +1547,7 @@
       "backupSettings": "Sauvegarder",
       "backupSettingsHelp": "Téléchargez une sauvegarde JSON complète contenant tous les projets, modifications d’appareils, préférences, règles automatiques, entrées du coffre local et journaux d’exécution stockés sur cet appareil. Conservez plusieurs copies dans votre archive hors ligne.",
       "restoreSettings": "Restaurer",
-      "restoreSettingsHelp": "Restaurez une sauvegarde JSON complète. Le planner capture d’abord une nouvelle copie de sécurité puis applique le fichier sélectionné, ce qui vous permet de revenir immédiatement en arrière si quelque chose semble incorrect.",
+      "restoreSettingsHelp": "Restaurez une sauvegarde JSON complète. Le planner capture d’abord une nouvelle copie de sécurité puis remplace les préférences enregistrées et les données de session avec le fichier sélectionné, ce qui vous permet de revenir immédiatement en arrière si quelque chose semble incorrect.",
       "restoreRehearsalButton": "Simulation de restauration",
       "restoreRehearsalButtonHelp": "Testez une sauvegarde ou un lot de projet dans un espace temporaire avant de restaurer vos données actives.",
       "restoreRehearsalHeading": "Simulation de restauration",
