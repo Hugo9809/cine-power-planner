@@ -878,7 +878,7 @@
       "backupSettings": "Backup",
       "backupSettingsHelp": "Download a full JSON backup containing every project, device edit, preference, auto-gear rule, queued backup vault entry, and runtime log stored on this device. Keep multiple copies in your offline archive.",
       "restoreSettings": "Restore",
-      "restoreSettingsHelp": "Restore a full JSON backup. The planner captures a fresh safety copy first, then applies the selected file so you can roll back immediately if anything looks wrong.",
+      "restoreSettingsHelp": "Restore a full JSON backup. The planner captures a fresh safety copy first, then replaces stored preferences and session data with the selected file so you can roll back immediately if anything looks wrong.",
       "restoreRehearsalButton": "Restore rehearsal",
       "restoreRehearsalButtonHelp": "Test a backup or project bundle in a disposable sandbox before you restore your live data.",
       "restoreRehearsalHeading": "Restore rehearsal",

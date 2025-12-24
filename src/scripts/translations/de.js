@@ -1578,7 +1578,7 @@
       "backupSettings": "Sichern",
       "backupSettingsHelp": "Lade ein vollständiges JSON-Backup mit allen Projekten, Geräteanpassungen, Einstellungen, automatischen Regeln, Einträgen im Sicherungstresor und Laufzeitprotokollen dieses Geräts herunter. Bewahre mehrere Kopien in deinem Offline-Archiv auf.",
       "restoreSettings": "Wiederherstellen",
-      "restoreSettingsHelp": "Stelle ein vollständiges JSON-Backup wieder her. Der Planner erstellt zuerst eine neue Sicherheitskopie und wendet dann die ausgewählte Datei an, sodass du sofort zurückrollen kannst, falls etwas nicht stimmt.",
+      "restoreSettingsHelp": "Stelle ein vollständiges JSON-Backup wieder her. Der Planner erstellt zuerst eine neue Sicherheitskopie und ersetzt dann die gespeicherten Einstellungen und Sitzungsdaten mit der ausgewählten Datei, sodass du sofort zurückrollen kannst, falls etwas nicht stimmt.",
       "restoreRehearsalButton": "Wiederherstellungsprobe",
       "restoreRehearsalButtonHelp": "Teste eine Sicherung oder ein Projektpaket in einer Wegwerf-Sandbox, bevor du deine Live-Daten zurückspielst.",
       "restoreRehearsalHeading": "Wiederherstellungsprobe",

@@ -1549,7 +1549,7 @@
       "backupSettings": "Copia de seguridad",
       "backupSettingsHelp": "Descarga una copia de seguridad JSON completa con todos los proyectos, ediciones de dispositivos, preferencias, reglas automáticas, entradas en la bóveda local y registros de ejecución almacenados en este dispositivo. Conserva varias copias en tu archivo sin conexión.",
       "restoreSettings": "Restaurar",
-      "restoreSettingsHelp": "Restaura una copia de seguridad JSON completa. El planificador captura primero una nueva copia de seguridad y después aplica el archivo seleccionado para que puedas revertirlo de inmediato si algo parece incorrecto.",
+      "restoreSettingsHelp": "Restaura una copia de seguridad JSON completa. El planificador captura primero una nueva copia de seguridad y después reemplaza las preferencias guardadas y los datos de sesión con el archivo seleccionado para que puedas revertirlo de inmediato si algo parece incorrecto.",
       "restoreRehearsalButton": "Ensayo de restauración",
       "restoreRehearsalButtonHelp": "Prueba una copia de seguridad o un paquete de proyecto en una sandbox desechable antes de restaurar tus datos activos.",
       "restoreRehearsalHeading": "Ensayo de restauración",

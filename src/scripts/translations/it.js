@@ -1572,7 +1572,7 @@
       "backupSettings": "Backup",
       "backupSettingsHelp": "Scarica un backup JSON completo con tutti i progetti, le modifiche ai dispositivi, le preferenze, le regole automatiche, le voci del vault locale e i log runtime presenti su questo dispositivo. Conservane copie multiple nel tuo archivio offline.",
       "restoreSettings": "Ripristina",
-      "restoreSettingsHelp": "Ripristina un backup JSON completo. Il planner cattura prima una nuova copia di sicurezza, quindi applica il file selezionato così puoi tornare indietro subito se qualcosa non va.",
+      "restoreSettingsHelp": "Ripristina un backup JSON completo. Il planner cattura prima una nuova copia di sicurezza, quindi sostituisce le preferenze salvate e i dati di sessione con il file selezionato così puoi tornare indietro subito se qualcosa non va.",
       "restoreRehearsalButton": "Prova di ripristino",
       "restoreRehearsalButtonHelp": "Metti alla prova un backup o un pacchetto progetto in una sandbox temporanea prima di ripristinare i dati attivi.",
       "restoreRehearsalHeading": "Prova di ripristino",
