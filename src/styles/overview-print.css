@@ -552,6 +552,10 @@ body.dark-mode #overviewDialogContent .requirement-box {
   grid-column: span 3;
 }
 
+#overviewDialogContent .requirements-grid .requirement-box[data-field="filter"] {
+  display: none;
+}
+
 #overviewDialogContent .project-requirements-section,
 #overviewDialogContent .requirements-grid,
 #overviewDialogContent .requirements-grid .requirement-box {
