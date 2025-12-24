@@ -4,8 +4,8 @@ This guide is the primary entry point for data-safety practices in Cine Power
 Planner. It describes the end-to-end lifecycle from manual saves through
 promotion, with explicit offline steps and evidence capture. For detailed
 interface instructions, schemas and troubleshooting, cross-reference the
-[Save, Share, Import, Backup & Restore Reference](../save-share-restore-reference.md)
-and the [Backup Rotation Guide](../backup-rotation-guide.md).
+[Save, Share, Import, Backup & Restore Reference](save-share-restore-reference.md)
+and the [Backup Rotation Guide](../ops/backup-rotation-guide.md).
 
 ## Lifecycle overview (offline-first)
 
@@ -17,7 +17,7 @@ and the [Backup Rotation Guide](../backup-rotation-guide.md).
 6. **Promotion**
 
 Every step below assumes offline operation is possible at any time. Use the
-[Operations Checklist](../operations-checklist.md) to rehearse the flow on each
+[Operations Checklist](../ops/operations-checklist.md) to rehearse the flow on each
 workstation before crews depend on it in the field.
 
 ## Step-by-step lifecycle
@@ -36,7 +36,7 @@ workstation before crews depend on it in the field.
 
 **Reference**
 - Detailed save behaviors and schema notes live in
-  [Save, Share, Import, Backup & Restore Reference](../save-share-restore-reference.md).
+  [Save, Share, Import, Backup & Restore Reference](save-share-restore-reference.md).
 
 ### 2) Autosave
 
@@ -53,7 +53,7 @@ workstation before crews depend on it in the field.
 
 **Reference**
 - Autosave cadence and safeguards are detailed in
-  [Save, Share, Import, Backup & Restore Reference](../save-share-restore-reference.md).
+  [Save, Share, Import, Backup & Restore Reference](save-share-restore-reference.md).
 
 ### 3) Backup vault
 
@@ -69,7 +69,7 @@ workstation before crews depend on it in the field.
 
 **Reference**
 - Vault behavior and safeguards are detailed in
-  [Save, Share, Import, Backup & Restore Reference](../save-share-restore-reference.md).
+  [Save, Share, Import, Backup & Restore Reference](save-share-restore-reference.md).
 
 ### 4) Project export
 
@@ -84,8 +84,8 @@ workstation before crews depend on it in the field.
 
 **Reference**
 - Export formats and fields are documented in
-  [Save, Share, Import, Backup & Restore Reference](../save-share-restore-reference.md).
-- Rotation strategy belongs in the [Backup Rotation Guide](../backup-rotation-guide.md).
+  [Save, Share, Import, Backup & Restore Reference](save-share-restore-reference.md).
+- Rotation strategy belongs in the [Backup Rotation Guide](../ops/backup-rotation-guide.md).
 
 ### 5) Restore rehearsal
 
@@ -102,7 +102,7 @@ workstation before crews depend on it in the field.
 
 **Reference**
 - Restore rehearsal controls and compatibility checks are covered in
-  [Save, Share, Import, Backup & Restore Reference](../save-share-restore-reference.md).
+  [Save, Share, Import, Backup & Restore Reference](save-share-restore-reference.md).
 
 ### 6) Promotion
 
@@ -119,7 +119,7 @@ workstation before crews depend on it in the field.
 
 **Reference**
 - Promotion behavior, backups and rollbacks are described in
-  [Save, Share, Import, Backup & Restore Reference](../save-share-restore-reference.md).
+  [Save, Share, Import, Backup & Restore Reference](save-share-restore-reference.md).
 
 ## Storage limits & profile risks
 
@@ -145,7 +145,7 @@ workstations without losing data:
 
 This path relies on local backups plus restore rehearsal before promotion. For
 rotation policy and retention timing, follow the
-[Backup Rotation Guide](../backup-rotation-guide.md).
+[Backup Rotation Guide](../ops/backup-rotation-guide.md).
 
 ## Evidence capture checklist
 

@@ -2,7 +2,7 @@
 
 This reference details every safeguard that protects user data across save,
 autosave, share, import, backup and restore workflows. Use it alongside the
-[Operations Checklist](operations-checklist.md) when training crews or auditing
+[Operations Checklist](../ops/operations-checklist.md) when training crews or auditing
 workstations.
 
 ## Save & autosave
