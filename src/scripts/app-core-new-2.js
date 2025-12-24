@@ -13422,16 +13422,127 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
     }
 
+    function normalizeGearTableCategoryLabel(rawLabel) {
+      if (typeof rawLabel !== 'string') return '';
+      let label = rawLabel.replace(/\s+/g, ' ').trim();
+      if (label.endsWith('+')) {
+        label = label.substring(0, label.length - 1).trim();
+      }
+      return label;
+    }
+
+    function resolveGearTableCategoryLabel(group) {
+      if (!group) return '';
+      let label = '';
+      if (group.dataset && typeof group.dataset.gearTableCategory === 'string') {
+        label = group.dataset.gearTableCategory;
+      }
+      if (!label) {
+        label = group.getAttribute('data-gear-table-category') || '';
+      }
+      const headingCell = group.querySelector('.category-row td');
+      if (headingCell) {
+        const labelNode = headingCell.querySelector('.gear-category-label');
+        if (labelNode && labelNode.textContent) {
+          label = labelNode.textContent;
+        } else {
+          const dataLabel = headingCell.getAttribute('data-gear-category-label');
+          if (dataLabel) {
+            label = dataLabel;
+          } else if (headingCell.textContent) {
+            label = headingCell.textContent;
+          }
+        }
+      }
+      return normalizeGearTableCategoryLabel(label);
+    }
+
+    function syncGearTableGroupCustomMeta(group, label, key) {
+      if (!group) return;
+      const normalizedLabel = normalizeGearTableCategoryLabel(label);
+      const normalizedKey = typeof key === 'string' ? key.trim() : '';
+      if (normalizedKey) {
+        group.setAttribute('data-gear-custom-key', normalizedKey);
+      }
+      group.querySelectorAll('[data-gear-custom-category]').forEach(node => {
+        if (normalizedLabel) {
+          node.setAttribute('data-gear-custom-category', normalizedLabel);
+        }
+        if (normalizedKey) {
+          node.setAttribute('data-gear-custom-key', normalizedKey);
+          if (node.getAttribute('data-gear-custom-list') !== null) {
+            node.setAttribute('data-gear-custom-list', normalizedKey);
+          }
+          if (node.getAttribute('data-gear-custom-add') !== null) {
+            node.setAttribute('data-gear-custom-add', normalizedKey);
+          }
+          if (node.getAttribute('data-gear-custom-suggestions') !== null) {
+            node.setAttribute('data-gear-custom-suggestions', normalizedKey);
+          }
+        }
+      });
+    }
+
+    function syncGearTableCategoryLabel(group, label) {
+      if (!group || !label) return;
+      const normalizedLabel = normalizeGearTableCategoryLabel(label);
+      if (!normalizedLabel) return;
+      group.setAttribute('data-gear-table-category', normalizedLabel);
+      if (group.dataset) {
+        group.dataset.gearTableCategory = normalizedLabel;
+      }
+      const headingCell = group.querySelector('.category-row td');
+      if (!headingCell) return;
+      headingCell.setAttribute('data-gear-category-label', normalizedLabel);
+      const labelNode = headingCell.querySelector('.gear-category-label');
+      if (labelNode) {
+        if (labelNode.textContent.trim() !== normalizedLabel) {
+          labelNode.textContent = normalizedLabel;
+        }
+      } else if (headingCell.textContent.trim() !== normalizedLabel) {
+        headingCell.textContent = normalizedLabel;
+      }
+    }
+
+    function mergeDuplicateGearTableCategories(table) {
+      if (!table) return;
+      const groups = Array.from(table.querySelectorAll('tbody.category-group'));
+      const seen = new Map();
+      groups.forEach(group => {
+        const label = resolveGearTableCategoryLabel(group);
+        if (!label) return;
+        const key = label.toLowerCase();
+        const existing = seen.get(key);
+        if (!existing) {
+          seen.set(key, group);
+          syncGearTableCategoryLabel(group, label);
+          return;
+        }
+        const existingKey = existing.getAttribute('data-gear-custom-key') || '';
+        const incomingKey = group.getAttribute('data-gear-custom-key') || '';
+        const resolvedKey = existingKey || incomingKey;
+        if (resolvedKey && existingKey !== resolvedKey) {
+          existing.setAttribute('data-gear-custom-key', resolvedKey);
+        }
+        const rows = Array.from(group.querySelectorAll('tr'));
+        rows.forEach(row => {
+          if (row.classList.contains('category-row')) return;
+          existing.appendChild(row);
+        });
+        syncGearTableGroupCustomMeta(existing, label, resolvedKey);
+        group.remove();
+      });
+    }
+
     function annotateGearTableCategoryGroups(table) {
       if (!table) return;
       const groups = table.querySelectorAll('tbody.category-group');
       groups.forEach(group => {
-        const headingCell = group.querySelector('.category-row td');
-        if (!headingCell) return;
-        const label = headingCell.textContent ? headingCell.textContent.trim() : '';
+        const label = resolveGearTableCategoryLabel(group);
         if (!label) return;
-        if (group.getAttribute('data-gear-table-category') === label) return;
-        group.setAttribute('data-gear-table-category', label);
+        syncGearTableCategoryLabel(group, label);
+        const categoryKey = group.getAttribute('data-gear-custom-key') || '';
+        syncGearTableGroupCustomMeta(group, label, categoryKey);
       });
     }
 
@@ -13482,6 +13593,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (group.rows.length) table.appendChild(group);
       });
       annotateGearTableCategoryGroups(table);
+      mergeDuplicateGearTableCategories(table);
     }
 
     let overviewTitleCandidatesCache = null;
@@ -14082,6 +14194,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (gearListOutput) {
         if (safeGearHtml) {
           gearListOutput.innerHTML = safeGearHtml;
+          const gearTable = gearListOutput.querySelector('.gear-table')
+            || gearListOutput.querySelector('table');
+          if (gearTable) {
+            mergeDuplicateGearTableCategories(gearTable);
+          }
           if (typeof ensureGearListCustomControls === 'function') {
             ensureGearListCustomControls(gearListOutput);
           }
