@@ -930,9 +930,9 @@ repeatable verification loop:
   catch media degradation before it causes data loss.
 
 
-## Gear Lists & Reporting
+## Kit Lists & Reporting
 
-- Click **Generate Gear List and Project Requirements** to expand selections and project requirements into
+- Click **Generate Kit List and Production Requirements** to expand selections and production requirements into
   categorized packing tables. Lists refresh automatically when data changes.
 - Entries are grouped by category with duplicates merged. Scenario selections add
   matching rigging, weather protection and specialty accessories so the printed
@@ -949,7 +949,7 @@ repeatable verification loop:
   calculator counts and required hot-swap hardware.
 - Crew details, monitoring configurations, video distribution preferences and
   custom notes appear in exports so departments stay aligned.
-- The Project Requirements dialog captures production company information with
+- The Production Requirements dialog captures production company information with
   separate fields for street, address line 2, city, region, postal code and
   country. Populate whichever fields you have—everything stays optional—and the
   planner will preserve structured values in saves, backups, imports and
@@ -957,8 +957,8 @@ repeatable verification loop:
 - Arrow keys (including Home and End) move focus between the saved Project
   Requirements cards so crews can review every note without leaving the
   keyboard.
-- Gear lists save with the project, appear in printable overviews, live inside
-  shareable project files and can be removed with **Delete Gear List** if you
+- Kit lists save with the project, appear in printable overviews, live inside
+  shareable project files and can be removed with **Delete Kit List** if you
   want a fresh start.
 
 
