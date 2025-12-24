@@ -55,8 +55,8 @@ describe('service worker asset manifest', () => {
     // Ensure essential documentation files remain cached for offline safety checks.
     expect(manifestAssets).toEqual(
       expect.arrayContaining([
-        './docs/offline-readiness.md',
-        './docs/save-share-restore-reference.md',
+        './docs/ops/offline-readiness.md',
+        './docs/user/save-share-restore-reference.md',
       ]),
     );
     expect(manifestAssets).toEqual(

@@ -59,7 +59,7 @@ fails when they drift. If it reports differences, regenerate the manifest with
 - Screenshot of service worker diagnostics (`navigator.serviceWorker` state).
 - Auto-backup ledger export showing offline run.
 - Checksums for exported backups/bundles before and after cache reset.
-- Notes recorded in `docs/verification-log-template.md`.
+- Notes recorded in `docs/ops/verification-log-template.md`.
 
 ## Follow-up
 

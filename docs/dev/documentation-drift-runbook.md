@@ -28,7 +28,7 @@ whenever QA spots mismatched wording, outdated screenshots or missing locales.
      the loader in `src/scripts/translations.js` to the docs in question.
    - Cross-check help topics from `src/scripts/modules/help.js` so in-app copy
      mirrors the documentation even when crews stay completely offline.
-   - Update `docs/schema-inventory.md` if persistence shapes changed.
+   - Update `docs/dev/schema-inventory.md` if persistence shapes changed.
 2. **Doc updates**
    - Revise the affected markdown files, README translations and help overlay
      topics.

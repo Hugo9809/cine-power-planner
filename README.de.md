@@ -1,19 +1,70 @@
 # Cine Power Planner
 
-<img src="src/icons/app-icon.png" alt="Cine Power Planner icon" width="200">
+<img src="src/icons/app-icon.png" alt="Cine Power Planner Symbol" width="160">
 
-Cine Power Planner ist eine eigenständige Web-App zum Erstellen, Prüfen und Teilen professioneller Kamera-Strompläne, die dein Gerät niemals verlassen. Plane V‑Mount-, B‑Mount- oder Gold-Mount-Rigs, bewerte Laufzeiten, erfasse Projektanforderungen und exportiere teilbare Pakete – komplett im Browser, sogar offline. Alle Abhängigkeiten liegen in diesem Repository, damit dieselbe Erfahrung auf der Bühne, im Feld oder im Archivlaufwerk funktioniert, ohne nach Hause zu telefonieren.
+Cine Power Planner ist eine eigenständige Web-App, mit der professionelle
+Kamera-Strompläne erstellt, geprüft und geteilt werden, ohne dass Daten das
+lokale Gerät verlassen. Plane V‑Mount-, B‑Mount- oder Gold‑Mount-Rigs, modelliere
+Laufzeit-Erwartungen, erfasse Projektanforderungen und exportiere teilbare
+Bundles – vollständig im Browser und auch offline. Alle Abhängigkeiten liegen
+in diesem Repository, sodass dieselbe Erfahrung auf Set-Workstations,
+Feld-Laptops oder luftgetrennten Archiven funktioniert.
 
-## Hauptfunktionen
+## Datenschutzversprechen
 
-- **Gerätespezifische Stromdatenbank.** Greife auf gebündelte Leistungswerte für Kameras, Monitore, Sender, Lichter und Zubehör zu oder erweitere den lokalen Katalog um eigene Einträge, damit jedes Projekt mit verifizierten Daten startet.
-- **Laufzeit- und Akkuplanung.** Kombiniere Kapazitäten, Spannungsfamilien und Entladeverhalten, um abzuschätzen, wie lange jedes Rig durchhält, bevor Crews Akkus tauschen. Laufzeitfeedback hält die Erwartung während Vorbereitung und Proben sichtbar.
-- **Individuelle Rig-Konfigurationen.** Kombiniere Kameras, Zubehör, Crew-Anforderungen und gespeicherte Szenarien, um exakt die Builds abzubilden, die on set laufen. Exportiere Bundles oder Backups jederzeit, ohne dass Daten verloren gehen.
-- **Sicherheitsübungen & Prüfnachweise.** Geführte Drills, manuell exportierte Diff-Protokolle aus **Versionen vergleichen** und Verifizierungspakete zeigen, dass Speichern, Teilen, Import, Backup und Restore jede Nutzerinformation schützen – selbst komplett ohne Internet.
-- **Kompatibilitätszusammenfassungen beim Restore.** Jeder Restore führt eine Kompatibilitätsprüfung aus, die fehlende Bereiche und den Dateinamen des Sicherheits-Backups vor dem Restore auflistet, damit Teams Änderungen prüfen können, bevor Daten wieder live gehen.
-- **Konsequenter Offline-Betrieb.** Alle Icons, Fonts, Uicons und Hilfsskripte reisen mit dem Repository. Autosave, Backup, Restore, Teilen und Hilfe laufen vollständig lokal, damit Teams auch im isolierten Betrieb zuverlässig arbeiten.
-- **Lokaler Backup-Tresor bei blockierten Downloads.** Wenn automatische Downloads blockiert sind, legt der Planner Backups in einem lokalen Tresor ab und zeigt eine Banner-Aktion, damit Exporte offline sicher weiterlaufen.
-- **Synonymbewusste globale Suche.** Sicherheitsbegriffe wie „Trash“, „Archiv“, „Schützen“, „Wiederherstellen“ oder „Rollback“ springen direkt zu Lösch-, Speicher-, Backup- und Restore-Werkzeugen, sodass Datensicherung mühelos bleibt.
+- **Nur lokale Speicherung.** Projekte, Gear-Listen, Laufzeit-Feedback,
+  Exporte und Backups bleiben auf deinem Rechner; die App benötigt keine
+  externen Dienste.
+- **Mehrstufige Sicherheitsnetze.** Speichern, Autosave, Teilen, Importieren,
+  Backup und Restore erzeugen immer Sicherheits-Snapshots, damit eine
+  Wiederherstellung möglich ist, bevor Daten übernommen werden.
+- **Offline by Design.** Alle Icons, Fonts, Uicons und Helferskripte liegen in
+  diesem Repo, sodass Offline-Nutzung nie die Bedienbarkeit oder Datensicherheit
+  beeinträchtigt.
+
+## Start hier (Kurzdrill)
+
+1. Öffne `index.html` in einem unterstützten Browser. Belasse die
+   Repository-Struktur, damit alle Offline-Icons, Fonts und Hilfetexte lokal
+   geladen werden.
+2. Starte **Hilfe → Quick start checklist**, um Speichern, Teilen, Importieren,
+   Backup und Restore auf diesem Gerät vollständig zu proben.
+3. Exportiere direkt danach ein Planner-Backup und ein Projekt-Bundle.
+   Bewahre beide auf getrennten Offline-Medien auf, um einen sicheren
+   Wiederherstellungspunkt zu haben.
+4. Trenne die Netzwerkverbindung und lade neu. Stelle sicher, dass Projekte,
+   Hilfe und **Force reload** weiterhin funktionieren, ohne gespeicherte Daten
+   anzutasten.
+
+## Dokumentationsindex
+
+Der kanonische Dokumentationshub befindet sich in
+[`docs/README.md`](docs/README.md). Dort sind alle Offline-Anleitungen nach
+Rollen (Nutzer, Betrieb, Entwicklung) und Workflows gruppiert, damit jede
+Routine nur einmal dokumentiert ist.
+
+- **Nutzer:innen:** starte mit dem
+  [User Guide](docs/user/user-guide.md) und dem
+  [Data Protection Lifecycle Guide](docs/user/data-protection-lifecycle.md).
+- **Operations:** proben mit der
+  [Operations Checklist](docs/ops/operations-checklist.md) und dem
+  [Offline Readiness Runbook](docs/ops/offline-readiness.md).
+- **Entwicklung:** folge dem
+  [Development & Maintenance Guide](docs/dev/development.md) und dem
+  [Documentation Maintenance Guide](docs/dev/documentation-maintenance.md).
+
+## Kernfunktionen
+
+- **Wissensbasis für Leistungsdaten.** Greife auf gebündelte Verbrauchswerte zu
+  oder erweitere den lokalen Katalog mit eigenen Einträgen.
+- **Batterielaufzeiten planen.** Kombiniere Kapazitäten, Spannungen und
+  Laufzeit-Feedback, damit Schätzungen praxisnah bleiben.
+- **Individuelle Rig-Konfigurationen.** Mische Kameras, Zubehör und Crew-
+  Anforderungen und exportiere Bundles oder Backups ohne Datenverlust.
+- **Offline-first Betrieb.** Jedes Asset ist im Repo enthalten, sodass Autosave,
+  Backup, Restore, Sharing und Hilfe vollständig offline funktionieren.
+- **Restore-Kompatibilitätsübersichten.** Jeder Restore listet fehlende
+  Abschnitte und erstellt ein Sicherheits-Backup, bevor Daten übernommen werden.
 
 ## Installation
 
@@ -22,628 +73,30 @@ Cine Power Planner ist eine eigenständige Web-App zum Erstellen, Prüfen und Te
    git clone /path/to/cine-power-planner.git
    cd cine-power-planner
    ```
-   (Wenn du ein Offline-Bundle erhalten hast, entpacke es stattdessen in einen lokalen Ordner.)
-2. Öffne `index.html` direkt in einem unterstützten Browser. Alle Assets laden aus dem Repository, sodass du die Verbindung sofort trennen kannst.
-3. (Optional) Serviere den Ordner über `http://localhost`, um den mitgelieferten Service Worker und die PWA-Installation zu aktivieren. Jeder statische Server funktioniert offline, zum Beispiel:
+   (Wenn du ein Offline-Bundle erhalten hast, entpacke es stattdessen lokal.)
+2. Öffne `index.html` direkt in einem unterstützten Browser. Alle Assets werden
+   lokal geladen, sodass du die Verbindung sofort trennen kannst.
+3. (Optional) Stelle den Ordner über `http://localhost` bereit, um den
+   Service Worker und die PWA-Installation zu aktivieren. Jeder statische
+   Server funktioniert offline:
    ```bash
-   npx http-server
-   # oder
    python -m http.server
+   # oder
+   npm run serve
    ```
-4. Folge dem [Schnellstart](#schnellstart), um Speichern, Teilen, Import, Backups und Wiederherstellungen auf jedem Gerät zu proben, bevor Crews den Planner im Einsatz verwenden.
-
-## Auf einen Blick
-
-- **Offline zuerst planen.** Baue V‑Mount-, B‑Mount- oder Gold-Mount-Setups direkt im Browser. Alle Uicons, Schriften und Hilfsskripte liegen lokal, sodass nichts von externen CDNs oder Netzwerken abhängt. Klone das Repository, zieh das Netzwerkkabel ab und die Oberfläche funktioniert unverändert weiter.
-- **Daten bleiben auf dem Gerät.** Projekte, Laufzeit-Feedback, Favoriten, eigene Geräte, Gerätelisten und Einstellungen bleiben lokal. Backups und teilbare Pakete sind menschenlesbare JSON-Dateien, die du kontrollierst.
-- **Sicherheitsnetze schnell prüfen.** Manuelle Speicherungen, Hintergrund-Auto-Saves und automatische Zeitstempel-Backups greifen ineinander, damit du den Ablauf Speichern → Backup → Bundle → Wiederherstellen als ersten Schritt üben kannst.
-- **Updates bewusst begleiten.** Neue Service-Worker-Versionen aktivieren sich automatisch; der In-App-Button **Neu laden erzwingen** steht bereit, wenn du Caches leeren und einen sauberen Reload absichern möchtest.
-
-## Sicherheitsnetze im Überblick
-
-| Schutzebene | Was sie schützt | So setzt du sie ein | Nachweis fürs Archiv |
-| --- | --- | --- | --- |
-| Manuelle Speicherungen | Aktuellen Projektstand inklusive Geräte, Laufzeitnotizen und Gear-Listen. | **Enter** drücken, **Speichern** wählen oder `Strg+S`/`⌘S` nutzen. | Zeitgestempelte Einträge im Selektor und exportierte Diff-Protokolle aus **Versionen vergleichen**. |
-| Auto-Save- & Auto-Backup-Kadenz | Laufende Schnappschüsse, die Zwischenstände sichern. | Projekt geöffnet lassen – Schnappschüsse laufen etwa alle 50 Änderungen oder 10 Minuten. | `auto-backup-…`-Einträge im Selektor sowie die Zeitleiste unter **Letzte Aktivitäten**. |
-| Vollständiges Planner-Backup | Alle Projekte, Favoriten, Laufzeitnotizen, automatische Gear-Regeln und Einstellungen. | **Einstellungen → Backup & Wiederherstellung → Backup** (oder **Schnelle Schutzmaßnahmen**). | `planner-backup.json`, exportierte Backup-Verlaufsprotokolle und Anhänge des Prüfprotokolls. |
-| Projekt-Bundle-Exporte | Ein einzelnes Projekt plus referenzierte Custom-Geräte (Favoriten bleiben lokal). | **Projekt exportieren** im Selektor. | Dateien `projektname.json` (oder umbenannte `.cpproject`) mit Prüfsummen-Notizen. |
-| Kompatibilitätszusammenfassung beim Restore | Warnt, wenn einem Backup moderne Datenbereiche fehlen, bevor es übernommen wird. | Restore über die Sandbox starten und die Kompatibilitätsmeldung prüfen. | Screenshot der fehlenden Bereiche und des Dateinamens des Sicherheits-Backups. |
-| Lokale Backup-Tresor-Warteschlange | Sichert Auto-Backups, wenn der Browser Downloads blockiert. | Banner-Aktion nutzen, um den lokalen Tresor zu öffnen und JSON-Dateien zu exportieren. | Exportprotokolle aus dem Tresor und archivierte Backup-Dateien. |
-| Wiederherstellungs-Sandbox | Sicherheit, dass Import und Restore korrekt funktionieren, bevor Live-Daten berührt werden. | **Einstellungen → Backup & Wiederherstellung → Restore-Probe**. | Konsolenmitschnitt von `window.__cineRuntimeIntegrity`, Probenotizen und Sandbox-Screenshots. |
-| Dokumentations- & Übersetzungsupdates | Hilfecenter-Themen, lokalisierte READMEs und druckbare Leitfäden. | Dokumentations-Checkliste befolgen, sobald sich Abläufe ändern. | Aktualisierte Docs in `docs/`, lokalisierte `README.*.md` und signierte Prüfpakete. |
-
-## Schnellzugriffe
-
-- **Mit dem Lifecycle-Leitfaden starten.** Nutze den [Data Protection Lifecycle Guide](docs/user/data-protection-lifecycle.md) als primären Einstieg für manuelles Speichern → Auto-Save → Backup-Tresor → Export → Restore-Probe → Promotion, inklusive Offline-Schritten und Nachweisen.
-- **Kompletten Probelauf starten.** Folge der [Schnellstart](#schnellstart)-Übung, um Speichern, Teilen, Importieren, Backup und Wiederherstellung auf jedem Rechner – auch offline – zu verifizieren.
-- **Workflows nachschlagen.** Halte den [Speicher-, Teil- & Import-Drill](#speicher--teil--import-drill) sowie die ausführliche [Referenz zu Speichern, Teilen, Importieren, Backup & Wiederherstellen](docs/save-share-restore-reference.md) für Trainings und Audits bereit.
-- **Offline-Bereitschaft belegen.** Kombiniere das [Offline-Readiness-Runbook](docs/offline-readiness.md) mit der [operativen Checkliste](docs/operations-checklist.md), damit dokumentierte Proben mit App und Assets Schritt halten.
-- **Zwischengespeicherte Bundles re-zertifizieren.** Durchlaufe den [Offline-Cache- & Schutz-Verifizierungsdrill](docs/offline-cache-verification-drill.md), sobald Service-Worker-Assets, Icons oder Persistenzcode geändert wurden, damit gecachte Builds dem Repository entsprechen.
-- **Redundante Rotationen planen.** Nutze den [Backup-Rotationsleitfaden](docs/backup-rotation-guide.md), um tägliche, wöchentliche und Cold-Storage-Kopien abzubilden, damit Auto-Saves, manuelle Exporte und teilbare Bundles immer eine Off-Device-Redundanz haben, bevor Crews aufbrechen.
-- **Stromanschlüsse absichern.** Kombiniere die [Referenz zu Power-Summary-Warnungen](docs/power-summary-warning-reference.md) mit jeder Power-Summary-Übung, um Anschlussgrenzen, redundante Sicherungen sowie die Übereinstimmung von Auto-Speicher und Freigabe zu protokollieren, bevor du Pläne offline weitergibst.
-- **Benutzerdaten bewusst schützen.** Nutze das [Data Protection Playbook](docs/data-protection-playbook.md), um Änderungen zu planen, tägliche Schutzroutinen zu proben, Releases vorzubereiten und auf Vorfälle zu reagieren.
-- **Schnell auf Zwischenfälle reagieren.** Halte das [Emergency Recovery Playbook](docs/emergency-recovery-playbook.md) bei Offline-Bundles bereit, damit Teams Daten stabilisieren, wartende Backups exportieren und Restore-Proben ohne Netzwerk durchführen können.
-- **Dokumentation gezielt aktualisieren.** Arbeite die [Dokumentations-Update-Checkliste](docs/documentation-update-checklist.md) und die [Dokumentationsabdeckungs-Matrix](docs/documentation-coverage-matrix.md) durch, damit Hilfethemen, Übersetzungen und Handbücher synchron bleiben.
-- **Verifizierungsproben protokollieren.** Kopple jeden Release oder Audit mit dem [Dokumentations-Verifizierungspaket](docs/documentation-verification-packet.md) und sichere Kopien der [Verifizierungs-Log-Vorlage](docs/verification-log-template.md), damit Nachweise zu allen Schutzproben vorliegen.
-- **Dokumentationsdrift stoppen.** Folge dem neuen [Dokumentations-Drift-Runbook](docs/documentation-drift-runbook.md), um sicherzustellen, dass Hilfethemen, lokalisierte READMEs und Druckhandbücher die identischen Speicher-/Teil-/Import-/Backup-/Restore-Schutzmaßnahmen wie der Runtime-Zustand abbilden, bevor du Offline-Bundles verteilst.
-- **Status-Snapshot erstellen.** Nutze den [Dokumentations-Statusbericht](docs/documentation-status-report-template.md), wenn du Hilfethemen oder Übersetzungen aktualisierst. Er fasst Änderungen, Offline-Belege und Speicherorte von Backups plus Prüfprotokollen zusammen.
-- **Lokalisierung mit Sicherheit erledigen.** Greife auf den [Translation Guide](docs/translation-guide.md) und die sprachspezifischen README-Dateien zurück, wenn neue Sprachen hinzugefügt oder angepasst werden.
-
-## Versionsreferenz
-
-- Der Planner stellt die aktuelle Version unter `window.APP_VERSION`, `window.CPP_APP_VERSION` und `window.cinePowerPlanner.version` bereit, damit Offline-Automatisierungen, Dokumentationsdurchläufe und Service-Worker-Prüfungen Builds ohne Netzwerkzugang bestätigen können.
-
-## Offline-Audit-Werkzeugkasten
-
-Nutze diese gebündelten Leitfäden, wenn du Offline-Tauglichkeit nachweisen oder Datenwege zwischen Rechnern dokumentieren musst:
-
-- **Operations-Checkliste** – Der Ablauf in [`docs/operations-checklist.md`](docs/operations-checklist.md) spiegelt die In-App-Schutzmaßnahmen, damit jeder Speicher-, Teil-, Import-, Backup- und Restore-Weg beobachtet wird, bevor Teams offline gehen.
-- **Offline-Readiness-Runbook** – [`docs/offline-readiness.md`](docs/offline-readiness.md) erweitert die Probe um Reisetage, Cache-Priming, redundante Medien und Recovery-Drills, damit Daten auch im luftgetrennten Betrieb geschützt bleiben.
-- **Data Protection Playbook** – [`docs/data-protection-playbook.md`](docs/data-protection-playbook.md) bündelt Entscheidungsbäume für Updates, Notfälle und Kommunikation, damit Benutzerdaten stets Priorität behalten.
-- **Verifizierungs-Log-Vorlage** – [`docs/verification-log-template.md`](docs/verification-log-template.md) hält fest, wer geprobt hat, wann Backups exportiert wurden und wo redundante Kopien liegen. Bewahre die ausgefüllte Vorlage bei den Bundles auf.
-- **Dokumentationsabdeckungs-Matrix** – [`docs/documentation-coverage-matrix.md`](docs/documentation-coverage-matrix.md) prüft, ob Hilfethemen, Übersetzungen, Screenshots und Handbücher den aktuellen Stand widerspiegeln.
-
-## Dokumentations- & Trainingsrhythmus
-
-Hilfethemen, Checklisten und lokalisierte READMEs im Gleichschritt mit dem Runtime-Verhalten zu halten, ist Teil jedes Releases. Sobald sich Abläufe ändern oder neue Schutzmechanismen landen, durchläufst du diesen Zyklus, bevor Builds an Crews gehen:
-
-1. **Änderung kartieren.** Notiere, welche Speicher-, Teil-, Import-, Backup- oder Restore-Flows neue Zustände, Hinweise oder Schutzmaßnahmen erhalten. Aktualisiere die entsprechenden Walkthroughs in [`docs/`](docs), damit Proben das Interface widerspiegeln.
-2. **Mehrsprachige Hinweise auffrischen.** Übertrage Formulierungen in `README.*.md` und lokalisierte Hilfe-Panels, damit Offline-Teams in jeder Sprache identische Anweisungen bekommen.
-3. **Verifizierungspakete erneut ausführen.** Durchlaufe das [Dokumentations-Verifizierungspaket](docs/documentation-verification-packet.md) mit dem aktuellen Build und sichere unterschriebene Logs, die jeden Offline-Flow belegen.
-4. **Aktualisierte Bundles verteilen.** Regeneriere teilbare Trainings-Bundles, damit Crews mit den Assets, Icons und Checklisten aus diesem Repository üben.
-
-Behandle diese Schritte als verpflichtend für jeden Merge, damit die Dokumentation genauso robust bleibt wie der Planner.
-
-## Release- & Dokumentations-Checkliste
-
-Bevor du zusammenführst oder ein Field-Build ausspielst, arbeite diese komprimierte Liste durch, um Daten, Dokumentation und Übersetzungen zu schützen:
-
-1. **Manifest-Wächter ausführen.** Starte `npm run check-consistency`, um Gerätedaten und `service-worker-assets.js` gegen die im Speicher erzeugte Manifestliste zu prüfen. Falls eine Abweichung gemeldet wird, `npm run generate:sw-assets` ausführen, die Datei committen und den Wächter erneut laufen lassen.
-2. **Kritische Workflows proben.** Führe den [Schnellstart](#schnellstart) oder [`docs/operations-checklist.md`](docs/operations-checklist.md) aus, um Speichern, Teilen, Importieren, Backup und Wiederherstellen offline zu verifizieren.
-3. **Schriftliche Hilfen aktualisieren.** Aktualisiere Hilfecenter, lokalisierte README-Dateien und Druckanleitungen. Nutze die [Dokumentationsabdeckungs-Matrix](docs/documentation-coverage-matrix.md), um sicherzustellen, dass keine Sprache fehlt.
-4. **Prüfartefakte sichern.** Fülle das [Dokumentations-Verifizierungspaket](docs/documentation-verification-packet.md) und die [Verifizierungs-Log-Vorlage](docs/verification-log-template.md) mit den neuesten Proben, Export-Hashes und Cache-Screenshots.
-5. **Übersetzungstoggles prüfen.** Wechsel durch alle Sprachen in der App und bestätige, dass neue Strings ohne externe Assets funktionieren.
-6. **Redundante Archive speichern.** Exportiere `planner-backup.json`, aktuelle Projekt-Bundles, automatische Gear-Regel-JSON und ein ZIP des Repos. Lege alles auf mindestens zwei offline Medien mit kurzem Aufbewahrungshinweis ab.
-7. **Service-Worker-Status protokollieren.** Dokumentiere gemeldete Version, Offline-Indikator-Verhalten und Zeitstempel des letzten manuellen **Neu laden erzwingen**, damit Crews wissen, welche Revision aktiv ist.
-
-## Überblick
-
-### Entwickelt für Crews
-
-Der Planner entstand für 1st ACs, Data Wrangler und DPs. Sobald du Bodies, Batterieteller, Funkstrecken und Zubehör ergänzt, aktualisieren sich Gesamtverbrauch und Laufzeiten sofort. Sicherheitswarnungen markieren überlastete Akkus, und Gerätelisten bleiben an die Projektkontexte gebunden, damit beim Handover nichts fehlt.
-
-### Gemacht für Reisen
-
-Öffne `index.html` direkt von der Festplatte oder hoste das Repository intern – ganz ohne Build-Prozess, Server oder Accounts. Ein Service Worker hält die App offline verfügbar, merkt sich jede Einstellung und aktiviert neue Versionen automatisch, während der optionale Button **Neu laden erzwingen** bereitsteht, falls du Caches auf eigenen Wunsch leeren möchtest. Speichern, Teilen, Importieren, Backup und Wiederherstellen laufen immer lokal, damit Benutzerdaten geschützt bleiben.
-
-### Warum Offline-first zählt
-
-Filmsets haben selten garantierte Konnektivität, Studios verlangen häufig luftgetrennte Planungstools. Cine Power Planner liefert identische Fähigkeiten unabhängig vom Netzwerkstatus: Alle Assets sind gebündelt, jeder Workflow läuft lokal und jede Sicherung erzeugt Artefakte für dein Archiv. Diese Abläufe vor dem Dreh zu prüfen gehört zur Checkliste, damit im Einsatz nichts an externe Dienste gebunden ist.
-
-### Funktionssäulen
-
-- **Mit Vertrauen planen.** Berechne Stromaufnahme bei 14,4 V/12 V (und 33,6 V/21,6 V für B‑Mount), vergleiche kompatible Akkus und visualisiere Laufzeiteffekte über ein gewichtetes Feedback-Dashboard.
-- **Produktionsbereit bleiben.** Projekte erfassen Geräte, Anforderungen, Szenarien, Crewdetails und Gerätelisten; Auto-Backups, Bundles und der optionale Button **Neu laden erzwingen** halten Daten aktuell, ohne Stabilität zu opfern.
-- **Arbeiten wie gewohnt.** Spracherkennung, Dark-, Pink- und High-Contrast-Themes, Typografie-Regler, Custom-Logo und Hover-Hilfe machen die Oberfläche on set und in der Vorbereitung zugänglich. Die Hover-Hilfe ergänzt nun automatisch kontextbezogene Beschreibungen für jede Schaltfläche, jedes Feld und jedes Menü, sodass sich jedes Bedienelement auch offline selbst erklärt.
-
-## Grundprinzipien
-
-- **Immer offlinefähig.** Die komplette Anwendung inklusive Icons, Legal-Seiten und Tools liegt im Repository. Öffne `index.html` lokal oder über ein privates Intranet; der Service Worker hält Assets synchron, ohne Online-Zwang.
-- **Keine versteckten Datenpfade.** Speichern, Bundles, Importe, Backups und Wiederherstellungen passieren vollständig im Browser. Es verlässt nichts das Gerät, außer du exportierst es bewusst.
-- **Redundante Sicherheitsnetze.** Manuelle Saves, Hintergrund-Auto-Saves, periodische Auto-Backups, erzwungene Pre-Restore-Backups und menschenlesbare Exporte sorgen dafür, dass Benutzerdaten nicht verschwinden.
-- **Vorhersehbare Updates.** Neue Service-Worker-Versionen aktivieren sich automatisch, zwischengespeicherte Varianten bleiben verfügbar. Mit **Neu laden erzwingen** kannst du Caches bewusst leeren, ohne gespeicherte Arbeit anzutasten.
-- **Konstante Darstellung.** Gebündelte Uicons, OpenMoji und Typografie-Dateien garantieren identische Optik – egal ob im Studio oder im Feld ohne Netz.
-- **Jede Änderung absichern.** Vor jeder Wiederherstellung legt der Planner ein erzwungenes Backup an und bewahrt frühere Revisionen, damit kein Import deine Arbeit überschreibt. Prüfprotokolle und Checksum-Notizen reisen mit jedem Archiv, um die Integrität auch offline nachzuweisen.
-
-## Versprechen zur Datenbewahrung
-
-Der Schutz der Crew-Workflows und ihrer Daten hat oberste Priorität. Wenn du mit Cine Power Planner planst, profitierst du von denselben Schutzschichten, die wir vor jedem Release proben:
-
-- **Nur verifizierte Schutzmaßnahmen.** Speichern-/Teilen-/Import-/Backup-/Restore-Workflows werden zusammen mit dem [Documentation Verification Packet](docs/documentation-verification-packet.md) dokumentiert, damit Field-Crews jede Sicherung prüfen können, bevor sie offline reisen.
-- **Hilfe & Übersetzungen im Gleichschritt.** Die [Dokumentations-Update-Checkliste](docs/documentation-update-checklist.md) und der [Translation Guide](docs/translation-guide.md) sorgen dafür, dass neue Verhaltensweisen in Hilfethemen, lokalisierten READMEs und gedruckten Leitfäden landen, bevor Bundles ausgeliefert werden.
-- **Backups an jeder Station.** Der [Backup Rotation Guide](docs/backup-rotation-guide.md) und die [Operations Checklist](docs/operations-checklist.md) beschreiben, wie redundante Archive, Probenachweise und Prüfprotokolle gestaffelt werden, damit kein Projekt ohne Wiederherstellungspfad bleibt.
-- **Auditierbare Belege.** Wir erfassen Konsolenexporte von `window.__cineRuntimeIntegrity`, unterschriebene Proben-Logs und Bundle-Hashes, damit Compliance-Teams und Crews den Datenschutz ohne Aufwand auditieren können.
-
-Wenn eine Änderung Speichern, Teilen, Importieren, Backups, Wiederherstellungen oder die Dokumentation betrifft, bleibt sie blockierend, bis diese Schutzmaßnahmen durchlaufen und protokolliert sind. Diese Disziplin bewahrt Benutzerdaten selbst auf luftgetrennten Systemen.
-
-## Inhaltsverzeichnis
-
-- [Hauptfunktionen](#hauptfunktionen)
-- [Installation](#installation)
-- [Auf einen Blick](#auf-einen-blick)
-- [Sicherheitsnetze im Überblick](#sicherheitsnetze-im-überblick)
-- [Schnellzugriffe](#schnellzugriffe)
-- [Offline-Audit-Werkzeugkasten](#offline-audit-werkzeugkasten)
-- [Dokumentations- & Trainingsrhythmus](#dokumentations--trainingsrhythmus)
-- [Release- & Dokumentations-Checkliste](#release--dokumentations-checkliste)
-- [Überblick](#überblick)
-- [Grundprinzipien](#grundprinzipien)
-- [Versprechen zur Datenbewahrung](#versprechen-zur-datenbewahrung)
-- [Übersetzungen](#übersetzungen)
-- [Was ist neu](#was-ist-neu)
-- [Schnellstart](#schnellstart)
-- [Systemanforderungen & Browser-Support](#systemanforderungen--browser-support)
-- [Speicher-, Teil- & Import-Drill](#speicher--teil--import-drill)
-- [Täglicher Ablauf](#täglicher-ablauf)
-- [Speichern & Projektverwaltung](#speichern--projektverwaltung)
-- [Teilen & Importe](#teilen--importe)
-- [Projekt- & Backup-Dateiformate](#projekt--backup-dateiformate)
-- [Interface-Rundgang](#interface-rundgang)
-- [Anpassung & Barrierefreiheit](#anpassung--barrierefreiheit)
-- [Datensicherheit & Offline-Betrieb](#datensicherheit--offline-betrieb)
-- [Daten- & Speicherübersicht](#daten--speicherübersicht)
-- [Speicherbudget & Wartung](#speicherbudget--wartung)
-- [Backup & Wiederherstellung](#backup--wiederherstellung)
-- [Datenintegritäts-Drills](#datenintegritäts-drills)
-- [Operative Checklisten](#operative-checklisten)
-- [Notfall-Wiederherstellungsplan](#notfall-wiederherstellungsplan)
-- [Gerätelisten & Reporting](#gerätelisten--reporting)
-- [Automatische Gear-Regeln](#automatische-gear-regeln)
-- [Runtime-Intelligenz](#runtime-intelligenz)
-- [Tastenkürzel](#tastenkürzel)
-- [Lokalisierung](#lokalisierung)
-- [Als App installieren](#als-app-installieren)
-- [Gerätedaten-Workflow](#gerätedaten-workflow)
-- [Entwicklung](#entwicklung)
-- [Fehlerbehebung](#fehlerbehebung)
-- [Feedback & Support](#feedback--support)
-- [Mitwirken](#mitwirken)
-- [Danksagungen](#danksagungen)
-- [Lizenz](#lizenz)
 
 ## Übersetzungen
 
-Die Dokumentation steht in mehreren Sprachen bereit. Die App erkennt beim ersten Start automatisch die Browsersprache, und du kannst jederzeit über das Sprachmenü oben rechts oder über **Einstellungen** wechseln.
-
-- 🇬🇧 [English](README.en.md)
-- 🇩🇪 [Deutsch](README.de.md)
-- 🇪🇸 [Español](README.es.md)
-- 🇮🇹 [Italiano](README.it.md)
-- 🇫🇷 [Français](README.fr.md)
-
-Folge `docs/translation-guide.md` für Details zur Lokalisierung.
-
-## Was ist neu
-
-- **Erweiterte Objektivdatenbank** – Sirui 1.33x/1.6x Anamorphics, NiSi Athena Cine Primes, Kinefinity Mavo Primes, Spirit Lab Pure Primes, Ancient Optics & Petzval Rehousings und Zero Optik Canon Dream Primes (Rehoused) zum Offline-Katalog hinzugefügt.
-- **Überarbeitete Druckvorschau** – ein neues, Seitenleisten-basiertes Druckerlebnis mit Echtzeit-Vorschau, Layouteinstellungen und PDF-Exportsteuerungen direkt im Planner, damit Berichte präzise angepasst werden können.
-- **Erweiterte Befehlspalette** – drücke `Strg+K` (oder `⌘K`), um auf das Befehlszentrum für schnelle Aktionen wie Projekterstellung, Dunkelmodus-Umschaltung, Hinzufügen von Geräten oder Springen zu bestimmten Funktionen zuzugreifen.
-- **Interaktive Kontaktfotos** – ziehe Bilddateien per Drag & Drop direkt auf Kontaktkarten, um Avatare sofort zu aktualisieren, inkl. neuer Werkzeuge zum Zuschneiden und zur Vorschau.
-- **Pink-Modus Refactor** – genieße flüssigere Animationen und einen robusteren „Icon-Regen“ bei Verwendung des Pink-Designs, jetzt mit verbesserter Leistung und Zuverlässigkeit.
-- **Backup-Vergleiche** – Wähle manuelle Saves oder Auto-Backups, prüfe Diffs, ergänze Vorfallnotizen und exportiere Protokolle, bevor du Änderungen zurückrollst oder Daten an die Post übergibst.
-- **Restore-Proben** – Lade komplette Backups oder Projekt-Bundles in eine isolierte Sandbox, um Inhalte gegen Live-Daten zu checken, ohne Produktionsprofile anzurühren.
-- **Diagnoseprotokoll-Steuerung** – Öffne **Einstellungen → Daten & Speicher**, sieh dir das laufende Log direkt im Planner an, filtere nach Stufe oder Namespace und passe Aufbewahrung, Konsolenspiegelung, die standardmäßig aktive Konsolenerfassung sowie Fehlererfassung ohne externe Tools an.
-- **Backup-Verlaufsprotokoll** – Jeder Vollbackup-Download speichert Zeitstempel und Dateinamen lokal. In **Einstellungen → Daten & Speicher** kannst du die Zählung prüfen oder das Protokoll zusammen mit deinen Archiven exportieren, um Offline-Aufbewahrung nachzuweisen.
-- **Intelligente Stativ-Präferenzen** – automatische Ausrüstungsregeln berücksichtigen jetzt spezifische Stativ- und Kopf-Präferenzen, damit Ihre bevorzugte Hardware basierend auf Kamera-Gewicht und Szenario vorgeschlagen wird.
-- **Automatische Gear-Regeln** – Definiere szenariobasierte Ergänzungen oder Entfernungen mit Import/Export-Kontrollen und zeitgesteuerten Backups.
-- **Regelabdeckungs-Dashboard** – Fasse Abdeckungsgrad, doppelte Auslöser, Netto-Zu-/Abgänge, gestapelte Szenarien, Konflikte und ungedeckte Anforderungen direkt in den automatischen Gear-Regeln zusammen, setze Fokus-Filter offline und gib dieselben Einblicke in Exporten und Druckansichten weiter.
-- **Daten- & Speicher-Dashboard** – Prüfe gespeicherte Projekte, Gerätelisten, eigene Geräte, Favoriten und Laufzeitfeedback direkt in den Einstellungen und schätze die Backup-Größe.
-- **Runtime-Schutzprüfung** – Das Runtime-Bundle protokolliert Prüfergebnisse unter `window.__cineRuntimeIntegrity` und stellt `window.cineRuntime.verifyCriticalFlows()` bereit, damit Teams Speicher-, Teil- und Restore-Pfade sowie die Feedback-Speicherung vor der Abreise bestätigen können.
-- **Autosave-Status-Overlay** – Spiegelt die letzte Autosave-Notiz im Einstellungsdialog, damit Teams Hintergrundaktivitäten während Recovery-Drills sehen.
-- **Monitoring-sensitiver Gear-Editor** – Blendet zusätzliche Monitor- und Videoverteilungsoptionen nur ein, wenn Szenarien sie verlangen.
-- **Akzent- & Typografie-Regler** – Passe Akzentfarbe, Schriftgröße und Schriftart an; Dark-, Pink- und High-Contrast-Themes bleiben zwischen Besuchen erhalten.
-- **Global-Search-Kürzel** – `/` oder `Strg+K` (`⌘K` auf macOS) fokussiert sofort die Funktionssuche – auch bei eingeklapptem Menü.
-- **Neu laden erzwingen** – Aktualisiere Service-Worker-Assets ohne gespeicherte Projekte oder Geräte zu löschen. Eine robuste Verbindungsprüfung pingt den Server jetzt vor der Bereinigung an, damit Caches bei fehlendem Netzwerk unangetastet bleiben.
-  Gib dem Vorgang bis zu fünf Sekunden Zeit, bevor der manuelle Cache-Lösch-Fallback greift, damit langsamere Rechner den Service Worker sauber abmelden können und Autosaves nicht doppelt ausgelöst werden.
-- **Favoriten anpinnen** – Markiere Einträge mit Sternen, damit Lieblingskameras, Akkus und Zubehör oben bleiben und im Backup landen.
-- **Werkseinstellungen mit Sicherung** – Automatisches Backup vor jedem Zurücksetzen, damit keine Daten verloren gehen.
-
-Weitere Details findest du in den sprachspezifischen READMEs.
-
-## Schnellstart
-
-Führe diese Checkliste beim ersten Setup oder nach Updates aus. Sie beweist, dass Speichern, Teilen, Import, Backup und Wiederherstellen online wie offline identisch funktionieren.
-
-1. Repository klonen oder herunterladen.
-2. `index.html` in einem modernen Browser öffnen.
-3. (Optional) Ordner lokal per HTTP(S) bereitstellen, z. B.:
-   ```bash
-   npx http-server
-   # oder
-   python -m http.server
-   ```
-   So installiert sich der Service Worker, aktiviert neue Versionen automatisch und lässt **Neu laden erzwingen** für manuelles Cache-Leeren verfügbar.
-4. Planner einmal laden, Tab schließen, Netzwerk trennen (oder Flugmodus aktivieren) und `index.html` erneut öffnen. Das Offline-Badge sollte kurz aufleuchten, während gecachte Assets – inklusive lokal gespeicherter Uicons – geladen werden. Erscheint ein Banner mit **„1 Sicherung im lokalen Tresor gespeichert.“** oder **„{count} Sicherungen im lokalen Tresor gespeichert.“** neben der Schaltfläche **Lokalen Sicherungstresor öffnen**, Tresor öffnen, alle wartenden Archive herunterladen und sicherstellen, dass das Banner verschwindet, bevor du offline bleibst.
-5. **Hilfe → Schnellstart-Checkliste** öffnen und das geführte Tutorial starten. Es führt durch Projektanlage, Gerätekonfiguration, Power-Summary-Kontrolle inklusive Schnellübersichts-Checkpoint sowie die neue Offline-Sicherheitsnetz-Übung, die den oberen Indikator und den Autosave-Status hervorhebt, Gear-Listen, Kontaktverwaltung, eigenes Equipment, automatische Regeln sowie Export/Import und Backups. Schritt-Navigator und Fortschrittsleiste lassen dich abgeschlossene Abschnitte ohne Neustart erneut ansehen; pausierst du zwischendurch, erscheint automatisch **Geführtes Tutorial fortsetzen** mit den gespeicherten Zählungen, damit der Fortschritt offline erhalten bleibt. Zusätzlich blendet die Checklisten-Zeile einen Offline-Status mit erledigten Schritten, dem nächsten Abschnitt und einem Zeitstempel ein, der zeigt, wann der letzte Schritt abgeschlossen wurde, bevor du den Rundgang erneut startest.
-   Sobald der Power-Summary-Schritt aktiv ist, gleiche die farbcodierten Warnhinweise mit der [Referenz zu Power-Summary-Warnungen](docs/power-summary-warning-reference.md) ab, protokolliere eventuelle Pin- oder D-Tap-Überlastungen, bestätige redundante Backups und verifiziere, dass der Autosave-Zeitstempel zur Freigabe-/Export-Vorschau passt, bevor du den Abschnitt abhaken kannst.
-6. Erstes Projekt anlegen, **Enter** (oder **Strg+S**/`⌘S`) drücken und im Projektmenü das zeitgestempelte Auto-Backup prüfen, das nach rund 50 protokollierten Änderungen oder spätestens nach zehn Minuten erscheint.
-7. **Einstellungen → Backup & Wiederherstellung → Backup** exportieren und die `planner-backup.json` in einem privaten Profil importieren. So stellst du sicher, dass keine Sicherung auf einem Gerät festsitzt und der erzwungene Pre-Restore-Export funktioniert.
-8. Projekt-Bundle exportieren (`project-name.json`) und auf einem zweiten Gerät/Profil importieren. Das trainiert die komplette Kette Speichern → Teilen → Importieren und stellt sicher, dass Uicons, Fonts und Scripts offline mitreisen.
-9. Verifiziertes Backup und Projekt-Bundle zusammen mit der Repository-Kopie archivieren. Datum, Rechner und Operator protokollieren, damit nachvollziehbar bleibt, wann der Drill erfolgreich war und alle Workflows synchron blieben.
-10. Entwicklerkonsole öffnen und einen Screenshot von `window.__cineRuntimeIntegrity` festhalten (oder `window.cineRuntime.verifyCriticalFlows()` erneut ausführen und das Protokoll speichern). So dokumentierst du, dass die Runtime-Wache die Speicher-/Teilen-/Restore-Wege und die Feedback-Speicherung während der Offline-Probe bestätigt hat.
-
-## Systemanforderungen & Browser-Support
-
-- **Moderne Evergreen-Browser.** Validiert mit aktuellen Chromium-, Firefox- und Safari-Versionen. Service Worker, Zugriff auf `localStorage` (Website-Speicher) und persistenter Speicher müssen aktiv sein.
-- **Offline-freundliche Geräte.** Laptops/Tablets sollten dauerhaften Speicher erlauben. Starte die App einmal online, damit der Service Worker alle Assets cacht, und übe den Offline-Reload vor der Reise.
-- **Ausreichender lokaler Speicher.** Große Produktionen erzeugen viele Projekte, Backups und Gerätelisten. Beobachte den Speicherplatz deines Browserprofils und exportiere regelmäßig auf redundante Medien.
-- **Keine externen Abhängigkeiten.** Alle Icons, Fonts und Hilfsskripte liegen im Repository. Kopiere Ordner wie `animated icons 3/` und lokale Uicons mit, damit Optik und Scripts identisch bleiben.
-
-### Frühere Updates
-## Speicher-, Teil- & Import-Drill
-
-Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Workstations oder größeren Updates durchgeführt werden. Er zeigt, dass Speichern, Teilen, Import, Backup und Restore ohne Netzwerk funktionieren.
-
-1. **Baseline-Save.** Aktuelles Projekt öffnen, manuell speichern und den Zeitstempel merken. Innerhalb von zehn Minuten sollte ein Auto-Backup erscheinen.
-2. **Redundanz-Export.** Planner-Backup und Projekt-Bundle exportieren, ggf. `.cpproject`-Konvention nutzen, auf getrennten Medien sichern.
-3. **Restore-Generalprobe.** In einem privaten Profil oder zweiten Gerät Backup importieren, danach das Bundle. Gerätelisten, Dashboards und Regeln prüfen. Favoriten und andere globale Daten stammen aus dem Planner-Backup – Projekt-Bundles fügen sie nicht hinzu.
-4. **Offline-Verifikation.** Im Testprofil Netzwerk trennen, `index.html` neu laden und prüfen, ob Offline-Indikator, Uicons und Hilfsskripte sauber geladen werden.
-5. **Diff-Log erfassen.** Zurück im Primärprofil **Einstellungen → Backup & Wiederherstellung → Versionen vergleichen** öffnen, den neuesten manuellen Save und das aktuellste Auto-Backup auswählen, die markierten Änderungen prüfen, Kontext in **Vorfallsnotizen** festhalten und das JSON exportieren. Die Datei gemeinsam mit den Drill-Artefakten ablegen, damit Audits die Historie offline nachvollziehen können.
-6. **Archivieren.** Testprofil löschen, Exporte beschriften und in die Produktions-Checkliste aufnehmen.
-7. **Runtime protokollieren.** Im Testprofil die Entwicklerkonsole öffnen, `window.__cineRuntimeIntegrity.ok` auf `true` prüfen und bei Bedarf `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` ausführen. Das Ergebnis zusammen mit den Drill-Notizen archivieren und so belegen, dass auch die Feedback-Speicherung geschützt bleibt.
-
-## Täglicher Ablauf
-
-1. **Projekt laden oder erstellen.** Namen eingeben, **Enter** oder **Speichern** drücken – der aktive Name taucht in Listen und Exporten auf.
-2. **Geräte hinzufügen.** Kameras, Strom und Zubehör aus kategorisierten Dropdowns wählen. Tippen zum Filtern, Favoriten und der Shortcut `/` (`Strg+K`/`⌘K`) beschleunigen die Auswahl.
-3. **Strom & Laufzeit prüfen.** Warnungen beobachten, Akkus vergleichen und das Laufzeit-Dashboard analysieren.
-4. **Anforderungen erfassen.** Crew, Szenarien, Handles, Matteboxen und Monitoring eintragen. Das gespeicherte Benutzerprofil landet automatisch in der Crew-Liste – Rolle oder Kontaktangaben lassen sich projektweise anpassen. Das Raster **Speicher & Medien** zieht CFexpress-, CFast-, SD- und microSD-Familien direkt aus dem Offline-Katalog, selbst wenn die ausgewählte Kamera andere Slots nutzt, damit du Kartenmengen und Notizen ohne Lücken im gespeicherten Paket protokollierst. Fork-Buttons duplizieren Einträge für schnelleres Ausfüllen. **Einstellungen → Automatische Gear-Regeln** ergänzen Szenario-spezifische Anpassungen.
-5. **Plan exportieren.** Geräteliste generieren, Backup oder Projekt-Bundle herunterladen, bevor es ans Set geht. Backups enthalten eigene Geräte, Laufzeitdaten und Favoriten.
-6. **Offline-Bereitschaft bestätigen.** Netzwerk trennen, App neu laden und sicherstellen, dass alles erreichbar bleibt. Bei Abweichungen aus dem letzten Backup wiederherstellen.
-
-## Speichern & Projektverwaltung
-
-- **Manuelle Saves halten Versionen bewusst.** Projektnamen eingeben und **Enter**/**Speichern** drücken. Jede Version bewahrt Geräte, Anforderungen, Listen, Favoriten, Diagramm-Layouts und Laufzeitbeobachtungen.
-- **Auto-Saves schützen Fortschritt.** Während ein Projekt aktiv ist, schreibt die App Änderungen im Hintergrund. `auto-backup-…`-Einträge erscheinen alle zehn Minuten oder nach ungefähr 50 protokollierten Änderungen. Beim Projektwechsel, Import, Export oder vor dem Neuladen legt die App zusätzlich sofort eine neue Sicherung an, auch wenn der Takt noch nicht überschritten ist.
-- **Quick safeguards sichern sofort.** Öffne **Einstellungen → Daten & Speicher → Quick safeguards**, um ohne Tab-Wechsel ein Vollbackup zu laden oder direkt zum Wiederherstellungsbereich zu springen; jeder Lauf erscheint im Dashboard, damit du die JSON sofort ablegen kannst.【F:index.html†L2548-L2570】
-- **Auto-Backups bei Bedarf einblenden.** Über **Einstellungen → Backup & Wiederherstellung → Auto-Backups anzeigen** lassen sich die Zeitstempel im Selector sichtbar machen.
-- **Umbenennen erzeugt Duplikate.** Namen ändern und **Enter** drücken erstellt eine Abzweigung – ideal für Vergleichsversionen.
-- **Projektwechsel ist verlustfrei.** Auswahl im Menü lädt sofort, Scrollposition und unsaved Inputs werden übernommen.
-- **Crew-Kontakte bleiben verfügbar.** Über den Seitenleistenpunkt **Kontakte** pflegst du eine Besetzungsliste mit Rollen,
-    E-Mails, Telefonnummern, Websites und Profilfotos, die sich in jedes Projekt übernehmen lässt. Die Kontakte liegen im selben
-    localStorage-Snapshot wie deine Projekte, werden in manuelle Backups eingeschlossen und lassen sich bei Bedarf offline aus
-    `.vcf`- (vCard-) Dateien zusammenführen. Speichere Crew-Zeilen zurück in die Liste, damit zukünftige Projekte ohne Nachtippen
-    auf dem aktuellen Stand bleiben.【F:index.html†L206-L209】【F:index.html†L7345-L7374】【F:src/scripts/app-core-new-1.js†L13632-L17848】
-- **Eigenes Equipment bleibt synchron.** Öffne den **Eigenes Equipment**-Dialog, um Namen, Mengen, Notizen und Herkunft deiner
-    persönlichen Kits festzuhalten. Die Einträge leben im gleichen Offline-Snapshot wie deine Projekte, greifen in Bedingungen der
-    automatischen Gear-Regeln und reisen in manuellen Backups, Projekt-Bundles sowie Quota-Schutzläufen mit, damit kein privates
-    Equipment aus dem Planer fällt.【F:index.html†L214-L219】【F:index.html†L6596-L6656】【F:src/scripts/modules/features/own-gear.js†L43-L172】【F:docs/save-share-restore-reference.md†L15-L17】
-- **Löschen mit Bestätigung.** Papierkorb-Symbol fragt nach, bevor Einträge entfernt werden.
-
-## Teilen & Importe
-
-- **Projekt-Bundles bleiben leichtgewichtig.** **Projekt exportieren** speichert `project-name.json` mit dem aktiven Projekt plus referenzierten Custom-Geräten (und optional eingeschlossenen Automationsregeln). Favoriten und andere globale Daten bleiben auf dem Ausgangsgerät – kombiniere das Bundle mit einem Planner-Backup, wenn sie mitreisen sollen. Optional zu `.cpproject` umbenennen und über sichere Kanäle teilen.
-- **Automatische Gear-Regeln reisen mit.** Toggle **Automatische Gear-Regeln einschließen** entscheidet, ob Regeln im Bundle landen; beim Import können Teams sie getrennt übernehmen.
-- **Importe überschreiben nichts versehentlich.** Trifft ein Bundle auf ein bestehendes Projekt mit identischem Namen, speichert der Planner die neue Kopie als `projektname-imported`, sodass beide Varianten erhalten bleiben.
-- **Standalone-Regelimporte validieren offline.** Beim Import von `auto-gear-rules-*.json` prüft der Planner Dateityp, Semver und Zeitstempel, bevor Regeln überschrieben werden. Alte/neue Builds lösen Warnungen aus; bei Fehlern wird der vorherige Snapshot automatisch wiederhergestellt.
-- **Restores sind doppelt gepuffert.** Vor jedem Import wird ein Backup des aktuellen Zustands erzwungen. Danach wird das Bundle validiert und oben in der Liste platziert.
-- **Cross-Device bleibt offline.** Kopiere `index.html`, die Verzeichnisse `src/scripts/` und `src/data/` (inklusive `src/data/devices/`) sowie deine Backup- oder Bundle-Dateien auf einen Wechseldatenträger. Starte die App vom Datenträger, importiere das Paket und arbeite weiter ohne Netzwerk.
-- **Exporte prüfen.** JSON vor dem Teilen sichten, um unerwünschte Inhalte auszuschließen. Struktur ist lesbar und kann bei Bedarf redigiert werden.
-- **Manueller Download sichert Exporte ab.** Wenn Browser oder Content-Blocker den Download verhindern, öffnet der Planner einen "Manual download"-Tab mit dem JSON-Inhalt. Drücke `Strg+A`/`Strg+C` (`⌘A`/`⌘C` auf macOS), füge den Text in eine `.json`-Datei ein und archiviere sie mit deinen Backups, bevor du den Tab schließt.
-- **Mit Checklisten synchronisieren.** Bei neuen Bundles `Updated at`-Zeitstempel prüfen und alte JSONs archivieren.
-- **Kontext bewahren.** Bundles merken Sprache, Theme, Logos und Personalisierungen, damit Empfänger vertraut starten – auch offline.
-
-## Projekt- & Backup-Dateiformate
-
-- **`project-name.json` (Projekt-Bundle).** Enthält ein Projekt plus referenzierte Custom-Geräte (und optional automatische Gear-Regeln). Favoriten, Kontakte und andere globale Daten bleiben lokal – verwende ein Planner-Backup, wenn sie mitreisen sollen. `.cpproject` wird gleich behandelt.
-- **`planner-backup.json` (Vollbackup).** **Einstellungen → Backup & Wiederherstellung → Backup** speichert alle Projekte,
-  Auto-Backups, Favoriten, Laufzeitfeedback, Regeln, Kontaktlisten, UI-Präferenzen, Fonts und Branding.
-- **`auto-gear-rules-*.json` (Regel-Exports).** Zeitgestempelte Sicherungen der Automations-Setups inklusive Metadaten zur Offline-Validierung.
-- **Integritätsprüfungen & Benennung.** Siehe Abschnitt [File Formats & Integrity Checks](docs/save-share-restore-reference.md#file-formats--integrity-checks) für Namenskonventionen, Pflichtabschnitte und offline geführte Checksummlogs vor dem Transport.
-
-## Interface-Rundgang
-
-### Schnellüberblick
-
-- **Globale Suche** (`/`, `Strg+K`, `⌘K`) springt zu Features, Selektoren oder Hilfethemen – selbst bei versteckter Navigation.
-  Vorschläge zeigen direkte Treffer für Funktionen und Geräte vor Hilfethemen, damit Tastaturabläufe zuerst bei Bedienelementen
-  landen. Exakte Phrasen landen jetzt zuerst, daher bringt das Tippen einer vollständigen Bezeichnung wie „battery health“ die
-  passende Funktion vor allgemeinere Treffer. Leer das Feld, erscheinen zuletzt genutzte Treffer oben und Crew-Routinen lassen
-  sich ohne Umwege wiederholen. Beginne eine Suche mit `recent` oder `history`, um zuerst deine zuletzt genutzten Treffer zu
-  sehen, bevor der gesamte Katalog geprüft wird.
-- **Help-Center** (`?`, `H`, `F1`, `Strg+/`) liefert Guides, Shortcuts, FAQs und Hover-Hilfe. Die Start-hier-Checkliste beschreibt
-  jetzt, wie du den Offline-Indikator vorbereitest, doppelte Exporte sicherst und eine Wiederherstellungsprobe durchläufst,
-  damit Teams Backups vor dem Einsatz prüfen. Ein Konsolen-Schnellcheck listet
-  `window.__cineRuntimeIntegrity`, `window.cineRuntime.verifyCriticalFlows()`
-  und die `cinePersistence`-Hilfsfunktionen, damit du Offline-Proben direkt im
-  Dialog protokollierst.
-- **Projektdiagramm** visualisiert Strom- und Signalpfade; mit gedrückter Umschalttaste als JPG exportieren.
-- **Akkuvergleich** zeigt Leistung kompatibler Packs und warnt vor Überlast.
-- **Gerätelistengenerator** erstellt kategorisierte Tabellen mit Metadaten, Crew-E-Mails und Szenario-Zubehör.
-- **Versionsvergleich** (**Einstellungen → Backup & Wiederherstellung → Versionen vergleichen**) hebt Unterschiede zwischen manuellen Saves oder Auto-Backups hervor, erlaubt Vorfallsnotizen und exportiert Prüfprotokolle vor der Archivierung.
-- **Wiederherstellungsprobe** lädt Backups in eine Sandbox, damit du jeden Datensatz offline prüfen kannst, bevor Live-Daten überschrieben werden.
-- **Offline-Badge & Neu laden erzwingen** zeigen Verbindungsstatus und aktualisieren Assets ohne Datenverlust.
-
-### Top-Bar-Steuerung
-
-- Skip-Link, Offline-Indikator und responsive Branding halten die Navigation zugänglich.
-- Globale Suche fokussiert mit `/` oder `Strg+K` (`⌘K`), öffnet auf Mobilgeräten das Menü und lässt sich mit Escape leeren.
-- Sprachwechsel, Dark/Pink-Theme und Einstellungen sitzen in der Kopfleiste; dort lassen sich Akzentfarbe, Schriftgröße, Schriftart, High-Contrast, Custom-Logo sowie Backup-, Restore- und Factory-Reset-Tools (immer mit Sicherung) steuern. Alle Theme-Schalter bleiben automatisch synchron.
-- Hilfe-Button öffnet den Suchdialog und reagiert jederzeit auf `?`, `H`, `F1` oder `Strg+/`.
-- Der 🔄-Button entfernt gecachte Assets und lädt die App ohne Projektdaten zu löschen. Der Browser lädt das neue Paket jetzt parallel zur Bereinigung vor, damit die neue Version schneller erscheint und trotzdem alles gesichert bleibt.
-
-### Navigation & Suche
-
-- Auf kleinen Bildschirmen spiegelt ein einklappbares Seitenmenü alle Hauptsektionen.
-- Dropdowns und Editorlisten unterstützen Inline-Suche und Tippen zum Filtern. `/` oder `Strg+F` (`⌘F`) fokussiert das nächste Suchfeld.
-- Suchvorschläge heben passende Schlüsselwörter hervor, damit du Treffer bestätigst, bevor du weiter navigierst oder Aktionen ausführst.
-- Sterne pinnen Favoriten in Selektoren und sichern sie in Backups.
-
-## Anpassung & Barrierefreiheit
-
-- Wechsel zwischen Light, Dark, Pink und High-Contrast; Akzentfarbe, Basis-Schriftgröße und Typografie bleiben offline gespeichert.
-- Skip-Link, sichtbare Fokuszustände und responsives Layout unterstützen Tastatur, Tablet und Phone.
-- Tastenkürzel decken Suche (`/`, `Strg+K`, `⌘K`), Hilfe (`?`, `H`, `F1`, `Strg+/`), Speichern (`Enter`, `Strg+S`, `⌘S`), Dark Mode (`D`) und Pink Theme (`P`) ab.
-- Hover-Hilfe verwandelt Buttons, Felder, Dropdowns und Header in Tooltips.
-- Lade ein eigenes Logo für Overviews, setze Monitoring-Defaults und Anforderungspresets.
-- Fork-Buttons duplizieren Einträge, Favoriten halten häufige Geräte griffbereit.
-
-## Datensicherheit & Offline-Betrieb
-
-- Der Service Worker cached alle Assets, damit die App offline bleibt. Updates aktivieren sich automatisch, und mit dem optionalen **Neu laden erzwingen** kannst du Caches gezielt leeren, wenn du einen garantiert sauberen Start brauchst.
-- Projekte, Laufzeitdaten, Favoriten, Custom-Geräte, Themes und Listen liegen im Browser-Speicher. Unterstützte Browser erhalten Persistenz-Anfragen, um Löschrisiken zu mindern.
-- Automatische Sicherungen stapeln Projektsnapshots alle zehn Minuten oder nach rund 50 festgehaltenen Änderungen. Bei Projektwechseln, Importen, Exporten oder vor dem Neuladen erstellt die App zusätzlich sofort eine neue Aufnahme, selbst wenn dieser Takt noch läuft; stündliche Voll-Backups und Hintergrundarchive der Auto-Gear-Regeln ergänzen die Timeline. Aktiviere **Einstellungen → Backup & Wiederherstellung → Auto-Backups in Projektliste anzeigen**, um die Aufbewahrung zu steuern und Snapshots ohne Verbindung wiederherzustellen.
-- Blockiert der Browser Downloads, öffnet die App einen Tab **Manueller Download** mit dem JSON, damit du es in eine `.json`-Datei kopierst und auf vertrauenswürdigen Offline-Medien ablegst.
-- Nutze **Einstellungen → Backup & Wiederherstellung → Versionen vergleichen**, um zwei Stände zu vergleichen, Kontext in **Vorfallsnotizen** festzuhalten und ein Prüfprotokoll für Übergaben zu exportieren.
-- Starte **Wiederherstellungsprobe** in **Einstellungen → Backup & Wiederherstellung**, lade das Backup in eine Wegwerf-Sandbox, prüfe die Vergleichstabelle und bestätige die Integrität, bevor du **Wiederherstellen** auf die Live-Daten anwendest.
-- Repository lokal öffnen oder intern hosten, damit sensible Daten nicht nach außen gelangen. Exporte sind menschenlesbar und auditierbar.
-- Kopfzeile zeigt Offline-Indikator, Force-Reload aktualisiert Assets ohne Saves anzutasten und stößt vor dem Löschen der Caches
-  jetzt automatisch einen sofortigen Auto-Save samt Backup an.
-- **Werkseinstellungen** oder das Löschen der Website-Daten erfolgt erst nach einem automatischen Backup.
-- Service-Worker-Updates laden im Hintergrund und aktivieren sich automatisch. Erscheint **Update bereit**, schließe deine Änderungen ab, sichere ein Backup für die Dokumentation und nutze **Neu laden erzwingen**, wenn du Caches leeren und die Sitzung mit frisch geladenen Assets fortsetzen möchtest.
-- Daten liegen in gehärtetem `localStorage`; gesperrte Profile weichen auf `sessionStorage` aus. Jeder Schreibvorgang legt zusätzlich einen `__legacyMigrationBackup`-Schnappschuss an, damit sich Quota- oder Schemafehler verlustfrei beheben lassen. Entwickler-Tools können Rohdaten exportieren, bevor Caches geleert oder Tests gefahren werden.
-- Ein kritischer Speicherwächter läuft bei jedem Start und spiegelt jeden wichtigen Schlüssel in sein Backup, bevor du Änderungen vornimmst. So bleibt auch bei Legacy-Daten stets eine redundante Kopie für Wiederherstellungen erhalten.
-
-## Daten- & Speicherübersicht
-
-- **Einstellungen → Daten & Speicher** listet gespeicherte Projekte, Auto-Backups, Gerätelisten, Custom-Geräte, Favoriten, Laufzeitfeedback und Session-Cache mit Live-Zahlen.
-- Einträge erklären ihre Inhalte; leere Bereiche bleiben verborgen, damit du den Zustand sofort siehst.
-- Die Übersicht schätzt die Backup-Größe basierend auf dem jüngsten Export.
-- Das **Diagnoseprotokoll** spiegelt alle cineLogging-Einträge, erlaubt Filter nach Schweregrad oder Namespace und bietet Regler für Aufbewahrung, Konsolenspiegelung, die standardmäßig aktivierte Konsolenerfassung sowie globale Fehlererfassung – direkt offline in den Einstellungen. Ein Hinweis erscheint, sobald Filter alle Einträge ausblenden, damit Prüfungen nicht versehentlich als Fehler gewertet werden. Jeder Eintrag vermerkt jetzt ISO-Zeitstempel, Millisekundenmarke, Ereignis-ID und Kanal, damit du Konsolen-Fallbacks selbst dann mit den gespeicherten Diagnosen abgleichen kannst, wenn der strukturierte Logger fehlt. Warnungen und Fehler aus Übersichts-Drucken sowie PDF-Exporten landen nun ebenfalls hier – inklusive Hinweis, ob das Fallback-Fenster anspringen musste –, damit Freigabeproben den kompletten Ablauf nachvollziehen. Auch der Service-Worker spiegelt seine Cache-Aktivität jetzt direkt in diesem Protokoll, damit Offline-Precache-Probleme, Navigations-Fallbacks und verschobene Client-Übernahmen sofort sichtbar bleiben.
-  Eine Live-Übersicht zur Aktivierung zeigt jetzt, ob jede Schwere die Konsolenspiegelung oder das aufbewahrte Protokoll erreicht, bevor du schwere Diagnostik losschickst – so lassen sich ausführliche Traces offline sicherer zuschalten.
-- Die Zeitleiste **Neueste Aktivitäten** blendet unter den drei Zeitstempeln nun **Sicherheits-Hinweise** ein. Sie erinnern daran, wenn manuelle Saves, automatische Snapshots oder Vollbackups veralten, und nennen die Uhrzeit, damit klar ist, welche Schutzmaßnahme du vor einer Offline-Session auffrischen musst.
-- Die Statuszeile **Backup-Wächter** fasst den Bericht des kritischen Speicherwächters zusammen. Sie spiegelt jede essenzielle Speicher-Schlüssel vor Änderungen in einen redundanten Slot und zeigt, ob neue Kopien entstanden sind, noch auf den ersten Save gewartet wird oder eine Konsolenprüfung nötig ist. Ein Blick vor der Reise bestätigt, dass für jedes Projekt, jede Geräteliste und jede Präferenz eine Spiegelung bereitsteht.【F:src/scripts/app-core-new-2.js†L8640-L8740】【F:src/scripts/storage.js†L2800-L2995】
-- Vollbackups zeigen ihre aktuelle Anzahl und speisen das Backup-Protokoll, damit du vor dem Archivieren kontrollieren kannst, ob die stündlichen Sicherungen erfasst wurden.
-
-## Speicherbudget & Wartung
-
-- **Persistenten Speicher prüfen.** Auf jeder Workstation den Status unter **Einstellungen → Daten & Speicher** kontrollieren. Bei Ablehnung häufiger exportieren.
-- **Quota im Blick behalten.** Speicher-Dashboard oder Browser-Inspector nutzen. Bei wenig Platz ältere Backups archivieren, `auto-backup-…`-Einträge bereinigen und neue Exporte testen.
-- **Caches nach Updates vorbereiten.** Nach **Neu laden erzwingen** Hilfe-Dialog, Legal-Seiten und häufig genutzte Ansichten öffnen, damit Uicons, OpenMoji und Fonts erneut lokal vorliegen.
-- **Speicherstatus dokumentieren.** Checks in Prep- und Wrap-Logs aufnehmen: Persistenz-Status, freier Speicher, Speicherort der aktuellen Backups.
-
-## Backup & Wiederherstellung
-
-- **Gespeicherte Projektsnapshots** – Projektliste speichert alle Saves und erzeugt alle zehn Minuten oder nach rund 50 Änderungen `auto-backup-…`.
-- **Vollbackups** – **Einstellungen → Backup & Wiederherstellung → Backup** erstellt `planner-backup.json` inkl. aller Projekte, Geräte, Regeln und UI-States; vor jeder Wiederherstellung wird ein Sicherheitsbackup angelegt.
-- **Quick safeguards-Bereich** – In **Einstellungen → Daten & Speicher** steht ein eigener **Quick safeguards**-Block für Ein-Klick-Backups oder den Sprung zu Restore-Tools bereit, damit zusätzliche Kopien ohne Kontextwechsel entstehen.【F:index.html†L2548-L2570】
-- **Backup-Verlauf** – Jede Vollsicherung schreibt einen Eintrag, der sich in **Einstellungen → Daten & Speicher** prüfen oder zusammen mit dem Archiv exportieren lässt. Zeitstempel und Dateinamen bleiben so auch offline nachvollziehbar.
-- **Verborgene Migrations-Backups** – Vor Überschreibungen wird der vorige JSON-Snapshot im geschützten `__legacyMigrationBackup` abgelegt und bei Fehlern automatisch wiederhergestellt. Die Komprimierung wählt jetzt automatisch die kleinste sichere Kodierung, damit Sicherungen weiterhin in das Browser-Kontingent passen. Quotawiederherstellungsdurchläufe komprimieren nun zuerst die größten gespeicherten Einträge, um schneller Platz zu schaffen, ohne aktive Backups anzutasten.【F:src/scripts/storage.js†L1541-L1652】
-- **Automatische Regel-Snapshots** – Änderungen in **Automatische Gear-Regeln** erzeugen alle zehn Minuten Sicherheitskopien.
-  Der Aufbewahrungsregler startet jetzt bei 36 Sicherungen, damit Teams mehr Puffer
-  haben, bevor ältere Einträge entfernt werden.
-- **Factory Reset** – löscht Daten erst nach automatischem Backup.
-- **Stündliche Erinnerungen** – Hintergrundroutine fordert stündlich zu Backups auf.
-- **Runtime-Integritätswache** – Vor Abfahrt in der Konsole `window.__cineRuntimeIntegrity.ok` auf `true` prüfen oder `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` ausführen. Der Bericht bestätigt, dass Speichern/Teilen/Wiederherstellen und die Feedback-Speicherung offline geschützt sind.
-- **Verifikation** – Nach jedem kritischen Backup Import in einem Testprofil prüfen.
-- **Sichere Aufbewahrung** – Backups mit Projektname/Zeitstempel beschriften und auf redundanten Medien lagern.
-- **Vor Überschreiben vergleichen** – Vor Restores frisches Backup ziehen und Unterschiede prüfen.
-
-## Datenintegritäts-Drills
-
-- **Pre-Flight (täglich/vor größeren Änderungen).** Manuell speichern, Backup und Bundle exportieren, in Testprofil importieren, prüfen, löschen.
-- **Offline-Probe (wöchentlich/vor Reisen).** Planner laden, Backup erstellen, offline gehen, `index.html` neu laden und auf klare Assets achten.
-- **Change-Control (nach Daten-/Script-Updates).** `npm test` laufen lassen und danach Pre-Flight wiederholen; Backup mit Changelog archivieren.
-- **Monatlicher Help-Center-Check (integrierte Checkliste).** **Hilfe → Monatlicher Daten-Gesundheitscheck** öffnen, über **Einstellungen → Daten & Speicherung → Schnelle Schutzmaßnahmen → Vollständiges Backup herunterladen** ein frisches Abbild sichern, alle aktiven Projekte exportieren, offline neu laden, mit **Wiederherstellungsprobe** abschließen, anschließend `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` ausführen und die Konsolenausgabe zusammen mit dem Ergebnis im Rotationsprotokoll festhalten.
-- **Redundanz-Rotation (monatlich/vor Archivierung).** Neueste Backups, Bundle (ggf. `.cpproject`) und Repository-ZIP auf zwei Medien lagern und abwechselnd testen.
-
-## Operative Checklisten
-
-Print-freundliche Versionen findest du in `docs/operations-checklist.md`; der Travel-Guide `docs/offline-readiness.md` vertieft die Abläufe.
-
-### Pre-Shoot-Readiness
-
-1. Richtige Repository-Version prüfen, **Neu laden erzwingen**, Version in **Einstellungen → Info** vergleichen, Legal-Seiten öffnen um Uicons/OpenMoji/Fonds zu cachen.
-2. Kritische Projekte und aktuelles `auto-backup-…` öffnen, Gearlisten, Feedback und Favoriten prüfen.
-3. Änderung vornehmen, `Enter` oder `Strg+S`/`⌘S` speichern, `planner-backup.json` exportieren, in Testprofil importieren und Liste vergleichen.
-4. `project-name.json` exportieren, importieren, Regeln/Custom-Geräte/Offline-Badge prüfen, Profil löschen.
-5. Netzwerk trennen, Offline-Badge prüfen, Icons betrachten, Projekte öffnen.
-6. Verifizierte Backups/Bundles plus Repository-ZIP redundant sichern.
-
-### Wrap-Day-Handoff
-
-1. Letztes Backup und Bundle exportieren, mit Datum/Ort/Unit beschriften.
-2. Im Verifikationsgerät importieren und auf Fehler prüfen, Gerät offline halten.
-3. Änderungen dokumentieren (welche Auto-Backups befördert wurden, neue Geräte, Regeländerungen) und den Notizen beilegen.
-4. Nach Archivierung **Neu laden erzwingen**, Hilfe-Dialog und Legal-Seiten öffnen, damit Caches aktuell sind.
-5. Redundante Medien an Storage-Team übergeben und zweiten Satz gemäß Datenrichtlinie aufbewahren.
-
-## Notfall-Wiederherstellungsplan
-
-1. **Stoppen und Zustand sichern.** Tab offen lassen, Netzwerk trennen, Zeit und Offline-Status notieren, nicht neu laden.
-2. **Vorhandenes exportieren.** **Einstellungen → Backup & Wiederherstellung → Backup** auslösen und `planner-backup.json` sichern – enthält Auto-Backups, Favoriten, Laufzeitdaten und Regeln.
-3. **Auto-Backups duplizieren.** `auto-backup-…`-Einträge einblenden, jüngste Snapshots zu manuellen Saves hochstufen und mit Incident-ID versehen.
-4. **Verifikations-Bundle prüfen.** Letztes gutes Bundle (`project-name.json`/`.cpproject`) in privatem Profil oder zweitem Gerät offline importieren und Daten vergleichen.
-5. **Sorgfältig wiederherstellen.** Wenn Verifikation passt, frisches Backup im Hauptprofil importieren. Vorheriges Backup bleibt für JSON-Diff-Vergleiche erhalten.
-6. **Caches erneuern & dokumentieren.** Danach **Neu laden erzwingen**, Hilfe- und Legal-Seiten öffnen, Vorfall protokollieren (Zeit, Exporte, Speicherorte, Prüfgerät) und Log zum Backup legen.
-
-## Gerätelisten & Reporting
-
-- **Geräteliste erzeugen** wandelt Auswahl und Anforderungen in kategorisierte Tabellen um; Aktualisierung erfolgt automatisch bei Änderungen.
-- Einträge gruppieren nach Kategorie, Duplikate werden zusammengeführt. Szenarien ergänzen passende Rigs, Wetter- oder Spezialzubehör.
-- Automatische Regeln laufen nach dem Generator und fügen szenariospezifische Anpassungen hinzu.
-- Abdeckungsnotizen aus dem Regel-Dashboard erscheinen in Druckansichten, Exporten und Bundles, damit Offline-Reviews identisch zum In-App-Status bleiben.
-- Objektivreihen enthalten Frontdurchmesser, Gewicht, Naheinstellgrenze, Rod-Anforderungen und Mattebox-Komponenten. Die druckbare Overview spiegelt diese Auswahl mit Marke, Mount, Durchmesser, Fokus, Gewicht, Rod-Support und Notizen, sodass Ausleihpakete offline dieselben Specs tragen. Akkureihen berücksichtigen Rechnercounts und Hot-Swap-Hardware.
-- Crewdetails, Monitoring, Verteilung und Notizen erscheinen in Exporten.
-- Mit den Pfeiltasten (inklusive Pos1 und Ende) wechseln Crews zwischen den gespeicherten Projektanforderungs-Karten, ohne die Tastatur zu verlassen.
-- Listen werden mit dem Projekt gespeichert, erscheinen in Overviews, Bundles und lassen sich mit **Geräteliste löschen** zurücksetzen.
-
-## Automatische Gear-Regeln
-
-**Einstellungen → Automatische Gear-Regeln** ermöglicht Feintuning ohne JSON-Bearbeitung:
-
-- Regeln nur aktivieren, wenn bestimmte **Pflichtszenarien** gewählt sind; optionale Labels erleichtern das Scannen.
-- Regeln auch nach dem **Kameragewicht** steuern: Vergleiche den ausgewählten Body mit einem schwerer-, leichter- oder exakt-definierten Schwellenwert, bevor die Automatisierung greift.
-- Equipment mit Kategorie und Anzahl hinzufügen oder **Custom Additions** für Hinweise/Spezialkits verwenden. Entfernen-Regeln blenden bestimmte Zeilen aus.
-- Regeln laufen nach den Standardpaketen, greifen nahtlos in Gearlisten, Backups und Bundles ein.
-- Ein Dashboard zur Regelabdeckung hebt doppelte Auslöser, Netto-Zu-/Abgänge, Konflikte und ungedeckte Szenarien hervor. Fokus-Karten filtern die Liste, springen zu betroffenen Regeln und bleiben offline nutzbar.
-- Gespeicherte Listen behalten die aktive Regelmenge; beim Laden oder Import bleibt der Regelkontext erhalten.
-- Abdeckungsinformationen reisen als `coverage`-Objekt in Druckansichten, Backups, Projektexporten und Bundles mit, sodass nachgelagerte Audits exakt denselben Stand sehen.
-- Regelsets als JSON exportieren/importieren, auf Werkseinstellungen zurücksetzen oder auf die automatische Historie (alle zehn Minuten) zurückgreifen.
-
-## Runtime-Intelligenz
-
-Von Nutzer:innen gemeldete Laufzeiten fließen in ein gewichtetes Modell:
-
-- Temperaturfaktoren: ×1 bei 25 °C, ×1,25 bei 0 °C, ×1,6 bei −10 °C, ×2 bei −20 °C.
-- Auflösung: ≥12K ×3, ≥8K ×2, ≥4K ×1,5, ≥1080p ×1, darunter proportional.
-- Framerate skaliert linear ab 24 fps (48 fps = ×2).
-- WLAN aktiv +10 %.
-- Codec-Faktoren: RAW/BRAW/ARRIRAW/R3D/CinemaDNG/Canon RAW/X‑OCN ×1; ProRes ×1,1; DNx/AVID ×1,2; All-Intra ×1,3; H.264/AVC ×1,5; H.265/HEVC ×1,7.
-- Monitor-Werte werden nach Helligkeitsverhältnis gewichtet.
-- Finale Gewichtung reflektiert den Anteil am Gesamtdraw, damit ähnliche Rigs mehr Einfluss haben.
-- Dashboard sortiert nach Gewicht, zeigt Prozentanteile und markiert Ausreißer.
-
-## Tastenkürzel
-
-| Shortcut | Aktion | Hinweise |
-| --- | --- | --- |
-| `/`, `Strg+K`, `⌘K` | Command Palette / Globale Suche öffnen | Funktioniert auch bei eingeklappter Navigation, `Esc` löscht |
-| `Enter`, `Strg+S`, `⌘S` | Aktives Projekt speichern | Button bleibt deaktiviert bis ein Name gesetzt ist |
-| `?`, `H`, `F1`, `Strg+/` | Hilfe öffnen | Dialog bleibt durchsuchtbar |
-| `D` | Dark Mode umschalten | Ebenfalls in **Einstellungen → Themes**; Header-Schalter, Onboarding-Auswahl und Einstellungen bleiben automatisch synchron. |
-| `P` | Pinkes Theme umschalten | Funktioniert mit Light, Dark, High-Contrast |
-| 🔄 | Gecachte Assets neu laden | Auch über **Einstellungen → Neu laden erzwingen** |
-
-## Lokalisierung
-
-Neue Sprachen lassen sich sofort testen – kein Build nötig:
-
-- **Dokumentations-Update-Tracker nutzen.** Fortschritt im In-App-Tracker (**Einstellungen → Allgemein**) protokollieren, damit
-  Release-Notizen zeigen, welche Übersetzungen, Hilfethemen und Druckanleitungen vor dem Versand der Offline-Bundles
-  aktualisiert wurden.
-
-1. README duplizieren und übersetzen (`README.<lang>.md`).
-2. Ein bestehendes Sprachmodul unter `src/scripts/translations/<locale>.js`
-   kopieren und alle Werte offline übersetzen. Platzhalter wie `%s`,
-   Tastenkürzel und Satzzeichen unverändert lassen.
-3. Die Sprache im Loader `src/scripts/translations.js` registrieren, damit
-   `LOCALE_SCRIPTS` und die Ladehinweiskarten das Modul auch bei Offline-Starts
-   vorladen.
-4. Statische Seiten (Privacy, Impressum) kopieren und übersetzen.
-5. `npm test` ausführen, bevor ein Pull Request entsteht.
-
-## Als App installieren
-
-Cine Power Planner ist eine Progressive Web App:
-
-1. `index.html` in einem unterstützten Browser öffnen.
-2. Über **Installieren** oder **Zum Home-Bildschirm hinzufügen** installieren.
-   - **Chrome/Edge (Desktop):** Installationssymbol in der Adressleiste.
-   - **Android:** Menü → *Zum Startbildschirm hinzufügen*.
-   - **iOS Safari:** Teilen → *Zum Home-Bildschirm*.
-3. App aus dem Launcher starten. Die Installation funktioniert offline, aktualisiert sich automatisch und bietet dennoch **Neu laden erzwingen**, falls du Caches für einen sauberen Reload leeren möchtest.
-
-## Gerätedaten-Workflow
-
-Gerätekataloge liegen unter `src/data/devices/`. Jede Datei bündelt verwandte Ausrüstung, damit Änderungen in Versionierung und App nachvollziehbar bleiben. Vor Commits helfen folgende Skripte:
-
-```bash
-npm run normalize
-npm run unify-ports
-npm run check-consistency
-npm run generate-schema
-```
-
-`npm run normalize` bereinigt Steckverbinder und Kurzschreibweisen. `npm run unify-ports` vereinheitlicht Ports. `npm run check-consistency` prüft Pflichtfelder, `npm run generate-schema` aktualisiert `schema.json`. Datenspezifische Tests laufen mit:
-
-```bash
-npm run test:data
-```
-
-`npm run help` listet alle Skripte, `--help` liefert Details.
-
-> **Katalogaktualisierung.** Der FIZ-Handeinheitenkatalog enthält jetzt TILTAs Nucleus-M und Nucleus-M II gemeinsam mit den Nano- und Nano II-Handrädern, Prestons HU4, cmotions cPRO-Handeinheit, Chrosziels MagNum-Handeinheit, Teradeks CTRL.3, DJIs Focus- und Focus Pro-Handeinheiten plus dem RS Focus Wheel (2022), Hedéns YMER-3-Handeinheit, Freeflys Pilot Pro-Handcontroller, Redrocks microRemote-Handcontroller sowie SmallRigs MagicFIZ-Handgriff, sodass Teams offline mehr Systeme vergleichen können, ohne die App zu verlassen.
->
-> **Erweiterung des Objektivkatalogs.** Die Objektivdatenbank enthält jetzt Sirui 1.33x & 1.6x Anamorphics, NiSi Athena Cine Primes, Kinefinity Mavo Primes, Spirit Lab Pure Primes, Ancient Optics & Petzval Rehousings und Zero Optik Canon Dream Primes (Rehoused), damit Cinematografen mit einer noch größeren Auswahl an modernen Objektiven planen können.
-
-
-## Entwicklung
-
-Node.js 18 oder neuer installieren, dann:
-
-```bash
-npm install
-npm run lint
-npm test
-```
-
-`npm test` führt ESLint, Datenprüfungen und Jest nacheinander aus (`--runInBand`, `maxWorkers=1`). Spezielle Suites beim Entwickeln:
-
-```bash
-npm run test:unit
-npm run test:data
-npm run test:dom
-npm run test:script
-```
-
-### Modul-Registry
-
-Alle kritischen Bundles (`cinePersistence`, `cineOffline`, `cineUi`,
-`cineRuntime` sowie gemeinsame Helfer) werden in der globalen
-`cineModules`-Registrierung abgelegt. Jedes Modul ist standardmäßig eingefroren,
-mit Metadaten dokumentiert und wird beim Start geprüft, damit Speichern,
-Teilen, Importieren, Backups und Wiederherstellungen nie ohne Schutzpfade
-laufen. Die Anforderungen stehen in
-[`docs/architecture/module-registry.md`](docs/architecture/module-registry.md);
-bitte vor neuen Modulen lesen, damit Offline-Garantien, Dokumentation und
-Übersetzungen synchron bleiben.
-
-Ein Infrastruktur-Quartett – `cineModuleArchitectureCore`,
-`cineModuleArchitectureHelpers`, `cineModuleBase`, `cineModuleContext` und
-`cineModuleEnvironment` – hält Bereichserkennung,
-Modulsystem-Abfragen, Registrierungswarteschlangen und globale Exporte zwischen
-Modern- und Legacy-Bundles ohne zusätzlichen Boilerplate synchron.
-
-Für neue Module sollte `cineModules.createBlueprint({...})` genutzt werden, um
-Metadaten und Standard-Freeze-Optionen vor der Registrierung zu übernehmen. Der
-Helfer friert die erzeugte API ein, normalisiert Kategorie-, Beschreibungs- und
-Verbindungsangaben und stellt fehlgeschlagene Registrierungen automatisch in die
-Warteschlange, damit Offline-Workflows keine Schutzmechanismen verlieren.
-
-### Legacy-Browser-Bundle
-
-Nach Änderungen in `src/scripts/` oder `src/data/` `npm run build:legacy` ausführen. Dadurch wird das ES5-Bundle unter `legacy/` neu erzeugt und lokale Polyfills bleiben aktuell. Dabei werden jetzt auch JSON-Artefakte (z. B. `src/data/schema.json`) nach `legacy/data/` gespiegelt, damit die Legacy-`require()`-Pfade offline und in Tests funktionieren.
-
-### Struktur
-
-```
-index.html
-src/styles/style.css
-src/styles/overview.css
-src/styles/overview-print.css
-src/scripts/script.js
-src/scripts/storage.js
-src/scripts/static-theme.js
-src/scripts/modules/        # Eingefrorene Laufzeitmodule im cineModules-Register
-src/data/index.js
-src/data/devices/
-src/data/schema.json
-src/vendor/
-legal/
-tools/
-tests/
-```
-
-## Fehlerbehebung
-
-- **Service Worker hängt?** **Neu laden erzwingen** oder Hard Reload aus Entwickler-Tools.
-- **Daten fehlen nach Tab-Schluss?** Speichereinstellungen prüfen; Private Mode kann Persistenz blockieren.
-- **Downloads blockiert?** Mehrfachdownloads erlauben.
-- **CLI-Skripte fehlschlagen?** Node.js 18+, `npm install`, dann Skript erneut. Bei Memory-Errors gezielt `npm run test:unit` etc. nutzen.
-
-## Feedback & Support
-
-Bitte Issues anlegen, wenn Probleme auftreten, Fragen bestehen oder Feature-Ideen auftauchen. Exporte oder Laufzeit-Beispiele helfen dabei, den Katalog korrekt zu halten.
-
-## Mitwirken
-
-Beiträge sind willkommen! Nach dem Lesen von `CONTRIBUTING.md` Issues eröffnen oder Pull Requests stellen. Vorab `npm test` ausführen.
-
-## Danksagungen
-
-Die App liefert lokale Uicons, OpenMoji-Assets und weitere gebündelte Grafiken, damit Icons auch offline verfügbar sind, und nutzt lz-string zum kompakten Speichern in URLs und Backups.
+Halte die lokalisierten README-Dateien im Einklang mit dieser README, sobald
+Workflows angepasst werden – besonders bei Speichern, Teilen, Importieren,
+Backup oder Restore.
+
+- [Deutsch](README.de.md)
+- [English](README.en.md)
+- [Español](README.es.md)
+- [Français](README.fr.md)
+- [Italiano](README.it.md)
 
 ## Lizenz
 
-Veröffentlicht unter der ISC-Lizenz. Details siehe `package.json`.
+Veröffentlicht unter der ISC-Lizenz. Siehe `package.json` für Details.

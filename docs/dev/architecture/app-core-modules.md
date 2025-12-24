@@ -37,7 +37,7 @@ persistence and rehearsal tooling.
   and records entries in the verification ledger. Feature modules never call
   `localStorage` directly.
 - **Schema inventory:** `modules/results.js` and `modules/helpers/schema/*.js`
-  resolve the `docs/schema-inventory.md` definitions at runtime so imports from
+  resolve the `docs/dev/schema-inventory.md` definitions at runtime so imports from
   older builds are coerced into safe shapes or rejected with actionable logs.
 - **Share/import bridge:** The `modules/offline.js` surface coordinates planner
   bundle exports, checksum capture and restore rehearsals. It logs outcomes to
