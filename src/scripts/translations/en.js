@@ -375,7 +375,7 @@
         },
         "saveShareBackup": {
           "title": "Save, Share & Backup",
-          "content": "Use **Export Project** to download a JSON bundle (optionally include automatic gear rules and owned-gear markers). **Import Project** loads a file without overwriting your current setup until you confirm Save. Use **Backup & Restore** for full-app backups, restore rehearsals, version comparisons, and the local backup vault when automatic downloads are blocked."
+          "content": "Use **Export Project** to download a JSON bundle (optionally include automatic gear rules and owned-gear markers). Use **Share Project** to create a share bundle for offline import; recipients open it with **Import Project** and nothing overwrites their current setup until they confirm Save. Use **Backup & Restore** for full-app backups, restore rehearsals, version comparisons, and the local backup vault when automatic downloads are blocked."
         },
         "deviceConfiguration": {
           "title": "Device Configuration",
