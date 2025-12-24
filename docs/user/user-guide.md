@@ -201,16 +201,16 @@ safeguards we rehearse before every release:
 
 - **Verified safeguards only.** Save/share/import/backup/restore workflows ship
   with rehearsals recorded in the
-  [Documentation Verification Packet](docs/ops/documentation-verification-packet.md)
+  [Documentation Verification Packet](../ops/documentation-verification-packet.md)
   so field crews can confirm each safeguard before traveling offline.
 - **Help & translations updated in lockstep.** The
-  [Documentation Update Checklist](docs/dev/documentation-update-checklist.md) and
-  [Translation Guide](docs/dev/translation-guide.md) make sure refreshed behavior is
+  [Documentation Update Checklist](../dev/documentation-update-checklist.md) and
+  [Translation Guide](../dev/translation-guide.md) make sure refreshed behavior is
   reflected in help topics, localized READMEs and printed guides before bundles
   ship.
 - **Backups everywhere you need them.** The
-  [Backup Rotation Guide](docs/ops/backup-rotation-guide.md) and
-  [Operations Checklist](docs/ops/operations-checklist.md) outline how to stage
+  [Backup Rotation Guide](../ops/backup-rotation-guide.md) and
+  [Operations Checklist](../ops/operations-checklist.md) outline how to stage
   redundant archives, rehearsal artifacts and verification logs so no project is
   ever left without a recovery path.
 - **Evidence you can audit.** We capture console exports from
@@ -338,7 +338,7 @@ same online or offline.
    complete, when the most recent step finished and the next workflow to cover
    before you relaunch the tour. When the tutorial highlights the Power
    Summary, cross-check the colour-coded warnings against the
-   [Power Summary Warning Reference](docs/user/power-summary-warning-reference.md),
+   [Power Summary Warning Reference](power-summary-warning-reference.md),
    log any pin or D-Tap overloads, confirm redundant backups and ensure the
    autosave banner timestamp matches the share/export preview before you mark
    the step complete.
@@ -361,18 +361,18 @@ same online or offline.
    Rehearsing the full save → share → import loop keeps crews confident that
    offline workflows are airtight and that locally stored Uicons, fonts and
    helper scripts follow the project.
-1. Run the [Offline Cache & Safeguard Verification Drill](docs/ops/offline-cache-verification-drill.md)
+1. Run the [Offline Cache & Safeguard Verification Drill](../ops/offline-cache-verification-drill.md)
    to confirm cached assets, autosave safeguards and forced pre-restore backups
    match repository expectations. File the verification log so each workstation
    proves its offline bundle before it leaves for set.
 1. Archive the verified backup and project bundle alongside the repository copy
    you opened. Log the verification date, machine name and operator in the same
-   folder (mirroring the recommendations in `docs/ops/backup-rotation-guide.md`) so
+   folder (mirroring the recommendations in `../ops/backup-rotation-guide.md`) so
    every crew can prove when the drill succeeded. This keeps save, share,
    import, backup and restore workflows provably in sync from the first session
    and gives you redundant recovery media for travel days.
 1. Duplicate the worksheet in
-   `docs/ops/verification-log-template.md` (or store a copy of the rendered
+   `../ops/verification-log-template.md` (or store a copy of the rendered
    template) and record the completed rehearsal, including timestamps for each
    save/share/import/backup/restore step and notes from the offline run.
    Attach screenshots, exported bundles and verification hashes to the packet
@@ -387,8 +387,8 @@ same online or offline.
     reiterates the save → share → import → backup → restore drills you just ran.
     This step keeps Help, Documentation and Translation resources verified
     alongside the core workflows. When updates are needed, follow the
-    [Documentation Maintenance guide](docs/dev/documentation-maintenance.md) and
-    [Documentation Audit Checklist](docs/dev/documentation-audit-checklist.md) to
+    [Documentation Maintenance guide](../dev/documentation-maintenance.md) and
+    [Documentation Audit Checklist](../dev/documentation-audit-checklist.md) to
     ensure every offline asset ships updated screenshots, localized strings and
     safety instructions before the next rehearsal.
 
@@ -398,7 +398,7 @@ same online or offline.
 Keep this table nearby when rehearsing or teaching the planner. It consolidates
 the core save, share, import, backup and restore paths, what each captures and
 the safety nets that protect user data even when you stay offline.
-Start with the [Data Protection Lifecycle Guide](docs/user/data-protection-lifecycle.md)
+Start with the [Data Protection Lifecycle Guide](data-protection-lifecycle.md)
 for the end-to-end offline sequence, then use this table as a quick refresher.
 
 | Workflow | How to trigger | Data captured | Offline behavior | Built-in safeguards |
@@ -464,7 +464,7 @@ access.
    everything restored cleanly. Label and file the verified exports with your
    production’s archival checklist and add a short verification log (timestamp,
    machine, operator and notes). Use the [verification log
-   template](docs/ops/verification-log-template.md) to capture consistent evidence
+   template](../ops/verification-log-template.md) to capture consistent evidence
    across teams. The paper trail makes it easy to prove that save, share,
    import, backup and restore workflows were validated end-to-end before anyone
    relies on them in the field.
@@ -600,7 +600,7 @@ Use Cine Power Planner end-to-end with the following routine:
   previous JSON (or `.cpproject`) bundle in your storage system to maintain a
   clear history.
 - **Document every transfer.** Treat exports and imports as audit events. Append
-  a new entry to the [`docs/ops/verification-log-template.md`](docs/ops/verification-log-template.md)
+  a new entry to the [`../ops/verification-log-template.md`](../ops/verification-log-template.md)
   worksheet while you are still offline, note who created or received the
   bundle, capture checksum or hash details from the saved JSON and store the log
   beside the transfer. The practice keeps the share → import chain traceable and
@@ -634,7 +634,7 @@ Use Cine Power Planner end-to-end with the following routine:
   import warnings if you restore them on a different build.
 - **Integrity checks & naming guidance.** Follow the offline checklist, naming
   conventions and checksum workflow in the [File Formats & Integrity Checks
-  section](docs/user/save-share-restore-reference.md#file-formats--integrity-checks)
+  section](save-share-restore-reference.md#file-formats--integrity-checks)
   before transporting backups or bundles.
 
 
@@ -886,9 +886,9 @@ Use Cine Power Planner end-to-end with the following routine:
   differences so you can merge notes manually if needed.
 - **Archive the paper trail with backups** – whenever you create
   `planner-backup.json`, attach the updated
-  [`docs/ops/verification-log-template.md`](docs/ops/verification-log-template.md)
+  [`../ops/verification-log-template.md`](../ops/verification-log-template.md)
   packet and a copy of the
-  [Save, Share, Import, Backup & Restore Reference](docs/user/save-share-restore-reference.md)
+  [Save, Share, Import, Backup & Restore Reference](save-share-restore-reference.md)
   excerpt you followed. Storing the documentation beside the archive keeps
   offline crews confident that the save → backup → restore routine they rehearse
   matches the evidence filed for audits.
