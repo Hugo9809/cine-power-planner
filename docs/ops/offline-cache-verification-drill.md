@@ -63,7 +63,7 @@ fails when they drift. If it reports differences, regenerate the manifest with
 
 ## Follow-up
 
-- Update `review-findings.md` with observed issues.
+- Update `../dev/reviews/review-findings.md` with observed issues.
 - If behaviour changed, refresh affected docs (operations checklist, save/share
   reference, offline readiness).
 - Store evidence with the documentation verification packet.

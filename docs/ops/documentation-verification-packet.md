@@ -25,7 +25,7 @@ release backups.
 3. Generate a manifest `manifest.json` listing each artifact, checksum and
    storage media location.
 4. Print the manifest and include it with the physical media.
-5. Update `review-findings.md` with storage locations and responsible contacts.
+5. Update `../dev/reviews/review-findings.md` with storage locations and responsible contacts.
 
 ## Review workflow
 

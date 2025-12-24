@@ -48,10 +48,10 @@ restore workflows protect every bit of user data.
    - [ ] Import via sandbox, promote and export diff logs manually from **Settings → Backup & Restore → Compare versions** before comparing to the original.
 10. **Documentation alignment**
    - [ ] Check README + docs instructions against actual UI labels.
-   - [ ] Update `review-findings.md` with discrepancies.
+   - [ ] Update `../dev/reviews/review-findings.md` with discrepancies.
 
 ## Completion
 
 - [ ] Export updated verification packet (logs, screenshots, backups).
 - [ ] Update [Documentation Status Report](documentation-status-report-template.md).
-- [ ] Store evidence with release archives and note locations in `review-findings.md`.
+- [ ] Store evidence with release archives and note locations in `../dev/reviews/review-findings.md`.

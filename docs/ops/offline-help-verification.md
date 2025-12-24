@@ -55,7 +55,7 @@ cache-resident guidance.
      to protect any new autosave snapshots generated during testing.
    - Capture console output for `window.__cineRuntimeIntegrity` and add the
      offline indicator/screenshot timestamps to the verification packet. Note
-     storage media locations in `review-findings.md`.
+     storage media locations in `../dev/reviews/review-findings.md`.
 
 ## Expected outputs
 
