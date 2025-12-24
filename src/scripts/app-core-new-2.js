@@ -13506,6 +13506,97 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     function mergeDuplicateGearTableCategories(table) {
       if (!table) return;
+      const mergeCellNodes = (targetCell, sourceCell) => {
+        if (!targetCell || !sourceCell || targetCell === sourceCell) return;
+        const doc = targetCell.ownerDocument || (typeof document !== 'undefined' ? document : null);
+        const appendWithSeparator = node => {
+          if (!node) return;
+          const hasContent = targetCell.childNodes.length > 0;
+          if (hasContent) {
+            const lastEl = targetCell.lastElementChild;
+            const lastIsBreak = lastEl && lastEl.tagName && lastEl.tagName.toLowerCase() === 'br';
+            const isText = node.nodeType === 3 && node.textContent.trim();
+            const isElement = node.nodeType === 1;
+            const tag = isElement && node.tagName ? node.tagName.toLowerCase() : '';
+            const isBlock = tag === 'div' || tag === 'section' || tag === 'table' || tag === 'ul' || tag === 'ol';
+            if ((isText || (isElement && !isBlock)) && !lastIsBreak && doc) {
+              targetCell.appendChild(doc.createElement('br'));
+            }
+          }
+          targetCell.appendChild(node);
+        };
+        const targetStandard = targetCell.querySelector('.gear-standard-items');
+        sourceCell.querySelectorAll('.gear-standard-items').forEach(sourceStandard => {
+          if (targetStandard) {
+            while (sourceStandard.firstChild) {
+              targetStandard.appendChild(sourceStandard.firstChild);
+            }
+            sourceStandard.remove();
+          } else {
+            const customSection = targetCell.querySelector('.gear-custom-section');
+            if (customSection) {
+              targetCell.insertBefore(sourceStandard, customSection);
+            } else {
+              targetCell.appendChild(sourceStandard);
+            }
+          }
+        });
+
+        const targetCustom = targetCell.querySelector('.gear-custom-section');
+        sourceCell.querySelectorAll('.gear-custom-section').forEach(sourceCustom => {
+          if (!targetCustom) {
+            targetCell.appendChild(sourceCustom);
+            return;
+          }
+          let targetItems = targetCustom.querySelector('.gear-custom-items');
+          if (!targetItems && doc) {
+            targetItems = doc.createElement('div');
+            targetItems.className = 'gear-custom-items';
+            targetCustom.appendChild(targetItems);
+          }
+          const sourceItems = sourceCustom.querySelector('.gear-custom-items');
+          if (sourceItems && targetItems) {
+            while (sourceItems.firstChild) {
+              targetItems.appendChild(sourceItems.firstChild);
+            }
+          }
+          sourceCustom.querySelectorAll('.gear-custom-item').forEach(item => {
+            if (targetItems) {
+              targetItems.appendChild(item);
+            } else {
+              targetCustom.appendChild(item);
+            }
+          });
+          sourceCustom.remove();
+        });
+
+        while (sourceCell.firstChild) {
+          appendWithSeparator(sourceCell.firstChild);
+        }
+      };
+      const normalizeCategoryGroupRows = group => {
+        if (!group) return null;
+        const rows = Array.from(group.querySelectorAll('tr')).filter(row => !row.classList.contains('category-row'));
+        const doc = group.ownerDocument || (typeof document !== 'undefined' ? document : null);
+        let primaryRow = rows.shift();
+        if (!primaryRow && doc) {
+          primaryRow = doc.createElement('tr');
+          group.appendChild(primaryRow);
+        }
+        if (!primaryRow) return null;
+        let primaryCell = primaryRow.querySelector('td');
+        if (!primaryCell && doc) {
+          primaryCell = doc.createElement('td');
+          primaryRow.appendChild(primaryCell);
+        }
+        if (!primaryCell) return null;
+        rows.forEach(row => {
+          const cell = row.querySelector('td') || row;
+          mergeCellNodes(primaryCell, cell);
+          row.remove();
+        });
+        return primaryCell;
+      };
       const groups = Array.from(table.querySelectorAll('tbody.category-group'));
       const seen = new Map();
       groups.forEach(group => {
@@ -13524,11 +13615,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (resolvedKey && existingKey !== resolvedKey) {
           existing.setAttribute('data-gear-custom-key', resolvedKey);
         }
-        const rows = Array.from(group.querySelectorAll('tr'));
-        rows.forEach(row => {
-          if (row.classList.contains('category-row')) return;
-          existing.appendChild(row);
-        });
+        const existingCell = normalizeCategoryGroupRows(existing);
+        const incomingRows = Array.from(group.querySelectorAll('tr')).filter(row => !row.classList.contains('category-row'));
+        if (existingCell) {
+          incomingRows.forEach(row => {
+            const cell = row.querySelector('td') || row;
+            mergeCellNodes(existingCell, cell);
+            row.remove();
+          });
+        } else {
+          incomingRows.forEach(row => existing.appendChild(row));
+        }
+        normalizeCategoryGroupRows(existing);
         syncGearTableGroupCustomMeta(existing, label, resolvedKey);
         group.remove();
       });
