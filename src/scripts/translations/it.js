@@ -2121,7 +2121,7 @@
       "helpDataAuditNote": "Registra i risultati, acquisisci uno screenshot di Impostazioni → Dati e archiviazione con l'ultimo salvataggio automatico e archivia anche l'output della sentinella runtime nel registro di rotazione dei backup così saprai sempre quali copie sono state verificate offline.",
       "helpRestoreDrillNote": "Annota nomi file, timestamp e risultati della verifica nel registro di rotazione dei backup in modo che ogni esercitazione documenti una copia ripristinabile.",
       "helpSearchClear": "Cancella ricerca",
-      "helpSearchHelp": "Digita parole chiave o grafie alternative per filtrare all'istante gli argomenti della guida. I collegamenti rapidi si aggiornano durante la digitazione ed evidenziano l'articolo corrispondente quando premi Invio. Premi '/' o Ctrl+F (⌘+F su Mac) per spostare subito il focus sulla casella di ricerca, quindi usa Tab per scorrere i collegamenti filtrati senza chiudere il progetto.",
+      "helpSearchHelp": "Digita parole chiave o grafie alternative per filtrare all'istante gli argomenti della guida. I collegamenti rapidi si aggiornano durante la digitazione ed evidenziano l'articolo corrispondente quando premi Invio. Quando la finestra della guida è aperta, premi '/' o Ctrl+F (⌘+F su Mac) per spostare subito il focus sulla casella di ricerca (non sulla ricerca del browser), quindi usa Tab per scorrere i collegamenti filtrati senza chiudere il progetto.",
       "helpSearchClearHelp": "Svuota il campo di ricerca e mostra di nuovo tutti gli argomenti.",
       "helpQuickLinksHeading": "Vai a un argomento",
       "helpQuickLinksAriaLabel": "Navigazione rapida degli argomenti di aiuto",

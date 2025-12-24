@@ -2110,7 +2110,7 @@
       "helpDataAuditNote": "Log the results, capture a screenshot of Settings → Data & Storage with the latest autosave timestamp, and archive the console guard output with your backup rotation checklist so you always know which copies were verified offline.",
       "helpRestoreDrillNote": "Log filenames, timestamps and verification results in your backup rotation checklist so every rehearsal documents a restorable copy.",
       "helpSearchClear": "Clear search",
-      "helpSearchHelp": "Type keywords or alternate spellings to instantly filter help topics. Quick links update as you type and highlight the matching article when you press Enter. Press '/' or Ctrl+F (Cmd+F on Mac) to focus the search box, then press Tab to step through filtered quick links without leaving your project.",
+      "helpSearchHelp": "Type keywords or alternate spellings to instantly filter help topics. Quick links update as you type and highlight the matching article when you press Enter. Press '/' or Ctrl+F (Cmd+F on Mac) to focus the search box when the help dialog is open (instead of the browser find), then press Tab to step through filtered quick links without leaving your project.",
       "helpSearchClearHelp": "Clear the search box and show all help topics again.",
       "helpQuickLinksHeading": "Jump to a topic",
       "helpQuickLinksAriaLabel": "Help topics quick navigation",

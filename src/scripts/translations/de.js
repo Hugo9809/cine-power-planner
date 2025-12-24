@@ -2127,7 +2127,7 @@
       "helpDataAuditNote": "Dokumentiere die Ergebnisse, sichere einen Screenshot von Einstellungen → Daten & Speicherung mit dem aktuellsten Autosave-Zeitstempel und archiviere außerdem die Ausgabe der Runtime-Wache in deinem Backup-Rotationsprotokoll, damit du immer weißt, welche Kopien offline geprüft wurden.",
       "helpRestoreDrillNote": "Protokolliere Dateinamen, Zeitstempel und Prüfergebnisse in deinem Backup-Rotationsprotokoll, damit jede Übung eine wiederherstellbare Kopie dokumentiert.",
       "helpSearchClear": "Suche löschen",
-      "helpSearchHelp": "Gib Stichwörter oder alternative Schreibweisen ein, um die Hilfethemen sofort zu filtern. Die Schnelllinks aktualisieren sich während der Eingabe und heben den passenden Artikel hervor, sobald du Eingabe drückst. Drücke '/' oder Strg+F (Cmd+F auf dem Mac), um das Suchfeld sofort zu fokussieren, und nutze Tab, um durch die gefilterten Links zu wechseln, ohne das Projekt zu schließen.",
+      "helpSearchHelp": "Gib Stichwörter oder alternative Schreibweisen ein, um die Hilfethemen sofort zu filtern. Die Schnelllinks aktualisieren sich während der Eingabe und heben den passenden Artikel hervor, sobald du Eingabe drückst. Wenn der Hilfedialog geöffnet ist, drücke '/' oder Strg+F (Cmd+F auf dem Mac), um das Suchfeld sofort zu fokussieren (statt der Browser-Suche), und nutze Tab, um durch die gefilterten Links zu wechseln, ohne das Projekt zu schließen.",
       "helpSearchClearHelp": "Setzt das Suchfeld zurück und zeigt wieder alle Themen an.",
       "helpQuickLinksHeading": "Zum Thema springen",
       "helpQuickLinksAriaLabel": "Schnellnavigation der Hilfethemen",

@@ -2098,7 +2098,7 @@
       "helpDataAuditNote": "Anota los resultados, guarda una captura de Configuración → Datos y almacenamiento con la marca temporal más reciente y archiva también la salida de la guarda runtime en tu registro de rotación de copias de seguridad para saber siempre qué copias se verificaron sin conexión.",
       "helpRestoreDrillNote": "Anota nombres de archivo, marcas de tiempo y resultados de verificación en tu registro de rotación de copias de seguridad para que cada ensayo documente una copia recuperable.",
       "helpSearchClear": "Borrar búsqueda",
-      "helpSearchHelp": "Escribe palabras clave o variantes ortográficas para filtrar al instante los temas de ayuda. Los accesos directos se actualizan a medida que escribes y resaltan el artículo correspondiente cuando pulsas Intro. Pulsa '/' o Ctrl+F (Cmd+F en Mac) para llevar de inmediato el foco al campo de búsqueda y usa Tab para recorrer los accesos filtrados sin cerrar el proyecto.",
+      "helpSearchHelp": "Escribe palabras clave o variantes ortográficas para filtrar al instante los temas de ayuda. Los accesos directos se actualizan a medida que escribes y resaltan el artículo correspondiente cuando pulsas Intro. Cuando el cuadro de ayuda está abierto, pulsa '/' o Ctrl+F (Cmd+F en Mac) para llevar de inmediato el foco al campo de búsqueda (no a la búsqueda del navegador) y usa Tab para recorrer los accesos filtrados sin cerrar el proyecto.",
       "helpSearchClearHelp": "Vacía el campo de búsqueda y vuelve a mostrar todos los temas.",
       "helpQuickLinksHeading": "Ir a un tema",
       "helpQuickLinksAriaLabel": "Navegación rápida por los temas de ayuda",
