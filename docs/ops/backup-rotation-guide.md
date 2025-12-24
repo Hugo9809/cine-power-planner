@@ -58,7 +58,7 @@ exact timestamp and initials in the packet before resuming the rotation.
    Include any "Emergency
    fallback storage active" warnings and the action timestamp in the verification
    packet.
-6. Log every step in `docs/verification-log-template.md`, attach console output
+6. Log every step in `docs/ops/verification-log-template.md`, attach console output
    and store the evidence with the backups.
 
 ## Maintenance checklist

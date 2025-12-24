@@ -41,7 +41,7 @@ For each module extraction:
 3. **Move related functions** – relocate code wholesale, keeping original logic intact, and re-export via CommonJS and global attachments for legacy environments.
 4. **Update integration points** – adjust require/import statements, ensure globals (e.g., `cineRuntime`) still attach, and wire new module into bundler/test harness.
 5. **Regression checks** – run automated tests, manual offline smoke tests (Service Worker cache prime, offline autosave, import/export). Verify help/documentation strings and translation entries referencing moved code are refreshed.
-6. **Line-count audit** – confirm source and generated bundles fall below 15k lines; document results in `docs/runtime-refactor-status.md` (new file) after each phase.
+6. **Line-count audit** – confirm source and generated bundles fall below 15k lines; document results in `docs/dev/runtime-refactor-status.md` (new file) after each phase.
 
 ## 5. First module extraction (foundation/environment)
 

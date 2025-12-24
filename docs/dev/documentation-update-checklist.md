@@ -34,7 +34,7 @@ instructions.
       matches the latest UI labels for save, export, import, backup and restore flows.
 - [ ] Update help topics for **Save**, **Export**, **Import**, **Backup** and **Restore**
       if button names, warnings or guardrail copy changed.
-- [ ] Update schema definitions in `docs/schema-inventory.md` if persistence
+- [ ] Update schema definitions in `docs/dev/schema-inventory.md` if persistence
       payloads changed.
 - [ ] Record interim notes in `review-findings.md`.
 

@@ -14,7 +14,7 @@ machines.
   preset state.
 - `src/scripts/storage.js` mirrors rule payloads into timestamped backup slots
   before the UI loads so every edit has a rollback point.
-- `docs/save-share-restore-reference.md` explains how preset backups integrate
+- `docs/user/save-share-restore-reference.md` explains how preset backups integrate
   with planner bundles—update both when behaviour changes.
 
 ## Rule generation pipeline

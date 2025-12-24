@@ -71,7 +71,7 @@ if (typeof globalThis !== 'undefined' && typeof globalThis.STRONG_SEARCH_MATCH_T
 const FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK =
   'Force reload requires an internet connection. Try again once you are back online.';
 
-// Reference to the Pink Mode UI toggle. See docs/pink-mode-reference.md for feature details.
+// Reference to the Pink Mode UI toggle. See docs/user/pink-mode-reference.md for feature details.
 var pinkModeToggle =
   typeof pinkModeToggle !== 'undefined'
     ? pinkModeToggle

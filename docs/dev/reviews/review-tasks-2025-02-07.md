@@ -11,10 +11,10 @@ _No open tasks – add new entries here whenever the latest findings require fol
 
 | ID | Description | Priority | Owner | Status | Evidence reference |
 | --- | --- | --- | --- | --- | --- |
-| TASK-001 | Update `docs/save-share-restore-reference.md` with the new redundant autosave/backups guard notes introduced during the runtime helper split. | Medium | TBD | Closed | `docs/save-share-restore-reference.md` L10-L25 (commit `d734117`) documents the critical storage guard behaviour and ledger evidence trail. |
-| TASK-002 | Sync `docs/documentation-update-checklist.md` with the current backup rotation rehearsal steps so operators rehearse redundant exports before hand-off. | Medium | TBD | Closed | `docs/documentation-update-checklist.md` L25-L32 + `docs/backup-rotation-guide.md` L8-L48 (commit `d734117`) capture the rehearsal drill, redundant export cadence and evidence logging requirements. |
+| TASK-001 | Update `docs/user/save-share-restore-reference.md` with the new redundant autosave/backups guard notes introduced during the runtime helper split. | Medium | TBD | Closed | `docs/user/save-share-restore-reference.md` L10-L25 (commit `d734117`) documents the critical storage guard behaviour and ledger evidence trail. |
+| TASK-002 | Sync `docs/dev/documentation-update-checklist.md` with the current backup rotation rehearsal steps so operators rehearse redundant exports before hand-off. | Medium | TBD | Closed | `docs/dev/documentation-update-checklist.md` L25-L32 + `docs/ops/backup-rotation-guide.md` L8-L48 (commit `d734117`) capture the rehearsal drill, redundant export cadence and evidence logging requirements. |
 | TASK-008 | Update the service worker asset manifest so every `docs/` page is cached for offline crews following the README trail. | High | Automated QA | Closed | commit `3df4feb` (2025-10-21) + `npm run check-consistency` verification on 2025-10-26 |
-| TASK-011 | Expand `docs/testing-plan.md` so the `npm test` entry documents the lint, `check-consistency`, and Jest multi-project pipelines and their offline evidence steps. | Medium | Automated QA | Closed | commit `d734117` (2025-10-21) + `npm test` rehearsal on 2025-10-25 |
+| TASK-011 | Expand `docs/dev/testing-plan.md` so the `npm test` entry documents the lint, `check-consistency`, and Jest multi-project pipelines and their offline evidence steps. | Medium | Automated QA | Closed | commit `d734117` (2025-10-21) + `npm test` rehearsal on 2025-10-25 |
 
 ## Workflow
 

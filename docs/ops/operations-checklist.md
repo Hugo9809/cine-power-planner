@@ -11,7 +11,7 @@ restore workflows protect every bit of user data.
       and the header reload control is disabled before proceeding.
 - [ ] Ensure the rehearsal project is loaded with representative data.
 - [ ] Confirm the latest planner backup and project bundles are stored safely.
-- [ ] Open a fresh copy of `docs/verification-log-template.md` to log evidence.
+- [ ] Open a fresh copy of `docs/ops/verification-log-template.md` to log evidence.
 
 ## Rehearsal steps
 
