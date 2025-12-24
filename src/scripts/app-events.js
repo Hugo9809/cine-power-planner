@@ -2731,7 +2731,26 @@ addSafeEventListener('saveSetupBtn', "click", handleSaveSetupClick);
 
 if (setupNameInput) {
   addSafeEventListener('setupName', "input", function () {
-    handleSaveSetupClick({ silent: true });
+    if (saveSetupBtn) {
+      saveSetupBtn.disabled = !setupNameInput.value.trim();
+    }
+    if (typeof checkSetupChanged === 'function') {
+      try {
+        checkSetupChanged();
+      } catch (error) {
+        console.warn('Failed to evaluate setup change status after name update', error);
+      }
+    }
+  });
+
+  addSafeEventListener('setupName', "keydown", function (event) {
+    if (event.isComposing) {
+      return;
+    }
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleSaveSetupClick(event);
+    }
   });
 }
 
