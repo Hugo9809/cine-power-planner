@@ -14,7 +14,7 @@
         "layoutRentalDescription": "Optimizes layout for rental by grouping items by category.",
         "sectionsTitle": "Sections",
         "sectionProject": "Production Requirements",
-        "sectionDevices": "Rig/Package Devices",
+        "sectionDevices": "Camera Package Devices",
         "sectionDiagram": "Power Diagram",
         "sectionGearList": "Kit List",
         "sectionBattery": "Battery Comparison",
@@ -93,8 +93,8 @@
       "batteryComparisonDescription": "Review every compatible battery to see runtime estimates for your current setup.",
       "batteryComparisonDescriptionHelp": "This table lists every compatible battery and updates as you change your setup. Hover any heading to learn what the numbers represent.",
       "batteryComparisonTableHelp": "Rows show compatible batteries. Runtime includes current draw calculations, and the colored bar compares runtime length at a glance.",
-      "setupDiagramHeading": "Connection Diagram",
-      "diagramPdfNote": "The visual connection diagram is not included in the PDF export. Open the print view to review the layout.",
+      "setupDiagramHeading": "Power Diagram",
+      "diagramPdfNote": "The Power Diagram is not included in the PDF export. Open the print view to review the layout.",
       "projectRequirementsNav": "Production Requirements",
       "projectRequirementsNavHelp": "Jump to the Production Requirements output once generated.",
       "gearListNav": "Kit List",
@@ -135,12 +135,12 @@
       "batteryTableRuntimeHelp": "Estimated runtime in hours plus which outputs supply enough current.",
       "batteryTableGraphLabel": "Runtime comparison bar",
       "batteryTableGraphHelp": "Bar length compares runtime across batteries. Green covers pins and D-Tap, orange means only main pins, and blue marks infinite runtime estimates.",
-      "setupDiagramHeadingHelp": "View a visual diagram of how selected devices connect.",
+      "setupDiagramHeadingHelp": "View the Power Diagram showing how power, video, and control connect across the rig.",
       "setupDiagramPlaceholder": "Select devices to visualize the project.",
       "diagramLegendPower": "Power",
       "diagramLegendVideo": "Video",
       "diagramLegendFIZ": "FIZ",
-      "downloadDiagramBtn": "Download Diagram",
+      "downloadDiagramBtn": "Download Power Diagram",
       "gridSnapToggle": "Snap to Grid",
       "existingDevicesHeading": "Existing Devices",
       "deviceLibrarySearchLabel": "Search entire library",
@@ -386,8 +386,8 @@
           "content": "The **Power Summary** shows the total power consumption of your rig and estimated runtime based on the selected battery and mount voltages. Watch for **Pin** and **D-Tap** warnings, and use the quick summary to explain results offline."
         },
         "connectionDiagram": {
-          "title": "Connection Diagram",
-          "content": "The **Connection Diagram** visualizes how devices are connected. Drag to arrange nodes, zoom and pan to inspect details, and download SVG or JPG snapshots for sharing."
+          "title": "Power Diagram",
+          "content": "The **Power Diagram** shows how power, video, and control gear connect. Drag to arrange nodes, zoom and pan to inspect details, and download SVG or JPG snapshots for sharing."
         },
         "gearList": {
           "title": "Kit List",
@@ -1830,9 +1830,9 @@
       "printOptionsLayoutStandard": "Standard layout",
       "printOptionsLayoutRental": "Rental-friendly layout",
       "rentalPrintSectionProject": "Production Requirements",
-      "rentalPrintSectionDevices": "Rig/Package Devices",
+      "rentalPrintSectionDevices": "Camera Package Devices",
       "rentalPrintSectionPower": "Power Summary",
-      "rentalPrintSectionDiagram": "Camera Diagram",
+      "rentalPrintSectionDiagram": "Power Diagram",
       "rentalPrintSectionGearList": "Kit List",
       "rentalPrintSectionBattery": "Battery Comparison",
       "pdfWarningsHeading": "Warnings",
@@ -2008,8 +2008,8 @@
             "body": "Use the runtime feedback button to log real-world results. Entries sync with the current project, strengthen future estimates and remain available offline for audits."
           },
           "connectionDiagram": {
-            "title": "Inspect the connection diagram",
-            "body": "The interactive diagram shows how power, video and control gear connect. Drag nodes to plan rig layout, double-click devices to open hover details, then save so the arrangement and annotations persist across exports and restores."
+            "title": "Inspect the power diagram",
+            "body": "The interactive Power Diagram shows how power, video and control gear connect. Drag nodes to plan rig layout, double-click devices to open hover details, then save so the arrangement and annotations persist across exports and restores."
           },
           "connectionDiagramDetails": {
             "title": "Open device hover details",
@@ -2165,7 +2165,7 @@
       "runtimeFeedbackBtnHelp": "Open a form where you can submit real-world runtime data for this configuration.",
       "zoomOutHelp": "Zoom out of the project diagram to view more of the layout.",
       "zoomInHelp": "Zoom in on the project diagram for a closer look at connections.",
-      "downloadDiagramHelp": "Download the current project diagram as an SVG or JPG image.",
+      "downloadDiagramHelp": "Download the Power Diagram as an SVG or JPG image.",
       "gridSnapToggleHelp": "Turn grid snapping on or off to help align items in the diagram.",
       "resetViewBtn": "Reset View",
       "resetViewHelp": "Reset zoom and pan to their defaults.",

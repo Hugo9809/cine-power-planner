@@ -14,8 +14,8 @@
         "layoutRentalDescription": "Ottimizza il layout raggruppando gli elementi per categoria.",
         "sectionsTitle": "Sezioni",
         "sectionProject": "Requisiti di produzione",
-        "sectionDevices": "Dispositivi del rig/pacchetto",
-        "sectionDiagram": "Diagramma delle Connessioni",
+        "sectionDevices": "Dispositivi del pacchetto camera",
+        "sectionDiagram": "Diagramma di alimentazione",
         "sectionGearList": "Lista kit",
         "sectionBattery": "Confronto Batterie",
         "exportPdfButton": "Esporta PDF",
@@ -27,7 +27,7 @@
         "generatedNoProjectRequirements": "Nessun dato sui requisiti di produzione.",
         "generatedDeviceSelectionTitle": "Dispositivi del pacchetto camera",
         "generatedNoDevicesSelected": "Nessun dispositivo selezionato.",
-        "generatedPowerDiagramTitle": "Diagramma delle Connessioni",
+        "generatedPowerDiagramTitle": "Diagramma di alimentazione",
         "generatedPowerSummaryTitle": "Riepilogo Potenza",
         "generatedGearListTitle": "Lista kit",
         "generatedTotalLoad": "Carico Totale",
@@ -94,8 +94,8 @@
       "batteryComparisonDescription": "Esamina tutte le batterie compatibili per vedere le stime di autonomia con la configurazione attuale.",
       "batteryComparisonDescriptionHelp": "Questa tabella elenca tutte le batterie compatibili e si aggiorna quando modifichi la configurazione. Passa il puntatore sulle intestazioni per capire i valori.",
       "batteryComparisonTableHelp": "Ogni riga mostra una batteria compatibile. L'autonomia include il consumo stimato e la barra colorata confronta la durata a colpo d'occhio.",
-      "setupDiagramHeading": "Diagramma delle connessioni",
-      "diagramPdfNote": "Il diagramma delle connessioni non è incluso nell'esportazione PDF. Apri la vista di stampa per consultare il layout.",
+      "setupDiagramHeading": "Diagramma di alimentazione",
+      "diagramPdfNote": "Il diagramma di alimentazione non è incluso nell'esportazione PDF. Apri la vista di stampa per consultare il layout.",
       "projectRequirementsNav": "Requisiti di produzione",
       "projectRequirementsNavHelp": "Vai all'output Requisiti di produzione quando è stato generato.",
       "gearListNav": "Lista kit",
@@ -136,12 +136,12 @@
       "batteryTableRuntimeHelp": "Autonomia stimata in ore e quali uscite forniscono abbastanza corrente.",
       "batteryTableGraphLabel": "Barra di confronto autonomia",
       "batteryTableGraphHelp": "La lunghezza della barra confronta l'autonomia tra le batterie. Il verde copre pin e D-Tap, l'arancione indica solo i pin principali e il blu segnala autonomie teoricamente infinite.",
-      "setupDiagramHeadingHelp": "Mostra un diagramma visivo di come i dispositivi selezionati si collegano.",
+      "setupDiagramHeadingHelp": "Mostra il diagramma di alimentazione con i collegamenti di energia, video e controllo del rig.",
       "setupDiagramPlaceholder": "Seleziona i dispositivi per visualizzare la configurazione.",
       "diagramLegendPower": "Energia",
       "diagramLegendVideo": "Video",
       "diagramLegendFIZ": "FIZ",
-      "downloadDiagramBtn": "Scarica il diagramma",
+      "downloadDiagramBtn": "Scarica il diagramma di alimentazione",
       "gridSnapToggle": "Aggancia alla griglia",
       "existingDevicesHeading": "Dispositivi esistenti",
       "deviceLibrarySearchLabel": "Cerca in tutta la libreria",
@@ -1031,9 +1031,9 @@
       "printOptionsLayoutStandard": "Layout standard",
       "printOptionsLayoutRental": "Layout per rental",
       "rentalPrintSectionProject": "Requisiti di produzione",
-      "rentalPrintSectionDevices": "Dispositivi del rig/pacchetto",
+      "rentalPrintSectionDevices": "Dispositivi del pacchetto camera",
       "rentalPrintSectionPower": "Riepilogo alimentazione",
-      "rentalPrintSectionDiagram": "Schema camera",
+      "rentalPrintSectionDiagram": "Diagramma di alimentazione",
       "rentalPrintSectionGearList": "Lista kit",
       "rentalPrintSectionBattery": "Confronto batterie",
       "exportAndRevertBtn": "Esporta e ripristina il database predefinito",
@@ -1080,8 +1080,8 @@
           "content": "Il **Riepilogo potenza** mostra consumo totale e autonomia stimata in base alla batteria e ai voltaggi di montaggio. Controlla gli avvisi **Pin** e **D‑Tap** e usa il riepilogo rapido per spiegare i risultati offline."
         },
         "connectionDiagram": {
-          "title": "Diagramma di connessione",
-          "content": "Il **Diagramma di connessione** mostra come sono collegati i dispositivi. Trascina per disporre i nodi, usa zoom e panoramica e scarica snapshot SVG o JPG."
+          "title": "Diagramma di alimentazione",
+          "content": "Il **Diagramma di alimentazione** mostra i collegamenti di energia, video e controllo. Trascina per disporre i nodi, usa zoom e panoramica e scarica snapshot SVG o JPG."
         },
         "gearList": {
           "title": "Lista kit",
@@ -2023,8 +2023,8 @@
             "body": "Usa il pulsante feedback runtime per registrare risultati reali. Le voci si sincronizzano con il progetto corrente, migliorano le stime future e restano disponibili offline per gli audit."
           },
           "connectionDiagram": {
-            "title": "Esamina il diagramma delle connessioni",
-            "body": "Il diagramma interattivo mostra come si collegano alimentazione, video e controllo. Trascina i nodi per pianificare il layout, fai doppio clic sui dispositivi per aprire i popup informativi e poi salva così disposizione e annotazioni restano in esportazioni e ripristini."
+            "title": "Esamina il diagramma di alimentazione",
+            "body": "Il diagramma di alimentazione interattivo mostra come si collegano alimentazione, video e controllo. Trascina i nodi per pianificare il layout, fai doppio clic sui dispositivi per aprire i popup informativi e poi salva così disposizione e annotazioni restano in esportazioni e ripristini."
           },
           "connectionDiagramDetails": {
             "title": "Apri i dettagli hover del dispositivo",
@@ -2176,7 +2176,7 @@
       "runtimeFeedbackBtnHelp": "Invia la durata di funzionamento misurata per questa configurazione.",
       "zoomOutHelp": "Allontana il diagramma di configurazione.",
       "zoomInHelp": "Avvicina il diagramma di configurazione.",
-      "downloadDiagramHelp": "Scarica il diagramma di configurazione come immagine.",
+      "downloadDiagramHelp": "Scarica il diagramma di alimentazione come immagine.",
       "gridSnapToggleHelp": "Attiva/disattiva l'allineamento alla griglia dei nodi del diagramma.",
       "resetViewBtn": "Reimposta vista",
       "resetViewHelp": "Ripristina lo zoom e il movimento del diagramma.",

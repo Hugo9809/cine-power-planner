@@ -62,8 +62,8 @@
       "batteryComparisonDescription": "Passez en revue chaque batterie compatible pour voir les estimations d’autonomie pour votre configuration actuelle.",
       "batteryComparisonDescriptionHelp": "Ce tableau réunit toutes les batteries compatibles et se met à jour dès que vous modifiez votre configuration. Survolez les en-têtes pour comprendre chaque valeur.",
       "batteryComparisonTableHelp": "Chaque ligne présente une batterie compatible. L’autonomie estimée intègre la consommation calculée et la barre colorée compare les durées d’un coup d’œil.",
-      "setupDiagramHeading": "Schéma de connexion",
-      "diagramPdfNote": "Le schéma de connexion n’est pas inclus dans l’export PDF. Ouvrez la vue d’impression pour vérifier la mise en page.",
+      "setupDiagramHeading": "Schéma d’alimentation",
+      "diagramPdfNote": "Le schéma d’alimentation n’est pas inclus dans l’export PDF. Ouvrez la vue d’impression pour vérifier la mise en page.",
       "projectRequirementsNav": "Exigences de production",
       "projectRequirementsNavHelp": "Accéder à la sortie Exigences de production une fois générée.",
       "gearListNav": "Liste de kit",
@@ -104,12 +104,12 @@
       "batteryTableRuntimeHelp": "Autonomie estimée en heures ainsi que les sorties qui fournissent le courant nécessaire.",
       "batteryTableGraphLabel": "Barre de comparaison d’autonomie",
       "batteryTableGraphHelp": "La longueur de la barre compare l’autonomie entre les batteries. Le vert couvre les broches et la sortie D-Tap, l’orange signifie uniquement les broches principales et le bleu indique une autonomie théorique infinie.",
-      "setupDiagramHeadingHelp": "Affiche un schéma visuel des connexions entre les appareils sélectionnés.",
+      "setupDiagramHeadingHelp": "Affiche le schéma d’alimentation et les liaisons d’énergie, vidéo et contrôle du rig.",
       "setupDiagramPlaceholder": "Sélectionnez des appareils pour afficher le schéma.",
       "diagramLegendPower": "Alimentation",
       "diagramLegendVideo": "Vidéo",
       "diagramLegendFIZ": "FIZ",
-      "downloadDiagramBtn": "Télécharger le diagramme",
+      "downloadDiagramBtn": "Télécharger le schéma d’alimentation",
       "gridSnapToggle": "Aligner sur la grille",
       "existingDevicesHeading": "Appareils existants",
       "deviceLibrarySearchLabel": "Rechercher dans toute la bibliothèque",
@@ -1006,9 +1006,9 @@
       "printOptionsLayoutStandard": "Mise en page standard",
       "printOptionsLayoutRental": "Mise en page location",
       "rentalPrintSectionProject": "Exigences de production",
-      "rentalPrintSectionDevices": "Appareils du rig/pack",
+      "rentalPrintSectionDevices": "Appareils du pack caméra",
       "rentalPrintSectionPower": "Résumé d'alimentation",
-      "rentalPrintSectionDiagram": "Schéma caméra",
+      "rentalPrintSectionDiagram": "Schéma d’alimentation",
       "rentalPrintSectionGearList": "Liste de matériel",
       "rentalPrintSectionBattery": "Comparatif des batteries",
       "exportAndRevertBtn": "Exporter et Réinitialiser",
@@ -1055,8 +1055,8 @@
           "content": "Le **Résumé de puissance** montre la consommation totale et l'autonomie estimée selon la batterie et les tensions de monture. Surveillez les avertissements **Pin** et **D‑Tap**, et utilisez le résumé rapide pour expliquer les résultats hors ligne."
         },
         "connectionDiagram": {
-          "title": "Schéma de connexion",
-          "content": "Le **Schéma de connexion** visualise les branchements. Faites glisser pour organiser, zoomez/panoramique pour les détails et téléchargez des instantanés SVG ou JPG."
+          "title": "Schéma d’alimentation",
+          "content": "Le **Schéma d’alimentation** visualise les liaisons d’énergie, vidéo et contrôle. Faites glisser pour organiser, zoomez/panoramique pour les détails et téléchargez des instantanés SVG ou JPG."
         },
         "gearList": {
           "title": "Liste de kit",
@@ -1998,8 +1998,8 @@
             "body": "Utilisez le bouton de retour d’expérience sur l’autonomie pour consigner les résultats réels. Les entrées se synchronisent avec le projet en cours, renforcent les estimations futures et restent disponibles hors ligne pour les audits."
           },
           "connectionDiagram": {
-            "title": "Inspectez le diagramme de connexion",
-            "body": "Le diagramme interactif montre comment l’alimentation, la vidéo et les contrôles sont reliés. Faites glisser les nœuds pour planifier l’agencement, double-cliquez sur les appareils pour afficher les infobulles détaillées, puis enregistrez afin que la disposition et les annotations persistent dans les exports et restaurations."
+            "title": "Inspectez le schéma d’alimentation",
+            "body": "Le schéma d’alimentation interactif montre comment l’alimentation, la vidéo et les contrôles sont reliés. Faites glisser les nœuds pour planifier l’agencement, double-cliquez sur les appareils pour afficher les infobulles détaillées, puis enregistrez afin que la disposition et les annotations persistent dans les exports et restaurations."
           },
           "connectionDiagramDetails": {
             "title": "Ouvrez les détails flottants de l’appareil",
@@ -2151,7 +2151,7 @@
       "runtimeFeedbackBtnHelp": "Soumettez la durée de fonctionnement mesurée pour cette configuration.",
       "zoomOutHelp": "Réduit le diagramme de configuration.",
       "zoomInHelp": "Agrandit le diagramme de configuration.",
-      "downloadDiagramHelp": "Télécharge le diagramme de configuration comme image.",
+      "downloadDiagramHelp": "Télécharge le schéma d’alimentation comme image.",
       "gridSnapToggleHelp": "Active/désactive l'alignement des nœuds du diagramme sur la grille.",
       "resetViewBtn": "Réinitialiser la vue",
       "resetViewHelp": "Réinitialise le zoom et le panoramique du diagramme.",
