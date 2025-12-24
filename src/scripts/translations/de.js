@@ -889,11 +889,11 @@
         "Best Boy Electric": "Erster Licht-Assistent",
         "Electrician": "Beleuchter",
         "Rigging Gaffer": "Rigging-Oberbeleuchter",
-        "Key Grip": "Chef-Kamerabühne",
-        "Best Boy Grip": "Erster Kamerabühnen-Assistent",
-        "Grip": "Kamerabühne",
-        "Dolly Grip": "Kamerabühne Dolly",
-        "Rigging Grip": "Rigging-Kamerabühne"
+        "Key Grip": "Chef-Machinist",
+        "Best Boy Grip": "Stellv. Chef-Machinist",
+        "Grip": "Machinist",
+        "Dolly Grip": "Dolly-Machinist",
+        "Rigging Grip": "Rigging-Machinist"
       },
       "scenarios": {
         "Indoor": "Innenmotiv / Studio",
