@@ -1456,6 +1456,19 @@ const rentalHouses = Object.freeze([
     accessDate: '2025-02-14'
   }),
   Object.freeze({
+    name: 'SHERPA-CINE-RENT',
+    shortName: 'SHERPA-CINE-RENT',
+    city: 'Munich',
+    country: 'Germany',
+    address: 'Häberlstraße 22, 80337 München',
+    phone: '+49 176 82449905',
+    email: 'mail@tenzinsherpa.film',
+    website: 'https://www.tenzinsherpa.film/equipment',
+    sourceQuote: 'Provided by user request (address, phone, email, website).',
+    sourceUrl: '',
+    accessDate: '2025-12-24'
+  }),
+  Object.freeze({
     name: 'Sparks Filmtechnik – München',
     shortName: 'Sparks Filmtechnik',
     city: 'Munich',
@@ -1755,5 +1768,3 @@ if (shouldExposeGlobally) {
 if (typeof module !== 'undefined' && module && module.exports) {
   module.exports = rentalHouses;
 }
-
-
