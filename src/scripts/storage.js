@@ -61,7 +61,8 @@
   // [Added by Agent] Lifecycle channel for cross-tab coordination
   const LIFECYCLE_CHANNEL_NAME = 'cine-power-planner-lifecycle';
   let lifecycleChannel = null;
-  if (typeof BroadcastChannel !== 'undefined') {
+  const isJestWorker = typeof process !== 'undefined' && process && process.env && process.env.JEST_WORKER_ID;
+  if (typeof BroadcastChannel !== 'undefined' && !isJestWorker) {
     try {
       lifecycleChannel = new BroadcastChannel(LIFECYCLE_CHANNEL_NAME);
       if (lifecycleChannel) {
@@ -104,6 +105,23 @@
       GLOBAL_SCOPE.__cineStorageInitialized = true;
       void storageInitFlagError;
     }
+  }
+
+  // [Added by Agent] Expose a teardown method for tests to close the channel
+  // and allow the process to exit cleanly.
+  function closeStorageLifecycle() {
+    if (lifecycleChannel) {
+      try {
+        lifecycleChannel.close();
+      } catch (closeError) {
+        void closeError;
+      }
+      lifecycleChannel = null;
+    }
+  }
+  // Export it if we are in a testing environment (implied by module.exports existence)
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports.closeStorageLifecycle = closeStorageLifecycle;
   }
 
   // Perform a defensive deep clone that keeps us safe even when the runtime

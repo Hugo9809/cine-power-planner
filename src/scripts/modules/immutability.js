@@ -174,14 +174,7 @@
       return true;
     }
 
-    if (
-      typeof process !== 'undefined' &&
-      process &&
-      process.release &&
-      process.release.name === 'node'
-    ) {
-      return true;
-    }
+
 
 
     try {
@@ -243,21 +236,7 @@
       return value;
     }
 
-    if (typeof process !== 'undefined' && process && process.env && process.env.JEST_WORKER_ID) {
-      try {
-        if (typeof Object.freeze === 'function') {
-          Object.freeze(value);
-          if (!Object.isFrozen(value)) {
-            console.warn('immutability.js (Jest block): Object.freeze called but object is NOT frozen', value);
-          } else {
-            // console.log('immutability.js (Jest block): Object frozen successfully');
-          }
-        }
-      } catch (freezeError) {
-        void freezeError;
-      }
-      return value;
-    }
+
 
     if (typeof value === 'function') {
       try {
