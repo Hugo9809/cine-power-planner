@@ -1569,6 +1569,39 @@ const lensSelectionManager = (() => {
       return;
     }
     if (optionsEmptyMessage) optionsEmptyMessage.hidden = true;
+
+    // Actions Header
+    const actionsHeader = doc.createElement('div');
+    actionsHeader.className = 'lens-options-header';
+
+    const countSpan = doc.createElement('span');
+    countSpan.textContent = `${lensList.length} items`;
+    actionsHeader.appendChild(countSpan);
+
+    const toggleLabel = doc.createElement('label');
+    toggleLabel.className = 'lens-set-toggle';
+
+    const toggleInput = doc.createElement('input');
+    toggleInput.type = 'checkbox';
+
+    // Calculate selection state for indeterminate checkbox
+    const selectedCount = lensList.filter(lens => state.selections.some(sel => sel.name === lens.name)).length;
+    const allSelected = lensList.length > 0 && selectedCount === lensList.length;
+    const someSelected = selectedCount > 0 && !allSelected;
+
+    toggleInput.checked = allSelected;
+    toggleInput.indeterminate = someSelected;
+
+    toggleInput.addEventListener('change', (event) => {
+      toggleLensSet(lensList, event.target.checked);
+    });
+
+    toggleLabel.appendChild(toggleInput);
+    toggleLabel.appendChild(doc.createTextNode('Select Full Set'));
+    actionsHeader.appendChild(toggleLabel);
+
+    optionsContainer.appendChild(actionsHeader);
+
     lensList.forEach((lens, index) => {
       const wrapper = doc.createElement('div');
       wrapper.className = 'lens-option';
@@ -1604,6 +1637,43 @@ const lensSelectionManager = (() => {
       optionsContainer.appendChild(wrapper);
       optionInputs.set(lens.name, checkbox);
     });
+  };
+
+  const toggleLensSet = (lensList, shouldSelect) => {
+    if (!Array.isArray(lensList) || !lensList.length) return;
+
+    let changed = false;
+    const lensNames = new Set(lensList.map(l => l.name));
+
+    if (shouldSelect) {
+      // Select All
+      lensList.forEach(lens => {
+        if (!state.selections.some(sel => sel.name === lens.name)) {
+          const defaultMount = determineLensMountSelection(lens.name);
+          const selection = {
+            name: lens.name,
+            mount: defaultMount.mount
+          };
+          if (defaultMount.status) {
+            selection.mountState = defaultMount.status;
+          }
+          state.selections.push(selection);
+          changed = true;
+        }
+      });
+    } else {
+      // Deselect All (only from this set)
+      const initialLength = state.selections.length;
+      state.selections = state.selections.filter(sel => !lensNames.has(sel.name));
+      if (state.selections.length !== initialLength) {
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      renderSelectionChips();
+      renderLensOptions();
+    }
   };
 
   const renderSeries = () => {
@@ -3339,7 +3409,14 @@ if (generateOverviewBtnRef) {
   generateOverviewBtnRef.addEventListener('click', () => {
     const setupSelectRef = typeof setupSelect !== 'undefined' ? setupSelect : document.getElementById('setupSelect');
     if (!setupSelectRef || !setupSelectRef.value) { // Ensure a setup is selected
-      alert(texts[currentLang].alertSelectSetupForOverview);
+      if (typeof window.cineShowAlertDialog === 'function') {
+        window.cineShowAlertDialog({
+          title: (texts[currentLang] && texts[currentLang].alertSelectSetupForOverviewTitle) || 'No Project Selected',
+          message: texts[currentLang].alertSelectSetupForOverview
+        });
+      } else {
+        alert(texts[currentLang].alertSelectSetupForOverview);
+      }
       return;
     }
 
@@ -3371,11 +3448,17 @@ function alertPinExceeded() {
   const totalCurrentLow = parseFloat(totalCurrent12Elem.textContent);
   const pinLimit = parseBatteryCurrentLimit(battData.pinA);
   if (!Number.isFinite(pinLimit) || pinLimit <= 0) return;
-  alert(
-    texts[currentLang].warnPinExceeded
-      .replace('{current}', totalCurrentLow.toFixed(2))
-      .replace('{max}', String(pinLimit))
-  );
+  const message = texts[currentLang].warnPinExceeded
+    .replace('{current}', totalCurrentLow.toFixed(2))
+    .replace('{max}', String(pinLimit));
+  if (typeof window.cineShowAlertDialog === 'function') {
+    window.cineShowAlertDialog({
+      title: texts[currentLang].warnPinExceededTitle || 'Current Limit Exceeded',
+      message: message
+    });
+  } else {
+    alert(message);
+  }
 }
 
 // Generate a printable gear list for the current setup
@@ -3384,7 +3467,14 @@ if (generateGearListBtnRef) {
   generateGearListBtnRef.addEventListener('click', () => {
     const setupSelectRef = typeof setupSelect !== 'undefined' ? setupSelect : document.getElementById('setupSelect');
     if (!setupSelectRef || !setupSelectRef.value) {
-      alert(texts[currentLang].alertSelectSetupForOverview);
+      if (typeof window.cineShowAlertDialog === 'function') {
+        window.cineShowAlertDialog({
+          title: (texts[currentLang] && texts[currentLang].alertSelectSetupForOverviewTitle) || 'No Project Selected',
+          message: texts[currentLang].alertSelectSetupForOverview
+        });
+      } else {
+        alert(texts[currentLang].alertSelectSetupForOverview);
+      }
       return;
     }
     if (!batteryPinsSufficient()) {
@@ -3989,6 +4079,11 @@ function downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear)
       if (typeof setTimeout === 'function') {
         setTimeout(() => shareLinkMessage.classList.add('hidden'), 6000);
       }
+    } else if (typeof window.cineShowAlertDialog === 'function') {
+      window.cineShowAlertDialog({
+        title: 'Export Failed',
+        message: failureMessage
+      });
     } else if (typeof alert === 'function') {
       alert(failureMessage);
     }
@@ -4029,6 +4124,11 @@ function downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear)
       if (typeof setTimeout === 'function') {
         setTimeout(() => shareLinkMessage.classList.add('hidden'), 8000);
       }
+    } else if (typeof window.cineShowAlertDialog === 'function') {
+      window.cineShowAlertDialog({
+        title: 'Download Blocked',
+        message: manualMessage
+      });
     } else if (typeof alert === 'function') {
       alert(manualMessage);
     }
@@ -4047,6 +4147,11 @@ function downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear)
     if (typeof setTimeout === 'function') {
       setTimeout(() => shareLinkMessage.classList.add('hidden'), 4000);
     }
+  } else if (typeof window.cineShowAlertDialog === 'function') {
+    window.cineShowAlertDialog({
+      title: 'Success',
+      message: successMessage
+    });
   } else if (typeof alert === 'function') {
     alert(successMessage);
   }
@@ -6188,11 +6293,12 @@ function populateFilterDropdown(extraTypes = []) {
 }
 
 function populateProjectForm(info = {}) {
-  if (!projectForm) return;
-  projectForm.reset();
+  const form = typeof projectForm !== 'undefined' ? projectForm : (typeof document !== 'undefined' ? document.getElementById('projectForm') : null);
+  if (!form) return;
+  form.reset();
   const setVal = (name, value) => {
     if (value === undefined) return;
-    const field = projectForm.querySelector(`[name="${name}"]`);
+    const field = form.querySelector(`[name="${name}"]`);
     if (!field) return;
     let resolvedValue = value;
     if (name === 'recordingFrameRate' || name === 'slowMotionRecordingFrameRate') {
@@ -6230,6 +6336,13 @@ function populateProjectForm(info = {}) {
       });
     }
   };
+
+  const resolve = (val, id) => val || (typeof document !== 'undefined' ? document.getElementById(id) : null);
+  const crewDiv = resolve(typeof crewContainer !== 'undefined' ? crewContainer : null, 'crewContainer');
+  const prepDiv = resolve(typeof prepContainer !== 'undefined' ? prepContainer : null, 'prepContainer');
+  const shootDiv = resolve(typeof shootContainer !== 'undefined' ? shootContainer : null, 'shootContainer');
+  const returnDiv = resolve(typeof returnContainer !== 'undefined' ? returnContainer : null, 'returnContainer');
+  const storageDiv = resolve(typeof storageNeedsContainer !== 'undefined' ? storageNeedsContainer : null, 'storageNeedsContainer');
 
   populateRecordingResolutionDropdown(info.recordingResolution);
   populateSensorModeDropdown(info.sensorMode);
@@ -6286,8 +6399,8 @@ function populateProjectForm(info = {}) {
   setVal('productionCompanyPostalCode', normalizedAddressFields.postalCode);
   setVal('productionCompanyCountry', normalizedAddressFields.country);
   setVal('rentalHouse', info.rentalHouse);
-  if (crewContainer) {
-    crewContainer.innerHTML = '';
+  if (crewDiv) {
+    crewDiv.innerHTML = '';
 
     const crewEntries = Array.isArray(info.people)
       ? info.people.map(person => (person && typeof person === 'object' ? { ...person } : {}))
@@ -6362,8 +6475,8 @@ function populateProjectForm(info = {}) {
 
     crewEntries.forEach(p => createCrewRow(p));
   }
-  if (prepContainer) {
-    prepContainer.innerHTML = '';
+  if (prepDiv) {
+    prepDiv.innerHTML = '';
     const prepArr = Array.isArray(info.prepDays)
       ? info.prepDays
       : (info.prepDays ? String(info.prepDays).split('\n') : ['']);
@@ -6373,8 +6486,8 @@ function populateProjectForm(info = {}) {
       createPrepRow({ start, end });
     });
   }
-  if (shootContainer) {
-    shootContainer.innerHTML = '';
+  if (shootDiv) {
+    shootDiv.innerHTML = '';
     const shootArr = Array.isArray(info.shootingDays)
       ? info.shootingDays
       : (info.shootingDays ? String(info.shootingDays).split('\n') : ['']);
@@ -6384,8 +6497,8 @@ function populateProjectForm(info = {}) {
       createShootRow({ start, end });
     });
   }
-  if (returnContainer) {
-    returnContainer.innerHTML = '';
+  if (returnDiv) {
+    returnDiv.innerHTML = '';
     const returnArr = Array.isArray(info.returnDays)
       ? info.returnDays
       : (info.returnDays ? String(info.returnDays).split('\n') : ['']);
@@ -6395,8 +6508,8 @@ function populateProjectForm(info = {}) {
       createReturnRow({ start, end });
     });
   }
-  if (storageNeedsContainer) {
-    storageNeedsContainer.innerHTML = '';
+  if (storageDiv) {
+    storageDiv.innerHTML = '';
     const storageArr = Array.isArray(info.storageRequirements) ? info.storageRequirements : [];
     if (storageArr.length) {
       storageArr.forEach(entry => createStorageRequirementRow(entry));

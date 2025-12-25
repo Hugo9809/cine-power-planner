@@ -398,6 +398,19 @@
       return false;
     }
     const normalized = Array.isArray(records) ? records : [];
+
+    if (normalized.length === 0) {
+      try {
+        storage.removeItem(BACKUP_VAULT_FALLBACK_STORAGE_KEY);
+        fallbackStorageRecordCount = 0;
+        refreshBackupVaultFallbackMode(null);
+        return true;
+      } catch (removeError) {
+        console.warn('Failed to remove fallback backup vault entries', removeError);
+        return false;
+      }
+    }
+
     let serialized = '[]';
     try {
       serialized = JSON.stringify(normalized);
@@ -964,11 +977,17 @@
         if (typeof GLOBAL_SCOPE.showNotification === 'function') {
           try {
             GLOBAL_SCOPE.showNotification('info', message);
+            return false;
           } catch (notifyError) {
             void notifyError;
           }
         }
-        if (typeof alert === 'function') {
+        if (typeof GLOBAL_SCOPE.cineShowAlertDialog === 'function') {
+          GLOBAL_SCOPE.cineShowAlertDialog({
+            title: resolveBackupVaultWindowTitle(),
+            message: message
+          });
+        } else if (typeof alert === 'function') {
           try {
             alert(message);
           } catch (alertError) {
@@ -999,11 +1018,17 @@
         if (typeof GLOBAL_SCOPE.showNotification === 'function') {
           try {
             GLOBAL_SCOPE.showNotification('error', message);
+            return false;
           } catch (notifyError) {
             void notifyError;
           }
         }
-        if (typeof alert === 'function') {
+        if (typeof GLOBAL_SCOPE.cineShowAlertDialog === 'function') {
+          GLOBAL_SCOPE.cineShowAlertDialog({
+            title: resolveBackupVaultWindowTitle(),
+            message: message
+          });
+        } else if (typeof alert === 'function') {
           try {
             alert(message);
           } catch (alertError) {
@@ -1069,7 +1094,11 @@
         `          link.click();\n` +
         `          setTimeout(function () { URL.revokeObjectURL(url); }, 0);\n` +
         `        } catch (error) {\n` +
-        `          alert('Download blocked — copy the JSON below instead.');\n` +
+        `          if (typeof window.opener.cineShowAlertDialog === 'function') {\n` +
+        `            window.opener.cineShowAlertDialog('Download blocked — copy the JSON below instead.');\n` +
+        `          } else {\n` +
+        `            alert('Download blocked — copy the JSON below instead.');\n` +
+        `          }\n` +
         `        }\n` +
         `      });\n` +
         `      header.appendChild(downloadButton);\n` +

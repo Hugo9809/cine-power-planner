@@ -1,0 +1,567 @@
+  console.error
+    MOCK SET: __storage_test__ = 1
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at Proxy.originalFn (tests/setup/jest.setup.js:63:12)
+      at Object.error (tests/unit/storage.test.js:11:15)
+      at setItem (src/scripts/storage.js:5795:15)
+      at verifyStorage (src/scripts/storage.js:5857:25)
+      at initializeSafeLocalStorage (src/scripts/storage.js:5889:30)
+      at Object.<anonymous> (src/scripts/storage.js:17404:2)
+      at Object.require (tests/unit/storage.test.js:95:5)
+
+  console.error
+    MOCK SET: cameraPowerPlanner_prj_JsonProject = {"gearList":"<section>JSON</section>","projectInfo
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at Proxy.originalFn (tests/setup/jest.setup.js:63:12)
+      at Object.error (tests/unit/storage.test.js:11:15)
+      at setItem (src/scripts/storage.js:8407:19)
+      at saveJSONToStorage (src/scripts/storage.js:12609:20)
+      at persistProjectShard (src/scripts/storage.js:13029:26)
+      at saveProject (src/scripts/storage.js:13220:7)
+      at importer (src/scripts/storage.js:17209:9)
+      at importProject (src/scripts/storage.js:13312:9)
+          at Array.forEach (<anonymous>)
+      at forEach (src/scripts/storage.js:13299:15)
+      at importProjectCollection (src/scripts/storage.js:13261:16)
+      at importProjectCollection (src/scripts/storage.js:17215:22)
+      at importTrackedCollection (src/scripts/storage.js:17223:7)
+      at Object.importAllData (tests/unit/storage.test.js:3165:5)
+
+  console.error
+    MOCK SET: cameraPowerPlanner_prj_JsonProject__backup = {"gearList":"<section>JSON</section>","projectInfo
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at Proxy.originalFn (tests/setup/jest.setup.js:63:12)
+      at Object.error (tests/unit/storage.test.js:11:15)
+      at setItem (src/scripts/storage.js:8468:21)
+      at tryStoreCandidate (src/scripts/storage.js:8484:15)
+      at attemptBackupWrite (src/scripts/storage.js:8561:28)
+      at saveJSONToStorage (src/scripts/storage.js:12609:20)
+      at persistProjectShard (src/scripts/storage.js:13029:26)
+      at saveProject (src/scripts/storage.js:13220:7)
+      at importer (src/scripts/storage.js:17209:9)
+      at importProject (src/scripts/storage.js:13312:9)
+          at Array.forEach (<anonymous>)
+      at forEach (src/scripts/storage.js:13299:15)
+      at importProjectCollection (src/scripts/storage.js:13261:16)
+      at importProjectCollection (src/scripts/storage.js:17215:22)
+      at importTrackedCollection (src/scripts/storage.js:17223:7)
+      at Object.importAllData (tests/unit/storage.test.js:3165:5)
+
+  console.error
+    MOCK SET: cameraPowerPlanner_project_rev = 1
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at Proxy.originalFn (tests/setup/jest.setup.js:63:12)
+      at Object.error (tests/unit/storage.test.js:11:15)
+      at setItem (src/scripts/storage.js:8407:19)
+      at saveJSONToStorage (src/scripts/storage.js:1600:5)
+      at bumpProjectStorageRevision (src/scripts/storage.js:12652:5)
+      at persistAllProjects (src/scripts/storage.js:13050:7)
+      at saveProject (src/scripts/storage.js:13220:7)
+      at importer (src/scripts/storage.js:17209:9)
+      at importProject (src/scripts/storage.js:13312:9)
+          at Array.forEach (<anonymous>)
+      at forEach (src/scripts/storage.js:13299:15)
+      at importProjectCollection (src/scripts/storage.js:13261:16)
+      at importProjectCollection (src/scripts/storage.js:17215:22)
+      at importTrackedCollection (src/scripts/storage.js:17223:7)
+      at Object.importAllData (tests/unit/storage.test.js:3165:5)
+
+  console.error
+    MOCK SET: cameraPowerPlanner_project_rev__backup = 1
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at Proxy.originalFn (tests/setup/jest.setup.js:63:12)
+      at Object.error (tests/unit/storage.test.js:11:15)
+      at setItem (src/scripts/storage.js:8468:21)
+      at tryStoreCandidate (src/scripts/storage.js:8484:15)
+      at attemptBackupWrite (src/scripts/storage.js:8561:28)
+      at saveJSONToStorage (src/scripts/storage.js:1600:5)
+      at bumpProjectStorageRevision (src/scripts/storage.js:12652:5)
+      at persistAllProjects (src/scripts/storage.js:13050:7)
+      at saveProject (src/scripts/storage.js:13220:7)
+      at importer (src/scripts/storage.js:17209:9)
+      at importProject (src/scripts/storage.js:13312:9)
+          at Array.forEach (<anonymous>)
+      at forEach (src/scripts/storage.js:13299:15)
+      at importProjectCollection (src/scripts/storage.js:13261:16)
+      at importProjectCollection (src/scripts/storage.js:17215:22)
+      at importTrackedCollection (src/scripts/storage.js:17223:7)
+      at Object.importAllData (tests/unit/storage.test.js:3165:5)
+
+  console.error
+    MOCK SET: cameraPowerPlanner_prj_ = {"gearList":"<article>Inline</article>","projectIn
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at Proxy.originalFn (tests/setup/jest.setup.js:63:12)
+      at Object.error (tests/unit/storage.test.js:11:15)
+      at setItem (src/scripts/storage.js:8407:19)
+      at saveJSONToStorage (src/scripts/storage.js:12609:20)
+      at persistProjectShard (src/scripts/storage.js:13029:26)
+      at saveProject (src/scripts/storage.js:13220:7)
+      at importer (src/scripts/storage.js:17209:9)
+      at importProject (src/scripts/storage.js:13312:9)
+          at Array.forEach (<anonymous>)
+      at forEach (src/scripts/storage.js:13299:15)
+      at importProjectCollection (src/scripts/storage.js:13261:16)
+      at importProjectCollection (src/scripts/storage.js:17215:22)
+      at importTrackedCollection (src/scripts/storage.js:17223:7)
+      at Object.importAllData (tests/unit/storage.test.js:3165:5)
+
+  console.error
+    MOCK SET: cameraPowerPlanner_prj___backup = {"gearList":"<article>Inline</article>","projectIn
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at Proxy.originalFn (tests/setup/jest.setup.js:63:12)
+      at Object.error (tests/unit/storage.test.js:11:15)
+      at setItem (src/scripts/storage.js:8468:21)
+      at tryStoreCandidate (src/scripts/storage.js:8484:15)
+      at attemptBackupWrite (src/scripts/storage.js:8561:28)
+      at saveJSONToStorage (src/scripts/storage.js:12609:20)
+      at persistProjectShard (src/scripts/storage.js:13029:26)
+      at saveProject (src/scripts/storage.js:13220:7)
+      at importer (src/scripts/storage.js:17209:9)
+      at importProject (src/scripts/storage.js:13312:9)
+          at Array.forEach (<anonymous>)
+      at forEach (src/scripts/storage.js:13299:15)
+      at importProjectCollection (src/scripts/storage.js:13261:16)
+      at importProjectCollection (src/scripts/storage.js:17215:22)
+      at importTrackedCollection (src/scripts/storage.js:17223:7)
+      at Object.importAllData (tests/unit/storage.test.js:3165:5)
+
+  console.error
+    MOCK SET: cameraPowerPlanner_prj_JsonProject__backup = {"gearList":"<section>JSON</section>","projectInfo
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at Proxy.originalFn (tests/setup/jest.setup.js:63:12)
+      at Object.error (tests/unit/storage.test.js:11:15)
+      at setItem (src/scripts/storage.js:8468:21)
+      at tryStoreCandidate (src/scripts/storage.js:8484:15)
+      at attemptBackupWrite (src/scripts/storage.js:8561:28)
+      at saveJSONToStorage (src/scripts/storage.js:12609:20)
+      at persistProjectShard (src/scripts/storage.js:12645:7)
+          at Array.forEach (<anonymous>)
+      at forEach (src/scripts/storage.js:12644:27)
+      at persistAllProjects (src/scripts/storage.js:13050:7)
+      at saveProject (src/scripts/storage.js:13220:7)
+      at importer (src/scripts/storage.js:17209:9)
+      at importProject (src/scripts/storage.js:13312:9)
+          at Array.forEach (<anonymous>)
+      at forEach (src/scripts/storage.js:13299:15)
+      at importProjectCollection (src/scripts/storage.js:13261:16)
+      at importProjectCollection (src/scripts/storage.js:17215:22)
+      at importTrackedCollection (src/scripts/storage.js:17223:7)
+      at Object.importAllData (tests/unit/storage.test.js:3165:5)
+
+  console.error
+    MOCK SET: cameraPowerPlanner_project_rev = 2
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at Proxy.originalFn (tests/setup/jest.setup.js:63:12)
+      at Object.error (tests/unit/storage.test.js:11:15)
+      at setItem (src/scripts/storage.js:8407:19)
+      at saveJSONToStorage (src/scripts/storage.js:1600:5)
+      at bumpProjectStorageRevision (src/scripts/storage.js:12652:5)
+      at persistAllProjects (src/scripts/storage.js:13050:7)
+      at saveProject (src/scripts/storage.js:13220:7)
+      at importer (src/scripts/storage.js:17209:9)
+      at importProject (src/scripts/storage.js:13312:9)
+          at Array.forEach (<anonymous>)
+      at forEach (src/scripts/storage.js:13299:15)
+      at importProjectCollection (src/scripts/storage.js:13261:16)
+      at importProjectCollection (src/scripts/storage.js:17215:22)
+      at importTrackedCollection (src/scripts/storage.js:17223:7)
+      at Object.importAllData (tests/unit/storage.test.js:3165:5)
+
+  console.error
+    MOCK SET: cameraPowerPlanner_project_rev__backup = 2
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at Proxy.originalFn (tests/setup/jest.setup.js:63:12)
+      at Object.error (tests/unit/storage.test.js:11:15)
+      at setItem (src/scripts/storage.js:8468:21)
+      at tryStoreCandidate (src/scripts/storage.js:8484:15)
+      at attemptBackupWrite (src/scripts/storage.js:8561:28)
+      at saveJSONToStorage (src/scripts/storage.js:1600:5)
+      at bumpProjectStorageRevision (src/scripts/storage.js:12652:5)
+      at persistAllProjects (src/scripts/storage.js:13050:7)
+      at saveProject (src/scripts/storage.js:13220:7)
+      at importer (src/scripts/storage.js:17209:9)
+      at importProject (src/scripts/storage.js:13312:9)
+          at Array.forEach (<anonymous>)
+      at forEach (src/scripts/storage.js:13299:15)
+      at importProjectCollection (src/scripts/storage.js:13261:16)
+      at importProjectCollection (src/scripts/storage.js:17215:22)
+      at importTrackedCollection (src/scripts/storage.js:17223:7)
+      at Object.importAllData (tests/unit/storage.test.js:3165:5)
+
+  console.error
+    DEBUG: Storage keys: ["cameraPowerPlanner_prj_JsonProject","cameraPowerPlanner_project_rev","cameraPowerPlanner_project_rev__backup","cameraPowerPlanner_prj_"]
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at Proxy.originalFn (tests/setup/jest.setup.js:63:12)
+      at Object.error (tests/unit/storage.test.js:3179:13)
+
+  console.error
+    DEBUG: projects: {
+      "JsonProject": {
+        "gearList": "<section>JSON</section>",
+        "projectInfo": null,
+        "gearListAndProjectRequirementsGenerated": true
+      }
+    }
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at Proxy.originalFn (tests/setup/jest.setup.js:63:12)
+      at Object.error (tests/unit/storage.test.js:3183:15)
+
+FAIL unit tests/unit/storage.test.js
+  device data storage
+    ○ skipped saveDeviceData stores JSON in localStorage
+    ○ skipped saveDeviceData(null) removes stored overrides and backup copy
+    ○ skipped loadDeviceData returns parsed data if valid
+    ○ skipped loadDeviceData adds missing categories for legacy data
+    ○ skipped loadDeviceData creates migration backup before rewriting normalized data
+    ○ skipped loadDeviceData preserves existing migration backup entries
+    ○ skipped loadDeviceData migrates legacy key prefix to current storage
+    ○ skipped loadDeviceData recovers missing primary from compressed backup without nesting compression
+    ○ skipped saveDeviceData stores uncompressed payloads even for large entries
+    ○ skipped saveDeviceData rewrites legacy compressed payloads to plain JSON
+    ○ skipped loadDeviceData replaces non-object categories with empty objects
+    ○ skipped loadDeviceData returns null for primitive data
+    ○ skipped loadDeviceData restores data from backup when primary payload is corrupted
+  setup storage
+    ○ skipped saveSetups stores JSON
+    ○ skipped loadSetups returns empty object when none
+    ○ skipped loadSetups returns parsed object when present
+    ○ skipped loadSetups converts array data into an object
+    ○ skipped loadSetups ensures unique keys when names duplicate
+    ○ skipped loadSetups treats case or whitespace variants as duplicates
+    ○ skipped loadSetups returns empty object for primitive data
+    ○ skipped loadSetups recovers from backup when stored data is corrupted
+    ○ skipped loadSetups removes entries that are not plain objects
+    ○ skipped saveSetups removes older duplicate auto backups before trimming unique entries
+    ○ skipped saveSetups replaces circular references in auto backups with a safe placeholder
+    ○ skipped saveSetups keeps auto backups with identical data when labels differ
+    ○ skipped saveSetups keeps auto backups with distinct Date values for the same label
+    ○ skipped saveSetups keeps the newest auto backup for each project label when trimming
+    ○ skipped saveSetups keeps only the newest unlabeled auto backup when earlier copies are identical
+    ○ skipped saveSetups logs when duplicate auto backups are trimmed without losing the newest copy
+    ○ skipped saveSetups retains unique auto backups even when exceeding the retention limit
+    ○ skipped renameSetup marks auto backups renamed within the automatic namespace
+    ○ skipped saveSetups keeps renamed auto backups when a new snapshot shares the label
+    ○ skipped saveSetup adds and persists single setup
+    ○ skipped loadSetup retrieves named setup
+    ○ skipped deleteSetup removes named setup
+    ○ skipped renameSetup renames setup to a new unique name
+    ○ skipped renameSetup appends suffix when target exists
+    ○ skipped renameSetup ignores case and whitespace when name unchanged
+    ○ skipped renameSetup prevents case-insensitive duplicates
+    ○ skipped renameSetup returns null when original missing
+    ○ skipped renameSetup ignores empty new name
+  session state storage
+    ○ skipped saveSessionState stores JSON in localStorage
+    ○ skipped loadSessionState returns parsed object when present
+    ○ skipped loadSessionState returns null when none
+    ○ skipped loadSessionState migrates data from sessionStorage
+    ○ skipped loadSessionState migrates legacy key prefix
+    ○ skipped loadSessionState normalizes legacy session payloads
+    ○ skipped loadSessionState creates migration backup before rewriting normalized data
+    ○ skipped loadSessionState preserves existing migration backup entries
+  feedback storage
+    ○ skipped saveFeedback stores JSON
+    ○ skipped loadFeedback returns parsed object when present
+    ○ skipped loadFeedback returns empty object for non-object data
+  project storage
+    ○ skipped saveProject stores data per project name
+    ○ skipped loadProject resolves entries saved with surrounding whitespace
+    ○ skipped saveProject normalizes project keys with surrounding whitespace when unused
+    ○ skipped deleteProject removes entries even when addressed with trimmed names
+    ○ skipped saveProject normalizes null gearList to empty string
+    ○ skipped saveProject strips non-object projectInfo values
+    ○ skipped saveProject preserves custom gear selector entries
+    ○ skipped saveProject removes older duplicate auto backups before trimming unique entries
+    ○ skipped saveProject retains unique auto backups even when exceeding the retention limit
+    ○ skipped saveProject ignores non-object payloads entirely
+    ○ skipped saveProject creates an automatic backup before overwriting existing data
+    ○ skipped saveProject generates distinct auto backup names within the same minute
+    ○ skipped saveProject skips creating backups when data has not changed
+    ○ skipped saveProject does not create nested backups when updating auto backup entries
+    ○ skipped loadProject returns normalized map of projects when name omitted
+    ○ skipped loadProject upgrades legacy lens list strings to structured selections
+    ○ skipped loadProject normalizes legacy lens selection objects and arrays
+    ○ skipped loadProject derives lens selections when legacy data stored outside projectInfo
+    ○ skipped loadProject normalizes legacy lens selection maps with string mounts
+    ○ skipped loadProject preserves metadata when deriving lens selections from name maps
+    ○ skipped loadProject recovers project info from stored requirements HTML
+    ○ skipped loadProject parses combined production company requirement box
+    ○ skipped loadProject maps localized requirement labels when data-field is missing
+    ○ skipped loadProject returns null for unknown names
+    ○ skipped loadProject migrates legacy key prefix to new storage
+    ○ skipped loadProject creates migration backup before rewriting normalized data
+    ○ skipped loadProject preserves existing migration backup entries
+    ○ skipped deleteProject removes individual projects and stores an automatic backup before deleting
+    ○ skipped deleteProject without a name clears all stored projects
+  favorites storage
+    ○ skipped loadFavorites returns empty object for non-object data
+    ○ skipped saveFavorites ignores non-object payloads
+  automatic gear storage
+    ○ skipped saveAutoGearRules persists rule arrays
+    ○ skipped loadAutoGearRules falls back to empty array when data malformed
+    ○ skipped loadAutoGearRules migrates legacy key prefix
+    ○ skipped loadAutoGearRules defaults enabled to true when missing
+    ○ skipped loadAutoGearBackups returns stored backups and sanitises invalid payloads
+    ○ skipped saveAutoGearAutoPresetId removes auto preset entries from compressed storage
+    ○ skipped saveAutoGearBackups trims the oldest entry when storage quota is exceeded
+    ○ skipped saveAutoGearBackups removes migration backup copy when quota persists with empty payload
+    ○ skipped saveAutoGearBackups clears cached UI storage when migration cleanup is unavailable
+    ○ skipped saveAutoGearBackupRetention creates migration backup before overwriting existing values
+    ○ skipped saveAutoGearSeedFlag toggles the persisted flag
+    ○ skipped loadAutoGearAutoPresetId reflects persisted value
+    ○ skipped loadAutoGearAutoPresetId migrates legacy key prefix
+    ○ skipped clearing the auto preset removes the autosaved entry from presets
+    ○ skipped replacing the auto preset id removes the previous autosaved entry
+    ○ skipped loadAutoGearMonitorDefaults migrates legacy key prefix
+  clearAllData
+    ○ skipped removes all stored planner data
+    ○ skipped removes legacy planner keys so migrations cannot restore cleared data
+    ○ skipped clears diagnostics storage to guarantee a fresh console session
+  export/import all data
+    ✕ importAllData parses project JSON arrays stored as strings (30 ms)
+    ○ skipped exportAllData collects all planner data
+    ○ skipped exportAllData normalizes stored boolean preference strings
+    ○ skipped exportAllData filters invalid custom font entries
+    ○ skipped exportAllData reads custom fonts from backup storage when primary is missing
+    ○ skipped exportAllData reads custom logo from backup storage when primary is missing
+    ○ skipped exportAllData includes stored schema cache values
+    ○ skipped exportAllData/importAllData round-trips print layout preferences offline
+    ○ skipped importAllData restores planner data
+    ○ skipped exportAllData preserves automatic gear enabled states
+    ○ skipped importAllData applies temperature unit preference
+    ○ skipped importAllData converts legacy storage snapshots with prefixed keys
+    ○ skipped importAllData decodes legacy longgop compressed migration backups
+    ○ skipped importAllData clears stored device overrides when payload sets devices to null
+    ○ skipped importAllData clears session state when payload sets session to null
+    ○ skipped importAllData handles legacy projects array
+    ○ skipped importAllData merges project map without overwriting existing entries
+    ○ skipped importAllData merges legacy project arrays without replacing existing ones
+    ○ skipped importAllData handles project collections stored as Map instances
+    ○ skipped importAllData handles project tuple arrays with explicit names
+    ○ skipped importAllData handles legacy project string payload
+    ○ skipped importAllData handles legacy project map entries stored as strings
+    ○ skipped importAllData handles project map entries stored as JSON strings
+    ○ skipped importAllData extracts nested project data containers
+    ○ skipped importAllData imports legacy plannerData project entries
+    ○ skipped importAllData converts legacy filter arrays into serialized filter selections
+    ○ skipped importAllData normalizes map-based filter payloads with mixed formats
+    ○ skipped importAllData handles legacy single gearList
+    ○ skipped loadProject normalizes stored JSON string payloads
+    ○ skipped loadProject normalizes project map entries saved as JSON strings
+    ○ skipped importAllData normalizes automatic gear booleans from strings
+    ○ skipped importAllData treats ambiguous automatic gear booleans as disabled
+    ○ skipped importAllData accepts automatic gear data stored as object maps
+    ○ skipped importAllData accepts automatic gear data stored as Map instances
+    ○ skipped importAllData accepts automatic gear data stored as JSON strings
+    ○ skipped importAllData extracts preset id from object payloads
+    ○ skipped importAllData parses JSON project strings
+    ○ skipped importAllData normalizes nested legacy project payloads
+  full backup history storage
+    ○ skipped recordFullBackupHistoryEntry appends entries and enforces limit
+    ○ skipped saveFullBackupHistory removes storage key when empty array provided
+    ○ skipped saveFullBackupHistory preserves existing history when payload normalizes to empty
+    ○ skipped loadFullBackupHistory normalizes raw string entries
+    ○ skipped importAllData normalizes mixed array full backup history payloads
+    ○ skipped importAllData accepts full backup history stored inside nested objects
+    ○ skipped importAllData supports legacy fullBackups string payloads
+    ○ skipped importAllData accepts full backup history stored as Map
+  migration backups before overwriting data
+    ○ skipped captures previous {
+  label: 'device overrides',
+  key: 'cameraPowerPlanner_devices',
+  initial: [Object],
+  save: [Function: save],
+  next: [Object]
+} snapshot before writing new data
+    ○ skipped captures previous {
+  label: 'session state',
+  key: 'cameraPowerPlanner_session',
+  initial: [Object],
+  save: [Function: save],
+  next: [Object]
+} snapshot before writing new data
+    ○ skipped captures previous {
+  label: 'setups',
+  key: 'cameraPowerPlanner_setups',
+  initial: [Object],
+  save: [Function: save],
+  next: [Object]
+} snapshot before writing new data
+    ○ skipped captures previous {
+  label: 'favorites',
+  key: 'cameraPowerPlanner_favorites',
+  initial: [Object],
+  save: [Function: save],
+  next: [Object]
+} snapshot before writing new data
+    ○ skipped captures previous {
+  label: 'feedback',
+  key: 'cameraPowerPlanner_feedback',
+  initial: [Object],
+  save: [Function: save],
+  next: [Object]
+} snapshot before writing new data
+    ○ skipped captures previous {
+  label: 'automatic gear rules',
+  key: 'cameraPowerPlanner_autoGearRules',
+  initial: [Array],
+  save: [Function: save],
+  next: [Array]
+} snapshot before writing new data
+    ○ skipped captures previous {
+  label: 'automatic gear backups',
+  key: 'cameraPowerPlanner_autoGearBackups',
+  initial: [Array],
+  save: [Function: save],
+  next: [Array]
+} snapshot before writing new data
+    ○ skipped captures previous {
+  label: 'automatic gear presets',
+  key: 'cameraPowerPlanner_autoGearPresets',
+  initial: [Array],
+  save: [Function: save],
+  next: [Array]
+} snapshot before writing new data
+    ○ skipped captures previous {
+  label: 'automatic gear monitor defaults',
+  key: 'cameraPowerPlanner_autoGearMonitorDefaults',
+  initial: [Object],
+  save: [Function: save],
+  next: [Object]
+} snapshot before writing new data
+    ○ skipped captures previous {
+  label: 'full backup history',
+  key: 'cameraPowerPlanner_fullBackups',
+  initial: [Array],
+  save: [Function: save],
+  next: [Array]
+} snapshot before writing new data
+    ○ skipped saveProject preserves existing project container before overwriting
+    ○ skipped saveDeviceData upgrades legacy migration backup payloads to modern envelope
+    ○ skipped saveDeviceData wraps string-based legacy migration backups
+    ○ skipped saveDeviceData normalizes numeric migration backup timestamps
+    ○ skipped camera colour palette survives export/import round trip
+  storage snapshot conversion
+    ○ skipped imports preferences stored under simple keys from a snapshot object
+  critical storage backup guard
+    ○ skipped creates backup copies for stored entries
+    ○ skipped project backups capture custom gear selectors
+    ○ skipped reports missing entries when nothing is stored
+
+  ● export/import all data › importAllData parses project JSON arrays stored as strings
+
+    expect(received).toBeDefined()
+
+    Received: undefined
+
+      3183 |       console.error('DEBUG: projects:', JSON.stringify(projects, null, 2));
+      3184 |     }
+    > 3185 |     expect(inlineEntry).toBeDefined();
+           |                         ^
+      3186 |     expect(inlineEntry[1]).toEqual(withGenerationFlag({ gearList: '<article>Inline</article>', projectInfo: null }));
+      3187 |   });
+      3188 |
+
+      at Object.toBeDefined (tests/unit/storage.test.js:3185:25)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 166 skipped, 167 total
+Snapshots:   0 total
+Time:        1.015 s
+Ran all test suites matching tests/unit/storage.test.js with tests matching "importAllData parses project JSON arrays stored as strings".

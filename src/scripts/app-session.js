@@ -3030,7 +3030,19 @@ const createBackupDiffRefs = () => {
   };
 };
 
-const {
+let backupDiffToggleButtonEl;
+let backupDiffSectionEl;
+let backupDiffPrimarySelectEl;
+let backupDiffSecondarySelectEl;
+let backupDiffEmptyStateEl;
+let backupDiffSummaryEl;
+let backupDiffListEl;
+let backupDiffListContainerEl;
+let backupDiffNotesEl;
+let backupDiffExportButtonEl;
+let backupDiffCloseButtonEl;
+
+({
   toggleButton: backupDiffToggleButtonEl,
   section: backupDiffSectionEl,
   primarySelect: backupDiffPrimarySelectEl,
@@ -3042,7 +3054,7 @@ const {
   notes: backupDiffNotesEl,
   exportButton: backupDiffExportButtonEl,
   closeButton: backupDiffCloseButtonEl,
-} = createBackupDiffRefs();
+} = createBackupDiffRefs());
 
 function createRestoreRehearsalRefs() {
   const doc = typeof document !== 'undefined' ? document : null;
@@ -10269,11 +10281,16 @@ function renderBackupDiff() {
 }
 
 function populateBackupDiffSelectors() {
+  const resolve = (val, id) => val || (typeof document !== 'undefined' ? document.getElementById(id) : null);
+  const primary = resolve(backupDiffPrimarySelectEl, 'backupDiffPrimary');
+  const secondary = resolve(backupDiffSecondarySelectEl, 'backupDiffSecondary');
+  const emptyState = resolve(backupDiffEmptyStateEl, 'backupDiffEmptyState');
+
   backupDiffOptionsCache = collectBackupDiffOptions();
-  fillBackupDiffSelect(backupDiffPrimarySelectEl, backupDiffOptionsCache, backupDiffState.baseline);
-  fillBackupDiffSelect(backupDiffSecondarySelectEl, backupDiffOptionsCache, backupDiffState.comparison);
-  if (backupDiffEmptyStateEl) {
-    backupDiffEmptyStateEl.hidden = backupDiffOptionsCache.length > 0;
+  fillBackupDiffSelect(primary, backupDiffOptionsCache, backupDiffState.baseline);
+  fillBackupDiffSelect(secondary, backupDiffOptionsCache, backupDiffState.comparison);
+  if (emptyState) {
+    emptyState.hidden = backupDiffOptionsCache.length > 0;
   }
   renderBackupDiff();
 }
@@ -11055,7 +11072,12 @@ function performSettingsBackup(notify = true, timestamp = new Date(), options = 
       if (downloadResult.method === 'window-fallback') {
         const manualMessage = getManualDownloadFallbackMessage();
         showNotification('warning', manualMessage);
-        if (typeof alert === 'function') {
+        if (typeof window.cineShowAlertDialog === 'function') {
+          window.cineShowAlertDialog({
+            title: 'Download Blocked',
+            message: manualMessage
+          });
+        } else if (typeof alert === 'function') {
           alert(manualMessage);
         }
       } else if (shouldNotify) {
@@ -12589,25 +12611,39 @@ if (typeof window !== 'undefined' && window && typeof window.addEventListener ==
 ensureSessionRuntimePlaceholder('renderStoragePersistenceStatus', () => renderStoragePersistenceStatus);
 ensureSessionRuntimePlaceholder('refreshStoragePersistenceStatus', () => refreshStoragePersistenceStatus);
 
-if (backupDiffToggleButtonEl) {
-  backupDiffToggleButtonEl.addEventListener('click', handleBackupDiffToggle);
-}
-if (backupDiffCloseButtonEl) {
-  backupDiffCloseButtonEl.addEventListener('click', () => collapseBackupDiffSection());
-}
-if (backupDiffPrimarySelectEl) {
-  backupDiffPrimarySelectEl.addEventListener('change', handleBackupDiffSelectionChange);
-}
-if (backupDiffSecondarySelectEl) {
-  backupDiffSecondarySelectEl.addEventListener('change', handleBackupDiffSelectionChange);
-}
-if (backupDiffExportButtonEl) {
-  backupDiffExportButtonEl.addEventListener('click', handleBackupDiffExport);
-  backupDiffExportButtonEl.disabled = true;
-}
-if (backupDiffSummaryEl) {
-  backupDiffSummaryEl.textContent = getDiffText('versionCompareNoSelection', 'Choose two versions to generate a diff.');
-}
+const bindBackupDiffEvents = () => {
+  const resolve = (id) => typeof document !== 'undefined' ? document.getElementById(id) : null;
+  const safeBind = (id, type, handler) => {
+    const el = resolve(id);
+    if (el) {
+      el.addEventListener(type, handler);
+    } else if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+      cineCoreUiHelpers.whenElementAvailable(id, (found) => found.addEventListener(type, handler));
+    }
+  };
+
+  safeBind('backupDiffToggleButton', 'click', handleBackupDiffToggle);
+  safeBind('backupDiffClose', 'click', () => collapseBackupDiffSection());
+  safeBind('backupDiffPrimary', 'change', handleBackupDiffSelectionChange);
+  safeBind('backupDiffSecondary', 'change', handleBackupDiffSelectionChange);
+  safeBind('backupDiffExport', 'click', handleBackupDiffExport);
+
+  const summary = resolve('backupDiffSummary');
+  if (summary) {
+    summary.textContent = getDiffText('versionCompareNoSelection', 'Choose two versions to generate a diff.');
+  } else if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+    cineCoreUiHelpers.whenElementAvailable('backupDiffSummary', (found) => {
+      found.textContent = getDiffText('versionCompareNoSelection', 'Choose two versions to generate a diff.');
+    });
+  }
+
+  const exportBtn = resolve('backupDiffExport');
+  if (exportBtn) {
+    exportBtn.disabled = true;
+  }
+};
+
+bindBackupDiffEvents();
 if (backupDiffNotesEl) {
   backupDiffNotesEl.disabled = true;
 }
@@ -12647,7 +12683,14 @@ function handleRestoreSettingsInputChange() {
       || fallbackTexts.restoreBackupFailed
       || 'Backup failed. Restore cancelled.';
     showNotification('error', failureMessage);
-    alert(failureMessage);
+    if (typeof window.cineShowAlertDialog === 'function') {
+      window.cineShowAlertDialog({
+        title: 'Restore Failed',
+        message: failureMessage
+      });
+    } else {
+      alert(failureMessage);
+    }
     restoreSettingsInput.value = '';
     return;
   }
@@ -12749,7 +12792,14 @@ function handleRestoreSettingsInputChange() {
   const handleRestoreError = (error) => {
     console.warn('Restore failed', error);
     showNotification('error', restoreFailureMessage);
-    alert(restoreFailureMessage);
+    if (typeof window.cineShowAlertDialog === 'function') {
+      window.cineShowAlertDialog({
+        title: 'Restore Failed',
+        message: restoreFailureMessage
+      });
+    } else {
+      alert(restoreFailureMessage);
+    }
     finalizeRestore();
   };
 
@@ -12788,7 +12838,14 @@ function handleRestoreSettingsInputChange() {
           sessionSnapshot: restoredSession,
           backupFileName,
         });
-        alert(compatibilityMessage);
+        if (typeof window.cineShowAlertDialog === 'function') {
+          window.cineShowAlertDialog({
+            title: 'Version Compatibility',
+            message: compatibilityMessage
+          });
+        } else {
+          alert(compatibilityMessage);
+        }
       }
       const shouldRestoreSettings =
         restoredSettings
@@ -12866,7 +12923,15 @@ function handleRestoreSettingsInputChange() {
       if (verificationResult && verificationResult.alertMessage) {
         alertSegments.push(verificationResult.alertMessage);
       }
-      alert(alertSegments.join('\n\n'));
+      const message = alertSegments.join('\n\n');
+      if (typeof window.cineShowAlertDialog === 'function') {
+        window.cineShowAlertDialog({
+          title: 'Restore Successful',
+          message: message
+        });
+      } else {
+        alert(message);
+      }
       finalizeRestore();
     } catch (err) {
       if (restoreMutated) {
@@ -13351,10 +13416,17 @@ window.cineShowConfirmDialog = (options) => {
   }
 
   if (titleEl) titleEl.textContent = title || 'Confirm';
-  if (messageEl) messageEl.textContent = message || 'Are you sure?';
+  if (messageEl) {
+    if (typeof message === 'string' && message.includes('\n')) {
+      messageEl.innerHTML = message.replace(/\n/g, '<br>');
+    } else {
+      messageEl.textContent = message || 'Are you sure?';
+    }
+  }
 
   confirmBtn.textContent = confirmLabel || 'Confirm';
   cancelBtn.textContent = cancelLabel || 'Cancel';
+  cancelBtn.style.display = 'inline-block';
 
   if (danger) {
     confirmBtn.classList.add('danger');
@@ -13386,6 +13458,63 @@ window.cineShowConfirmDialog = (options) => {
     close();
     if (typeof onCancel === 'function') {
       onCancel();
+    }
+  });
+
+  dialog.removeAttribute('hidden');
+  if (typeof dialog.showModal === 'function') {
+    dialog.showModal();
+  }
+};
+
+window.cineShowAlertDialog = (options) => {
+  const config = typeof options === 'string' ? { message: options } : (options || {});
+  const {
+    title,
+    message,
+    confirmLabel,
+    onConfirm,
+  } = config;
+
+  const dialog = document.getElementById('appConfirmDialog');
+  const titleEl = document.getElementById('appConfirmTitle');
+  const messageEl = document.getElementById('appConfirmMessage');
+  const confirmBtn = document.getElementById('appConfirmBtn');
+  const cancelBtn = document.getElementById('appConfirmCancelBtn');
+
+  if (!dialog || !confirmBtn || !cancelBtn) {
+    console.warn('Alert dialog elements missing');
+    if (typeof alert === 'function') alert(message);
+    return;
+  }
+
+  if (titleEl) titleEl.textContent = title || 'Notification';
+  if (messageEl) {
+    if (typeof message === 'string' && message.includes('\n')) {
+      messageEl.innerHTML = message.replace(/\n/g, '<br>');
+    } else {
+      messageEl.textContent = message || '';
+    }
+  }
+
+  confirmBtn.textContent = confirmLabel || 'OK';
+  confirmBtn.classList.remove('danger');
+  cancelBtn.style.display = 'none';
+
+  const newConfirmBtn = confirmBtn.cloneNode(true);
+  confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+  const close = () => {
+    if (typeof dialog.close === 'function') {
+      dialog.close();
+    }
+    dialog.setAttribute('hidden', '');
+  };
+
+  newConfirmBtn.addEventListener('click', () => {
+    close();
+    if (typeof onConfirm === 'function') {
+      onConfirm();
     }
   });
 
@@ -18244,15 +18373,53 @@ function initApp() {
   }
   restoreSessionState();
   applySharedSetupFromUrl();
-  if (requiredScenariosSelect) {
-    requiredScenariosSelect.addEventListener('change', updateRequiredScenariosSummary);
-    updateRequiredScenariosSummary();
-  }
-  if (tripodHeadBrandSelect) {
-    tripodHeadBrandSelect.addEventListener('change', updateTripodOptions);
-  }
-  if (tripodBowlSelect) {
-    tripodBowlSelect.addEventListener('change', updateTripodOptions);
+  if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+    cineCoreUiHelpers.whenElementAvailable('requiredScenarios', (el) => {
+      if (typeof requiredScenariosSelect === 'undefined' || !requiredScenariosSelect) {
+        try { if (typeof window !== 'undefined') window.requiredScenariosSelect = el; } catch (e) { void e; }
+      }
+      el.addEventListener('change', updateRequiredScenariosSummary);
+      updateRequiredScenariosSummary();
+    });
+
+    cineCoreUiHelpers.whenElementAvailable('tripodHeadBrand', (el) => {
+      if (typeof tripodHeadBrandSelect === 'undefined' || !tripodHeadBrandSelect) {
+        try { if (typeof window !== 'undefined') window.tripodHeadBrandSelect = el; } catch (e) { void e; }
+      }
+      el.addEventListener('change', updateTripodOptions);
+    });
+
+    cineCoreUiHelpers.whenElementAvailable('tripodBowl', (el) => {
+      if (typeof tripodBowlSelect === 'undefined' || !tripodBowlSelect) {
+        try { if (typeof window !== 'undefined') window.tripodBowlSelect = el; } catch (e) { void e; }
+      }
+      el.addEventListener('change', updateTripodOptions);
+    });
+
+    cineCoreUiHelpers.whenElementAvailable('tripodTypes', (el) => {
+      if (typeof tripodTypesSelect === 'undefined' || !tripodTypesSelect) {
+        try { if (typeof window !== 'undefined') window.tripodTypesSelect = el; } catch (e) { void e; }
+      }
+      el.addEventListener('change', updateTripodOptions);
+    });
+
+    cineCoreUiHelpers.whenElementAvailable('tripodSpreader', (el) => {
+      if (typeof tripodSpreaderSelect === 'undefined' || !tripodSpreaderSelect) {
+        try { if (typeof window !== 'undefined') window.tripodSpreaderSelect = el; } catch (e) { void e; }
+      }
+      el.addEventListener('change', updateTripodOptions);
+    });
+  } else {
+    if (requiredScenariosSelect) {
+      requiredScenariosSelect.addEventListener('change', updateRequiredScenariosSummary);
+      updateRequiredScenariosSummary();
+    }
+    if (tripodHeadBrandSelect) {
+      tripodHeadBrandSelect.addEventListener('change', updateTripodOptions);
+    }
+    if (tripodBowlSelect) {
+      tripodBowlSelect.addEventListener('change', updateTripodOptions);
+    }
   }
   updateTripodOptions();
   updateViewfinderExtensionVisibility();
@@ -18354,16 +18521,49 @@ function schedulePostRenderTask(task, options = {}) {
 }
 
 function populateEnvironmentDropdowns() {
+  const populate = (tempSelect) => {
+    if (tempSelect) {
+      if (typeof ensureFeedbackTemperatureOptionsSafe === 'function') {
+        ensureFeedbackTemperatureOptionsSafe(tempSelect);
+      }
+      if (typeof updateFeedbackTemperatureOptionsSafe === 'function') {
+        updateFeedbackTemperatureOptionsSafe();
+      }
+    }
+  };
+
   const tempSelect = document.getElementById('fbTemperature');
   if (tempSelect) {
-    ensureFeedbackTemperatureOptionsSafe(tempSelect);
-    updateFeedbackTemperatureOptionsSafe();
+    populate(tempSelect);
+  } else if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+    cineCoreUiHelpers.whenElementAvailable('fbTemperature', populate);
   }
-
 }
 
 function populateLensDropdown() {
-  if (!lensSelect) return;
+  const resolveLensSelect = () => {
+    if (typeof lensSelect !== 'undefined' && lensSelect) return lensSelect;
+    if (typeof document !== 'undefined') return document.getElementById('lenses');
+    return null;
+  };
+
+  const resolvedLensSelect = resolveLensSelect();
+
+  if (!resolvedLensSelect) {
+    if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+      cineCoreUiHelpers.whenElementAvailable('lenses', (el) => {
+        if (typeof lensSelect === 'undefined' || !lensSelect) {
+          // If global isn't set, try to set it for compatibility
+          if (typeof window !== 'undefined') window.lensSelect = el;
+        }
+        populateLensDropdown();
+      });
+    }
+    return;
+  }
+
+  // Use local variable for safety
+  const targetSelect = resolvedLensSelect;
 
   const normalizeFocusScaleValue = (value) => {
     if (typeof value !== 'string') {
@@ -18507,11 +18707,11 @@ function populateLensDropdown() {
     return;
   }
 
-  const previousSelection = new Set(Array.from(lensSelect.selectedOptions || []).map(opt => opt.value));
+  const previousSelection = new Set(Array.from(targetSelect.selectedOptions || []).map(opt => opt.value));
 
   const fragment = document.createDocumentFragment();
 
-  if (!lensSelect.multiple) {
+  if (!targetSelect.multiple) {
     const emptyOpt = document.createElement('option');
     emptyOpt.value = '';
     fragment.appendChild(emptyOpt);
@@ -18553,8 +18753,8 @@ function populateLensDropdown() {
     fragment.appendChild(opt);
   }
 
-  lensSelect.innerHTML = '';
-  lensSelect.appendChild(fragment);
+  targetSelect.innerHTML = '';
+  targetSelect.appendChild(fragment);
 
   if (typeof updateLensWorkflowCatalog === 'function') {
     try {
@@ -18566,29 +18766,36 @@ function populateLensDropdown() {
 }
 
 function populateCameraPropertyDropdown(selectId, property, selected = '') {
+  const populate = (dropdown) => {
+    dropdown.innerHTML = '';
+    const emptyOpt = document.createElement('option');
+    emptyOpt.value = '';
+    dropdown.appendChild(emptyOpt);
+
+    const camKey = (typeof cameraSelect !== 'undefined' && cameraSelect) ? cameraSelect.value : '';
+    const values =
+      camKey && devices && devices.cameras && devices.cameras[camKey]
+        ? devices.cameras[camKey][property]
+        : null;
+    if (Array.isArray(values)) {
+      values.forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v;
+        opt.textContent = v;
+        if (v === selected) opt.selected = true;
+        dropdown.appendChild(opt);
+      });
+    }
+  };
+
   const dropdown = document.getElementById(selectId);
-  if (!dropdown) return;
-
-  dropdown.innerHTML = '';
-  const emptyOpt = document.createElement('option');
-  emptyOpt.value = '';
-  dropdown.appendChild(emptyOpt);
-
-  const camKey = cameraSelect && cameraSelect.value;
-  const values =
-    camKey && devices && devices.cameras && devices.cameras[camKey]
-      ? devices.cameras[camKey][property]
-      : null;
-  if (Array.isArray(values)) {
-    values.forEach(v => {
-      const opt = document.createElement('option');
-      opt.value = v;
-      opt.textContent = v;
-      if (v === selected) opt.selected = true;
-      dropdown.appendChild(opt);
-    });
+  if (dropdown) {
+    populate(dropdown);
+  } else if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+    cineCoreUiHelpers.whenElementAvailable(selectId, populate);
   }
 }
+
 
 function populateRecordingResolutionDropdown(selected = '') {
   populateCameraPropertyDropdown('recordingResolution', 'resolutions', selected);
@@ -19284,25 +19491,41 @@ function populateFrameRateDropdownFor(config = {}) {
 }
 
 function populateFrameRateDropdown(selected = '') {
+  const resolve = (val, id) => val || (typeof document !== 'undefined' ? document.getElementById(id) : null);
+  const inputEl = resolve(recordingFrameRateInput, 'recordingFrameRate');
+
+  if (!inputEl && typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+    cineCoreUiHelpers.whenElementAvailable('recordingFrameRate', () => populateFrameRateDropdown(selected));
+    return;
+  }
+
   populateFrameRateDropdownFor({
     selected,
-    recordingInput: recordingFrameRateInput,
-    optionsList: recordingFrameRateOptionsList,
-    sensorSelect: sensorModeDropdown,
-    resolutionSelect: recordingResolutionDropdown,
-    hintElement: recordingFrameRateHint,
+    recordingInput: inputEl,
+    optionsList: resolve(recordingFrameRateOptionsList, 'recordingFrameRateOptions'),
+    sensorSelect: resolve(sensorModeDropdown, 'sensorMode'),
+    resolutionSelect: resolve(recordingResolutionDropdown, 'recordingResolution'),
+    hintElement: resolve(recordingFrameRateHint, 'recordingFrameRateHint'),
   });
 }
 
 function populateSlowMotionFrameRateDropdown(selected = '') {
+  const resolve = (val, id) => val || (typeof document !== 'undefined' ? document.getElementById(id) : null);
+  const inputEl = resolve(slowMotionRecordingFrameRateInput, 'slowMotionRecordingFrameRate');
+
+  if (!inputEl && typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+    cineCoreUiHelpers.whenElementAvailable('slowMotionRecordingFrameRate', () => populateSlowMotionFrameRateDropdown(selected));
+    return;
+  }
+
   populateFrameRateDropdownFor({
     selected,
-    recordingInput: slowMotionRecordingFrameRateInput,
-    optionsList: slowMotionRecordingFrameRateOptionsList,
-    sensorSelect: slowMotionSensorModeDropdown,
-    resolutionSelect: slowMotionRecordingResolutionDropdown,
-    aspectSelect: slowMotionAspectRatioSelect,
-    hintElement: slowMotionRecordingFrameRateHint,
+    recordingInput: inputEl,
+    optionsList: resolve(slowMotionRecordingFrameRateOptionsList, 'slowMotionRecordingFrameRateOptions'),
+    sensorSelect: resolve(slowMotionSensorModeDropdown, 'slowMotionSensorMode'),
+    resolutionSelect: resolve(slowMotionRecordingResolutionDropdown, 'slowMotionRecordingResolution'),
+    aspectSelect: resolve(slowMotionAspectRatioSelect, 'slowMotionAspectRatio'),
+    hintElement: resolve(slowMotionRecordingFrameRateHint, 'slowMotionRecordingFrameRateHint'),
   });
 }
 
@@ -19323,23 +19546,37 @@ function populateCodecDropdown(selected = '') {
 }
 
 function populateFilterDropdown() {
+  const populate = (select) => {
+    if (select && devices && Array.isArray(devices.filterOptions)) {
+      const fragment = document.createDocumentFragment();
+      if (!select.multiple) {
+        const emptyOpt = document.createElement('option');
+        emptyOpt.value = '';
+        fragment.appendChild(emptyOpt);
+      }
+      for (let index = 0; index < devices.filterOptions.length; index += 1) {
+        const value = devices.filterOptions[index];
+        const opt = document.createElement('option');
+        opt.value = value;
+        opt.textContent = value;
+        fragment.appendChild(opt);
+      }
+      select.innerHTML = '';
+      select.appendChild(fragment);
+    }
+  };
+
   const select = resolveFilterSelectElement();
-  if (select && devices && Array.isArray(devices.filterOptions)) {
-    const fragment = document.createDocumentFragment();
-    if (!select.multiple) {
-      const emptyOpt = document.createElement('option');
-      emptyOpt.value = '';
-      fragment.appendChild(emptyOpt);
-    }
-    for (let index = 0; index < devices.filterOptions.length; index += 1) {
-      const value = devices.filterOptions[index];
-      const opt = document.createElement('option');
-      opt.value = value;
-      opt.textContent = value;
-      fragment.appendChild(opt);
-    }
-    select.innerHTML = '';
-    select.appendChild(fragment);
+  if (select) {
+    populate(select);
+  } else if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+    cineCoreUiHelpers.whenElementAvailable('filter', (el) => {
+      // Update the global/cached reference if possible
+      if (typeof filterSelectElem !== 'undefined' && (!filterSelectElem || typeof filterSelectElem !== 'object')) {
+        filterSelectElem = el;
+      }
+      populate(el);
+    });
   }
 }
 
@@ -20194,45 +20431,52 @@ function populateUserButtonDropdowns() {
   const knownValues = new Set(items.map(item => item.value));
 
   ['monitorUserButtons', 'cameraUserButtons', 'viewfinderUserButtons'].forEach(id => {
-    const sel = document.getElementById(id);
-    if (!sel) return;
+    const populate = (sel) => {
+      if (!sel) return;
 
-    const previouslySelected = new Set(
-      Array.from(sel.selectedOptions || []).map(opt => opt.value)
-    );
+      const previouslySelected = new Set(
+        Array.from(sel.selectedOptions || []).map(opt => opt.value)
+      );
 
-    const fragment = document.createDocumentFragment();
+      const fragment = document.createDocumentFragment();
 
-    for (let index = 0; index < items.length; index += 1) {
-      const { value, label } = items[index];
-      if (!value) {
-        continue;
+      for (let index = 0; index < items.length; index += 1) {
+        const { value, label } = items[index];
+        if (!value) {
+          continue;
+        }
+        const opt = document.createElement('option');
+        opt.value = value;
+        opt.textContent = label;
+        if (previouslySelected.has(value)) {
+          opt.selected = true;
+        }
+        fragment.appendChild(opt);
       }
-      const opt = document.createElement('option');
-      opt.value = value;
-      opt.textContent = label;
-      if (previouslySelected.has(value)) {
+
+      previouslySelected.forEach(value => {
+        if (knownValues.has(value)) {
+          return;
+        }
+        const opt = document.createElement('option');
+        opt.value = value;
+        opt.textContent = value;
         opt.selected = true;
-      }
-      fragment.appendChild(opt);
+        fragment.appendChild(opt);
+      });
+
+      sel.innerHTML = '';
+      sel.appendChild(fragment);
+
+      const optionCount = sel.options ? sel.options.length : 0;
+      sel.size = optionCount > 0 ? optionCount : USER_BUTTON_FUNCTION_ITEMS.length;
+    };
+
+    if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+      cineCoreUiHelpers.whenElementAvailable(id, populate);
+    } else {
+      populate(document.getElementById(id));
     }
-
-    previouslySelected.forEach(value => {
-      if (knownValues.has(value)) {
-        return;
-      }
-      const opt = document.createElement('option');
-      opt.value = value;
-      opt.textContent = value;
-      opt.selected = true;
-      fragment.appendChild(opt);
-    });
-
-    sel.innerHTML = '';
-    sel.appendChild(fragment);
-
-    const optionCount = sel.options ? sel.options.length : 0;
-    sel.size = optionCount > 0 ? optionCount : USER_BUTTON_FUNCTION_ITEMS.length;
   });
 }
 

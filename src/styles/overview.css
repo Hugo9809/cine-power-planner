@@ -610,7 +610,7 @@ th {
 }
 
 .diagram-detail-dialog .modal-surface {
-  background: var(--surface-color, #ffffff);
+  background: var(--surface-elevated, var(--surface-color, #ffffff));
   color: var(--text-color, #000000);
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
@@ -651,7 +651,7 @@ th {
 .diagram-detail-dialog .diagram-popup__header {
   position: sticky;
   top: 0;
-  background: var(--surface-color, #ffffff);
+  background: var(--surface-elevated, var(--surface-color, #ffffff));
   z-index: 1;
   padding: 1rem;
   border-bottom: 1px solid var(--panel-border, #eee);
@@ -666,14 +666,14 @@ th {
 }
 
 body.dark-mode .diagram-detail-dialog .modal-surface {
-  background: var(--panel-bg, #222);
-  color: var(--text-color, #fff);
+  background: var(--surface-elevated, #2c2c2f);
+  color: var(--text-color, #f0f0f0);
   /* Ensure no border in dark mode either if it causes issues */
-  border: none;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--divider-color, #444);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
 }
 
 body.dark-mode .diagram-detail-dialog .diagram-popup__header {
-  background: var(--panel-bg, #222);
+  background: var(--surface-elevated, #2c2c2f);
   border-color: var(--panel-border, #444);
 }

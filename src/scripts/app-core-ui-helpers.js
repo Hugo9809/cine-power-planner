@@ -363,11 +363,79 @@
     }
   }
 
+  function whenElementAvailable(idOrSelector, onResolve, options = {}) {
+    if (!idOrSelector || typeof onResolve !== 'function') {
+      return false;
+    }
+
+    const doc = resolveDocument();
+    if (!doc) {
+      return false;
+    }
+
+    const find = (query) => {
+      let el = doc.getElementById(query);
+      if (!el) {
+        try {
+          el = doc.querySelector(query);
+        } catch (e) {
+          void e;
+        }
+      }
+      return el;
+    };
+
+    const initial = find(idOrSelector);
+    if (initial) {
+      try {
+        onResolve(initial);
+      } catch (handlerError) {
+        if (typeof console !== 'undefined' && console && typeof console.error === 'function') {
+          console.error(`whenElementAvailable: handler for ${idOrSelector} failed`, handlerError);
+        }
+      }
+      return true;
+    }
+
+    const attemptsLimit = typeof options.maxAttempts === 'number' ? options.maxAttempts : 150;
+    const interval = typeof options.interval === 'number' && options.interval > 0 ? options.interval : 100;
+
+    let attempts = 0;
+    const poll = () => {
+      attempts += 1;
+      const el = find(idOrSelector);
+      if (el) {
+        try {
+          onResolve(el);
+        } catch (handlerError) {
+          if (typeof console !== 'undefined' && console && typeof console.error === 'function') {
+            console.error(`whenElementAvailable: polled handler for ${idOrSelector} failed`, handlerError);
+          }
+        }
+        return;
+      }
+
+      if (attempts < attemptsLimit) {
+        setTimeout(poll, interval);
+      } else if (typeof options.onTimeout === 'function') {
+        try {
+          options.onTimeout();
+        } catch (timeoutError) {
+          void timeoutError;
+        }
+      }
+    };
+
+    setTimeout(poll, interval);
+    return true;
+  }
+
   const namespace = {
     escapeHtml,
     escapeButtonLabelSafely,
     resolveButtonIconMarkup,
     setButtonLabelWithIcon,
+    whenElementAvailable,
   };
 
   if (GLOBAL_SCOPE) {
@@ -380,6 +448,7 @@
     existing.escapeButtonLabelSafely = escapeButtonLabelSafely;
     existing.resolveButtonIconMarkup = resolveButtonIconMarkup;
     existing.setButtonLabelWithIcon = setButtonLabelWithIcon;
+    existing.whenElementAvailable = whenElementAvailable;
 
     try {
       GLOBAL_SCOPE.cineCoreUiHelpers = existing;

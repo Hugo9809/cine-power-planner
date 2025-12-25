@@ -14535,10 +14535,19 @@ function getStorageVariantOptions(type) {
     if (
       lowerLabel.includes('dual slots') ||
       lowerLabel.includes('slot 1') ||
-      lowerLabel === 'adapter'
+      lowerLabel === 'adapter' ||
+      lowerLabel.includes('via adapter') ||
+      lowerLabel === 'red pro'
     ) {
       return;
     }
+
+    // Heuristic: Require at least one digit (e.g. "64GB", "2.0", "1TB") to ensure
+    // we don't show bare brand names like "SanDisk" without a size.
+    if (!/\d/.test(lowerLabel)) {
+      return;
+    }
+
     variants.push({ value, label: label || value });
     seen.add(value);
   };
@@ -17899,7 +17908,12 @@ function clearDynamicFields() {
 }
 
 function buildDynamicFields(category, data = {}, exclude = []) {
-  if (!dynamicFieldsDiv) return;
+  if (typeof dynamicFieldsDiv === 'undefined' || !dynamicFieldsDiv) {
+    if (typeof document !== 'undefined') {
+      window.dynamicFieldsDiv = document.getElementById('dynamicFields');
+    }
+    if (!dynamicFieldsDiv) return;
+  }
   const attrs = getCombinedCategoryAttributes(category, data, exclude);
   dynamicFieldsDiv.innerHTML = '';
   if (!attrs.length) {

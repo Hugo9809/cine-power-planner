@@ -64,22 +64,29 @@
   if (typeof BroadcastChannel !== 'undefined') {
     try {
       lifecycleChannel = new BroadcastChannel(LIFECYCLE_CHANNEL_NAME);
-      lifecycleChannel.onmessage = (event) => {
-        if (event.data === 'factory-reset') {
-          if (GLOBAL_SCOPE) {
-            try {
+      if (lifecycleChannel) {
+        lifecycleChannel.onmessage = (event) => {
+          if (event && event.data === 'factory-reset') {
+            if (GLOBAL_SCOPE) {
               GLOBAL_SCOPE.__cameraPowerPlannerFactoryResetting = true;
-            } catch (e) {
-              void e;
+              // Clear session storage locally before reload to ensure it doesn't survive
+              // since page reload alone might preserve it in some browsers.
+              if (typeof sessionStorage !== 'undefined' && typeof sessionStorage.clear === 'function') {
+                try {
+                  sessionStorage.clear();
+                } catch (e) {
+                  void e;
+                }
+              }
+              if (typeof GLOBAL_SCOPE.location !== 'undefined' && typeof GLOBAL_SCOPE.location.reload === 'function') {
+                GLOBAL_SCOPE.location.reload();
+              }
             }
+          } else if (event.data === 'project-shards-changed') {
+            invalidateProjectReadCache();
           }
-          if (GLOBAL_SCOPE && GLOBAL_SCOPE.location && typeof GLOBAL_SCOPE.location.reload === 'function') {
-            GLOBAL_SCOPE.location.reload();
-          }
-        } else if (event.data === 'project-shards-changed') {
-          invalidateProjectReadCache();
-        }
-      };
+        };
+      }
     } catch (channelError) {
       // BroadcastChannel might be restricted in some environments
       void channelError;
@@ -3132,7 +3139,28 @@
     () => ({ key: SETUP_STORAGE_KEY }),
     () => ({ key: SESSION_STATE_KEY }),
     () => ({ key: FEEDBACK_STORAGE_KEY }),
-    () => ({ key: PROJECT_STORAGE_KEY }),
+    () => ({
+      key: PROJECT_STORAGE_KEY,
+      valueProvider: () => {
+        // Since we sharded projects, the main PROJECT_STORAGE_KEY is likely empty or gone.
+        // We want to reconstruct the monolithic object so that the backup file contains
+        // all projects, acting as a "full backup" safety net.
+        if (typeof readAllProjectsFromStorage === 'function') {
+          try {
+            const { projects } = readAllProjectsFromStorage({ forMutation: false });
+            if (projects && typeof projects === 'object') {
+              // Serialize manually to string as ensureCriticalStorageBackups expects string-ish values
+              return JSON.stringify(projects);
+            }
+          } catch (e) {
+            if (typeof console !== 'undefined' && console.warn) {
+              console.warn('Failed to reconstruct monolithic project backup', e);
+            }
+          }
+        }
+        return null;
+      }
+    }),
     () => ({ key: FAVORITES_STORAGE_KEY }),
     () => ({ key: CONTACTS_STORAGE_KEY }),
     () => ({ key: OWN_GEAR_STORAGE_KEY }),
@@ -3185,6 +3213,7 @@
       backupKey: resolvedBackupKey,
       storage,
       label: typeof options.label === 'string' ? options.label : key,
+      valueProvider: typeof candidate.valueProvider === 'function' ? candidate.valueProvider : null,
     };
   }
 
@@ -3348,7 +3377,11 @@
 
       let primaryValue;
       try {
-        primaryValue = storage.getItem(entry.key);
+        if (entry.valueProvider) {
+          primaryValue = entry.valueProvider();
+        } else {
+          primaryValue = storage.getItem(entry.key);
+        }
       } catch (readError) {
         summary.errors.push({ key: entry.key, reason: 'read-failed', error: readError });
         var primaryReadDetail = {
@@ -5344,9 +5377,46 @@
       return trySerializeMigrationBackupValue({ createdAt: fallback, data: rawValue });
     }
 
+    // If parsed is null/undefined or not object, wrap it
     if (!parsed || typeof parsed !== 'object') {
       const dataValue = parsed === undefined ? rawValue : parsed;
       return trySerializeMigrationBackupValue({ createdAt: fallback, data: dataValue });
+    }
+
+    // If it's an array of backup entries, check if it is already in modern format
+    // If it's an array of backup entries, it's a valid modern format for history.
+    if (Array.isArray(parsed)) {
+      let listChanged = false;
+      const normalizedList = parsed.map((item) => {
+        if (!item || typeof item !== 'object') {
+          listChanged = true;
+          return { createdAt: fallback, data: item };
+        }
+
+        const hasData = Object.prototype.hasOwnProperty.call(item, 'data');
+        const itemCreatedAt = item.createdAt;
+        const { value: normalizedDate, changed: dateChanged } = normalizeLegacyMigrationBackupCreatedAt(
+          itemCreatedAt, fallback
+        );
+
+        if (!hasData) {
+          listChanged = true;
+          // Treat the whole item as data if it's not a valid envelope
+          return { createdAt: normalizedDate, data: item };
+        }
+
+        if (dateChanged || itemCreatedAt !== normalizedDate) {
+          listChanged = true;
+          return { ...item, createdAt: normalizedDate };
+        }
+
+        return item;
+      });
+
+      if (!listChanged) {
+        return null;
+      }
+      return trySerializeMigrationBackupValue(normalizedList);
     }
 
     let normalized;
@@ -5403,11 +5473,6 @@
       changed = true;
     }
 
-    if (!Object.prototype.hasOwnProperty.call(normalized, 'data')) {
-      normalized.data = parsed;
-      changed = true;
-    }
-
     if (!changed) {
       return null;
     }
@@ -5460,7 +5525,27 @@
     }
 
     if (hasExistingBackup) {
-      return;
+      // If we already have a backup, we append to a list to keep history.
+      try {
+        const existingRaw = storage.getItem(backupKey);
+        const decoded = decodeStoredValue(existingRaw);
+        let existingData = null;
+        try {
+          existingData = JSON.parse(decoded);
+        } catch (jsonError) {
+          void jsonError;
+          existingData = decoded;
+        }
+
+        const list = Array.isArray(existingData) ? existingData : [existingData];
+        const newEntry = { createdAt: new Date().toISOString(), data: originalValue };
+        list.push(newEntry);
+        storage.setItem(backupKey, JSON.stringify(list));
+        return;
+      } catch (appendError) {
+        console.warn('Unable to append to migration backup', appendError);
+        return;
+      }
     }
 
     let serialized;
@@ -6188,6 +6273,9 @@
   function getSafeLocalStorage() {
     if (!safeLocalStorageInfo || !safeLocalStorageInfo.storage) {
       safeLocalStorageInfo = initializeSafeLocalStorage();
+      if (typeof console !== 'undefined' && console.log) {
+        console.log('DEBUG: storage initialized with type:', safeLocalStorageInfo.type);
+      }
     }
 
     if (safeLocalStorageInfo.type !== 'local') {
@@ -7906,8 +7994,14 @@
     errorMessage,
     options = {},
   ) {
-    if (!storage) return;
-    if (isFactoryResetActive()) return;
+    if (!storage) {
+      console.warn('DEBUG: saveJSONToStorage NO STORAGE');
+      return;
+    }
+    if (isFactoryResetActive()) {
+      console.warn('DEBUG: saveJSONToStorage RESET ACTIVE');
+      return;
+    }
 
     const {
       disableBackup = false,
@@ -8552,7 +8646,7 @@
   function deleteFromStorage(storage, key, errorMessage, options = {}) {
     if (!storage) return;
 
-    const { disableBackup = false, backupKey } = options || {};
+    const { disableBackup = false, backupKey, disableMigrationCleanup = false } = options || {};
     const fallbackKey = typeof backupKey === 'string' && backupKey
       ? backupKey
       : `${key}${STORAGE_BACKUP_SUFFIX}`;
@@ -8585,11 +8679,13 @@
       }
     }
 
-    const migrationBackupKey = `${key}${STORAGE_MIGRATION_BACKUP_SUFFIX}`;
-    try {
-      storage.removeItem(migrationBackupKey);
-    } catch (migrationError) {
-      console.warn(`Unable to remove migration backup for ${key}`, migrationError);
+    if (!disableMigrationCleanup) {
+      const migrationBackupKey = `${key}${STORAGE_MIGRATION_BACKUP_SUFFIX}`;
+      try {
+        storage.removeItem(migrationBackupKey);
+      } catch (migrationError) {
+        console.warn(`Unable to remove migration backup for ${key}`, migrationError);
+      }
     }
   }
 
@@ -12256,13 +12352,54 @@
       },
     );
     const originalValue = parsed;
+    let combinedRawEntries = null;
+
+    if (isPlainObject(parsed)) {
+      combinedRawEntries = { ...parsed };
+    } else {
+      combinedRawEntries = {};
+    }
+
+    if (safeStorage && typeof safeStorage.length === 'number') {
+      const count = safeStorage.length;
+      for (let i = 0; i < count; i++) {
+        const key = safeStorage.key(i);
+        if (!key || !key.startsWith(PROJECT_SHARD_PREFIX)) {
+          continue;
+        }
+        const rawName = key.substring(PROJECT_SHARD_PREFIX.length);
+        if (rawName === null || rawName === undefined) {
+          continue;
+        }
+        try {
+          const rawVal = safeStorage.getItem(key);
+          const parsedVal = JSON.parse(decodeStoredValue(rawVal));
+          // Store raw value to allow expansion of backups later
+          if (combinedRawEntries === null) {
+            combinedRawEntries = {};
+          }
+          combinedRawEntries[rawName] = parsedVal;
+        } catch (e) {
+          void e;
+        }
+      }
+    }
+
+    let inputForExpansion = parsed;
+    // preferring combined object if we have shards or if existing was object
+    if (combinedRawEntries !== null && Object.keys(combinedRawEntries).length > 0) {
+      inputForExpansion = combinedRawEntries;
+    } else if (isPlainObject(parsed)) {
+      inputForExpansion = combinedRawEntries;
+    }
+
     const expandOptions = {
       isAutoBackupKey: isAutoBackupStorageKey,
     };
     if (skipAutoBackupExpansion) {
       expandOptions.filter = (name) => !isAutoBackupStorageKey(name);
     }
-    const expandedParsed = expandAutoBackupEntries(parsed, expandOptions);
+    const expandedParsed = expandAutoBackupEntries(inputForExpansion, expandOptions);
     const projects = {};
     let changed = false;
     const usedProjectNames = new Set();
@@ -12298,45 +12435,7 @@
       normalized: cloneLookupMap(normalizedKeyLookup),
     });
 
-    const mergeShardedProjects = () => {
-      if (!safeStorage || typeof safeStorage.length !== 'number') {
-        return false;
-      }
-      let merged = false;
-      const count = safeStorage.length;
-      for (let i = 0; i < count; i++) {
-        const key = safeStorage.key(i);
-        if (!key || !key.startsWith(PROJECT_SHARD_PREFIX)) {
-          continue;
-        }
-        const rawName = key.substring(PROJECT_SHARD_PREFIX.length);
-        if (!rawName) {
-          continue;
-        }
-        if (Object.prototype.hasOwnProperty.call(projects, rawName)) {
-          continue;
-        }
-        try {
-          const rawVal = safeStorage.getItem(key);
-          const parsedVal = JSON.parse(decodeStoredValue(rawVal));
-          const normalized = normalizeProject(parsedVal);
-          if (normalized) {
-            projects[rawName] = normalized;
-            registerLookupKey(rawName, rawName);
-            markProjectNameUsed(rawName);
-            merged = true;
-          }
-        } catch (e) {
-          console.warn('Failed to read project shard', key, e);
-        }
-      }
-      return merged;
-    };
-
     const finalize = () => {
-      if (mergeShardedProjects()) {
-        changed = true;
-      }
 
       const snapshot = {
         projects,
@@ -12375,7 +12474,11 @@
     if (typeof expandedParsed === "string") {
       const normalized = normalizeProject(expandedParsed);
       if (normalized) {
-        const updatedName = generateUpdatedProjectName("", usedProjectNames, normalizedProjectNames);
+        const suggestedName =
+          (normalized && normalized.projectInfo && typeof normalized.projectInfo.projectName === 'string')
+            ? normalized.projectInfo.projectName
+            : "";
+        const updatedName = generateUpdatedProjectName(suggestedName, usedProjectNames, normalizedProjectNames);
         projects[updatedName] = normalized;
         registerLookupKey("", updatedName);
         markProjectNameUsed(updatedName);
@@ -12462,7 +12565,10 @@
         }
         let finalKey = key;
         if (needsUpgrade) {
-          finalKey = generateUpdatedProjectName(key, usedProjectNames, normalizedProjectNames);
+          const innerName = (normalized && normalized.projectInfo && typeof normalized.projectInfo.projectName === 'string' && normalized.projectInfo.projectName)
+            ? normalized.projectInfo.projectName
+            : key;
+          finalKey = generateUpdatedProjectName(innerName, usedProjectNames, normalizedProjectNames);
           changed = true;
         }
         if (
@@ -12486,40 +12592,130 @@
     return finalize();
   }
 
+  function pruneOrphanProjectShards(storage, projects) {
+    if (!storage || typeof storage.length !== 'number' || !isPlainObject(projects)) {
+      return;
+    }
+    const projectKeys = new Set(
+      Object.keys(projects).map((name) => normalizeProjectStorageKey(name)),
+    );
+    const keysToDelete = [];
+    for (let i = 0; i < storage.length; i += 1) {
+      const key = storage.key(i);
+      if (key && key.startsWith(PROJECT_SHARD_PREFIX)) {
+        const rawName = key.substring(PROJECT_SHARD_PREFIX.length);
+        if (!projectKeys.has(rawName)) {
+          keysToDelete.push(key);
+        }
+      }
+    }
+    keysToDelete.forEach((key) =>
+      deleteFromStorage(storage, key, 'Pruning orphan project shard:'),
+    );
+  }
+
+  function cleanupMonolithicProjectStorage(storage) {
+    if (!storage) return;
+    const raw = storage.getItem(PROJECT_STORAGE_KEY);
+    // If it's already empty, we don't need to do anything.
+    if (!raw) {
+      return;
+    }
+    // Ensure we have a migration backup before we delete the monolith
+    try {
+      const parsed = JSON.parse(decodeStoredValue(raw));
+      if (parsed) {
+        createStorageMigrationBackup(storage, PROJECT_STORAGE_KEY, parsed);
+      }
+    } catch (e) {
+      // If parsing fails, we skip migration backup but proceed with cleanup to prevent infinite loops
+      // if the data is corrupted and causing other issues.
+      void e;
+    }
+
+    deleteFromStorage(
+      storage,
+      PROJECT_STORAGE_KEY,
+      "Error clearing project monolithic storage after sharding:",
+      {
+        disableBackup: false,
+        disableMigrationCleanup: true
+      }
+    );
+  }
+
+  function persistProjectShard(name, project, options = {}) {
+    if (name === null || name === undefined || project === undefined || project === null) {
+      return false;
+    }
+    const safeStorage = getSafeLocalStorage();
+    if (!safeStorage) {
+      return false;
+    }
+
+    const { skipCompression = false } = options || {};
+    const shardKey = PROJECT_SHARD_PREFIX + normalizeProjectStorageKey(name);
+
+    // Prepare a temporary object to use existing serialization logic
+    const entries = {};
+    entries[name] = project;
+
+    const serialized = serializeAutoBackupEntries(entries, {
+      isAutoBackupKey: isAutoBackupStorageKey,
+    });
+    const projectData = serialized[name];
+
+    const result = saveJSONToStorage(
+      safeStorage,
+      shardKey,
+      projectData,
+      `Error saving project shard "${name}":`,
+      {
+        disableCompression: skipCompression,
+        onQuotaExceeded: () => {
+          // Cross-shard quota recovery: try to prune the oldest auto-backup shard.
+          // Note: we don't want forMutation: true here because we are in the middle of a save.
+          const { projects } = readAllProjectsFromStorage({ forMutation: false });
+          const removedKey = removeOldestAutoBackupEntry(projects);
+          if (removedKey) {
+            const victimKey = PROJECT_SHARD_PREFIX + normalizeProjectStorageKey(removedKey);
+            deleteFromStorage(safeStorage, victimKey, `Pruning shard "${removedKey}" to recover space:`);
+            return true;
+          }
+          return false;
+        },
+      }
+    );
+
+    return result === 'success';
+  }
+
   function persistAllProjects(projects, options = {}) {
     const { skipCompression = false } = options || {};
     const safeStorage = getSafeLocalStorage();
 
-    // enforceAutoBackupLimits modifies 'projects' in place by deleting excess. 
-    // If we receive the full set, we run it.
-    const removed = enforceAutoBackupLimits(projects);
-    if (Array.isArray(removed) && removed.length > 0) {
-      removed.forEach(name => {
-        const shardKey = PROJECT_SHARD_PREFIX + normalizeProjectStorageKey(name);
-        deleteFromStorage(safeStorage, shardKey, `Removing pruned backup shard ${name}:`);
-      });
-    }
-
     if (!projects || typeof projects !== 'object') return;
 
-    const serializedProjects = serializeAutoBackupEntries(projects, {
-      isAutoBackupKey: isAutoBackupStorageKey,
-    });
-    ensureProjectEntriesUncompressed(serializedProjects);
+    // Prune within the projects object first (handling auto-backup counts)
+    enforceAutoBackupLimits(projects);
 
-    saveJSONToStorage(
-      safeStorage,
-      PROJECT_STORAGE_KEY,
-      serializedProjects,
-      "Error saving project to localStorage:",
-      { disableCompression: skipCompression }
-    );
+    // Persist each project as its own shard.
+    Object.keys(projects).forEach((name) => {
+      persistProjectShard(name, projects[name], { skipCompression });
+    });
+
+    // Clean up orphans (projects that were deleted or renamed) and the monolithic key
+    pruneOrphanProjectShards(safeStorage, projects);
+    cleanupMonolithicProjectStorage(safeStorage);
+
     bumpProjectStorageRevision(safeStorage);
     invalidateProjectReadCache();
     if (lifecycleChannel) {
       try {
         lifecycleChannel.postMessage('project-shards-changed');
-      } catch (e) { void e; }
+      } catch (e) {
+        void e;
+      }
     }
   }
 
@@ -12781,8 +12977,8 @@
     );
     const initialExistingEntry =
       initialResolvedKey !== null
-      && initialResolvedKey !== undefined
-      && Object.prototype.hasOwnProperty.call(initialProjects, initialResolvedKey)
+        && initialResolvedKey !== undefined
+        && Object.prototype.hasOwnProperty.call(initialProjects, initialResolvedKey)
         ? initialProjects[initialResolvedKey]
         : null;
     const initialExistingSignature = initialExistingEntry
@@ -12870,10 +13066,48 @@
       }
     }
 
+    // Explicit rename handling from options (e.g. from handleSaveSetupClick)
+    const manualRenamedFrom = options && options.renamedFrom;
+    if (manualRenamedFrom && manualRenamedFrom !== storageKey) {
+      const resolvedOld = resolveProjectKey(projects, latestSnapshot.lookup, manualRenamedFrom, { preferExact: true });
+      if (resolvedOld && Object.prototype.hasOwnProperty.call(projects, resolvedOld)) {
+        delete projects[resolvedOld];
+        removeProjectActivity(resolvedOld);
+      }
+    }
+
     const finalKey = storageKey || '';
     projects[finalKey] = normalized;
     markProjectActivity(finalKey);
-    persistAllProjects(projects, { skipCompression });
+
+    // Prune within the projects object first (handling auto-backup counts)
+    enforceAutoBackupLimits(projects);
+
+    // Instead of calling persistAllProjects(projects), which would trigger a massive monolithic rewrite,
+    // we now use sharded persistence for the specific project being saved.
+    const shardSuccess = persistProjectShard(finalKey, normalized, { skipCompression });
+
+    if (shardSuccess) {
+      const safeStorage = getSafeLocalStorage();
+      // Clean up shards that are no longer in the projects map (renames or pruned backups)
+      pruneOrphanProjectShards(safeStorage, projects);
+      // Ensure migration from monolithic is finalized
+      cleanupMonolithicProjectStorage(safeStorage);
+
+      // Trigger cross-tab invalidation.
+      invalidateProjectReadCache();
+      if (lifecycleChannel) {
+        try {
+          lifecycleChannel.postMessage('project-shards-changed');
+        } catch (e) {
+          void e;
+        }
+      }
+      bumpProjectStorageRevision(safeStorage);
+    } else {
+      // Fallback for extreme cases (storage issues), though persistAllProjects would likely fail too.
+      persistAllProjects(projects, { skipCompression });
+    }
   }
 
   function deleteProject(name) {
@@ -12883,27 +13117,46 @@
         PROJECT_STORAGE_KEY,
         "Error deleting project from localStorage:",
       );
-      const safeStorage = getSafeLocalStorage();
-      if (safeStorage && typeof safeStorage.length === 'number') {
-        const shardKeys = [];
-        for (let i = 0; i < safeStorage.length; i++) {
-          const key = safeStorage.key(i);
-          if (key && key.startsWith(PROJECT_SHARD_PREFIX)) {
-            shardKeys.push(key);
-          }
-        }
-        shardKeys.forEach((key) => deleteFromStorage(
-          safeStorage,
-          key,
-          "Error deleting project shard from localStorage:",
-        ));
+      const storagesToPrune = [getSafeLocalStorage()];
+      if (typeof localStorage !== 'undefined' && storagesToPrune.indexOf(localStorage) === -1) {
+        storagesToPrune.push(localStorage);
       }
+
+      storagesToPrune.forEach((storage) => {
+        if (storage && typeof storage.length === 'number') {
+          const shardKeys = [];
+          for (let i = 0; i < storage.length; i++) {
+            const key = storage.key(i);
+            if (key && key.startsWith(PROJECT_SHARD_PREFIX)) {
+              shardKeys.push(key);
+            }
+          }
+          shardKeys.forEach((key) => deleteFromStorage(
+            storage,
+            key,
+            "Error deleting project shard from localStorage:",
+          ));
+        }
+      });
+
+      // Clear related UI caches when deleting all projects
+      if (typeof clearUiCacheStorageEntries === 'function') {
+        try {
+          clearUiCacheStorageEntries();
+        } catch (uiCacheError) {
+          console.warn('Failed to clear UI cache during project deletion', uiCacheError);
+        }
+      }
+
       invalidateProjectReadCache();
       if (lifecycleChannel) { try { lifecycleChannel.postMessage('project-shards-changed'); } catch (e) { void e; } }
       if (projectActivityTimestamps && typeof projectActivityTimestamps.clear === 'function') {
         projectActivityTimestamps.clear();
       }
-      bumpProjectStorageRevision(safeStorage);
+      const currentSafeStorage = getSafeLocalStorage();
+      if (currentSafeStorage) {
+        bumpProjectStorageRevision(currentSafeStorage);
+      }
       return;
     }
 
@@ -12919,7 +13172,14 @@
       resolvedKey !== null && resolvedKey !== undefined
         ? resolvedKey
         : normalizeProjectStorageKey(name);
+
     if (!Object.prototype.hasOwnProperty.call(projects, key)) {
+      // If key not found in project map, try deleting potential orphan shard directly
+      const potentialShardKey = PROJECT_SHARD_PREFIX + normalizeProjectStorageKey(name);
+      const safeStorage = getSafeLocalStorage();
+      if (safeStorage) {
+        deleteFromStorage(safeStorage, potentialShardKey, "Error deleting orphan project shard:");
+      }
       return;
     }
     const backupOutcome = maybeCreateProjectDeletionBackup(projects, key);
@@ -12929,12 +13189,36 @@
       return;
     }
     const shardKey = PROJECT_SHARD_PREFIX + normalizeProjectStorageKey(key);
-    deleteFromStorage(getSafeLocalStorage(), shardKey, "Error deleting project shard:");
+    const safeStorage = getSafeLocalStorage();
+    if (safeStorage) {
+      deleteFromStorage(safeStorage, shardKey, "Error deleting project shard:");
+    }
     delete projects[key];
     removeProjectActivity(key);
     persistAllProjects(projects);
     invalidateProjectReadCache();
     if (lifecycleChannel) { try { lifecycleChannel.postMessage('project-shards-changed'); } catch (e) { void e; } }
+  }
+
+  function renameProject(oldName, newName) {
+    if (!oldName || !newName) return null;
+    const { projects, lookup } = readAllProjectsFromStorage({ forMutation: true });
+    const resolvedKey = resolveProjectKey(projects, lookup, oldName, { preferExact: true });
+    if (!resolvedKey || !Object.prototype.hasOwnProperty.call(projects, resolvedKey)) {
+      return null;
+    }
+    const targetName = newName.trim();
+    if (!targetName || targetName === resolvedKey) {
+      return resolvedKey;
+    }
+
+    const movedValue = projects[resolvedKey];
+    // Rename in progress: removing old but not yet persisting
+    delete projects[resolvedKey];
+    projects[targetName] = movedValue;
+
+    persistAllProjects(projects);
+    return targetName;
   }
 
   function createProjectImporter() {
@@ -13813,11 +14097,38 @@
       return [];
     }
 
-    const seen = visited || new WeakSet();
-    if (seen.has(value)) {
-      return [];
+    if (Array.isArray(value)) {
+      const results = [];
+      const count = value.length;
+      const seen = visited || new WeakSet();
+      if (seen.has(value)) {
+        return [];
+      }
+      seen.add(value);
+      for (let i = 0; i < count; i += 1) {
+        const item = value[i];
+        if (Array.isArray(item)) {
+          const nested = normalizeImportedFullBackupHistory(item, seen);
+          if (nested && nested.length) {
+            for (let j = 0; j < nested.length; j += 1) {
+              results.push(nested[j]);
+            }
+          }
+        } else {
+          const entry = normalizeFullBackupHistoryEntry(item);
+          if (entry) {
+            results.push(entry);
+          }
+        }
+      }
+      return results;
     }
-    if (typeof value === 'object') {
+
+    const seen = visited || new WeakSet();
+    if (typeof value === 'object' && value !== null) {
+      if (seen.has(value)) {
+        return [];
+      }
       seen.add(value);
     }
 
@@ -13838,10 +14149,9 @@
       return entry ? [entry] : [];
     }
 
+    // Arrays are handled at the top of the function
     if (Array.isArray(value)) {
-      return value
-        .map(normalizeFullBackupHistoryEntry)
-        .filter(Boolean);
+      return [];
     }
 
     if (isPlainObject(value)) {
@@ -14817,14 +15127,14 @@
   }
 
   // --- Clear All Stored Data ---
-  // --- Clear All Stored Data ---
   async function clearAllData() {
-    if (GLOBAL_SCOPE) {
-      try {
-        GLOBAL_SCOPE.__cameraPowerPlannerFactoryResetting = true;
-      } catch (e) {
-        void e;
-      }
+    try {
+      if (typeof globalThis !== 'undefined') globalThis.__cameraPowerPlannerFactoryResetting = true;
+      if (typeof global !== 'undefined') global.__cameraPowerPlannerFactoryResetting = true;
+      if (typeof window !== 'undefined') window.__cameraPowerPlannerFactoryResetting = true;
+      if (GLOBAL_SCOPE) GLOBAL_SCOPE.__cameraPowerPlannerFactoryResetting = true;
+    } catch (e) {
+      void e;
     }
 
     if (lifecycleChannel) {
@@ -14863,7 +15173,7 @@
       let clearVaultFn = null;
       if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.clearBackupVault === 'function') {
         clearVaultFn = GLOBAL_SCOPE.clearBackupVault;
-      } else if (typeof clearBackupVault === 'function') {
+      } else if (typeof clearBackupVault !== 'undefined' && typeof clearBackupVault === 'function') {
         clearVaultFn = clearBackupVault;
       } else if (GLOBAL_SCOPE && GLOBAL_SCOPE.cineFeatureBackup && typeof GLOBAL_SCOPE.cineFeatureBackup.clearBackupVault === 'function') {
         clearVaultFn = GLOBAL_SCOPE.cineFeatureBackup.clearBackupVault;
@@ -14873,14 +15183,25 @@
         await clearVaultFn();
       } else if (typeof indexedDB !== 'undefined') {
         const vaultDbNames = ['cinePowerPlannerBackupVault'];
-        for (let index = 0; index < vaultDbNames.length; index += 1) {
-          const dbName = vaultDbNames[index];
-          try {
-            indexedDB.deleteDatabase(dbName);
-          } catch (deleteError) {
-            console.warn(`Failed to delete IndexedDB database "${dbName}" during factory reset`, deleteError);
-          }
-        }
+        await Promise.all(vaultDbNames.map(dbName => {
+          return new Promise((resolve) => {
+            try {
+              const request = indexedDB.deleteDatabase(dbName);
+              request.addEventListener('success', () => resolve());
+              request.addEventListener('error', () => {
+                console.warn(`Failed to delete IndexedDB database "${dbName}" during factory reset`, request.error);
+                resolve();
+              });
+              request.addEventListener('blocked', () => {
+                console.warn(`Deletion of IndexedDB database "${dbName}" blocked during factory reset`);
+                resolve();
+              });
+            } catch (deleteError) {
+              console.warn(`Error initiating deletion of IndexedDB database "${dbName}"`, deleteError);
+              resolve();
+            }
+          });
+        }));
       }
     } catch (vaultError) {
       console.warn('Failed to clear backup vault during factory reset', vaultError);
@@ -14942,6 +15263,7 @@
         : 'cine_install_banner_dismissed',
     ];
 
+
     const ensureStoragePruned = (storage, storageName) => {
       if (!storage || typeof storage.length !== 'number' || typeof storage.key !== 'function') {
         return;
@@ -14953,7 +15275,13 @@
         if (!key) {
           continue;
         }
-        if (key.startsWith(PROJECT_SHARD_PREFIX) || sessionCacheKeys.includes(key)) {
+        // Remove all app-related keys and specific session cache keys
+        if (
+          key.startsWith('cameraPowerPlanner_') ||
+          key.startsWith('cine_') ||
+          key.startsWith('cineRental') ||
+          sessionCacheKeys.includes(key)
+        ) {
           keysToRemove.push(key);
         }
       }
@@ -14975,46 +15303,70 @@
       ensureStoragePruned(sessionStorage, 'sessionStorage');
     }
 
-    // Explicitly clear known keys using the helper to ensure logging and safety
-    // This is redundant but safe, ensuring we definitely hit these keys even if iteration failed
-    deleteFromStorage(safeStorage, 'cineBackupVaultFallbackRecords', msg);
-    deleteFromStorage(safeStorage, DEVICE_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, SETUP_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, FEEDBACK_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, USER_PROFILE_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, FAVORITES_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, CONTACTS_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, AUTO_GEAR_RULES_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, AUTO_GEAR_SEEDED_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, AUTO_GEAR_PRESETS_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, getCustomFontStorageKeyName(), msg);
-    deleteFromStorage(safeStorage, CUSTOM_LOGO_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, DEVICE_SCHEMA_CACHE_KEY, msg);
-    deleteFromStorage(safeStorage, OWN_GEAR_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, DOCUMENTATION_TRACKER_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, FULL_BACKUP_HISTORY_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, STORAGE_COMPRESSION_FLAG_KEY, msg);
-    deleteFromStorage(safeStorage, STORAGE_TEST_KEY, msg);
-    deleteFromStorage(safeStorage, SESSION_STATE_KEY, msg);
+    // Explicitly clear known keys and prefixes using the helper to ensure logging and safety
+    // This is redundant with clear() but ensures critical keys are hit regardless of iteration issues.
+    if (typeof clearUiCacheStorageEntries === 'function') {
+      try {
+        clearUiCacheStorageEntries();
+      } catch (e) {
+        void e;
+      }
+    }
 
-    // [Added by Agent] Void unused helpers to satisfy lint
-    void applyProjectEntryCompression;
-    void forceCompressAllProjectEntries;
-    void clearDerivedProjectCachesForQuota;
-    void removeOldestRenamedAutoBackupEntry;
-    void shouldDisableProjectCompressionDuringPersist;
+    const explicitKeys = [
+      'cineBackupVaultFallbackRecords',
+      DEVICE_STORAGE_KEY,
+      SETUP_STORAGE_KEY,
+      FEEDBACK_STORAGE_KEY,
+      PROJECT_STORAGE_KEY,
+      'cameraPowerPlanner_projects',
+      FAVORITES_STORAGE_KEY,
+      CONTACTS_STORAGE_KEY,
+      AUTO_GEAR_RULES_STORAGE_KEY,
+      AUTO_GEAR_BACKUPS_STORAGE_KEY,
+      AUTO_GEAR_SEEDED_STORAGE_KEY,
+      AUTO_GEAR_PRESETS_STORAGE_KEY,
+      AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY,
+      AUTO_GEAR_AUTO_PRESET_STORAGE_KEY,
+      AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY,
+      AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY,
+      AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY,
+      getCustomFontStorageKeyName(),
+      CUSTOM_LOGO_STORAGE_KEY,
+      DEVICE_SCHEMA_CACHE_KEY,
+      OWN_GEAR_STORAGE_KEY,
+      USER_PROFILE_STORAGE_KEY,
+      DOCUMENTATION_TRACKER_STORAGE_KEY,
+      FULL_BACKUP_HISTORY_STORAGE_KEY,
+      STORAGE_COMPRESSION_FLAG_KEY,
+      STORAGE_TEST_KEY,
+      SESSION_STATE_KEY,
+      'cameraPowerPlanner_lastProject',
+      'cameraPowerPlanner_onboardingComplete',
+      'cameraPowerPlanner_tourShown',
+      'cameraPowerPlanner_v1_migration',
+      'cameraPowerPlanner_v2_migration',
+      'cameraPowerPlanner_sharded',
+      'cameraPowerPlanner_forceLegacyBundle',
+      'cameraPowerPlanner_forceLegacyBundleRetry'
+    ];
+
+    explicitKeys.forEach(k => {
+      if (k) deleteFromStorage(safeStorage, k, msg);
+    });
 
     if (typeof sessionStorage !== 'undefined') {
       deleteFromStorage(sessionStorage, SESSION_STATE_KEY, msg);
       deleteFromStorage(sessionStorage, '__cineLoggingHistory', msg);
       deleteFromStorage(sessionStorage, '__cineLoggingConfig', msg);
     }
+
+    // Void unused helpers to satisfy lint
+    void applyProjectEntryCompression;
+    void forceCompressAllProjectEntries;
+    void clearDerivedProjectCachesForQuota;
+    void removeOldestRenamedAutoBackupEntry;
+    void shouldDisableProjectCompressionDuringPersist;
 
     // Clear Service Worker Caches
     if (typeof caches !== 'undefined') {
@@ -15131,21 +15483,14 @@
       console.warn('Failed to clear cache storage', cacheError);
     }
 
-    const resetFactoryResetFlag = (scope) => {
-      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
-        return;
-      }
-      try {
-        scope.__cameraPowerPlannerFactoryResetting = false;
-      } catch (error) {
-        void error;
-      }
-    };
-
-    resetFactoryResetFlag(GLOBAL_SCOPE);
-    resetFactoryResetFlag(typeof window !== 'undefined' ? window : null);
-    resetFactoryResetFlag(typeof self !== 'undefined' ? self : null);
-    resetFactoryResetFlag(typeof global !== 'undefined' ? global : null);
+    try {
+      if (typeof globalThis !== 'undefined') globalThis.__cameraPowerPlannerFactoryResetting = false;
+      if (typeof global !== 'undefined') global.__cameraPowerPlannerFactoryResetting = false;
+      if (typeof window !== 'undefined') window.__cameraPowerPlannerFactoryResetting = false;
+      if (GLOBAL_SCOPE) GLOBAL_SCOPE.__cameraPowerPlannerFactoryResetting = false;
+    } catch (e) {
+      void e;
+    }
   }
 
   // --- Export/Import All Planner Data ---
@@ -16540,6 +16885,11 @@
   }
 
   function importAllData(allData, options = {}) {
+    if (Array.isArray(allData)) {
+      importProjectCollection(allData, () => createProjectImporter());
+      return;
+    }
+
     if (!isPlainObject(allData)) {
       return;
     }
@@ -16996,6 +17346,7 @@
     loadProject,
     saveProject,
     deleteProject,
+    renameProject,
     createProjectDeletionBackup,
     loadSessionState,
     saveSessionState,
@@ -17044,6 +17395,7 @@
     getCompressionLogSnapshot,
     setActiveProjectCompressionHold,
     clearActiveProjectCompressionHold,
+    invalidateProjectReadCache,
   };
 
   var TEST_ONLY_AUTO_BACKUP_COMPRESSION_CACHE = {

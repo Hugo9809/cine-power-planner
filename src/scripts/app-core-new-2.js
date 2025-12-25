@@ -17638,6 +17638,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     function populateMonitorSelect() {
+      const target = typeof monitorSelect !== 'undefined' ? monitorSelect : (typeof document !== 'undefined' ? document.getElementById('monitorSelect') : null);
+      if (!target) return;
+
       const monitors = devices.monitors || {};
 
       const filtered = Object.fromEntries(
@@ -17645,7 +17648,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         // .filter(([, data]) => !(data.wirelessRX && !data.wirelessTx)) // Temporary disable filter
       );
 
-      populateSelect(monitorSelect, filtered, true);
+      populateSelect(target, filtered, true);
     }
 
     function getCompatibleCagesForCamera(cameraName) {

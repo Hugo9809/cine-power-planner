@@ -385,7 +385,7 @@ var accentColorReset =
       ? document.getElementById('accentColorReset')
       : null;
 
-var localFontsButton =
+var resolvedLocalFontsButton =
   (typeof localFontsButton !== 'undefined' && localFontsButton)
     ? localFontsButton
     : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
@@ -475,7 +475,7 @@ if (typeof globalThis !== 'undefined') {
     reloadButton, closeMenuButton, openContactsBtn, shareSetupBtn,
     applySharedLinkBtn, generateOverviewBtn, runtimeFeedbackBtn,
     zoomOut, zoomIn, resetView, gridSnapToggle,
-    accentColorReset, localFontsButton, documentationTrackerAddRelease,
+    accentColorReset, localFontsButton: resolvedLocalFontsButton, documentationTrackerAddRelease,
     mountVoltageReset, autoGearSavePreset, autoGearDeletePreset,
     autoGearBackupRestore, autoGearAddRule, autoGearResetFactory,
     autoGearHighlightToggle, closePrintPreviewBtn, printPreviewExportBtn,
@@ -2499,11 +2499,20 @@ function addSafeEventListener(target, type, handler, options) {
       el.addEventListener(type, handler, options);
       return;
     }
+
+    // Use the robust polling listener if available
+    if (EVENTS_UI_HELPERS && typeof EVENTS_UI_HELPERS.whenElementAvailable === 'function') {
+      EVENTS_UI_HELPERS.whenElementAvailable(target, (foundEl) => {
+        // Re-verify it has addEventListener in case it's a weird object
+        if (foundEl && typeof foundEl.addEventListener === 'function') {
+          foundEl.addEventListener(type, handler, options);
+        }
+      });
+      return;
+    }
   }
 
-  // If the target is null but we might be able to find it later (race condition),
-  // we try to bind it on DOMContentLoaded.
-  // This is a "best effort" fallback for the many implicit globals used in this codebase.
+  // Fallback for objects/names that are not strings or if helper missing
   document.addEventListener('DOMContentLoaded', () => {
     let el = null;
     if (typeof target === 'string') {
@@ -2609,7 +2618,14 @@ function handleSaveSetupClick(optionsOrEvent) {
   const typedName = setupNameInput.value.trim();
   if (!typedName) {
     if (!isSilent) {
-      alert(texts[currentLang].alertSetupName);
+      if (typeof window.cineShowAlertDialog === 'function') {
+        window.cineShowAlertDialog({
+          title: langTexts.alertSetupNameTitle || fallbackTexts.alertSetupNameTitle || 'Project Name Required',
+          message: texts[currentLang].alertSetupName
+        });
+      } else {
+        alert(texts[currentLang].alertSetupName);
+      }
     }
     return;
   }
@@ -2679,7 +2695,10 @@ function handleSaveSetupClick(optionsOrEvent) {
       if (renamingAutoBackup && finalIsAutoBackup) {
         markAutoBackupDataAsRenamed(storedProjectSnapshot);
       }
-      saveProject(finalName, storedProjectSnapshot, { skipOverwriteBackup: true });
+      saveProject(finalName, storedProjectSnapshot, {
+        skipOverwriteBackup: true,
+        renamedFrom: selectedName
+      });
       didPersistProject = true;
     } catch (error) {
       didPersistProject = false;
@@ -2714,7 +2733,14 @@ function handleSaveSetupClick(optionsOrEvent) {
           void notifyError;
         }
       } else {
-        alert(warnMessage);
+        if (typeof window.cineShowAlertDialog === 'function') {
+          window.cineShowAlertDialog({
+            title: langTexts.alertSetupRenameSaveFailedTitle || 'Rename Failed',
+            message: warnMessage
+          });
+        } else {
+          alert(warnMessage);
+        }
       }
     }
   }
@@ -2763,7 +2789,15 @@ function handleSaveSetupClick(optionsOrEvent) {
       || fallbackTexts.alertSetupSaved
     );
   if (!isSilent && typeof saveAlertTemplate === 'string' && saveAlertTemplate) {
-    alert(saveAlertTemplate.replace("{name}", finalName));
+    const message = saveAlertTemplate.replace("{name}", finalName);
+    if (typeof window.cineShowAlertDialog === 'function') {
+      window.cineShowAlertDialog({
+        title: langTexts.alertSetupSavedTitle || fallbackTexts.alertSetupSavedTitle || 'Project Saved',
+        message: message
+      });
+    } else {
+      alert(message);
+    }
   }
 }
 
@@ -2800,7 +2834,14 @@ function handleDeleteSetupClick() {
     ? setupSelectElement.value
     : '';
   if (!setupName) {
-    alert(texts[currentLang].alertNoSetupSelected);
+    if (typeof window.cineShowAlertDialog === 'function') {
+      window.cineShowAlertDialog({
+        title: texts[currentLang].alertNoSetupSelectedTitle || 'No Project Selected',
+        message: texts[currentLang].alertNoSetupSelected
+      });
+    } else {
+      alert(texts[currentLang].alertNoSetupSelected);
+    }
     return;
   }
 
@@ -2861,7 +2902,15 @@ function handleDeleteSetupClick() {
       controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
       updateCalculations(); // Recalculate after deleting setup
     }
-    alert(texts[currentLang].alertSetupDeleted.replace("{name}", setupName));
+    const message = texts[currentLang].alertSetupDeleted.replace("{name}", setupName);
+    if (typeof window.cineShowAlertDialog === 'function') {
+      window.cineShowAlertDialog({
+        title: (texts[currentLang] && texts[currentLang].deleteSetupTitle) || 'Project Deleted',
+        message: message
+      });
+    } else {
+      alert(message);
+    }
   };
 
   if (typeof window.cineShowConfirmDialog === 'function') {
@@ -3441,8 +3490,15 @@ function populateSetupSelect() {
     setupSelectTarget.appendChild(opt);
   }
 }
-populateSetupSelect(); // Initial populate of setups
-checkSetupChanged();
+if (typeof EVENTS_UI_HELPERS.whenElementAvailable === 'function') {
+  EVENTS_UI_HELPERS.whenElementAvailable('setupSelect', () => {
+    populateSetupSelect();
+    checkSetupChanged();
+  });
+} else {
+  populateSetupSelect(); // Initial populate of setups
+  checkSetupChanged();
+}
 
 function notifyAutoSaveFromBackup(message, backupName, severity) {
   if (typeof message !== 'string') {
@@ -4680,6 +4736,7 @@ function showDeviceManagerSection() {
   if (!section || !btn) return;
   if (!section.classList.contains('hidden')) return;
   section.classList.remove('hidden');
+  document.body.classList.add('device-manager-active');
   setButtonLabelWithIconForEvents(btn, texts[currentLang].hideDeviceManager, ICON_GLYPHS.minus);
   btn.setAttribute('title', texts[currentLang].hideDeviceManager);
   btn.setAttribute('data-help', texts[currentLang].hideDeviceManagerHelp);
@@ -4694,6 +4751,7 @@ function hideDeviceManagerSection() {
   if (!section || !btn) return;
   if (section.classList.contains('hidden')) return;
   section.classList.add('hidden');
+  document.body.classList.remove('device-manager-active');
   setButtonLabelWithIconForEvents(btn, texts[currentLang].toggleDeviceManager, ICON_GLYPHS.gears);
   btn.setAttribute('title', texts[currentLang].toggleDeviceManager);
   btn.setAttribute('data-help', texts[currentLang].toggleDeviceManagerHelp);
@@ -5092,31 +5150,50 @@ function applyCameraTimecodes(timecodes) {
 }
 
 function populateDeviceForm(categoryKey, deviceData, subcategory) {
+  const resolve = (val, id) => val || (typeof document !== 'undefined' ? document.getElementById(id) : null);
+
+  // Re-resolve potentially null global references JIT
+  const wattDiv = resolve(typeof wattFieldDiv !== 'undefined' ? wattFieldDiv : null, 'wattField');
+  const batteryDiv = resolve(typeof batteryFieldsDiv !== 'undefined' ? batteryFieldsDiv : null, 'batteryFields');
+  const cameraDiv = resolve(typeof cameraFieldsDiv !== 'undefined' ? cameraFieldsDiv : null, 'cameraFields');
+  const monitorDiv = resolve(typeof monitorFieldsDiv !== 'undefined' ? monitorFieldsDiv : null, 'monitorFields');
+  const viewfinderDiv = resolve(typeof viewfinderFieldsDiv !== 'undefined' ? viewfinderFieldsDiv : null, 'viewfinderFields');
+  const videoDiv = resolve(typeof videoFieldsDiv !== 'undefined' ? videoFieldsDiv : null, 'videoFields');
+  const motorDiv = resolve(typeof motorFieldsDiv !== 'undefined' ? motorFieldsDiv : null, 'motorFields');
+  const controllerDiv = resolve(typeof controllerFieldsDiv !== 'undefined' ? controllerFieldsDiv : null, 'controllerFields');
+  const distanceDiv = resolve(typeof distanceFieldsDiv !== 'undefined' ? distanceFieldsDiv : null, 'distanceFields');
+  const lensDiv = resolve(typeof lensFieldsDiv !== 'undefined' ? lensFieldsDiv : null, 'lensFields');
+  const subcategoryDiv = resolve(typeof subcategoryFieldDiv !== 'undefined' ? subcategoryFieldDiv : null, 'subcategoryField');
+  const dynamicDiv = resolve(typeof dynamicFieldsDiv !== 'undefined' ? dynamicFieldsDiv : null, 'dynamicFields');
+
   placeWattField(categoryKey, deviceData);
   const type = inferDeviceCategory(categoryKey, deviceData);
-  if (wattFieldDiv) wattFieldDiv.style.display = "";
-  hideFormSection(batteryFieldsDiv);
-  hideFormSection(cameraFieldsDiv);
-  hideFormSection(monitorFieldsDiv);
-  hideFormSection(viewfinderFieldsDiv);
-  hideFormSection(videoFieldsDiv);
-  hideFormSection(motorFieldsDiv);
-  hideFormSection(controllerFieldsDiv);
-  hideFormSection(distanceFieldsDiv);
-  hideFormSection(lensFieldsDiv);
+
+  if (wattDiv) wattDiv.style.display = "";
+
+  hideFormSection(batteryDiv);
+  hideFormSection(cameraDiv);
+  hideFormSection(monitorDiv);
+  hideFormSection(viewfinderDiv);
+  hideFormSection(videoDiv);
+  hideFormSection(motorDiv);
+  hideFormSection(controllerDiv);
+  hideFormSection(distanceDiv);
+  hideFormSection(lensDiv);
+
   clearDynamicFields();
 
   if (type === "batteries") {
-    if (wattFieldDiv) wattFieldDiv.style.display = "none";
-    showFormSection(batteryFieldsDiv);
+    if (wattDiv) wattDiv.style.display = "none";
+    showFormSection(batteryDiv);
     newCapacityInput.value = deviceData.capacity ?? '';
     newPinAInput.value = deviceData.pinA ?? '';
     if (dtapRow) dtapRow.style.display = categoryKey === "batteryHotswaps" ? "none" : "";
     newDtapAInput.value = categoryKey === "batteryHotswaps" ? '' : (deviceData.dtapA ?? '');
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "cameras") {
-    if (wattFieldDiv) wattFieldDiv.style.display = "none";
-    showFormSection(cameraFieldsDiv);
+    if (wattDiv) wattDiv.style.display = "none";
+    showFormSection(cameraDiv);
     const tmp = resolveFirstPowerInputType(deviceData);
     cameraWattInput.value = deviceData.powerDrawWatts || '';
     cameraVoltageInput.value = deviceData.power?.input?.voltageRange || '';
@@ -5137,8 +5214,8 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     applyCameraTimecodes(deviceData.timecode || []);
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "lenses") {
-    if (wattFieldDiv) wattFieldDiv.style.display = "none";
-    showFormSection(lensFieldsDiv);
+    if (wattDiv) wattDiv.style.display = "none";
+    showFormSection(lensDiv);
     const fallbackMount = resolveDefaultLensMountType();
     let mountOptions = [];
     if (Array.isArray(deviceData?.mountOptions)) {
@@ -5156,8 +5233,8 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     }
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "monitors") {
-    if (wattFieldDiv) wattFieldDiv.style.display = "none";
-    showFormSection(monitorFieldsDiv);
+    if (wattDiv) wattDiv.style.display = "none";
+    showFormSection(monitorDiv);
     monitorScreenSizeInput.value = deviceData.screenSizeInches || '';
     monitorBrightnessInput.value = deviceData.brightnessNits || '';
     monitorWattInput.value = deviceData.powerDrawWatts || '';
@@ -5174,8 +5251,8 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
       deviceData.audioOutput || '';
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "viewfinders") {
-    if (wattFieldDiv) wattFieldDiv.style.display = "none";
-    showFormSection(viewfinderFieldsDiv);
+    if (wattDiv) wattDiv.style.display = "none";
+    showFormSection(viewfinderDiv);
     viewfinderScreenSizeInput.value = deviceData.screenSizeInches || '';
     viewfinderBrightnessInput.value = deviceData.brightnessNits || '';
     viewfinderWattInput.value = deviceData.powerDrawWatts || '';
@@ -5188,7 +5265,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     viewfinderLatencyInput.value = deviceData.latencyMs ?? '';
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "video") {
-    showFormSection(videoFieldsDiv);
+    showFormSection(videoDiv);
     newWattInput.value = deviceData.powerDrawWatts || '';
     callEventsCoreFunction('setVideoPowerInputs', [
       deviceData.power?.input || deviceData.powerInput || null,
@@ -5200,7 +5277,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     motorConnectorInput.value = '';
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "fiz.motors") {
-    showFormSection(motorFieldsDiv);
+    showFormSection(motorDiv);
     newWattInput.value = deviceData.powerDrawWatts || '';
     motorConnectorInput.value = deviceData.fizConnector || '';
     motorInternalInput.checked = !!deviceData.internalController;
@@ -5209,7 +5286,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     motorNotesInput.value = deviceData.notes || '';
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "fiz.controllers") {
-    showFormSection(controllerFieldsDiv);
+    showFormSection(controllerDiv);
     newWattInput.value = deviceData.powerDrawWatts || '';
     const cc = Array.isArray(deviceData.fizConnectors)
       ? deviceData.fizConnectors.map(fc => fc.type).join(', ')
@@ -5220,8 +5297,8 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     controllerConnectivityInput.value = deviceData.connectivity || '';
     controllerNotesInput.value = deviceData.notes || '';
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
-  } else if (type === "fiz.distance") {
-    showFormSection(distanceFieldsDiv);
+  } else if (type === "distances") {
+    showFormSection(distanceDiv);
     newWattInput.value = deviceData.powerDrawWatts || '';
     distanceConnectionInput.value = deviceData.connectionCompatibility || '';
     distanceMethodInput.value = deviceData.measurementMethod || '';
@@ -5231,11 +5308,11 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     distanceNotesInput.value = deviceData.notes || '';
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "accessories.cables") {
-    if (wattFieldDiv) {
-      wattFieldDiv.style.display = "none";
+    if (wattDiv) {
+      wattDiv.style.display = "none";
     }
-    if (subcategoryFieldDiv) {
-      subcategoryFieldDiv.hidden = false;
+    if (subcategoryDiv) {
+      subcategoryDiv.hidden = false;
     }
     const subcategoryKeys = getCableSubcategoryKeysForUi(subcategory ? [subcategory] : []);
     newSubcategorySelect.innerHTML = '';
@@ -5372,13 +5449,31 @@ addSafeEventListener('device-manager', "click", (event) => {
       refreshDeviceListsSafe();
       callCoreFunctionIfAvailable('updateMountTypeOptions', [], { defer: true });
       // Re-populate all dropdowns and update calculations
-      populateSelect(cameraSelect, devices.cameras, true);
+      const curCameraSelect = typeof cameraSelect !== 'undefined' ? cameraSelect : (typeof document !== 'undefined' ? document.getElementById('cameraSelect') : null);
+      const curVideoSelect = typeof videoSelect !== 'undefined' ? videoSelect : (typeof document !== 'undefined' ? document.getElementById('videoSelect') : null);
+      const curDistanceSelect = typeof distanceSelect !== 'undefined' ? distanceSelect : (typeof document !== 'undefined' ? document.getElementById('distanceSelect') : null);
+      const curBatterySelect = typeof batterySelect !== 'undefined' ? batterySelect : (typeof document !== 'undefined' ? document.getElementById('batterySelect') : null);
+
+      populateSelect(curCameraSelect, devices.cameras, true);
       populateMonitorSelect();
-      populateSelect(videoSelect, devices.video, true);
-      motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
-      controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
-      populateSelect(distanceSelect, devices.fiz.distance, true);
-      populateSelect(batterySelect, devices.batteries, true);
+      populateSelect(curVideoSelect, devices.video, true);
+
+      const fiz = devices.fiz || {};
+      const curMotorSelects = (typeof motorSelects !== 'undefined' && Array.isArray(motorSelects)) ? motorSelects : [
+        document.getElementById("motor1Select"),
+        document.getElementById("motor2Select"),
+        document.getElementById("motor3Select"),
+        document.getElementById("motor4Select")
+      ];
+      const curControllerSelects = (typeof controllerSelects !== 'undefined' && Array.isArray(controllerSelects)) ? controllerSelects : [
+        document.getElementById("controller1Select"),
+        document.getElementById("controller2Select")
+      ];
+
+      curMotorSelects.forEach(sel => populateSelect(sel, fiz.motors, true));
+      curControllerSelects.forEach(sel => populateSelect(sel, fiz.controllers, true));
+      populateSelect(curDistanceSelect, fiz.distance, true);
+      populateSelect(curBatterySelect, devices.batteries, true);
       updateFizConnectorOptions();
       updateMotorConnectorOptions();
       updateControllerConnectorOptions();
@@ -5723,18 +5818,39 @@ addSafeEventListener('addDeviceBtn', "click", (event) => {
   const originalSubcategory = addDeviceBtn.dataset.originalSubcategory;
 
   if (!name) {
-    alert(texts[currentLang].alertDeviceName);
+    if (typeof window.cineShowAlertDialog === 'function') {
+      window.cineShowAlertDialog({
+        title: texts[currentLang].alertDeviceNameTitle || 'Name Required',
+        message: texts[currentLang].alertDeviceName
+      });
+    } else {
+      alert(texts[currentLang].alertDeviceName);
+    }
     return;
   }
 
   if (category === "accessories.cables" && !subcategory) {
-    alert(texts[currentLang].alertDeviceFields);
+    if (typeof window.cineShowAlertDialog === 'function') {
+      window.cineShowAlertDialog({
+        title: texts[currentLang].alertDeviceFieldsTitle || 'Incomplete Data',
+        message: texts[currentLang].alertDeviceFields
+      });
+    } else {
+      alert(texts[currentLang].alertDeviceFields);
+    }
     return;
   }
 
   const targetCategory = getCategoryContainer(category, subcategory, { create: true });
   if (!targetCategory) {
-    alert(texts[currentLang].alertDeviceFields);
+    if (typeof window.cineShowAlertDialog === 'function') {
+      window.cineShowAlertDialog({
+        title: texts[currentLang].alertDeviceFieldsTitle || 'Incomplete Data',
+        message: texts[currentLang].alertDeviceFields
+      });
+    } else {
+      alert(texts[currentLang].alertDeviceFields);
+    }
     return;
   }
 
@@ -5766,7 +5882,14 @@ addSafeEventListener('addDeviceBtn', "click", (event) => {
     (!isEditing && targetCategory[name] !== undefined) ||
     (isEditing && targetCategory[name] !== undefined && (nameChanged || categoryChanged || cablePathChanged))
   ) {
-    alert(texts[currentLang].alertDeviceExists);
+    if (typeof window.cineShowAlertDialog === 'function') {
+      window.cineShowAlertDialog({
+        title: texts[currentLang].alertDeviceExistsTitle || 'Device Exists',
+        message: texts[currentLang].alertDeviceExists
+      });
+    } else {
+      alert(texts[currentLang].alertDeviceExists);
+    }
     return;
   }
 
@@ -5781,7 +5904,14 @@ addSafeEventListener('addDeviceBtn', "click", (event) => {
       pinA < 0 ||
       (category !== "batteryHotswaps" && (isNaN(dtapA) || dtapA < 0))
     ) {
-      alert(texts[currentLang].alertDeviceFields);
+      if (typeof window.cineShowAlertDialog === 'function') {
+        window.cineShowAlertDialog({
+          title: texts[currentLang].alertDeviceFieldsTitle || 'Incomplete Data',
+          message: texts[currentLang].alertDeviceFields
+        });
+      } else {
+        alert(texts[currentLang].alertDeviceFields);
+      }
       return;
     }
     const existing = editingSamePath && originalDeviceData ? { ...originalDeviceData } : {};
@@ -6118,14 +6248,31 @@ addSafeEventListener('addDeviceBtn', "click", (event) => {
   callEventsCoreFunction('updateTimecodeTypeOptions');
   refreshDeviceListsSafe();
   // Re-populate all dropdowns to include the new/updated device
-  populateSelect(cameraSelect, devices.cameras, true);
+  const curCameraSelect = typeof cameraSelect !== 'undefined' ? cameraSelect : (typeof document !== 'undefined' ? document.getElementById('cameraSelect') : null);
+  const curVideoSelect = typeof videoSelect !== 'undefined' ? videoSelect : (typeof document !== 'undefined' ? document.getElementById('videoSelect') : null);
+  const curDistanceSelect = typeof distanceSelect !== 'undefined' ? distanceSelect : (typeof document !== 'undefined' ? document.getElementById('distanceSelect') : null);
+  const curBatterySelect = typeof batterySelect !== 'undefined' ? batterySelect : (typeof document !== 'undefined' ? document.getElementById('batterySelect') : null);
+
+  populateSelect(curCameraSelect, devices.cameras, true);
   populateMonitorSelect();
-  populateSelect(videoSelect, devices.video, true);
+  populateSelect(curVideoSelect, devices.video, true);
+
   const fiz = devices.fiz || {};
-  motorSelects.forEach(sel => populateSelect(sel, fiz.motors, true));
-  controllerSelects.forEach(sel => populateSelect(sel, fiz.controllers, true));
-  populateSelect(distanceSelect, fiz.distance, true);
-  populateSelect(batterySelect, devices.batteries, true);
+  const curMotorSelects = (typeof motorSelects !== 'undefined' && Array.isArray(motorSelects)) ? motorSelects : [
+    document.getElementById("motor1Select"),
+    document.getElementById("motor2Select"),
+    document.getElementById("motor3Select"),
+    document.getElementById("motor4Select")
+  ];
+  const curControllerSelects = (typeof controllerSelects !== 'undefined' && Array.isArray(controllerSelects)) ? controllerSelects : [
+    document.getElementById("controller1Select"),
+    document.getElementById("controller2Select")
+  ];
+
+  curMotorSelects.forEach(sel => populateSelect(sel, fiz.motors, true));
+  curControllerSelects.forEach(sel => populateSelect(sel, fiz.controllers, true));
+  populateSelect(curDistanceSelect, fiz.distance, true);
+  populateSelect(curBatterySelect, devices.batteries, true);
   updateFizConnectorOptions();
   applyFilters();
   updateCalculations(); // Update calculations after device data changes
@@ -6161,9 +6308,25 @@ addSafeEventListener('addDeviceBtn', "click", (event) => {
   let categoryKey = category.replace(".", "_");
   let categoryDisplay = texts[currentLang]["category_" + categoryKey] || category;
   if (isEditing) {
-    alert(texts[currentLang].alertDeviceUpdated.replace("{name}", name).replace("{category}", categoryDisplay));
+    const message = texts[currentLang].alertDeviceUpdated.replace("{name}", name).replace("{category}", categoryDisplay);
+    if (typeof window.cineShowAlertDialog === 'function') {
+      window.cineShowAlertDialog({
+        title: texts[currentLang].alertDeviceUpdatedTitle || 'Device Updated',
+        message: message
+      });
+    } else {
+      alert(message);
+    }
   } else {
-    alert(texts[currentLang].alertDeviceAdded.replace("{name}", name).replace("{category}", categoryDisplay));
+    const message = texts[currentLang].alertDeviceAdded.replace("{name}", name).replace("{category}", categoryDisplay);
+    if (typeof window.cineShowAlertDialog === 'function') {
+      window.cineShowAlertDialog({
+        title: texts[currentLang].alertDeviceAddedTitle || 'Device Added',
+        message: message
+      });
+    } else {
+      alert(message);
+    }
   }
 });
 
@@ -6242,7 +6405,14 @@ if (exportAndRevertBtn) {
           }
         }
 
-        alert(texts[currentLang].alertExportAndRevertSuccess);
+        if (typeof window.cineShowAlertDialog === 'function') {
+          window.cineShowAlertDialog({
+            title: texts[currentLang].alertExportAndRevertSuccessTitle || 'Database Reset',
+            message: texts[currentLang].alertExportAndRevertSuccess
+          });
+        } else {
+          alert(texts[currentLang].alertExportAndRevertSuccess);
+        }
         location.reload();
       }, 500); // 500ms delay
       if (typeof revertTimer.unref === 'function') {
@@ -6299,7 +6469,15 @@ addSafeEventListener('importFileInput', "change", (event) => {
           { action: 'validate' }
         );
         console.error('Device import validation failed:', result.errors);
-        alert(summary ? `${texts[currentLang].alertImportError}\n${summary}` : texts[currentLang].alertImportError);
+        const message = summary ? `${texts[currentLang].alertImportError}\n${summary}` : texts[currentLang].alertImportError;
+        if (typeof window.cineShowAlertDialog === 'function') {
+          window.cineShowAlertDialog({
+            title: texts[currentLang].alertImportErrorTitle || 'Import Error',
+            message: message
+          });
+        } else {
+          alert(message);
+        }
         return;
       }
 
@@ -6335,13 +6513,31 @@ addSafeEventListener('importFileInput', "change", (event) => {
       viewfinderConnectorOptions = syncCoreOptionsArray('viewfinderConnectorOptions', 'getAllViewfinderConnectors', viewfinderConnectorOptions);
       refreshDeviceListsSafe(); // Update device manager lists
       // Re-populate all dropdowns and update calculations
-      populateSelect(cameraSelect, devices.cameras, true);
+      const curCameraSelect = typeof cameraSelect !== 'undefined' ? cameraSelect : (typeof document !== 'undefined' ? document.getElementById('cameraSelect') : null);
+      const curVideoSelect = typeof videoSelect !== 'undefined' ? videoSelect : (typeof document !== 'undefined' ? document.getElementById('videoSelect') : null);
+      const curDistanceSelect = typeof distanceSelect !== 'undefined' ? distanceSelect : (typeof document !== 'undefined' ? document.getElementById('distanceSelect') : null);
+      const curBatterySelect = typeof batterySelect !== 'undefined' ? batterySelect : (typeof document !== 'undefined' ? document.getElementById('batterySelect') : null);
+
+      populateSelect(curCameraSelect, devices.cameras, true);
       populateMonitorSelect();
-      populateSelect(videoSelect, devices.video, true);
-      motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
-      controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
-      populateSelect(distanceSelect, devices.fiz.distance, true);
-      populateSelect(batterySelect, devices.batteries, true);
+      populateSelect(curVideoSelect, devices.video, true);
+
+      const fiz = devices.fiz || {};
+      const curMotorSelects = (typeof motorSelects !== 'undefined' && Array.isArray(motorSelects)) ? motorSelects : [
+        document.getElementById("motor1Select"),
+        document.getElementById("motor2Select"),
+        document.getElementById("motor3Select"),
+        document.getElementById("motor4Select")
+      ];
+      const curControllerSelects = (typeof controllerSelects !== 'undefined' && Array.isArray(controllerSelects)) ? controllerSelects : [
+        document.getElementById("controller1Select"),
+        document.getElementById("controller2Select")
+      ];
+
+      curMotorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
+      curControllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
+      populateSelect(curDistanceSelect, devices.fiz.distance, true);
+      populateSelect(curBatterySelect, devices.batteries, true);
       updateFizConnectorOptions();
       updateMotorConnectorOptions();
       updateControllerConnectorOptions();
@@ -6355,7 +6551,15 @@ addSafeEventListener('importFileInput', "change", (event) => {
       updateCalculations();
 
       const deviceCount = countDeviceDatabaseEntries(devices);
-      alert(texts[currentLang].alertImportSuccess.replace("{num_devices}", deviceCount));
+      const message = texts[currentLang].alertImportSuccess.replace("{num_devices}", deviceCount);
+      if (typeof window.cineShowAlertDialog === 'function') {
+        window.cineShowAlertDialog({
+          title: texts[currentLang].alertImportSuccessTitle || 'Import Successful',
+          message: message
+        });
+      } else {
+        alert(message);
+      }
       exportOutput.style.display = "block"; // Show the textarea
       exportOutput.value = JSON.stringify(devices, null, 2); // Display the newly imported data
     } catch (error) {
@@ -6372,7 +6576,15 @@ addSafeEventListener('importFileInput', "change", (event) => {
       console.error("Error parsing or importing data:", error);
       const errorMessage = error && error.message ? error.message : String(error);
       const summary = formatDeviceImportErrors([errorMessage]);
-      alert(summary ? `${texts[currentLang].alertImportError}\n${summary}` : texts[currentLang].alertImportError);
+      const message = summary ? `${texts[currentLang].alertImportError}\n${summary}` : texts[currentLang].alertImportError;
+      if (typeof window.cineShowAlertDialog === 'function') {
+        window.cineShowAlertDialog({
+          title: texts[currentLang].alertImportErrorTitle || 'Import Error',
+          message: message
+        });
+      } else {
+        alert(message);
+      }
     }
   };
   reader.readAsText(file);

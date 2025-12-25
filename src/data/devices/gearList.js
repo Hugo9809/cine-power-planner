@@ -6637,7 +6637,6 @@
             "Easyrig - STABIL G3"
           ]
         },
-
       },
       "grip": {
         "Cinekinetic Cinesaddle": {
@@ -10330,7 +10329,6 @@
         "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14).",
         "mountOptions": []
       },
-
       "Leitz Summicron-C 15mm T2.0": {
         "brand": "Leitz",
         "frontDiameterMm": 95,
@@ -12693,7 +12691,6 @@
           }
         ]
       },
-
       "Musashi Optics Takumi 2 29-120mm T2.9": {
         "brand": "Musashi Optics",
         "frontDiameterMm": 136,
@@ -16497,7 +16494,6 @@
         "weight_g": 1390,
         "mountOptions": [{ "type": "PL / E / RF / L", "mount": "native" }]
       },
-
       "Kinefinity Mavo Prime 25mm T2.0": {
         "brand": "Kinefinity",
         "frontDiameterMm": 95,
@@ -16993,7 +16989,6 @@
         "weight_g": 530,
         "mountOptions": [{ "type": "PL / EF", "mount": "native" }]
       },
-    
       "Genesis G35 14.5mm T3": {
         "brand": "Gecko-Cam",
         "frontDiameterMm": 114,
@@ -18314,18 +18309,14 @@
           }
         ]
       }
-    
     }
   };
-
   // Expose lenses at the top level for easier access
   gear.lenses = gear.lenses || {};
-
   // Remove lenses from accessories to avoid duplicate entries
   if (gear.accessories && gear.accessories.lenses) {
     delete gear.accessories.lenses;
   }
-
   const categories = {
     viewfinders: gear.viewfinders,
     directorMonitors: gear.directorMonitors,
@@ -18336,7 +18327,6 @@
     accessories: gear.accessories,
     filterOptions: gear.filterOptions
   };
-
   if (typeof registerDevice === 'function') {
     Object.entries(categories).forEach(([name, data]) => registerDevice(name, data));
     if (typeof module !== 'undefined' && module.exports) {

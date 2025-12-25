@@ -231,8 +231,8 @@
     : typeof helpers.escapeButtonLabelSafely === 'function'
       ? helpers.escapeButtonLabelSafely
       : function fallbackEscapeButtonLabelSafely(text) {
-          return escapeButtonLabelSafelyFallback(text);
-        };
+        return escapeButtonLabelSafelyFallback(text);
+      };
 
   const resolveButtonIconMarkup = typeof bridge.resolveButtonIconMarkup === 'function'
     ? bridge.resolveButtonIconMarkup
@@ -245,14 +245,26 @@
     : typeof helpers.setButtonLabelWithIcon === 'function'
       ? helpers.setButtonLabelWithIcon
       : function fallbackSetButtonLabelWithIcon(button, label, glyph) {
-          setButtonLabelWithIconFallback(button, label, glyph);
-        };
+        setButtonLabelWithIconFallback(button, label, glyph);
+      };
+
+  const whenElementAvailable = typeof bridge.whenElementAvailable === 'function'
+    ? bridge.whenElementAvailable
+    : typeof helpers.whenElementAvailable === 'function'
+      ? helpers.whenElementAvailable
+      : function fallbackWhenElementAvailable(idOrSelector, onResolve, options) {
+        if (typeof helpers.whenElementAvailable === 'function') {
+          return helpers.whenElementAvailable(idOrSelector, onResolve, options);
+        }
+        return false;
+      };
 
   bridge.helpers = helpers;
   bridge.escapeHtml = escapeHtml;
   bridge.escapeButtonLabelSafely = escapeButtonLabelSafely;
   bridge.resolveButtonIconMarkup = resolveButtonIconMarkup;
   bridge.setButtonLabelWithIcon = setButtonLabelWithIcon;
+  bridge.whenElementAvailable = whenElementAvailable;
   bridge.resolveCoreUiHelpers = function resolveCoreUiHelpersPublic() {
     return resolveCoreUiHelpers(bridge, scopes);
   };
