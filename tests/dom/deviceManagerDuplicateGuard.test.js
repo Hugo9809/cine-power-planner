@@ -173,7 +173,7 @@ describe('device manager duplicate protections', () => {
       gears: '⚙',
     };
 
-    const noop = () => {};
+    const noop = () => { };
     global.updateCageSelectOptions = noop;
     global.updateGlobalDevicesReference = noop;
     global.scheduleProjectAutoSave = noop;
@@ -326,7 +326,7 @@ describe('device manager duplicate protections', () => {
     };
 
     jest.isolateModules(() => {
-      require('../../src/scripts/app-events.js');
+      require('../../src/scripts/core/app-events.js');
     });
 
     addDeviceBtn = document.getElementById('addDeviceBtn');

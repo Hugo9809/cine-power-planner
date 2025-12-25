@@ -43,6 +43,37 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return;
     }
   }
+  var LIFECYCLE_CHANNEL_NAME = 'cine-power-planner-lifecycle';
+  var lifecycleChannel = null;
+  var isJestWorker = typeof process !== 'undefined' && process && process.env && process.env.JEST_WORKER_ID;
+  if (typeof BroadcastChannel !== 'undefined' && !isJestWorker) {
+    try {
+      lifecycleChannel = new BroadcastChannel(LIFECYCLE_CHANNEL_NAME);
+      if (lifecycleChannel) {
+        lifecycleChannel.onmessage = function (event) {
+          if (event && event.data === 'factory-reset') {
+            if (GLOBAL_SCOPE) {
+              GLOBAL_SCOPE.__cameraPowerPlannerFactoryResetting = true;
+              if (typeof sessionStorage !== 'undefined' && typeof sessionStorage.clear === 'function') {
+                try {
+                  sessionStorage.clear();
+                } catch (e) {
+                  void e;
+                }
+              }
+              if (typeof GLOBAL_SCOPE.location !== 'undefined' && typeof GLOBAL_SCOPE.location.reload === 'function') {
+                GLOBAL_SCOPE.location.reload();
+              }
+            }
+          } else if (event.data === 'project-shards-changed') {
+            invalidateProjectReadCache();
+          }
+        };
+      }
+    } catch (channelError) {
+      void channelError;
+    }
+  }
   if (GLOBAL_SCOPE) {
     try {
       Object.defineProperty(GLOBAL_SCOPE, '__cineStorageInitialized', {
@@ -54,6 +85,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       GLOBAL_SCOPE.__cineStorageInitialized = true;
       void storageInitFlagError;
     }
+  }
+  function closeStorageLifecycle() {
+    if (lifecycleChannel) {
+      try {
+        lifecycleChannel.close();
+      } catch (closeError) {
+        void closeError;
+      }
+      lifecycleChannel = null;
+    }
+  }
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports.closeStorageLifecycle = closeStorageLifecycle;
   }
   function storageManualDeepClone(value, references) {
     if (value === null || _typeof(value) !== 'object') {
@@ -288,6 +332,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var SESSION_STATE_KEY = 'cameraPowerPlanner_session';
   var FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
   var PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
+  var PROJECT_STORAGE_REV_KEY = 'cameraPowerPlanner_project_rev';
   var FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
   var CONTACTS_STORAGE_KEY = 'cameraPowerPlanner_contacts';
   var OWN_GEAR_STORAGE_KEY = 'cameraPowerPlanner_ownGear';
@@ -302,6 +347,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL = typeof Symbol === 'function' ? Symbol.for('cinePowerPlanner.mountVoltageKey') : null;
   var PROJECT_STORAGE_READ_CACHE = null;
   var STORAGE_CACHE_SYMBOL = typeof Symbol === 'function' ? Symbol.for('cinePowerPlanner.storageCache') : '__cineStorageStateCache';
+  var PROJECT_SHARD_PREFIX = 'cameraPowerPlanner_prj_';
   var STORAGE_STATE_CACHE_WEAKMAP = typeof WeakMap === 'function' && typeof Map === 'function' ? new WeakMap() : null;
   var CONTACTS_MODULE_API = null;
   var CONTACTS_MODULE_RESOLUTION_ATTEMPTED = false;
@@ -1214,6 +1260,50 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function invalidateProjectReadCache() {
     PROJECT_STORAGE_READ_CACHE = null;
+  }
+  function normalizeProjectStorageRevisionValue(value) {
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return Math.max(0, Math.floor(value));
+    }
+    if (typeof value === 'string') {
+      var trimmed = value.trim();
+      if (!trimmed) {
+        return null;
+      }
+      var parsed = Number(trimmed);
+      if (Number.isFinite(parsed)) {
+        return Math.max(0, Math.floor(parsed));
+      }
+    }
+    return null;
+  }
+  function getProjectStorageRevisionKeyName() {
+    return PROJECT_STORAGE_REV_KEY;
+  }
+  function loadProjectStorageRevision(storageOverride) {
+    var storage = storageOverride || getSafeLocalStorage();
+    if (!storage || typeof storage.getItem !== 'function') {
+      return null;
+    }
+    var parsed = loadJSONFromStorage(storage, PROJECT_STORAGE_REV_KEY, 'Error reading project storage revision from localStorage:', null, {
+      validate: function validate(value) {
+        return value === null || typeof value === 'number' || typeof value === 'string';
+      }
+    });
+    return normalizeProjectStorageRevisionValue(parsed);
+  }
+  function bumpProjectStorageRevision(storageOverride) {
+    var storage = storageOverride || getSafeLocalStorage();
+    if (!storage || typeof storage.setItem !== 'function') {
+      return null;
+    }
+    var current = loadProjectStorageRevision(storage);
+    var next = Number.isFinite(current) ? current + 1 : 1;
+    saveJSONToStorage(storage, PROJECT_STORAGE_REV_KEY, next, 'Error saving project storage revision to localStorage:', {
+      disableCompression: true,
+      enableCompressionSweep: false
+    });
+    return next;
   }
   function cacheStorageValue(storage, key, rawValue, normalizedValue, value) {
     if (typeof key !== 'string' || !key) {
@@ -2450,7 +2540,25 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
   }, function () {
     return {
-      key: PROJECT_STORAGE_KEY
+      key: PROJECT_STORAGE_KEY,
+      valueProvider: function valueProvider() {
+        if (typeof readAllProjectsFromStorage === 'function') {
+          try {
+            var _readAllProjectsFromS = readAllProjectsFromStorage({
+                forMutation: false
+              }),
+              projects = _readAllProjectsFromS.projects;
+            if (projects && _typeof(projects) === 'object') {
+              return JSON.stringify(projects);
+            }
+          } catch (e) {
+            if (typeof console !== 'undefined' && console.warn) {
+              console.warn('Failed to reconstruct monolithic project backup', e);
+            }
+          }
+        }
+        return null;
+      }
     };
   }, function () {
     return {
@@ -2595,7 +2703,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       key: key,
       backupKey: resolvedBackupKey,
       storage: storage,
-      label: typeof options.label === 'string' ? options.label : key
+      label: typeof options.label === 'string' ? options.label : key,
+      valueProvider: typeof candidate.valueProvider === 'function' ? candidate.valueProvider : null
     };
   }
   function gatherCriticalStorageEntries() {
@@ -2738,7 +2847,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         var primaryValue;
         try {
-          primaryValue = storage.getItem(entry.key);
+          if (entry.valueProvider) {
+            primaryValue = entry.valueProvider();
+          } else {
+            primaryValue = storage.getItem(entry.key);
+          }
         } catch (readError) {
           summary.errors.push({
             key: entry.key,
@@ -4491,6 +4604,41 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         data: dataValue
       });
     }
+    if (Array.isArray(parsed)) {
+      var listChanged = false;
+      var normalizedList = parsed.map(function (item) {
+        if (!item || _typeof(item) !== 'object') {
+          listChanged = true;
+          return {
+            createdAt: fallback,
+            data: item
+          };
+        }
+        var hasData = Object.prototype.hasOwnProperty.call(item, 'data');
+        var itemCreatedAt = item.createdAt;
+        var _normalizeLegacyMigra = normalizeLegacyMigrationBackupCreatedAt(itemCreatedAt, fallback),
+          normalizedDate = _normalizeLegacyMigra.value,
+          dateChanged = _normalizeLegacyMigra.changed;
+        if (!hasData) {
+          listChanged = true;
+          return {
+            createdAt: normalizedDate,
+            data: item
+          };
+        }
+        if (dateChanged || itemCreatedAt !== normalizedDate) {
+          listChanged = true;
+          return _objectSpread(_objectSpread({}, item), {}, {
+            createdAt: normalizedDate
+          });
+        }
+        return item;
+      });
+      if (!listChanged) {
+        return null;
+      }
+      return trySerializeMigrationBackupValue(normalizedList);
+    }
     var normalized;
     var changed = false;
     if (Object.prototype.hasOwnProperty.call(parsed, 'data')) {
@@ -4528,19 +4676,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
     }
-    var _normalizeLegacyMigra = normalizeLegacyMigrationBackupCreatedAt(rawCreatedAt, fallback),
-      createdAt = _normalizeLegacyMigra.value,
-      createdAtChanged = _normalizeLegacyMigra.changed;
+    var _normalizeLegacyMigra2 = normalizeLegacyMigrationBackupCreatedAt(rawCreatedAt, fallback),
+      createdAt = _normalizeLegacyMigra2.value,
+      createdAtChanged = _normalizeLegacyMigra2.changed;
     normalized.createdAt = createdAt;
     if (createdAtSourceKey !== 'createdAt' && createdAtSourceKey && Object.prototype.hasOwnProperty.call(normalized, createdAtSourceKey)) {
       delete normalized[createdAtSourceKey];
       changed = true;
     }
     if (createdAtChanged) {
-      changed = true;
-    }
-    if (!Object.prototype.hasOwnProperty.call(normalized, 'data')) {
-      normalized.data = parsed;
       changed = true;
     }
     if (!changed) {
@@ -4589,7 +4733,63 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     if (hasExistingBackup) {
-      return;
+      try {
+        var existingRaw = storage.getItem(backupKey);
+        var decoded = decodeStoredValue(existingRaw);
+        var existingData = null;
+        try {
+          existingData = JSON.parse(decoded);
+        } catch (jsonError) {
+          void jsonError;
+          existingData = decoded;
+        }
+        var list = Array.isArray(existingData) ? existingData : [existingData];
+        var newEntry = {
+          createdAt: new Date().toISOString(),
+          data: originalValue
+        };
+        list.push(newEntry);
+        var MAX_BACKUP_HISTORY = 5;
+        if (list.length > MAX_BACKUP_HISTORY) {
+          list = list.slice(list.length - MAX_BACKUP_HISTORY);
+        }
+        var tryStoreList = function tryStoreList(candidateList) {
+          try {
+            storage.setItem(backupKey, JSON.stringify(candidateList));
+            return {
+              success: true
+            };
+          } catch (itemError) {
+            return {
+              success: false,
+              quota: isQuotaExceededError(itemError),
+              error: itemError
+            };
+          }
+        };
+        var result = tryStoreList(list);
+        while (!result.success && result.quota && list.length > 1) {
+          list.shift();
+          console.warn("Pruning oldest migration backup for ".concat(key, " due to quota limit."));
+          result = tryStoreList(list);
+        }
+        if (result.success) {
+          return;
+        }
+        if (!result.success && result.quota) {
+          var recovery = attemptMigrationBackupQuotaRecovery(storage, key, backupKey, function () {
+            return tryStoreList(list);
+          });
+          if (recovery && recovery.success) {
+            return;
+          }
+        }
+        console.warn('Unable to append to migration backup', result.error);
+        return;
+      } catch (appendError) {
+        console.warn('Unable to append to migration backup', appendError);
+        return;
+      }
     }
     var serialized;
     var createdAt = new Date().toISOString();
@@ -5174,6 +5374,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function getSafeLocalStorage() {
     if (!safeLocalStorageInfo || !safeLocalStorageInfo.storage) {
       safeLocalStorageInfo = initializeSafeLocalStorage();
+      if (typeof console !== 'undefined' && console.log) {
+        console.log('DEBUG: storage initialized with type:', safeLocalStorageInfo.type);
+      }
     }
     if (safeLocalStorageInfo.type !== 'local') {
       attemptLocalStorageUpgrade();
@@ -6666,7 +6869,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function saveJSONToStorage(storage, key, value, errorMessage) {
     var options = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
-    if (!storage) return;
+    if (!storage) {
+      console.warn('DEBUG: saveJSONToStorage NO STORAGE');
+      return;
+    }
+    if (isFactoryResetActive()) {
+      console.warn('DEBUG: saveJSONToStorage RESET ACTIVE');
+      return;
+    }
     var _ref1 = options || {},
       _ref1$disableBackup = _ref1.disableBackup,
       disableBackup = _ref1$disableBackup === void 0 ? false : _ref1$disableBackup,
@@ -7255,7 +7465,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var _ref12 = options || {},
       _ref12$disableBackup = _ref12.disableBackup,
       disableBackup = _ref12$disableBackup === void 0 ? false : _ref12$disableBackup,
-      backupKey = _ref12.backupKey;
+      backupKey = _ref12.backupKey,
+      _ref12$disableMigrati = _ref12.disableMigrationCleanup,
+      disableMigrationCleanup = _ref12$disableMigrati === void 0 ? false : _ref12$disableMigrati;
     var fallbackKey = typeof backupKey === 'string' && backupKey ? backupKey : "".concat(key).concat(STORAGE_BACKUP_SUFFIX);
     var useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
     clearCachedStorageEntry(storage, key);
@@ -7281,11 +7493,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         alertStorageError();
       }
     }
-    var migrationBackupKey = "".concat(key).concat(STORAGE_MIGRATION_BACKUP_SUFFIX);
-    try {
-      storage.removeItem(migrationBackupKey);
-    } catch (migrationError) {
-      console.warn("Unable to remove migration backup for ".concat(key), migrationError);
+    if (!disableMigrationCleanup) {
+      var migrationBackupKey = "".concat(key).concat(STORAGE_MIGRATION_BACKUP_SUFFIX);
+      try {
+        storage.removeItem(migrationBackupKey);
+      } catch (migrationError) {
+        console.warn("Unable to remove migration backup for ".concat(key), migrationError);
+      }
     }
   }
   var UI_CACHE_STORAGE_KEYS = [DEVICE_SCHEMA_CACHE_KEY, LEGACY_SCHEMA_CACHE_KEY];
@@ -10301,6 +10515,41 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     });
     var originalValue = parsed;
+    var combinedRawEntries = null;
+    if (isPlainObject(parsed)) {
+      combinedRawEntries = _objectSpread({}, parsed);
+    } else {
+      combinedRawEntries = {};
+    }
+    if (safeStorage && typeof safeStorage.length === 'number') {
+      var count = safeStorage.length;
+      for (var i = 0; i < count; i++) {
+        var key = safeStorage.key(i);
+        if (!key || !key.startsWith(PROJECT_SHARD_PREFIX)) {
+          continue;
+        }
+        var rawName = key.substring(PROJECT_SHARD_PREFIX.length);
+        if (rawName === null || rawName === undefined) {
+          continue;
+        }
+        try {
+          var rawVal = safeStorage.getItem(key);
+          var parsedVal = JSON.parse(decodeStoredValue(rawVal));
+          if (combinedRawEntries === null) {
+            combinedRawEntries = {};
+          }
+          combinedRawEntries[rawName] = parsedVal;
+        } catch (e) {
+          void e;
+        }
+      }
+    }
+    var inputForExpansion = parsed;
+    if (combinedRawEntries !== null && Object.keys(combinedRawEntries).length > 0) {
+      inputForExpansion = combinedRawEntries;
+    } else if (isPlainObject(parsed)) {
+      inputForExpansion = combinedRawEntries;
+    }
     var expandOptions = {
       isAutoBackupKey: isAutoBackupStorageKey
     };
@@ -10309,7 +10558,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return !isAutoBackupStorageKey(name);
       };
     }
-    var expandedParsed = expandAutoBackupEntries(parsed, expandOptions);
+    var expandedParsed = expandAutoBackupEntries(inputForExpansion, expandOptions);
     var projects = {};
     var changed = false;
     var usedProjectNames = new Set();
@@ -10379,7 +10628,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (typeof expandedParsed === "string") {
       var normalized = normalizeProject(expandedParsed);
       if (normalized) {
-        var updatedName = generateUpdatedProjectName("", usedProjectNames, normalizedProjectNames);
+        var suggestedName = normalized && normalized.projectInfo && typeof normalized.projectInfo.projectName === 'string' ? normalized.projectInfo.projectName : "";
+        var updatedName = generateUpdatedProjectName(suggestedName, usedProjectNames, normalizedProjectNames);
         projects[updatedName] = normalized;
         registerLookupKey("", updatedName);
         markProjectNameUsed(updatedName);
@@ -10437,7 +10687,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var normalized = normalizeProject(expandedParsed[key]);
       if (normalized) {
         var originalEntry = expandedParsed[key];
-        var needsUpgrade = !isNormalizedProjectEntry(originalEntry);
+        var isNormalized = isNormalizedProjectEntry(originalEntry);
+        var needsUpgrade = !isNormalized;
         var requiresContentUpdate = false;
         if (!needsUpgrade) {
           try {
@@ -10453,7 +10704,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         var finalKey = key;
         if (needsUpgrade) {
-          finalKey = generateUpdatedProjectName(key, usedProjectNames, normalizedProjectNames);
+          var innerName = normalized && normalized.projectInfo && typeof normalized.projectInfo.projectName === 'string' && normalized.projectInfo.projectName ? normalized.projectInfo.projectName : key;
+          finalKey = generateUpdatedProjectName(innerName, usedProjectNames, normalizedProjectNames);
           changed = true;
         }
         if (finalKey !== key && Object.prototype.hasOwnProperty.call(projects, finalKey)) {
@@ -10472,81 +10724,117 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     return finalize();
   }
-  function persistAllProjects(projects) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  function pruneOrphanProjectShards(storage, projects) {
+    if (!storage || typeof storage.length !== 'number' || !isPlainObject(projects)) {
+      return;
+    }
+    var projectKeys = new Set(Object.keys(projects).map(function (name) {
+      return normalizeProjectStorageKey(name);
+    }));
+    var keysToDelete = [];
+    for (var i = 0; i < storage.length; i += 1) {
+      var key = storage.key(i);
+      if (key && key.startsWith(PROJECT_SHARD_PREFIX)) {
+        var rawName = key.substring(PROJECT_SHARD_PREFIX.length);
+        if (!projectKeys.has(rawName)) {
+          keysToDelete.push(key);
+        }
+      }
+    }
+    keysToDelete.forEach(function (key) {
+      return deleteFromStorage(storage, key, 'Pruning orphan project shard:');
+    });
+  }
+  function cleanupMonolithicProjectStorage(storage) {
+    if (!storage) return;
+    var raw = storage.getItem(PROJECT_STORAGE_KEY);
+    if (!raw) {
+      return;
+    }
+    try {
+      var parsed = JSON.parse(decodeStoredValue(raw));
+      if (parsed) {
+        createStorageMigrationBackup(storage, PROJECT_STORAGE_KEY, parsed);
+      }
+    } catch (e) {
+      void e;
+    }
+    deleteFromStorage(storage, PROJECT_STORAGE_KEY, "Error clearing project monolithic storage after sharding:", {
+      disableBackup: false,
+      disableMigrationCleanup: true
+    });
+  }
+  function persistProjectShard(name, project) {
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    if (name === null || name === undefined || project === undefined || project === null) {
+      return false;
+    }
+    var safeStorage = getSafeLocalStorage();
+    if (!safeStorage) {
+      return false;
+    }
     var _ref31 = options || {},
       _ref31$skipCompressio = _ref31.skipCompression,
       skipCompression = _ref31$skipCompressio === void 0 ? false : _ref31$skipCompressio;
-    var safeStorage = getSafeLocalStorage();
-    enforceAutoBackupLimits(projects);
-    var serializedProjects = serializeAutoBackupEntries(projects, {
+    var shardKey = PROJECT_SHARD_PREFIX + normalizeProjectStorageKey(name);
+    var entries = {};
+    entries[name] = project;
+    var serialized = serializeAutoBackupEntries(entries, {
       isAutoBackupKey: isAutoBackupStorageKey
     });
-    if (skipCompression) {
-      ensureProjectEntriesUncompressed(serializedProjects);
-    } else {
-      applyProjectEntryCompression(serializedProjects);
-    }
-    invalidateProjectReadCache();
-    ensurePreWriteMigrationBackup(safeStorage, PROJECT_STORAGE_KEY);
-    var disableCompression = skipCompression || shouldDisableProjectCompressionDuringPersist();
-    var forcedProjectCompressionAttempted = false;
-    var derivedCachesClearedForQuota = false;
-    saveJSONToStorage(safeStorage, PROJECT_STORAGE_KEY, serializedProjects, "Error saving project to localStorage:", {
-      forceCompressionOnQuota: true,
-      disableCompression: disableCompression,
-      onQuotaExceeded: function onQuotaExceeded(error, context) {
-        if (!forcedProjectCompressionAttempted) {
-          forcedProjectCompressionAttempted = true;
-          var forcedCompression = forceCompressAllProjectEntries(serializedProjects, {
-            reason: 'project-storage-quota'
-          });
-          if (forcedCompression.changed) {
-            return true;
-          }
-        }
-        if (!derivedCachesClearedForQuota) {
-          var cleared = clearDerivedProjectCachesForQuota(safeStorage);
-          derivedCachesClearedForQuota = Boolean(cleared && cleared.cleared);
-          if (derivedCachesClearedForQuota) {
-            return true;
-          }
-        }
+    var projectData = serialized[name];
+    var result = saveJSONToStorage(safeStorage, shardKey, projectData, "Error saving project shard \"".concat(name, "\":"), {
+      disableCompression: skipCompression,
+      onQuotaExceeded: function onQuotaExceeded() {
+        var _readAllProjectsFromS2 = readAllProjectsFromStorage({
+            forMutation: false
+          }),
+          projects = _readAllProjectsFromS2.projects;
         var removedKey = removeOldestAutoBackupEntry(projects);
         if (removedKey) {
-          delete serializedProjects[removedKey];
-          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-            console.warn("Removed automatic project backup \"".concat(removedKey, "\" to free up storage space before saving projects."));
-          }
+          var victimKey = PROJECT_SHARD_PREFIX + normalizeProjectStorageKey(removedKey);
+          deleteFromStorage(safeStorage, victimKey, "Pruning shard \"".concat(removedKey, "\" to recover space:"));
           return true;
-        }
-        var removedRenamedKey = removeOldestRenamedAutoBackupEntry(projects);
-        if (removedRenamedKey) {
-          delete serializedProjects[removedRenamedKey];
-          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-            console.warn("Removed renamed automatic project backup \"".concat(removedRenamedKey, "\" to free up storage space before saving projects."));
-          }
-          return true;
-        }
-        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-          console.warn('Storage quota exceeded while saving projects. Preserved automatic backups and will attempt a compression sweep before retrying.', {
-            error: error,
-            context: context
-          });
         }
         return false;
       }
     });
+    return result === 'success';
+  }
+  function persistAllProjects(projects) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var _ref32 = options || {},
+      _ref32$skipCompressio = _ref32.skipCompression,
+      skipCompression = _ref32$skipCompressio === void 0 ? false : _ref32$skipCompressio;
+    var safeStorage = getSafeLocalStorage();
+    if (!projects || _typeof(projects) !== 'object') return;
+    enforceAutoBackupLimits(projects);
+    Object.keys(projects).forEach(function (name) {
+      persistProjectShard(name, projects[name], {
+        skipCompression: skipCompression
+      });
+    });
+    pruneOrphanProjectShards(safeStorage, projects);
+    cleanupMonolithicProjectStorage(safeStorage);
+    bumpProjectStorageRevision(safeStorage);
+    invalidateProjectReadCache();
+    if (lifecycleChannel) {
+      try {
+        lifecycleChannel.postMessage('project-shards-changed');
+      } catch (e) {
+        void e;
+      }
+    }
   }
   function loadProject(name) {
     var skipAutoBackupExpansion = name !== undefined && !(typeof name === 'string' && isAutoBackupStorageKey(name));
-    var _readAllProjectsFromS = readAllProjectsFromStorage({
+    var _readAllProjectsFromS3 = readAllProjectsFromStorage({
         skipAutoBackupExpansion: skipAutoBackupExpansion
       }),
-      projects = _readAllProjectsFromS.projects,
-      changed = _readAllProjectsFromS.changed,
-      originalValue = _readAllProjectsFromS.originalValue,
-      lookup = _readAllProjectsFromS.lookup;
+      projects = _readAllProjectsFromS3.projects,
+      changed = _readAllProjectsFromS3.changed,
+      originalValue = _readAllProjectsFromS3.originalValue,
+      lookup = _readAllProjectsFromS3.lookup;
     var resolvedKey = null;
     if (name !== undefined) {
       resolvedKey = resolveProjectKey(projects, lookup, name, {
@@ -10570,7 +10858,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return projects;
     }
     if (resolvedKey !== null && resolvedKey !== undefined && Object.prototype.hasOwnProperty.call(projects, resolvedKey)) {
-      return projects[resolvedKey];
+      var project = projects[resolvedKey];
+      if (project && (!project.gearList || project.gearList === "")) {
+        var setups = loadSetups();
+        var setup = setups[resolvedKey];
+        if (setup) {
+          if (setup.gearList) {
+            project.gearList = setup.gearList;
+          }
+        }
+      }
+      return project;
     }
     return null;
   }
@@ -10672,13 +10970,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
   }
   function createProjectDeletionBackup(name) {
-    var _readAllProjectsFromS2 = readAllProjectsFromStorage({
+    var _readAllProjectsFromS4 = readAllProjectsFromStorage({
         forMutation: true
       }),
-      projects = _readAllProjectsFromS2.projects,
-      changed = _readAllProjectsFromS2.changed,
-      originalValue = _readAllProjectsFromS2.originalValue,
-      lookup = _readAllProjectsFromS2.lookup;
+      projects = _readAllProjectsFromS4.projects,
+      changed = _readAllProjectsFromS4.changed,
+      originalValue = _readAllProjectsFromS4.originalValue,
+      lookup = _readAllProjectsFromS4.lookup;
     if (!projects || _typeof(projects) !== 'object') {
       return {
         status: 'invalid'
@@ -10775,22 +11073,34 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     var skipOverwriteBackup = Boolean(options && options.skipOverwriteBackup);
     var skipCompression = Boolean(options && options.skipCompression);
-    var _readAllProjectsFromS3 = readAllProjectsFromStorage({
-        forMutation: true
-      }),
-      projects = _readAllProjectsFromS3.projects,
-      changed = _readAllProjectsFromS3.changed,
-      originalValue = _readAllProjectsFromS3.originalValue,
-      lookup = _readAllProjectsFromS3.lookup;
-    if (changed) {
-      var safeStorage = getSafeLocalStorage();
-      if (safeStorage) {
-        createStorageMigrationBackup(safeStorage, PROJECT_STORAGE_KEY, originalValue);
-      }
-    }
     var requestedKey = typeof name === 'string' ? name : '';
     var preferredKey = normalizeProjectStorageKey(requestedKey);
-    var resolvedKey = resolveProjectKey(projects, lookup, requestedKey, {
+    var initialSnapshot = readAllProjectsFromStorage({
+      forMutation: true
+    });
+    var initialProjects = isPlainObject(initialSnapshot.projects) ? initialSnapshot.projects : {};
+    if (initialSnapshot.changed) {
+      var safeStorage = getSafeLocalStorage();
+      if (safeStorage) {
+        createStorageMigrationBackup(safeStorage, PROJECT_STORAGE_KEY, initialSnapshot.originalValue);
+      }
+    }
+    var initialResolvedKey = resolveProjectKey(initialProjects, initialSnapshot.lookup, requestedKey, {
+      preferExact: true
+    });
+    var initialExistingEntry = initialResolvedKey !== null && initialResolvedKey !== undefined && Object.prototype.hasOwnProperty.call(initialProjects, initialResolvedKey) ? initialProjects[initialResolvedKey] : null;
+    var initialExistingSignature = initialExistingEntry ? createStableValueSignature(initialExistingEntry) : null;
+    var latestSnapshot = readAllProjectsFromStorage({
+      forMutation: true
+    });
+    var projects = isPlainObject(latestSnapshot.projects) ? latestSnapshot.projects : {};
+    if (latestSnapshot.changed) {
+      var _safeStorage = getSafeLocalStorage();
+      if (_safeStorage) {
+        createStorageMigrationBackup(_safeStorage, PROJECT_STORAGE_KEY, latestSnapshot.originalValue);
+      }
+    }
+    var resolvedKey = resolveProjectKey(projects, latestSnapshot.lookup, requestedKey, {
       preferExact: true
     });
     var storageKey = resolvedKey;
@@ -10807,8 +11117,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     var existingKey = renamedFromKey !== null && renamedFromKey !== undefined ? renamedFromKey : storageKey;
     var hasExistingEntry = existingKey !== null && existingKey !== undefined && Object.prototype.hasOwnProperty.call(projects, existingKey);
+    var existingEntry = hasExistingEntry ? projects[existingKey] : null;
     if (hasExistingEntry && !skipOverwriteBackup) {
-      var existingSignature = createStableValueSignature(projects[existingKey]);
+      var existingSignature = createStableValueSignature(existingEntry);
       var nextSignature = createStableValueSignature(normalized);
       if (existingSignature !== nextSignature) {
         var backupOutcome = maybeCreateProjectOverwriteBackup(projects, existingKey);
@@ -10818,36 +11129,118 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     if (renamedFromKey !== null && renamedFromKey !== undefined && renamedFromKey !== storageKey) {
-      delete projects[renamedFromKey];
-      removeProjectActivity(renamedFromKey);
+      var shouldDelete = Boolean(initialExistingSignature);
+      if (Object.prototype.hasOwnProperty.call(projects, renamedFromKey)) {
+        if (initialExistingSignature) {
+          var latestSignature = createStableValueSignature(projects[renamedFromKey]);
+          if (latestSignature !== initialExistingSignature) {
+            shouldDelete = false;
+          }
+        } else {
+          shouldDelete = false;
+        }
+      } else {
+        shouldDelete = false;
+      }
+      if (shouldDelete) {
+        delete projects[renamedFromKey];
+        removeProjectActivity(renamedFromKey);
+      } else if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn("Skipped removing \"".concat(renamedFromKey, "\" while saving \"").concat(storageKey, "\" because the original entry changed in another tab."));
+      }
+    }
+    var manualRenamedFrom = options && options.renamedFrom;
+    if (manualRenamedFrom && manualRenamedFrom !== storageKey) {
+      var resolvedOld = resolveProjectKey(projects, latestSnapshot.lookup, manualRenamedFrom, {
+        preferExact: true
+      });
+      if (resolvedOld && Object.prototype.hasOwnProperty.call(projects, resolvedOld)) {
+        delete projects[resolvedOld];
+        removeProjectActivity(resolvedOld);
+      }
     }
     var finalKey = storageKey || '';
     projects[finalKey] = normalized;
     markProjectActivity(finalKey);
-    persistAllProjects(projects, {
+    enforceAutoBackupLimits(projects);
+    var shardSuccess = persistProjectShard(finalKey, normalized, {
       skipCompression: skipCompression
     });
+    if (shardSuccess) {
+      var _safeStorage2 = getSafeLocalStorage();
+      pruneOrphanProjectShards(_safeStorage2, projects);
+      cleanupMonolithicProjectStorage(_safeStorage2);
+      invalidateProjectReadCache();
+      if (lifecycleChannel) {
+        try {
+          lifecycleChannel.postMessage('project-shards-changed');
+        } catch (e) {
+          void e;
+        }
+      }
+      bumpProjectStorageRevision(_safeStorage2);
+    } else {
+      persistAllProjects(projects, {
+        skipCompression: skipCompression
+      });
+    }
   }
   function deleteProject(name) {
     if (name === undefined) {
       deleteFromStorage(getSafeLocalStorage(), PROJECT_STORAGE_KEY, "Error deleting project from localStorage:");
+      var storagesToPrune = [getSafeLocalStorage()];
+      if (typeof localStorage !== 'undefined' && storagesToPrune.indexOf(localStorage) === -1) {
+        storagesToPrune.push(localStorage);
+      }
+      storagesToPrune.forEach(function (storage) {
+        if (storage && typeof storage.length === 'number') {
+          var shardKeys = [];
+          for (var i = 0; i < storage.length; i++) {
+            var _key7 = storage.key(i);
+            if (_key7 && _key7.startsWith(PROJECT_SHARD_PREFIX)) {
+              shardKeys.push(_key7);
+            }
+          }
+          shardKeys.forEach(function (key) {
+            return deleteFromStorage(storage, key, "Error deleting project shard from localStorage:");
+          });
+        }
+      });
+      if (typeof clearUiCacheStorageEntries === 'function') {
+        try {
+          clearUiCacheStorageEntries();
+        } catch (uiCacheError) {
+          console.warn('Failed to clear UI cache during project deletion', uiCacheError);
+        }
+      }
       invalidateProjectReadCache();
+      if (lifecycleChannel) {
+        try {
+          lifecycleChannel.postMessage('project-shards-changed');
+        } catch (e) {
+          void e;
+        }
+      }
       if (projectActivityTimestamps && typeof projectActivityTimestamps.clear === 'function') {
         projectActivityTimestamps.clear();
       }
+      var currentSafeStorage = getSafeLocalStorage();
+      if (currentSafeStorage) {
+        bumpProjectStorageRevision(currentSafeStorage);
+      }
       return;
     }
-    var _readAllProjectsFromS4 = readAllProjectsFromStorage({
+    var _readAllProjectsFromS5 = readAllProjectsFromStorage({
         forMutation: true
       }),
-      projects = _readAllProjectsFromS4.projects,
-      changed = _readAllProjectsFromS4.changed,
-      originalValue = _readAllProjectsFromS4.originalValue,
-      lookup = _readAllProjectsFromS4.lookup;
+      projects = _readAllProjectsFromS5.projects,
+      changed = _readAllProjectsFromS5.changed,
+      originalValue = _readAllProjectsFromS5.originalValue,
+      lookup = _readAllProjectsFromS5.lookup;
     if (changed) {
-      var safeStorage = getSafeLocalStorage();
-      if (safeStorage) {
-        createStorageMigrationBackup(safeStorage, PROJECT_STORAGE_KEY, originalValue);
+      var _safeStorage3 = getSafeLocalStorage();
+      if (_safeStorage3) {
+        createStorageMigrationBackup(_safeStorage3, PROJECT_STORAGE_KEY, originalValue);
       }
     }
     var resolvedKey = resolveProjectKey(projects, lookup, name, {
@@ -10855,6 +11248,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     var key = resolvedKey !== null && resolvedKey !== undefined ? resolvedKey : normalizeProjectStorageKey(name);
     if (!Object.prototype.hasOwnProperty.call(projects, key)) {
+      var potentialShardKey = PROJECT_SHARD_PREFIX + normalizeProjectStorageKey(name);
+      var _safeStorage4 = getSafeLocalStorage();
+      if (_safeStorage4) {
+        deleteFromStorage(_safeStorage4, potentialShardKey, "Error deleting orphan project shard:");
+      }
       return;
     }
     var backupOutcome = maybeCreateProjectDeletionBackup(projects, key);
@@ -10863,22 +11261,53 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       alertStorageError();
       return;
     }
+    var shardKey = PROJECT_SHARD_PREFIX + normalizeProjectStorageKey(key);
+    var safeStorage = getSafeLocalStorage();
+    if (safeStorage) {
+      deleteFromStorage(safeStorage, shardKey, "Error deleting project shard:");
+    }
     delete projects[key];
     removeProjectActivity(key);
-    if (Object.keys(projects).length === 0) {
-      deleteFromStorage(getSafeLocalStorage(), PROJECT_STORAGE_KEY, "Error deleting project from localStorage:");
-      invalidateProjectReadCache();
-    } else {
-      persistAllProjects(projects);
+    persistAllProjects(projects);
+    invalidateProjectReadCache();
+    if (lifecycleChannel) {
+      try {
+        lifecycleChannel.postMessage('project-shards-changed');
+      } catch (e) {
+        void e;
+      }
     }
   }
-  function createProjectImporter() {
-    var _readAllProjectsFromS5 = readAllProjectsFromStorage({
+  function renameProject(oldName, newName) {
+    if (!oldName || !newName) return null;
+    var _readAllProjectsFromS6 = readAllProjectsFromStorage({
         forMutation: true
       }),
-      projects = _readAllProjectsFromS5.projects,
-      changed = _readAllProjectsFromS5.changed,
-      originalValue = _readAllProjectsFromS5.originalValue;
+      projects = _readAllProjectsFromS6.projects,
+      lookup = _readAllProjectsFromS6.lookup;
+    var resolvedKey = resolveProjectKey(projects, lookup, oldName, {
+      preferExact: true
+    });
+    if (!resolvedKey || !Object.prototype.hasOwnProperty.call(projects, resolvedKey)) {
+      return null;
+    }
+    var targetName = newName.trim();
+    if (!targetName || targetName === resolvedKey) {
+      return resolvedKey;
+    }
+    var movedValue = projects[resolvedKey];
+    delete projects[resolvedKey];
+    projects[targetName] = movedValue;
+    persistAllProjects(projects);
+    return targetName;
+  }
+  function createProjectImporter() {
+    var _readAllProjectsFromS7 = readAllProjectsFromStorage({
+        forMutation: true
+      }),
+      projects = _readAllProjectsFromS7.projects,
+      changed = _readAllProjectsFromS7.changed,
+      originalValue = _readAllProjectsFromS7.originalValue;
     if (changed) {
       var safeStorage = getSafeLocalStorage();
       if (safeStorage) {
@@ -10911,11 +11340,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           candidates.push(info.projectName.trim());
         }
       }
-      var filteredCandidates = candidates.filter(function (name) {
-        return name;
-      });
       var fallback = typeof fallbackName === "string" && fallbackName.trim() ? fallbackName.trim() : defaultName;
-      var baseName = filteredCandidates[0] || fallback;
+      var baseName = candidates.length > 0 ? candidates[0] : fallback;
       var normalizedBase = typeof baseName === "string" ? baseName.trim().toLowerCase() : "";
       var uniqueName = normalizedBase && normalizedNames.has(normalizedBase) ? generateImportedProjectName(baseName, usedNames, normalizedNames) : generateUniqueName(baseName, usedNames, normalizedNames);
       saveProject(uniqueName, normalizedProject, {
@@ -11011,9 +11437,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       var _importProject = ensureImporter();
       var count = 0;
-      entries.forEach(function (_ref32) {
-        var name = _ref32.name,
-          project = _ref32.project;
+      entries.forEach(function (_ref33) {
+        var name = _ref33.name,
+          project = _ref33.project;
         if (project === null || project === undefined) {
           return;
         }
@@ -11032,10 +11458,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (isPlainObject(collection)) {
       var _importProject2 = ensureImporter();
-      Object.entries(collection).forEach(function (_ref33) {
-        var _ref34 = _slicedToArray(_ref33, 2),
-          name = _ref34[0],
-          proj = _ref34[1];
+      Object.entries(collection).forEach(function (_ref34) {
+        var _ref35 = _slicedToArray(_ref34, 2),
+          name = _ref35[0],
+          proj = _ref35[1];
         var normalizedName = typeof name === 'string' ? name : convertMapLikeKey(name);
         _importProject2(typeof normalizedName === 'string' && normalizedName ? normalizedName : fallbackLabel, proj, fallbackLabel);
       });
@@ -11072,8 +11498,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (Array.isArray(plannerData)) {
       plannerData.forEach(function (entry) {
         if (Array.isArray(entry) && entry.length >= 2) {
-          var _key7 = entry[0];
-          if (typeof _key7 === "string" && _key7.toLowerCase().includes("project")) {
+          var _key8 = entry[0];
+          if (typeof _key8 === "string" && _key8.toLowerCase().includes("project")) {
             addCollection(entry[1]);
           }
           return;
@@ -11598,51 +12024,84 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return trimmed;
   };
   function normalizeImportedFullBackupHistory(value, visited) {
+    var depth = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
     if (value === null || value === undefined) {
       return [];
     }
-    var seen = visited || new WeakSet();
-    if (seen.has(value)) {
+    if (depth > 50) {
       return [];
     }
-    if (_typeof(value) === 'object') {
+    if (Array.isArray(value)) {
+      var results = [];
+      var count = value.length;
+      var _seen = visited || new WeakSet();
+      if (_seen.has(value)) {
+        return [];
+      }
+      _seen.add(value);
+      for (var i = 0; i < count; i += 1) {
+        var item = value[i];
+        if (_typeof(item) === 'object' && item !== null && _seen.has(item)) {
+          continue;
+        }
+        if (Array.isArray(item)) {
+          var nested = normalizeImportedFullBackupHistory(item, _seen, depth + 1);
+          if (nested && nested.length) {
+            for (var j = 0; j < nested.length; j += 1) {
+              results.push(nested[j]);
+            }
+          }
+        } else {
+          var entry = normalizeFullBackupHistoryEntry(item);
+          if (entry) {
+            results.push(entry);
+          }
+        }
+      }
+      return results;
+    }
+    var seen = visited || new WeakSet();
+    if (_typeof(value) === 'object' && value !== null) {
+      if (seen.has(value)) {
+        return [];
+      }
       seen.add(value);
     }
     if (isMapLike(value)) {
       var converted = convertMapLikeToObject(value);
       if (converted) {
-        return normalizeImportedFullBackupHistory(Object.values(converted), seen);
+        return normalizeImportedFullBackupHistory(Object.values(converted), seen, depth + 1);
       }
       return [];
     }
     if (typeof value === 'string') {
       var parsed = tryParseJSONLike(value);
       if (parsed.success) {
-        return normalizeImportedFullBackupHistory(parsed.parsed, seen);
+        return normalizeImportedFullBackupHistory(parsed.parsed, seen, depth + 1);
       }
-      var entry = normalizeFullBackupHistoryEntry(value);
-      return entry ? [entry] : [];
+      var _entry3 = normalizeFullBackupHistoryEntry(value);
+      return _entry3 ? [_entry3] : [];
     }
     if (Array.isArray(value)) {
-      return value.map(normalizeFullBackupHistoryEntry).filter(Boolean);
+      return [];
     }
     if (isPlainObject(value)) {
       if (Array.isArray(value.history)) {
-        return normalizeImportedFullBackupHistory(value.history, seen);
+        return normalizeImportedFullBackupHistory(value.history, seen, depth + 1);
       }
       if (Array.isArray(value.entries)) {
-        return normalizeImportedFullBackupHistory(value.entries, seen);
+        return normalizeImportedFullBackupHistory(value.entries, seen, depth + 1);
       }
       if (Array.isArray(value.list)) {
-        return normalizeImportedFullBackupHistory(value.list, seen);
+        return normalizeImportedFullBackupHistory(value.list, seen, depth + 1);
       }
-      var _entry3 = normalizeFullBackupHistoryEntry(value);
-      if (_entry3) {
-        return [_entry3];
+      var _entry4 = normalizeFullBackupHistoryEntry(value);
+      if (_entry4) {
+        return [_entry4];
       }
       var nestedValues = Object.values(value);
       if (nestedValues.length) {
-        return normalizeImportedFullBackupHistory(nestedValues, seen);
+        return normalizeImportedFullBackupHistory(nestedValues, seen, depth + 1);
       }
     }
     return [];
@@ -12018,11 +12477,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var _opts$skipNormalizati2 = opts.skipNormalization,
       skipNormalization = _opts$skipNormalizati2 === void 0 ? false : _opts$skipNormalizati2;
     var safeBackups = Array.isArray(backups) ? backups.slice() : [];
-    var _ref35 = skipNormalization ? {
+    var _ref36 = skipNormalization ? {
         normalized: safeBackups,
         changed: false
       } : normalizeLegacyLongGopBackups(safeBackups),
-      normalizedBackups = _ref35.normalized;
+      normalizedBackups = _ref36.normalized;
     var safeStorage = getSafeLocalStorage();
     ensurePreWriteMigrationBackup(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY);
     var attemptedMigrationCleanup = false;
@@ -12439,10 +12898,25 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function _clearAllData() {
     _clearAllData = _asyncToGenerator(_regenerator().m(function _callee2() {
-      var msg, clearVaultFn, safeStorage, prefixes, exactKeys, clearStorageAggressively, cacheKeys, preferenceKeys, onboardingStorageKeys, clearOnboardingTutorialState, storageCandidates, index, sessionCandidates, _index0, logging, registrations, _iterator, _step, registration, _cacheKeys, _iterator2, _step2, cacheKey, _t4, _t5, _t6, _t7, _t8, _t9;
+      var msg, clearVaultFn, vaultDbNames, safeStorage, clearStorageFully, sessionCacheKeys, ensureStoragePruned, explicitKeys, cacheKeys, preferenceKeys, onboardingStorageKeys, clearOnboardingTutorialState, storageCandidates, index, sessionCandidates, _index0, logging, registrations, _iterator, _step, registration, _cacheKeys, _iterator2, _step2, cacheKey, _t4, _t5, _t6, _t7, _t8, _t9;
       return _regenerator().w(function (_context2) {
         while (1) switch (_context2.p = _context2.n) {
           case 0:
+            try {
+              if (typeof globalThis !== 'undefined') globalThis.__cameraPowerPlannerFactoryResetting = true;
+              if (typeof global !== 'undefined') global.__cameraPowerPlannerFactoryResetting = true;
+              if (typeof window !== 'undefined') window.__cameraPowerPlannerFactoryResetting = true;
+              if (GLOBAL_SCOPE) GLOBAL_SCOPE.__cameraPowerPlannerFactoryResetting = true;
+            } catch (e) {
+              void e;
+            }
+            if (lifecycleChannel) {
+              try {
+                lifecycleChannel.postMessage('factory-reset');
+              } catch (e) {
+                void e;
+              }
+            }
             msg = "Error clearing storage:";
             try {
               deleteProject();
@@ -12460,13 +12934,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             clearVaultFn = null;
             if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.clearBackupVault === 'function') {
               clearVaultFn = GLOBAL_SCOPE.clearBackupVault;
-            } else if (typeof clearBackupVault === 'function') {
+            } else if (typeof clearBackupVault !== 'undefined' && typeof clearBackupVault === 'function') {
               clearVaultFn = clearBackupVault;
             } else if (GLOBAL_SCOPE && GLOBAL_SCOPE.cineFeatureBackup && typeof GLOBAL_SCOPE.cineFeatureBackup.clearBackupVault === 'function') {
               clearVaultFn = GLOBAL_SCOPE.cineFeatureBackup.clearBackupVault;
             }
             if (!clearVaultFn) {
-              _context2.n = 2;
+              _context2.n = 3;
               break;
             }
             _context2.n = 2;
@@ -12475,105 +12949,159 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             _context2.n = 4;
             break;
           case 3:
-            _context2.p = 3;
+            if (!(typeof indexedDB !== 'undefined')) {
+              _context2.n = 4;
+              break;
+            }
+            vaultDbNames = ['cinePowerPlannerBackupVault'];
+            _context2.n = 4;
+            return Promise.all(vaultDbNames.map(function (dbName) {
+              return new Promise(function (resolve) {
+                try {
+                  var request = indexedDB.deleteDatabase(dbName);
+                  request.addEventListener('success', function () {
+                    return resolve();
+                  });
+                  request.addEventListener('error', function () {
+                    console.warn("Failed to delete IndexedDB database \"".concat(dbName, "\" during factory reset"), request.error);
+                    resolve();
+                  });
+                  request.addEventListener('blocked', function () {
+                    console.warn("Deletion of IndexedDB database \"".concat(dbName, "\" blocked during factory reset"));
+                    resolve();
+                  });
+                } catch (deleteError) {
+                  console.warn("Error initiating deletion of IndexedDB database \"".concat(dbName, "\""), deleteError);
+                  resolve();
+                }
+              });
+            }));
+          case 4:
+            _context2.n = 6;
+            break;
+          case 5:
+            _context2.p = 5;
             _t4 = _context2.v;
             console.warn('Failed to clear backup vault during factory reset', _t4);
-          case 4:
+          case 6:
             safeStorage = getSafeLocalStorage();
-            prefixes = ['cameraPowerPlanner_', 'cinePowerPlanner_', 'cineBackupVault', 'cineRental', 'cine', '__cine', '__storage'];
-            exactKeys = ['darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown', 'debugMode', 'customLogo'];
-            clearStorageAggressively = function clearStorageAggressively(storage, storageName) {
-              if (!storage) return;
+            clearStorageFully = function clearStorageFully(storage, storageName) {
+              if (!storage) {
+                return;
+              }
+              if (typeof storage.clear === 'function') {
+                try {
+                  storage.clear();
+                  return;
+                } catch (clearError) {
+                  console.warn("Failed to clear ".concat(storageName, ", falling back to key removal."), clearError);
+                }
+              }
               try {
                 var keysToRemove = [];
                 var length = storage.length;
-                var _loop4 = function _loop4() {
+                for (var i = 0; i < length; i++) {
                   var key = storage.key(i);
                   if (key) {
-                    if (prefixes.some(function (p) {
-                      return key.startsWith(p);
-                    }) || exactKeys.includes(key) || key.includes('__backup') || key.includes('legacyMigrationBackup')) {
-                      keysToRemove.push(key);
-                    }
+                    keysToRemove.push(key);
                   }
-                };
-                for (var i = 0; i < length; i++) {
-                  _loop4();
                 }
                 keysToRemove.forEach(function (key) {
                   try {
                     storage.removeItem(key);
-                  } catch (e) {
-                    console.warn("Failed to remove key ".concat(key, " from ").concat(storageName), e);
+                  } catch (removeError) {
+                    console.warn("Failed to remove key ".concat(key, " from ").concat(storageName), removeError);
                   }
                 });
-              } catch (e) {
-                console.warn("Failed to iterate ".concat(storageName), e);
+              } catch (iterateError) {
+                console.warn("Failed to iterate ".concat(storageName), iterateError);
               }
             };
-            clearStorageAggressively(safeStorage, 'safeLocalStorage');
+            clearStorageFully(safeStorage, 'safeLocalStorage');
             if (typeof localStorage !== 'undefined' && localStorage !== safeStorage) {
-              clearStorageAggressively(localStorage, 'localStorage');
+              clearStorageFully(localStorage, 'localStorage');
             }
             if (typeof sessionStorage !== 'undefined') {
-              clearStorageAggressively(sessionStorage, 'sessionStorage');
+              clearStorageFully(sessionStorage, 'sessionStorage');
             }
-            deleteFromStorage(safeStorage, 'cineBackupVaultFallbackRecords', msg);
-            deleteFromStorage(safeStorage, DEVICE_STORAGE_KEY, msg);
-            deleteFromStorage(safeStorage, SETUP_STORAGE_KEY, msg);
-            deleteFromStorage(safeStorage, FEEDBACK_STORAGE_KEY, msg);
-            deleteFromStorage(safeStorage, USER_PROFILE_STORAGE_KEY, msg);
-            deleteFromStorage(safeStorage, FAVORITES_STORAGE_KEY, msg);
-            deleteFromStorage(safeStorage, CONTACTS_STORAGE_KEY, msg);
-            deleteFromStorage(safeStorage, AUTO_GEAR_RULES_STORAGE_KEY, msg);
-            deleteFromStorage(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY, msg);
-            deleteFromStorage(safeStorage, AUTO_GEAR_SEEDED_STORAGE_KEY, msg);
-            deleteFromStorage(safeStorage, AUTO_GEAR_PRESETS_STORAGE_KEY, msg);
-            deleteFromStorage(safeStorage, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, msg);
-            deleteFromStorage(safeStorage, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, msg);
-            deleteFromStorage(safeStorage, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, msg);
-            deleteFromStorage(safeStorage, AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY, msg);
-            deleteFromStorage(safeStorage, AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY, msg);
-            deleteFromStorage(safeStorage, getCustomFontStorageKeyName(), msg);
-            deleteFromStorage(safeStorage, CUSTOM_LOGO_STORAGE_KEY, msg);
-            deleteFromStorage(safeStorage, DEVICE_SCHEMA_CACHE_KEY, msg);
-            deleteFromStorage(safeStorage, OWN_GEAR_STORAGE_KEY, msg);
-            deleteFromStorage(safeStorage, DOCUMENTATION_TRACKER_STORAGE_KEY, msg);
-            deleteFromStorage(safeStorage, FULL_BACKUP_HISTORY_STORAGE_KEY, msg);
-            deleteFromStorage(safeStorage, STORAGE_COMPRESSION_FLAG_KEY, msg);
-            deleteFromStorage(safeStorage, STORAGE_TEST_KEY, msg);
-            deleteFromStorage(safeStorage, SESSION_STATE_KEY, msg);
+            sessionCacheKeys = ['settingsActiveTab', typeof GLOBAL_SCOPE !== 'undefined' && GLOBAL_SCOPE && typeof GLOBAL_SCOPE.INSTALL_BANNER_DISMISSED_KEY === 'string' ? GLOBAL_SCOPE.INSTALL_BANNER_DISMISSED_KEY : 'cine_install_banner_dismissed'];
+            ensureStoragePruned = function ensureStoragePruned(storage, storageName) {
+              if (!storage || typeof storage.length !== 'number' || typeof storage.key !== 'function') {
+                return;
+              }
+              var keysToRemove = [];
+              var length = storage.length;
+              for (var i = 0; i < length; i++) {
+                var key = storage.key(i);
+                if (!key) {
+                  continue;
+                }
+                if (key.startsWith('cameraPowerPlanner_') || key.startsWith('cine_') || key.startsWith('cineRental') || sessionCacheKeys.includes(key)) {
+                  keysToRemove.push(key);
+                }
+              }
+              keysToRemove.forEach(function (key) {
+                try {
+                  storage.removeItem(key);
+                } catch (removeError) {
+                  console.warn("Failed to remove key ".concat(key, " from ").concat(storageName), removeError);
+                }
+              });
+            };
+            ensureStoragePruned(safeStorage, 'safeLocalStorage');
+            if (typeof localStorage !== 'undefined' && localStorage !== safeStorage) {
+              ensureStoragePruned(localStorage, 'localStorage');
+            }
+            if (typeof sessionStorage !== 'undefined') {
+              ensureStoragePruned(sessionStorage, 'sessionStorage');
+            }
+            if (typeof clearUiCacheStorageEntries === 'function') {
+              try {
+                clearUiCacheStorageEntries();
+              } catch (e) {
+                void e;
+              }
+            }
+            explicitKeys = ['cineBackupVaultFallbackRecords', DEVICE_STORAGE_KEY, SETUP_STORAGE_KEY, FEEDBACK_STORAGE_KEY, PROJECT_STORAGE_KEY, 'cameraPowerPlanner_projects', FAVORITES_STORAGE_KEY, CONTACTS_STORAGE_KEY, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY, AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY, getCustomFontStorageKeyName(), CUSTOM_LOGO_STORAGE_KEY, DEVICE_SCHEMA_CACHE_KEY, OWN_GEAR_STORAGE_KEY, USER_PROFILE_STORAGE_KEY, DOCUMENTATION_TRACKER_STORAGE_KEY, FULL_BACKUP_HISTORY_STORAGE_KEY, STORAGE_COMPRESSION_FLAG_KEY, STORAGE_TEST_KEY, SESSION_STATE_KEY, 'cameraPowerPlanner_lastProject', 'cameraPowerPlanner_onboardingComplete', 'cameraPowerPlanner_tourShown', 'cameraPowerPlanner_v1_migration', 'cameraPowerPlanner_v2_migration', 'cameraPowerPlanner_sharded', 'cameraPowerPlanner_forceLegacyBundle', 'cameraPowerPlanner_forceLegacyBundleRetry'];
+            explicitKeys.forEach(function (k) {
+              if (k) deleteFromStorage(safeStorage, k, msg);
+            });
             if (typeof sessionStorage !== 'undefined') {
               deleteFromStorage(sessionStorage, SESSION_STATE_KEY, msg);
               deleteFromStorage(sessionStorage, '__cineLoggingHistory', msg);
               deleteFromStorage(sessionStorage, '__cineLoggingConfig', msg);
             }
+            void applyProjectEntryCompression;
+            void forceCompressAllProjectEntries;
+            void clearDerivedProjectCachesForQuota;
+            void removeOldestRenamedAutoBackupEntry;
+            void shouldDisableProjectCompressionDuringPersist;
             if (!(typeof caches !== 'undefined')) {
-              _context2.n = 9;
+              _context2.n = 11;
               break;
             }
-            _context2.p = 5;
-            _context2.n = 6;
+            _context2.p = 7;
+            _context2.n = 8;
             return caches.keys();
-          case 6:
+          case 8:
             cacheKeys = _context2.v;
-            _context2.n = 7;
+            _context2.n = 9;
             return Promise.all(cacheKeys.map(function (key) {
               return caches.delete(key);
             }));
-          case 7:
+          case 9:
             if (typeof console !== 'undefined' && typeof console.log === 'function') {
               console.log('Storage reset: Service Worker caches cleared.');
             }
-            _context2.n = 9;
+            _context2.n = 11;
             break;
-          case 8:
-            _context2.p = 8;
+          case 10:
+            _context2.p = 10;
             _t5 = _context2.v;
             if (typeof console !== 'undefined' && typeof console.warn === 'function') {
               console.warn('Storage reset: Failed to clear Service Worker caches.', _t5);
             }
-          case 9:
+          case 11:
             preferenceKeys = ['darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown', CAMERA_COLOR_STORAGE_KEY, PRINT_PREFERENCES_STORAGE_KEY];
             preferenceKeys.forEach(function (key) {
               deleteFromStorage(safeStorage, key, msg, {
@@ -12615,93 +13143,102 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             } catch (windowNameError) {
               console.warn('Unable to reset window.name during factory reset', windowNameError);
             }
-            _context2.p = 10;
+            _context2.p = 12;
             if (!(typeof navigator !== 'undefined' && navigator.serviceWorker)) {
-              _context2.n = 18;
+              _context2.n = 20;
               break;
             }
-            _context2.n = 11;
+            _context2.n = 13;
             return navigator.serviceWorker.getRegistrations();
-          case 11:
+          case 13:
             registrations = _context2.v;
             _iterator = _createForOfIteratorHelper(registrations);
-            _context2.p = 12;
+            _context2.p = 14;
             _iterator.s();
-          case 13:
+          case 15:
             if ((_step = _iterator.n()).done) {
-              _context2.n = 15;
+              _context2.n = 17;
               break;
             }
             registration = _step.value;
-            _context2.n = 14;
+            _context2.n = 16;
             return registration.unregister();
-          case 14:
-            _context2.n = 13;
-            break;
-          case 15:
-            _context2.n = 17;
-            break;
           case 16:
-            _context2.p = 16;
+            _context2.n = 15;
+            break;
+          case 17:
+            _context2.n = 19;
+            break;
+          case 18:
+            _context2.p = 18;
             _t6 = _context2.v;
             _iterator.e(_t6);
-          case 17:
-            _context2.p = 17;
-            _iterator.f();
-            return _context2.f(17);
-          case 18:
-            _context2.n = 20;
-            break;
           case 19:
             _context2.p = 19;
+            _iterator.f();
+            return _context2.f(19);
+          case 20:
+            _context2.n = 22;
+            break;
+          case 21:
+            _context2.p = 21;
             _t7 = _context2.v;
             console.warn('Failed to unregister service workers', _t7);
-          case 20:
-            _context2.p = 20;
+          case 22:
+            _context2.p = 22;
             if (!(typeof caches !== 'undefined' && typeof caches.keys === 'function')) {
-              _context2.n = 28;
+              _context2.n = 30;
               break;
             }
-            _context2.n = 21;
+            _context2.n = 23;
             return caches.keys();
-          case 21:
+          case 23:
             _cacheKeys = _context2.v;
             _iterator2 = _createForOfIteratorHelper(_cacheKeys);
-            _context2.p = 22;
+            _context2.p = 24;
             _iterator2.s();
-          case 23:
+          case 25:
             if ((_step2 = _iterator2.n()).done) {
-              _context2.n = 25;
+              _context2.n = 27;
               break;
             }
             cacheKey = _step2.value;
-            _context2.n = 24;
+            _context2.n = 26;
             return caches.delete(cacheKey);
-          case 24:
-            _context2.n = 23;
-            break;
-          case 25:
-            _context2.n = 27;
-            break;
           case 26:
-            _context2.p = 26;
+            _context2.n = 25;
+            break;
+          case 27:
+            _context2.n = 29;
+            break;
+          case 28:
+            _context2.p = 28;
             _t8 = _context2.v;
             _iterator2.e(_t8);
-          case 27:
-            _context2.p = 27;
-            _iterator2.f();
-            return _context2.f(27);
-          case 28:
-            _context2.n = 30;
-            break;
           case 29:
             _context2.p = 29;
+            _iterator2.f();
+            return _context2.f(29);
+          case 30:
+            _context2.n = 32;
+            break;
+          case 31:
+            _context2.p = 31;
             _t9 = _context2.v;
             console.warn('Failed to clear cache storage', _t9);
-          case 30:
+          case 32:
+            try {
+              if (typeof globalThis !== 'undefined') globalThis.__cameraPowerPlannerFactoryResetting = false;
+              if (typeof global !== 'undefined') global.__cameraPowerPlannerFactoryResetting = false;
+              if (typeof window !== 'undefined') window.__cameraPowerPlannerFactoryResetting = false;
+              if (GLOBAL_SCOPE) GLOBAL_SCOPE.__cameraPowerPlannerFactoryResetting = false;
+            } catch (e) {
+              void e;
+            }
+          case 33:
             return _context2.a(2);
         }
-      }, _callee2, null, [[22, 26, 27, 28], [20, 29], [12, 16, 17, 18], [10, 19], [5, 8], [1, 3]]);
+      }, _callee2, null, [[24, 28, 29, 30], [22, 31], [14, 18, 19, 20], [12, 21], [7, 10], [1, 5]]);
     }));
     return _clearAllData.apply(this, arguments);
   }
@@ -12959,7 +13496,161 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return [];
     }
   }
+  var backupVaultRecordCache = [];
+  function normalizeBackupVaultMetadata(metadata) {
+    if (!metadata || _typeof(metadata) !== 'object') {
+      return null;
+    }
+    var normalized = {};
+    if (typeof metadata.source === 'string' && metadata.source) {
+      normalized.source = metadata.source;
+    }
+    if (typeof metadata.reason === 'string' && metadata.reason) {
+      normalized.reason = metadata.reason;
+    }
+    if (typeof metadata.permissionState === 'string' && metadata.permissionState) {
+      normalized.permissionState = metadata.permissionState;
+    }
+    return Object.keys(normalized).length ? normalized : null;
+  }
+  function normalizeBackupVaultRecord(record) {
+    if (!record || _typeof(record) !== 'object') {
+      return null;
+    }
+    var id = typeof record.id === 'string' ? record.id.trim() : '';
+    if (!id) {
+      return null;
+    }
+    var fileName = typeof record.fileName === 'string' && record.fileName ? record.fileName : 'cine-power-planner-backup.json';
+    var createdAtMs = typeof record.createdAtMs === 'number' && Number.isFinite(record.createdAtMs) ? record.createdAtMs : null;
+    var createdAt = typeof record.createdAt === 'string' && record.createdAt ? record.createdAt : createdAtMs !== null ? new Date(createdAtMs).toISOString() : null;
+    var normalizedCreatedAtMs = createdAtMs;
+    if (normalizedCreatedAtMs === null && createdAt) {
+      var parsedTime = Date.parse(createdAt);
+      if (Number.isFinite(parsedTime)) {
+        normalizedCreatedAtMs = parsedTime;
+      }
+    }
+    if (normalizedCreatedAtMs === null) {
+      normalizedCreatedAtMs = Date.now();
+    }
+    var metadata = normalizeBackupVaultMetadata(record.metadata);
+    return {
+      id: id,
+      fileName: fileName,
+      payload: record.payload,
+      createdAt: createdAt || new Date(normalizedCreatedAtMs).toISOString(),
+      createdAtMs: normalizedCreatedAtMs,
+      metadata: metadata || {}
+    };
+  }
+  function normalizeBackupVaultRecordList(records) {
+    if (!records) {
+      return [];
+    }
+    var parsed = records;
+    if (typeof records === 'string') {
+      var parsedResult = tryParseJSONLike(records);
+      if (parsedResult && parsedResult.success) {
+        parsed = parsedResult.parsed;
+      }
+    }
+    var list = Array.isArray(parsed) ? parsed : [];
+    var normalized = [];
+    list.forEach(function (entry) {
+      var normalizedEntry = normalizeBackupVaultRecord(entry);
+      if (normalizedEntry) {
+        normalized.push(normalizedEntry);
+      }
+    });
+    return normalized;
+  }
+  function scoreBackupVaultRecord(record) {
+    if (!record) {
+      return 0;
+    }
+    var score = 0;
+    if (record.payload !== null && record.payload !== undefined) {
+      score += 3;
+    }
+    if (typeof record.fileName === 'string' && record.fileName) {
+      score += 1;
+    }
+    if (typeof record.createdAt === 'string' && record.createdAt) {
+      score += 1;
+    }
+    if (typeof record.createdAtMs === 'number' && Number.isFinite(record.createdAtMs)) {
+      score += 1;
+    }
+    if (record.metadata && _typeof(record.metadata) === 'object') {
+      score += 1;
+    }
+    return score;
+  }
+  function mergeBackupVaultRecords(existingList, incomingList) {
+    var merged = new Map();
+    var mergeList = function mergeList(records) {
+      if (!Array.isArray(records)) {
+        return;
+      }
+      records.forEach(function (record) {
+        var normalized = normalizeBackupVaultRecord(record);
+        if (!normalized) {
+          return;
+        }
+        var existing = merged.get(normalized.id);
+        if (!existing || scoreBackupVaultRecord(normalized) >= scoreBackupVaultRecord(existing)) {
+          merged.set(normalized.id, normalized);
+        }
+      });
+    };
+    mergeList(existingList);
+    mergeList(incomingList);
+    return Array.from(merged.values());
+  }
+  function readBackupVaultFallbackRecords() {
+    var raw = readLocalStorageValue('cineBackupVaultFallbackRecords');
+    return normalizeBackupVaultRecordList(raw);
+  }
+  function resolveBackupVaultApi() {
+    if (GLOBAL_SCOPE && GLOBAL_SCOPE.cineFeatureBackup && _typeof(GLOBAL_SCOPE.cineFeatureBackup) === 'object') {
+      return GLOBAL_SCOPE.cineFeatureBackup;
+    }
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.getQueuedBackupPayloads === 'function') {
+      return GLOBAL_SCOPE;
+    }
+    return null;
+  }
+  function refreshBackupVaultRecordCache() {
+    var api = resolveBackupVaultApi();
+    if (!api) {
+      return;
+    }
+    var loader = typeof api.listBackupVaultRecords === 'function' ? api.listBackupVaultRecords : typeof api.getQueuedBackupPayloads === 'function' ? api.getQueuedBackupPayloads : null;
+    if (!loader) {
+      return;
+    }
+    var response = null;
+    try {
+      response = loader();
+    } catch (error) {
+      console.warn('Unable to load backup vault records for export', error);
+      return;
+    }
+    if (Array.isArray(response)) {
+      backupVaultRecordCache = normalizeBackupVaultRecordList(response);
+      return;
+    }
+    if (response && typeof response.then === 'function') {
+      response.then(function (records) {
+        backupVaultRecordCache = normalizeBackupVaultRecordList(records);
+      }).catch(function (error) {
+        console.warn('Unable to load backup vault records for export', error);
+      });
+    }
+  }
   function exportAllData() {
+    refreshBackupVaultRecordCache();
     var payload = {
       devices: loadDeviceData(),
       setups: loadSetups(),
@@ -13006,6 +13697,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var schemaCache = readLocalStorageValue(DEVICE_SCHEMA_CACHE_KEY);
     if (schemaCache !== null && schemaCache !== undefined) {
       payload.schemaCache = schemaCache;
+    }
+    var fallbackVaultRecords = readBackupVaultFallbackRecords();
+    var combinedVaultRecords = mergeBackupVaultRecords(backupVaultRecordCache, fallbackVaultRecords);
+    if (combinedVaultRecords.length) {
+      payload.backupVaultRecords = combinedVaultRecords.map(function (record) {
+        return storageJsonDeepClone(record);
+      });
     }
     return payload;
   }
@@ -13227,10 +13925,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return {};
     }
     var normalized = {};
-    Object.entries(value).forEach(function (_ref36) {
-      var _ref37 = _slicedToArray(_ref36, 2),
-        key = _ref37[0],
-        val = _ref37[1];
+    Object.entries(value).forEach(function (_ref37) {
+      var _ref38 = _slicedToArray(_ref37, 2),
+        key = _ref38[0],
+        val = _ref38[1];
       if (typeof val !== 'string') return;
       var trimmed = val.trim();
       if (!trimmed) return;
@@ -13267,6 +13965,78 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     return "";
+  }
+  function normalizeImportedBackupVaultRecords(value) {
+    var records = normalizeImportedArray(value, ['backupVaultRecords', 'backupVault', 'vault', 'records', 'entries', 'items', 'list', 'values', 'data'], function (entry) {
+      return entry && _typeof(entry) === 'object';
+    });
+    return normalizeBackupVaultRecordList(records);
+  }
+  function importBackupVaultRecords(records) {
+    var normalized = normalizeBackupVaultRecordList(records);
+    if (!normalized.length) {
+      return;
+    }
+    var existingFallback = readBackupVaultFallbackRecords();
+    var mergedFallback = mergeBackupVaultRecords(existingFallback, normalized);
+    try {
+      safeSetLocalStorage('cineBackupVaultFallbackRecords', JSON.stringify(mergedFallback));
+    } catch (storageError) {
+      console.warn('Unable to persist imported backup vault fallback records', storageError);
+    }
+    var api = resolveBackupVaultApi();
+    if (!api || typeof api.queueBackupPayloadForVault !== 'function') {
+      return;
+    }
+    var queueRecord = function queueRecord(record) {
+      api.queueBackupPayloadForVault(record.fileName, record.payload, {
+        id: record.id,
+        createdAt: record.createdAt,
+        createdAtMs: record.createdAtMs,
+        source: record.metadata && record.metadata.source ? record.metadata.source : undefined,
+        reason: record.metadata && record.metadata.reason ? record.metadata.reason : undefined,
+        permissionState: record.metadata && record.metadata.permissionState ? record.metadata.permissionState : undefined
+      });
+    };
+    var loader = typeof api.listBackupVaultRecords === 'function' ? api.listBackupVaultRecords : typeof api.getQueuedBackupPayloads === 'function' ? api.getQueuedBackupPayloads : null;
+    if (!loader) {
+      normalized.forEach(queueRecord);
+      return;
+    }
+    try {
+      var response = loader();
+      if (Array.isArray(response)) {
+        var existingIds = new Set(response.map(function (entry) {
+          return entry && entry.id ? entry.id : null;
+        }));
+        normalized.forEach(function (record) {
+          if (!existingIds.has(record.id)) {
+            queueRecord(record);
+          }
+        });
+        return;
+      }
+      if (response && typeof response.then === 'function') {
+        response.then(function (existing) {
+          var existingIds = new Set(Array.isArray(existing) ? existing.map(function (entry) {
+            return entry && entry.id ? entry.id : null;
+          }) : []);
+          normalized.forEach(function (record) {
+            if (!existingIds.has(record.id)) {
+              queueRecord(record);
+            }
+          });
+        }).catch(function (error) {
+          console.warn('Unable to inspect backup vault before import', error);
+          normalized.forEach(queueRecord);
+        });
+        return;
+      }
+      normalized.forEach(queueRecord);
+    } catch (error) {
+      console.warn('Unable to import backup vault records via backup module', error);
+      normalized.forEach(queueRecord);
+    }
   }
   function getSnapshotKeyVariants(key) {
     return getStorageKeyVariants(key);
@@ -13447,7 +14217,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!isPlainObject(snapshot)) {
       return null;
     }
-    var exportStructureKeys = ['devices', 'setups', 'session', 'feedback', 'favorites', 'contacts', 'preferences', 'project', 'projects', 'autoGearRules', 'autoGearBackups', 'autoGearPresets', 'autoGearMonitorDefaults', 'autoGearSeeded', 'autoGearActivePresetId', 'autoGearAutoPresetId', 'autoGearBackupRetention', 'autoGearShowBackups', 'fullBackupHistory', 'fullBackups'];
+    var exportStructureKeys = ['devices', 'setups', 'session', 'feedback', 'favorites', 'contacts', 'preferences', 'project', 'projects', 'autoGearRules', 'autoGearBackups', 'autoGearPresets', 'autoGearMonitorDefaults', 'autoGearSeeded', 'autoGearActivePresetId', 'autoGearAutoPresetId', 'autoGearBackupRetention', 'autoGearShowBackups', 'fullBackupHistory', 'fullBackups', 'backupVaultRecords'];
     var resemblesExportPayload = exportStructureKeys.some(function (key) {
       return Object.prototype.hasOwnProperty.call(snapshot, key);
     });
@@ -13648,12 +14418,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function importAllData(allData) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    if (Array.isArray(allData)) {
+      importProjectCollection(allData, function () {
+        return createProjectImporter();
+      });
+      return;
+    }
     if (!isPlainObject(allData)) {
       return;
     }
-    var _ref38 = options || {},
-      _ref38$skipSnapshotCo = _ref38.skipSnapshotConversion,
-      skipSnapshotConversion = _ref38$skipSnapshotCo === void 0 ? false : _ref38$skipSnapshotCo;
+    var _ref39 = options || {},
+      _ref39$skipSnapshotCo = _ref39.skipSnapshotConversion,
+      skipSnapshotConversion = _ref39$skipSnapshotCo === void 0 ? false : _ref39$skipSnapshotCo;
     if (!skipSnapshotConversion) {
       var converted = convertStorageSnapshotToData(allData);
       if (converted) {
@@ -13994,6 +14770,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var _history = normalizeImportedFullBackupHistory(allData.fullBackups);
       saveFullBackupHistory(_history);
     }
+    if (Object.prototype.hasOwnProperty.call(allData, 'backupVaultRecords')) {
+      var backupRecords = normalizeImportedBackupVaultRecords(allData.backupVaultRecords);
+      importBackupVaultRecords(backupRecords);
+    } else if (Object.prototype.hasOwnProperty.call(allData, 'backupVault')) {
+      var _backupRecords = normalizeImportedBackupVaultRecords(allData.backupVault);
+      importBackupVaultRecords(_backupRecords);
+    }
     var importProjectEntry = null;
     var ensureProjectImporter = function ensureProjectImporter() {
       if (!importProjectEntry) {
@@ -14020,7 +14803,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return result;
     };
     if (allData.project) {
-      importTrackedCollection(allData.project);
+      importTrackedCollection(allData.project, "");
     }
     if (allData.projects) {
       importTrackedCollection(allData.projects);
@@ -14062,9 +14845,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     renameSetup: renameSetup,
     getMountVoltageStorageKeyName: getMountVoltageStorageKeyName,
     getMountVoltageStorageBackupKeyName: getMountVoltageStorageBackupKeyName,
+    getProjectStorageRevisionKeyName: getProjectStorageRevisionKeyName,
+    loadProjectStorageRevision: loadProjectStorageRevision,
     loadProject: loadProject,
     saveProject: saveProject,
     deleteProject: deleteProject,
+    renameProject: renameProject,
     createProjectDeletionBackup: createProjectDeletionBackup,
     loadSessionState: loadSessionState,
     saveSessionState: saveSessionState,
@@ -14112,7 +14898,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     decodeStoredValue: decodeStoredValue,
     getCompressionLogSnapshot: getCompressionLogSnapshot,
     setActiveProjectCompressionHold: setActiveProjectCompressionHold,
-    clearActiveProjectCompressionHold: clearActiveProjectCompressionHold
+    clearActiveProjectCompressionHold: clearActiveProjectCompressionHold,
+    invalidateProjectReadCache: invalidateProjectReadCache
   };
   var TEST_ONLY_AUTO_BACKUP_COMPRESSION_CACHE = {
     flag: AUTO_BACKUP_PAYLOAD_COMPRESSION_FLAG,

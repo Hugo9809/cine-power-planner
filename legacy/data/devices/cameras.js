@@ -383,7 +383,7 @@
         "type": "ETH (LEMO 10-pin)"
       }],
       "recordingMedia": [{
-        "type": "Codex Compact Drive 1TB",
+        "type": "Codex Compact Drive",
         "notes": "CA08-1024"
       }, {
         "type": "Codex Compact Drive 2TB",
@@ -624,7 +624,7 @@
         "type": "REMOTE B connector"
       }],
       "recordingMedia": [{
-        "type": "AXS Memory A-Series slot",
+        "type": "AXS Memory",
         "notes": ""
       }, {
         "type": "SD Card",
@@ -751,7 +751,7 @@
         "type": "REMOTE B connector"
       }],
       "recordingMedia": [{
-        "type": "AXS Memory A-Series slot",
+        "type": "AXS Memory",
         "notes": ""
       }, {
         "type": "SD Card",
@@ -923,7 +923,7 @@
         "type": "CFexpress Type A",
         "notes": ""
       }, {
-        "type": "SD",
+        "type": "SD Card",
         "notes": "UHS-II/UHS-I"
       }],
       "viewfinder": [{
@@ -1026,7 +1026,7 @@
         "type": "CFexpress Type A",
         "notes": ""
       }, {
-        "type": "SD",
+        "type": "SD Card",
         "notes": "UHS-II/UHS-I"
       }],
       "viewfinder": [{
@@ -1117,7 +1117,7 @@
         "type": "USB-C"
       }],
       "recordingMedia": [{
-        "type": "XQD Card",
+        "type": "XQD",
         "notes": ""
       }, {
         "type": "SD Card",
@@ -1201,7 +1201,7 @@
         "type": "LANC"
       }],
       "recordingMedia": [{
-        "type": "XQD Card",
+        "type": "XQD",
         "notes": ""
       }, {
         "type": "SD Card",
@@ -4019,7 +4019,7 @@
         "type": "CFexpress Type A",
         "notes": ""
       }, {
-        "type": "SD",
+        "type": "SD Card",
         "notes": "UHS-II/UHS-I"
       }],
       "viewfinder": [{
@@ -4446,7 +4446,7 @@
       }],
       "fizConnectors": [],
       "recordingMedia": [{
-        "type": "Internal NVMe SSD",
+        "type": "M.2 NVMe SSD",
         "notes": "User replaceable"
       }],
       "viewfinder": [{
@@ -4494,7 +4494,7 @@
       }],
       "fizConnectors": [],
       "recordingMedia": [{
-        "type": "Internal SSD",
+        "type": "M.2 NVMe SSD",
         "notes": "4TB NVMe"
       }],
       "viewfinder": [{
@@ -4564,7 +4564,7 @@
         "type": "Fischer 5-pin"
       }],
       "recordingMedia": [{
-        "type": "CineMag IV/V",
+        "type": "CineMag IV",
         "notes": "High-speed storage"
       }],
       "viewfinder": [{
@@ -6109,7 +6109,7 @@
         "type": "CFexpress Type A",
         "notes": ""
       }, {
-        "type": "SD",
+        "type": "SD Card",
         "notes": "UHS-II/UHS-I"
       }],
       "viewfinder": [{
@@ -6231,7 +6231,7 @@
         "type": "USB-C"
       }],
       "recordingMedia": [{
-        "type": "SD",
+        "type": "SD Card",
         "notes": "UHS-II/UHS-I"
       }],
       "viewfinder": [{
@@ -6291,7 +6291,7 @@
         "type": "USB-C"
       }],
       "recordingMedia": [{
-        "type": "SDXC",
+        "type": "SD Card",
         "notes": "UHS-I"
       }],
       "viewfinder": [{
@@ -7418,7 +7418,7 @@
       },
       "weight_g": 5500,
       "recordingMedia": [{
-        "type": "SD Card (x9)",
+        "type": "SD Card",
         "notes": "8x MicroSD for lenses, 1x SD for proxy/stabilization"
       }],
       "resolutions": ["11K 2D", "10K 3D"],
@@ -7439,7 +7439,7 @@
       },
       "weight_g": 1550,
       "recordingMedia": [{
-        "type": "SD Card (x7)",
+        "type": "SD Card",
         "notes": "6x MicroSD for lenses, 1x SD for proxy/stabilization"
       }],
       "resolutions": ["8K 3D", "8K 2D"],
@@ -7481,7 +7481,7 @@
       },
       "weight_g": 11160,
       "recordingMedia": [{
-        "type": "SSD (x8)",
+        "type": "M.2 NVMe SSD",
         "notes": "8x M.2 NVMe SSD modules"
       }],
       "resolutions": ["12K 3D"],

@@ -1,7 +1,7 @@
 const {
   ensureAutoBackupsFromProjects,
   cloneProjectEntryForSetup,
-} = require('../../src/scripts/app-core-auto-backup.js');
+} = require('../../src/scripts/core/app-core-auto-backup.js');
 
 describe('ensureAutoBackupsFromProjects', () => {
   it('imports missing auto backup projects into setups and persists once', () => {

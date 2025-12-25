@@ -76,7 +76,7 @@ describe('removeOriginalDeviceEntry', () => {
     };
 
     const functionSource = extractFunctionSource(
-      path.join(__dirname, '../../src/scripts/app-core-new-1.js'),
+      path.join(__dirname, '../../src/scripts/core/app-core-new-1.js'),
       'removeOriginalDeviceEntry'
     );
 

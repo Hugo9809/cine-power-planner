@@ -159,36 +159,36 @@
     ) {
       const collectAdditionalFallbackScopes =
         bootstrapEnvironmentTools &&
-        typeof bootstrapEnvironmentTools.collectFallbackScopes === 'function'
+          typeof bootstrapEnvironmentTools.collectFallbackScopes === 'function'
           ? function collectAdditionalFallbackScopes(scopes) {
-              try {
-                const collected = bootstrapEnvironmentTools.collectFallbackScopes({
-                  fallbackScopes: Array.isArray(scopes) ? scopes : ensureArray(scopes),
-                  runtimeScope,
-                  coreGlobalScope,
-                });
+            try {
+              const collected = bootstrapEnvironmentTools.collectFallbackScopes({
+                fallbackScopes: Array.isArray(scopes) ? scopes : ensureArray(scopes),
+                runtimeScope,
+                coreGlobalScope,
+              });
 
-                if (Array.isArray(collected)) {
-                  return collected;
-                }
-              } catch (environmentCollectError) {
-                void environmentCollectError;
+              if (Array.isArray(collected)) {
+                return collected;
               }
-
-              if (Array.isArray(scopes)) {
-                try {
-                  const legacyCollected = bootstrapEnvironmentTools.collectFallbackScopes(scopes);
-
-                  if (Array.isArray(legacyCollected)) {
-                    return legacyCollected;
-                  }
-                } catch (legacyEnvironmentCollectError) {
-                  void legacyEnvironmentCollectError;
-                }
-              }
-
-              return null;
+            } catch (environmentCollectError) {
+              void environmentCollectError;
             }
+
+            if (Array.isArray(scopes)) {
+              try {
+                const legacyCollected = bootstrapEnvironmentTools.collectFallbackScopes(scopes);
+
+                if (Array.isArray(legacyCollected)) {
+                  return legacyCollected;
+                }
+              } catch (legacyEnvironmentCollectError) {
+                void legacyEnvironmentCollectError;
+              }
+            }
+
+            return null;
+          }
           : null;
 
       try {
@@ -1296,7 +1296,7 @@
 
     let result = attemptFactory(
       localizationBootstrapTools &&
-        localizationBootstrapTools.createLocalizationBootstrapResult,
+      localizationBootstrapTools.createLocalizationBootstrapResult,
       resolverOptions
     );
 
@@ -1314,7 +1314,7 @@
     if (!result) {
       result = attemptFactory(
         localizationRuntimeTools &&
-          localizationRuntimeTools.createFallbackLocalizationRuntimeSetup,
+        localizationRuntimeTools.createFallbackLocalizationRuntimeSetup,
         {
           currentLocalization: options && options.currentLocalization,
           resolveCoreSupportModule,
@@ -1518,7 +1518,7 @@
       getBootstrapResultsTools(invocationOptions);
     const currentRuntimeShared =
       invocationOptions.currentRuntimeShared &&
-      isObject(invocationOptions.currentRuntimeShared)
+        isObject(invocationOptions.currentRuntimeShared)
         ? invocationOptions.currentRuntimeShared
         : null;
     const resolverOptions = normalizeBootstrapInvocationOptions(invocationOptions, {
@@ -1699,14 +1699,14 @@
 
     let result = attemptFactory(
       runtimeSharedBootstrapResolverTools &&
-        runtimeSharedBootstrapResolverTools.createRuntimeSharedBootstrapResult,
+      runtimeSharedBootstrapResolverTools.createRuntimeSharedBootstrapResult,
       resolverOptions
     );
 
     if (!result) {
       result = attemptFactory(
         runtimeSharedBootstrapLoaderTools &&
-          runtimeSharedBootstrapLoaderTools.resolveRuntimeSharedBootstrapResult,
+        runtimeSharedBootstrapLoaderTools.resolveRuntimeSharedBootstrapResult,
         {
           bootstrapOptions: resolverOptions,
           runtimeSharedBootstrapInlineTools,
@@ -1721,7 +1721,7 @@
     if (!result) {
       result = attemptFactory(
         runtimeSharedBootstrapResultTools &&
-          runtimeSharedBootstrapResultTools.createRuntimeSharedBootstrapResult,
+        runtimeSharedBootstrapResultTools.createRuntimeSharedBootstrapResult,
         {
           bootstrapOptions: {
             runtimeSharedBootstrapTools,
@@ -1851,14 +1851,14 @@
       ) {
         const collectAdditionalFallbackScopes =
           bootstrapEnvironmentTools &&
-          typeof bootstrapEnvironmentTools.collectFallbackScopes === 'function'
+            typeof bootstrapEnvironmentTools.collectFallbackScopes === 'function'
             ? function collectAdditional(scopes) {
-                return bootstrapEnvironmentTools.collectFallbackScopes({
-                  fallbackScopes: Array.isArray(scopes) ? scopes : ensureArray(scopes),
-                  runtimeScope,
-                  coreGlobalScope,
-                });
-              }
+              return bootstrapEnvironmentTools.collectFallbackScopes({
+                fallbackScopes: Array.isArray(scopes) ? scopes : ensureArray(scopes),
+                runtimeScope,
+                coreGlobalScope,
+              });
+            }
             : null;
 
         try {
@@ -2210,6 +2210,7 @@
     createInlineRuntimeSharedFallback,
     createBootstrapSuite,
     normalizeBootstrapInvocationOptions,
+    collectBootstrapFallbackScopes,
   };
 
   const resolverNamespaceName = 'cineCoreAppCoreBootstrapResolver';
@@ -2276,8 +2277,8 @@
   }
 })(
   (typeof globalThis !== 'undefined' && globalThis) ||
-    (typeof self !== 'undefined' && self) ||
-    (typeof window !== 'undefined' && window) ||
-    (typeof global !== 'undefined' && global) ||
-    null
+  (typeof self !== 'undefined' && self) ||
+  (typeof window !== 'undefined' && window) ||
+  (typeof global !== 'undefined' && global) ||
+  null
 );

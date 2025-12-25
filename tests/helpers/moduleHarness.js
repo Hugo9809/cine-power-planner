@@ -270,6 +270,8 @@ function setupModuleHarness() {
     safeFreezeDeep: freezeDeep,
     teardown() {
       delete global.cineModuleGlobals;
+      pendingWaiters.clear();
+      recordedModules.clear();
       jest.resetModules();
     },
   };

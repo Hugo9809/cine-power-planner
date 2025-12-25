@@ -302,7 +302,8 @@ function optimiseAvatarDataUrl(dataUrl, mimeType, onSuccess, onError) {
 }
 function readAvatarFile(file, onSuccess, onError) {
   if (!file) return;
-  if (file.size > CONTACT_AVATAR_MAX_SOURCE_BYTES) {
+  var maxBytes = typeof CONTACT_AVATAR_MAX_SOURCE_BYTES === 'number' ? CONTACT_AVATAR_MAX_SOURCE_BYTES : 6 * 1024 * 1024;
+  if (file.size > maxBytes) {
     if (typeof onError === 'function') onError('tooLarge');
     return;
   }
@@ -395,6 +396,12 @@ function assignProfileModuleExports(exportsObject) {
   var scope = resolveProfileGlobalScope();
   if (scope) {
     scope.CINE_CONTACTS_PROFILE_MODULE = exportsObject;
+    if (typeof scope.CONTACT_AVATAR_MAX_SOURCE_BYTES === 'undefined' || scope.CONTACT_AVATAR_MAX_SOURCE_BYTES === null) {
+      scope.CONTACT_AVATAR_MAX_SOURCE_BYTES = exportsObject.CONTACT_AVATAR_MAX_SOURCE_BYTES;
+    }
+    if (typeof scope.readAvatarFile !== 'function') {
+      scope.readAvatarFile = exportsObject.readAvatarFile;
+    }
   }
 }
 function resolveProfileGlobalScope() {

@@ -1,4 +1,4 @@
-/* eslint-env serviceworker */
+
 const SERVICE_WORKER_SCOPE =
   (typeof self !== 'undefined' && self) ||
   (typeof globalThis !== 'undefined' && globalThis) ||

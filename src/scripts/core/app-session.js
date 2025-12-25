@@ -4910,7 +4910,11 @@ function scheduleProjectAutoSave(immediateOrOptions = false) {
   }
 }
 
-if (projectForm) {
+var projectFormRefSession = (typeof projectForm !== 'undefined' && projectForm)
+  ? projectForm
+  : (typeof document !== 'undefined' ? document.getElementById('projectForm') : null);
+
+if (projectFormRefSession) {
   const resolveOptionFromEvent = (event, select) => {
     const findClosestSelect = (node) => {
       if (!node || typeof node !== 'object') {
@@ -5030,7 +5034,7 @@ if (projectForm) {
     });
   };
 
-  projectForm.querySelectorAll('select[multiple]').forEach(sel => {
+  projectFormRefSession.querySelectorAll('select[multiple]').forEach(sel => {
     attachMultiSelectToggle(sel);
   });
 
@@ -5056,7 +5060,7 @@ if (projectForm) {
     }
   };
 
-  projectForm.querySelectorAll('select').forEach(sel => {
+  projectFormRefSession.querySelectorAll('select').forEach(sel => {
     const handleUpdate = () => safeUpdateSelectIconBoxes(sel);
     sel.addEventListener('change', handleUpdate);
     handleUpdate();
@@ -5076,10 +5080,10 @@ if (projectForm) {
     noteProjectFormDirty();
     scheduleProjectAutoSave(true);
   };
-  projectForm.addEventListener('input', queueProjectAutoSave);
-  projectForm.addEventListener('change', flushProjectAutoSave);
+  projectFormRefSession.addEventListener('input', queueProjectAutoSave);
+  projectFormRefSession.addEventListener('change', flushProjectAutoSave);
 
-  projectForm.querySelectorAll('input, textarea, select').forEach(el => {
+  projectFormRefSession.querySelectorAll('input, textarea, select').forEach(el => {
     el.addEventListener('change', event => {
       noteProjectFormDirty();
       saveCurrentSession(event);

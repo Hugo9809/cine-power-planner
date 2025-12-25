@@ -2218,10 +2218,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       highlight: '#batterySelectRow'
     }, {
       key: 'resultsTotalDraw',
+      ensureHeroCard: true,
       highlight: ['#heroMainStat', '#metricCurrent144', '#metricCurrent12']
     }, {
       key: 'resultsBatteryPacks',
-      highlight: ['#batteryLifeLabel', '#batteryLife', '#batteryLifeUnit', '#runtimeAverageNote', '#batteryCountLabel', '#batteryCount']
+      ensureHeroCard: true,
+      highlight: ['#metricRuntime', '#metricBatteryCount']
     }, {
       key: 'resultsChangeover',
       highlight: '#breakdownList'
@@ -2246,12 +2248,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       focus: '#newName'
     }, {
       key: 'editDeviceDataReview',
-      highlight: '#deviceListContainer',
+      highlight: '#device-manager',
       focus: '#deviceListContainer .detail-toggle',
       ensureDeviceManager: true
     }, {
       key: 'editDeviceDataEdit',
-      highlight: '#deviceListContainer',
+      highlight: '#device-manager',
       focus: '#deviceListContainer .edit-btn',
       ensureDeviceManager: true,
       scrollToTop: true
@@ -2268,7 +2270,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       focus: '#ownGearName'
     }, {
       key: 'projectRequirementsAccess',
-      highlight: '#generateGearListBtn'
+      highlight: '#generateGearListBtn',
+      autoAdvance: true
     }, {
       key: 'projectRequirementsBrief',
       highlight: '#projectRequirementsBriefSection',
@@ -2409,6 +2412,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var autoOpenedDeviceManager = false;
   var deviceManagerSectionRef = null;
   var deviceManagerToggleRef = null;
+  var sideMenuObserver = null;
   var resumeHintVisible = false;
   var resumeStartIndex = null;
   var activeRequirementCleanup = null;
@@ -2545,6 +2549,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var initialComplete = typeof requirement.check === 'function' ? requirement.check() : false;
     activeRequirementCompleted = initialComplete;
     setNextButtonDisabled(!initialComplete);
+    if (initialComplete && step && step.autoAdvance) {
+      goToNextStep();
+      return;
+    }
     if (typeof requirement.attach !== 'function') {
       return;
     }
@@ -2556,6 +2564,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (!activeRequirementCompleted) {
           activeRequirementCompleted = true;
           setNextButtonDisabled(false);
+          if (step && step.autoAdvance) {
+            goToNextStep();
+          }
         }
       },
       incomplete: function incomplete() {
@@ -3146,20 +3157,34 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return filtered;
   }
-  function findUsableElement(candidates) {
-    if (!Array.isArray(candidates) || candidates.length === 0) {
-      return null;
+  function ensureHighlightVisible(step) {
+    if (!step) {
+      return;
     }
-    for (var index = 0; index < candidates.length; index += 1) {
-      var candidate = candidates[index];
-      if (!candidate) {
-        continue;
-      }
-      if (isHighlightElementUsable(candidate)) {
-        return candidate;
+    var elements = getHighlightElements(step);
+    if (!elements || !elements.length) {
+      return;
+    }
+    var target = null;
+    for (var index = 0; index < elements.length; index += 1) {
+      if (elements[index] && isHighlightElementUsable(elements[index])) {
+        target = elements[index];
+        break;
       }
     }
-    return candidates[0] || null;
+    if (!target) {
+      target = elements[0];
+    }
+    if (target && typeof target.scrollIntoView === 'function') {
+      try {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not scroll to highlight element.', error);
+      }
+    }
   }
   function getHighlightElements(step) {
     if (!step) {
@@ -3722,6 +3747,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     contactsDialogRef.setAttribute('hidden', '');
     autoOpenedContacts = false;
+  }
+  function ensureHeroCardForStep(step) {
+    if (!step || !step.ensureHeroCard) {
+      return;
+    }
+    var heroCard = DOCUMENT.getElementById('heroCard');
+    if (heroCard && heroCard.classList.contains('hidden')) {
+      heroCard.classList.remove('hidden');
+    }
   }
   function ensureOwnGearForStep(step) {
     if (!step || !step.ensureOwnGear) {
@@ -5083,6 +5117,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     avatarAction.className = 'onboarding-avatar-action';
     avatarAction.textContent = resolveAvatarActionLabel(false);
     var handleAvatarActionClick = function handleAvatarActionClick() {
+      if (hiddenFileInput && typeof hiddenFileInput.click === 'function') {
+        try {
+          hiddenFileInput.click();
+          return;
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not trigger avatar proxy input.', error);
+        }
+      }
       if (avatarInput && typeof avatarInput.click === 'function') {
         try {
           avatarInput.click();
@@ -6531,40 +6573,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       autoOpenedProjectDialog = false;
       detachProjectDialogVisibilityMonitor();
     }
-    var focusCandidates = resolveSelectorElements(toSelectorArray(step.focus));
-    var focusTarget = findUsableElement(focusCandidates);
-    if (step.scrollToTop && GLOBAL_SCOPE && typeof GLOBAL_SCOPE.scrollTo === 'function') {
-      try {
-        GLOBAL_SCOPE.scrollTo({
-          top: 0,
-          behavior: 'smooth'
-        });
-      } catch (error) {
-        safeWarn('cine.features.onboardingTour could not scroll to top.', error);
-      }
-    } else if (focusTarget && isHighlightElementUsable(focusTarget) && typeof focusTarget.scrollIntoView === 'function') {
-      try {
-        focusTarget.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center'
-        });
-      } catch (error) {
-        safeWarn('cine.features.onboardingTour could not scroll focus target into view.', error);
-      }
-    } else {
-      var highlightCandidates = getHighlightElements(step);
-      var highlightTarget = highlightCandidates.length > 0 ? highlightCandidates[0] : null;
-      if (highlightTarget && typeof highlightTarget.scrollIntoView === 'function') {
-        try {
-          highlightTarget.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-          });
-        } catch (error) {
-          safeWarn('cine.features.onboardingTour could not scroll highlight target.', error);
-        }
-      }
+    if (step.ensureHeroCard) {
+      ensureHeroCardForStep(step);
     }
+    ensureHighlightVisible(step);
     updateCardForStep(step, index);
     applyStepRequirement(step);
     applyStepAutomation(step);
@@ -6799,6 +6811,28 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     attachVisualViewportListeners();
+    if (DOCUMENT && typeof DOCUMENT.getElementById === 'function' && typeof MutationObserver === 'function') {
+      var sideMenu = DOCUMENT.getElementById('sideMenu');
+      if (sideMenu && !sideMenuObserver) {
+        try {
+          sideMenuObserver = new MutationObserver(function () {
+            schedulePositionUpdate();
+            if (active && currentStep) {
+              setTimeout(function () {
+                ensureHighlightVisible(currentStep);
+              }, 100);
+            }
+          });
+          sideMenuObserver.observe(sideMenu, {
+            attributes: true,
+            attributeFilter: ['class', 'hidden', 'aria-hidden']
+          });
+        } catch (error) {
+          sideMenuObserver = null;
+          safeWarn('cine.features.onboardingTour could not observe side menu.', error);
+        }
+      }
+    }
   }
   function detachGlobalListeners() {
     if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.removeEventListener === 'function') {
@@ -6810,6 +6844,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (supportsDialogTopLayer) {
         DOCUMENT.removeEventListener('toggle', handleDialogToggle, true);
       }
+    }
+    if (sideMenuObserver) {
+      try {
+        sideMenuObserver.disconnect();
+      } catch (error) {
+        void error;
+      }
+      sideMenuObserver = null;
     }
     detachVisualViewportListeners();
   }

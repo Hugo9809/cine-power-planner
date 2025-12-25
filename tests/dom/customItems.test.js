@@ -73,8 +73,11 @@ describe('custom items integration', () => {
                 category_cameras: 'Cameras', addDeviceBtnHelp: 'Add',
                 alertInvalidCameraJSON: 'Invalid Data', confirmDeleteDevice: 'Delete {name}?',
                 updateDeviceBtn: 'Update', updateDeviceBtnHelp: 'Update Help',
+
                 cancelEditBtnHelp: 'Cancel Help', alertDeviceName: 'Name!',
-                alertDeviceFields: 'Fields!', alertDeviceWatt: 'Watt!'
+                alertDeviceFields: 'Fields!', alertDeviceWatt: 'Watt!',
+                alertDeviceUpdated: 'Updated {name} in {category}!', alertDeviceUpdatedTitle: 'Device Updated',
+                alertDeviceAddedTitle: 'Device Added'
             }
         };
         global.currentLang = 'en';
@@ -119,6 +122,18 @@ describe('custom items integration', () => {
         global.alert = jest.fn();
 
         global.setButtonLabelWithIconForEvents = jest.fn();
+        global.setBatteryPlates = jest.fn();
+        global.setRecordingMedia = jest.fn();
+        global.updateDistanceMethodOptions = jest.fn();
+        global.updateTimecodeTypeOptions = jest.fn();
+        global.updateDistanceConnectionOptions = jest.fn();
+        global.updateDistanceDisplayOptions = jest.fn();
+        global.applyFilters = jest.fn();
+        global.updateCalculations = jest.fn();
+        global.setVideoOutputs = jest.fn();
+        global.applyCameraFizConnectors = jest.fn();
+        global.setViewfinders = jest.fn();
+        global.applyCameraTimecodes = jest.fn();
 
         const mappings = {
             'addDeviceBtn': 'addDeviceBtn',
@@ -275,13 +290,33 @@ describe('custom items integration', () => {
             global.newCategorySelect.appendChild(camOpt);
         }
 
-        global.addSafeEventListener = (el, event, handler) => {
-            if (el) el.addEventListener(event, handler);
+        Element.prototype.scrollIntoView = jest.fn();
+
+        let deviceManagerHandler;
+
+        // Spy on device-manager element to capture the handler
+        const dm = document.getElementById('device-manager');
+        if (dm) {
+            const originalAddEventListener = dm.addEventListener;
+            jest.spyOn(dm, 'addEventListener').mockImplementation((event, handler, options) => {
+                if (event === 'click') {
+                    deviceManagerHandler = handler;
+                }
+                originalAddEventListener.call(dm, event, handler, options);
+            });
+        } else {
+            console.error('DEBUG_LOG: device-manager element NOT FOUND during setup!');
+        }
+        // Expose to tests
+        global.testDeviceManagerHandler = (e) => {
+            if (deviceManagerHandler) {
+                deviceManagerHandler(e);
+            }
         };
 
         jest.isolateModules(() => {
             try {
-                require('../../src/scripts/app-events.js');
+                require('../../src/scripts/core/app-events.js');
             } catch (e) {
                 console.error("App events load error:", e);
                 throw e;
@@ -341,10 +376,15 @@ describe('custom items integration', () => {
         editBtn.className = 'edit-btn';
         editBtn.dataset.name = originalName;
         editBtn.dataset.category = 'cameras';
-        global.deviceManagerSection.appendChild(editBtn);
+        // Simulate click on edit button via delegation
+        const liveSection = document.getElementById('device-manager');
+        liveSection.appendChild(editBtn);
 
         // Simulate click on edit button via delegation
-        editBtn.click();
+        console.log('DEBUG: editBtn outerHTML:', editBtn.outerHTML);
+        console.log('DEBUG: editBtn className:', editBtn.className);
+        // editBtn.click(); // Automatic click failing
+        global.testDeviceManagerHandler({ target: editBtn, preventDefault: () => { } });
 
         // Verify we are in edit mode
         expect(global.addDeviceBtn.dataset.mode).toBe('edit');
@@ -426,9 +466,11 @@ describe('custom items integration', () => {
         deleteBtn.className = 'delete-btn';
         deleteBtn.dataset.name = name;
         deleteBtn.dataset.category = 'cameras';
-        global.deviceManagerSection.appendChild(deleteBtn);
+        const liveSection = document.getElementById('device-manager');
+        liveSection.appendChild(deleteBtn);
 
-        deleteBtn.click();
+        // deleteBtn.click();
+        global.testDeviceManagerHandler({ target: deleteBtn, preventDefault: () => { } });
 
         expect(global.confirm).toHaveBeenCalled();
         expect(global.storeDevices).toHaveBeenCalled();

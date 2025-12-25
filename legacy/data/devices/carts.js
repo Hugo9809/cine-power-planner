@@ -54,7 +54,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       "notes": "Side-mounted clamps to secure tripods, C-stands or light stands while rolling."
     }, {
       "name": "Adicam Steadicam/Gimbal Mounts",
-      "accessoryKind": "gimbal/steadicam",
+      "accessoryKind": "gimbal/Steadicam",
       "compatibleSeries": ["STANDARD", "STANDARD+", "MAX"],
       "notes": "Docking brackets for Steadicam or gimbal rigs that bolt to the frame."
     }, {
@@ -75,7 +75,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       "notes": "Side-mounted tripod cradle featuring an integrated 5/8\" pin."
     }, {
       "name": "Backstage Steadicam Riser, Swing Handles & Vest Holder",
-      "accessoryKind": "gimbal/steadicam",
+      "accessoryKind": "gimbal/Steadicam",
       "compatibleSeries": ["Magliner Junior", "Magliner Senior"],
       "notes": "Complete Steadicam docking kit with riser, swing handles and vest storage."
     }, {

@@ -3,7 +3,7 @@ const path = require('path');
 const { collectServiceWorkerAssets } = require('./serviceWorkerAssetManifest');
 
 const ANIMATION_DIRECTORIES = [path.join('src', 'animations'), 'animated icons 3'];
-const PINK_MODE_SOURCE_PATH = path.join('src', 'scripts', 'modules', 'core', 'pink-mode.js');
+const PINK_MODE_SOURCE_PATH = path.join('src', 'scripts', 'core', 'modules', 'core', 'pink-mode.js');
 
 function normalizeAssetPath(relativePath) {
   const parts = relativePath.split(path.sep).join('/').split('/');
@@ -133,7 +133,22 @@ function verifyPinkModeAssets(manifestAssets, projectRoot) {
 
 function renderManifestModule(assets) {
   const serialized = JSON.stringify(assets, null, 2);
-  return `/* eslint-env serviceworker */\n(function createServiceWorkerAssetManifest(globalScope) {\n  const assets = ${serialized};\n\n  if (globalScope && typeof globalScope === 'object') {\n    globalScope.SERVICE_WORKER_ASSETS = assets;\n  }\n\n  if (typeof module !== 'undefined' && module.exports) {\n    module.exports = assets;\n  }\n\n  return assets;\n})(typeof self !== 'undefined' ? self : typeof globalThis !== 'undefined' ? globalThis : undefined);\n`;
+  const manifestTemplate = (serialized) => `
+(function createServiceWorkerAssetManifest(globalScope) {
+  const assets = ${serialized};
+
+  if (globalScope && typeof globalScope === 'object') {
+    globalScope.SERVICE_WORKER_ASSETS = assets;
+  }
+
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = assets;
+  }
+
+  return assets;
+})(typeof self !== 'undefined' ? self : typeof globalThis !== 'undefined' ? globalThis : undefined);
+`;
+  return manifestTemplate(serialized);
 }
 
 function writeManifestFile(projectRoot, assets) {

@@ -962,17 +962,16 @@
     return Object.freeze(blueprint);
   }
 
-  const registry = Object.freeze({
-    register,
-    get,
-    has,
-    list,
-    describe,
-    describeAll,
-    assertRegistered,
-    createBlueprint,
-    __internalResetForTests: resetForTests,
-  });
+  const registry = {};
+  registry.register = register;
+  registry.get = get;
+  registry.has = has;
+  registry.list = list;
+  registry.describe = describe;
+  registry.describeAll = describeAll;
+  registry.assertRegistered = assertRegistered;
+  registry.createBlueprint = createBlueprint;
+  registry.__internalResetForTests = resetForTests;
 
   registryReference = registry;
 

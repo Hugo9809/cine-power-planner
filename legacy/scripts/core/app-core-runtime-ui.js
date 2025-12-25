@@ -162,11 +162,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var setButtonLabelWithIcon = typeof bridge.setButtonLabelWithIcon === 'function' ? bridge.setButtonLabelWithIcon : typeof helpers.setButtonLabelWithIcon === 'function' ? helpers.setButtonLabelWithIcon : function fallbackSetButtonLabelWithIcon(button, label, glyph) {
     setButtonLabelWithIconFallback(button, label, glyph);
   };
+  var whenElementAvailable = typeof bridge.whenElementAvailable === 'function' ? bridge.whenElementAvailable : typeof helpers.whenElementAvailable === 'function' ? helpers.whenElementAvailable : function fallbackWhenElementAvailable(idOrSelector, onResolve, options) {
+    if (typeof helpers.whenElementAvailable === 'function') {
+      return helpers.whenElementAvailable(idOrSelector, onResolve, options);
+    }
+    return false;
+  };
   bridge.helpers = helpers;
   bridge.escapeHtml = escapeHtml;
   bridge.escapeButtonLabelSafely = escapeButtonLabelSafely;
   bridge.resolveButtonIconMarkup = resolveButtonIconMarkup;
   bridge.setButtonLabelWithIcon = setButtonLabelWithIcon;
+  bridge.whenElementAvailable = whenElementAvailable;
   bridge.resolveCoreUiHelpers = function resolveCoreUiHelpersPublic() {
     return resolveCoreUiHelpers(bridge, scopes);
   };

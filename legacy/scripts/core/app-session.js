@@ -22,6 +22,7 @@ function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+console.log('app-session.js: Starting execution');
 (function () {
   if (typeof window !== 'undefined') {
     if (typeof window.batteryPlateSelect === "undefined") window.batteryPlateSelect = document.getElementById("batteryPlateSelect");
@@ -32,6 +33,8 @@ if (typeof globalThis !== 'undefined' && typeof globalThis.STRONG_SEARCH_MATCH_T
   globalThis.STRONG_SEARCH_MATCH_TYPES = FALLBACK_STRONG_SEARCH_MATCH_TYPES;
 }
 var FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK = 'Force reload requires an internet connection. Try again once you are back online.';
+var pinkModeToggle = typeof pinkModeToggle !== 'undefined' ? pinkModeToggle : typeof document !== 'undefined' && typeof document.getElementById === 'function' ? document.getElementById('pinkModeToggle') : null;
+var darkModeToggle = typeof darkModeToggle !== 'undefined' ? darkModeToggle : typeof document !== 'undefined' && typeof document.getElementById === 'function' ? document.getElementById('darkModeToggle') : null;
 var hotswapSelect = typeof hotswapSelect !== 'undefined' ? hotswapSelect : typeof document !== 'undefined' && typeof document.getElementById === 'function' ? document.getElementById('batteryHotswapSelect') : null;
 if (typeof globalThis !== 'undefined' && hotswapSelect && typeof globalThis.hotswapSelect === 'undefined') {
   globalThis.hotswapSelect = hotswapSelect;
@@ -229,6 +232,223 @@ function safeGetCurrentProjectName() {
   }
   return defaultValue;
 }
+var PROJECT_STORAGE_REV_KEY_FALLBACK = 'cameraPowerPlanner_project_rev';
+var lastKnownProjectStorageRevision = null;
+var projectStorageSyncTimer = null;
+var projectStorageSyncInProgress = false;
+function normalizeProjectStorageRevisionValue(value) {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return Math.max(0, Math.floor(value));
+  }
+  if (typeof value === 'string') {
+    var trimmed = value.trim();
+    if (!trimmed) {
+      return null;
+    }
+    var parsed = Number(trimmed);
+    if (Number.isFinite(parsed)) {
+      return Math.max(0, Math.floor(parsed));
+    }
+  }
+  return null;
+}
+function resolveProjectStorageRevisionKeyName() {
+  var resolver = resolveSessionRuntimeFunction('getProjectStorageRevisionKeyName');
+  if (typeof resolver === 'function') {
+    try {
+      var resolved = resolver();
+      if (typeof resolved === 'string' && resolved.trim()) {
+        return resolved.trim();
+      }
+    } catch (revisionKeyError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to resolve project storage revision key name', revisionKeyError);
+      }
+    }
+  }
+  return PROJECT_STORAGE_REV_KEY_FALLBACK;
+}
+function readProjectStorageRevisionValue() {
+  var storage = typeof getSafeLocalStorage === 'function' ? getSafeLocalStorage() : typeof localStorage !== 'undefined' ? localStorage : null;
+  if (!storage || typeof storage.getItem !== 'function') {
+    return null;
+  }
+  try {
+    var raw = storage.getItem(resolveProjectStorageRevisionKeyName());
+    return normalizeProjectStorageRevisionValue(raw);
+  } catch (storageReadError) {
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('Failed to read project storage revision from localStorage', storageReadError);
+    }
+    return null;
+  }
+}
+function resolveActiveProjectStorageKey() {
+  if (typeof getCurrentProjectStorageKey === 'function') {
+    try {
+      var storageKey = getCurrentProjectStorageKey({
+        allowTyped: true
+      });
+      if (typeof storageKey === 'string' && storageKey.trim()) {
+        return storageKey;
+      }
+    } catch (keyError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to resolve active project storage key', keyError);
+      }
+    }
+  }
+  var typedName = safeGetCurrentProjectName('');
+  if (typedName) {
+    return typedName;
+  }
+  if (setupSelect && typeof setupSelect.value === 'string' && setupSelect.value.trim()) {
+    return setupSelect.value.trim();
+  }
+  return '';
+}
+function reloadActiveProjectFromStorage() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  if (factoryResetInProgress || restoringSession) {
+    return false;
+  }
+  if (typeof isProjectPersistenceSuspended === 'function' && isProjectPersistenceSuspended()) {
+    return false;
+  }
+  if (typeof loadProject !== 'function') {
+    return false;
+  }
+  var storageKey = resolveActiveProjectStorageKey();
+  if (!storageKey) {
+    return false;
+  }
+  var storedProject = null;
+  try {
+    storedProject = loadProject(storageKey);
+  } catch (projectLoadError) {
+    if (!options.silent && typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('Failed to reload project from storage after external update', projectLoadError);
+    }
+    return false;
+  }
+  if (!storedProject || _typeof(storedProject) !== 'object') {
+    return false;
+  }
+  if (storedProject.powerSelection && typeof applyStoredPowerSelection === 'function') {
+    applyStoredPowerSelection(storedProject.powerSelection, {
+      preferExisting: false
+    });
+  }
+  updateBatteryOptions();
+  currentProjectInfo = storedProject.projectInfo || null;
+  if (projectForm) {
+    populateProjectForm(currentProjectInfo || {});
+  }
+  if (typeof setManualDiagramPositions === 'function') {
+    var normalizedDiagram = storedProject.diagramPositions && typeof normalizeDiagramPositionsInput === 'function' ? normalizeDiagramPositionsInput(storedProject.diagramPositions) : {};
+    setManualDiagramPositions(normalizedDiagram || {}, {
+      render: false
+    });
+  }
+  if (storedProject.autoGearRules && storedProject.autoGearRules.length) {
+    if (typeof useProjectAutoGearRules === 'function') {
+      useProjectAutoGearRules(storedProject.autoGearRules);
+    }
+  } else if (typeof clearProjectAutoGearRules === 'function') {
+    clearProjectAutoGearRules();
+  }
+  var regenerateGearList = function regenerateGearList(info) {
+    return callSessionCoreFunction('generateGearListHtml', [info || {}], {
+      defaultValue: ''
+    }) || '';
+  };
+  var storedHtml = typeof storedProject.gearList === 'string' ? storedProject.gearList : '';
+  var html = storedHtml || regenerateGearList(currentProjectInfo || {});
+  if (typeof displayGearAndRequirements === 'function') {
+    displayGearAndRequirements(html);
+  }
+  if (gearListOutput) {
+    if (html) {
+      ensureGearListActions();
+      bindGearListCageListener();
+      bindGearListEasyrigListener();
+      bindGearListSliderBowlListener();
+      bindGearListEyeLeatherListener();
+      bindGearListProGaffTapeListener();
+      bindGearListDirectorMonitorListener();
+    }
+    if (typeof applyGearListSelectors === 'function' && storedProject.gearSelectors && Object.keys(storedProject.gearSelectors).length) {
+      applyGearListSelectors(storedProject.gearSelectors);
+    }
+    if (typeof updateGearListButtonVisibility === 'function') {
+      updateGearListButtonVisibility();
+    }
+  }
+  if (typeof populateSetupSelect === 'function') {
+    try {
+      populateSetupSelect();
+    } catch (populateError) {
+      if (!options.silent && typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Failed to refresh setup selector after external project update', populateError);
+      }
+    }
+  }
+  if (typeof markProjectFormDataDirty === 'function') {
+    markProjectFormDataDirty();
+  }
+  if (typeof storeLoadedSetupStateSafe === 'function' && typeof getCurrentSetupState === 'function') {
+    storeLoadedSetupStateSafe(getCurrentSetupState());
+  }
+  if (typeof checkSetupChanged === 'function') {
+    checkSetupChanged();
+  }
+  return true;
+}
+function scheduleProjectStorageSync() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  if (projectStorageSyncInProgress) {
+    return;
+  }
+  if (projectStorageSyncTimer) {
+    clearTimeout(projectStorageSyncTimer);
+  }
+  projectStorageSyncTimer = setTimeout(function () {
+    projectStorageSyncTimer = null;
+    projectStorageSyncInProgress = true;
+    try {
+      reloadActiveProjectFromStorage({
+        silent: options.silent
+      });
+    } finally {
+      projectStorageSyncInProgress = false;
+    }
+  }, 120);
+}
+if (typeof window !== 'undefined' && window && typeof window.addEventListener === 'function') {
+  try {
+    lastKnownProjectStorageRevision = readProjectStorageRevisionValue();
+  } catch (revisionBootstrapError) {
+    lastKnownProjectStorageRevision = null;
+    void revisionBootstrapError;
+  }
+  window.addEventListener('storage', function (event) {
+    if (!event || _typeof(event) !== 'object') {
+      return;
+    }
+    var keyName = resolveProjectStorageRevisionKeyName();
+    if (event.key !== keyName) {
+      return;
+    }
+    var nextRevision = normalizeProjectStorageRevisionValue(event.newValue);
+    if (nextRevision !== null && nextRevision === lastKnownProjectStorageRevision) {
+      return;
+    }
+    lastKnownProjectStorageRevision = nextRevision;
+    scheduleProjectStorageSync({
+      silent: true
+    });
+  });
+}
 function resolveSetLanguageFn() {
   return resolveSessionRuntimeFunction('setLanguage');
 }
@@ -381,10 +601,15 @@ function ensureSessionRuntimePlaceholder(name, fallbackValue) {
     return fallbackProvider();
   }
   try {
-    if (typeof scope[name] === 'undefined') {
-      scope[name] = fallbackProvider();
+    var existing = scope[name];
+    if (typeof existing === 'undefined' || existing === null) {
+      var val = fallbackProvider();
+      if (typeof val !== 'undefined' && val !== null) {
+        scope[name] = val;
+      }
+      return val;
     }
-    return scope[name];
+    return existing;
   } catch (placeholderError) {
     void placeholderError;
     return fallbackProvider();
@@ -2108,18 +2333,29 @@ var createBackupDiffRefs = function createBackupDiffRefs() {
     closeButton: doc.getElementById('backupDiffClose')
   };
 };
-var _createBackupDiffRefs = createBackupDiffRefs(),
-  backupDiffToggleButtonEl = _createBackupDiffRefs.toggleButton,
-  backupDiffSectionEl = _createBackupDiffRefs.section,
-  backupDiffPrimarySelectEl = _createBackupDiffRefs.primarySelect,
-  backupDiffSecondarySelectEl = _createBackupDiffRefs.secondarySelect,
-  backupDiffEmptyStateEl = _createBackupDiffRefs.emptyState,
-  backupDiffSummaryEl = _createBackupDiffRefs.summary,
-  backupDiffListEl = _createBackupDiffRefs.list,
-  backupDiffListContainerEl = _createBackupDiffRefs.listContainer,
-  backupDiffNotesEl = _createBackupDiffRefs.notes,
-  backupDiffExportButtonEl = _createBackupDiffRefs.exportButton,
-  backupDiffCloseButtonEl = _createBackupDiffRefs.closeButton;
+var backupDiffToggleButtonEl;
+var backupDiffSectionEl;
+var backupDiffPrimarySelectEl;
+var backupDiffSecondarySelectEl;
+var backupDiffEmptyStateEl;
+var backupDiffSummaryEl;
+var backupDiffListEl;
+var backupDiffListContainerEl;
+var backupDiffNotesEl;
+var backupDiffExportButtonEl;
+var backupDiffCloseButtonEl;
+var _createBackupDiffRefs = createBackupDiffRefs();
+backupDiffToggleButtonEl = _createBackupDiffRefs.toggleButton;
+backupDiffSectionEl = _createBackupDiffRefs.section;
+backupDiffPrimarySelectEl = _createBackupDiffRefs.primarySelect;
+backupDiffSecondarySelectEl = _createBackupDiffRefs.secondarySelect;
+backupDiffEmptyStateEl = _createBackupDiffRefs.emptyState;
+backupDiffSummaryEl = _createBackupDiffRefs.summary;
+backupDiffListEl = _createBackupDiffRefs.list;
+backupDiffListContainerEl = _createBackupDiffRefs.listContainer;
+backupDiffNotesEl = _createBackupDiffRefs.notes;
+backupDiffExportButtonEl = _createBackupDiffRefs.exportButton;
+backupDiffCloseButtonEl = _createBackupDiffRefs.closeButton;
 function createRestoreRehearsalRefs() {
   var doc = typeof document !== 'undefined' ? document : null;
   if (!doc) {
@@ -5047,95 +5283,122 @@ function forEachTrackedSelect(collection, handler) {
   var list = Array.isArray(collection) ? collection : Array.from(collection || []);
   list.forEach(handler);
 }
-forEachTrackedSelect(getTrackedPowerSelects(), function (sel) {
-  sel.addEventListener('change', updateCalculations);
-});
-if (cameraSelect) {
-  cameraSelect.addEventListener('change', function () {
-    updateBatteryPlateVisibility();
-    updateBatteryOptions();
-    if (typeof updateCageSelectOptions === 'function') {
-      updateCageSelectOptions();
+var bindPowerSessionEvents = function bindPowerSessionEvents() {
+  var getEl = function getEl(output, id) {
+    return output || document.getElementById(id);
+  };
+  var cameraSelectEl = getEl(cameraSelect, 'cameraSelect');
+  var sensorModeDropdownEl = getEl(sensorModeDropdown, 'sensorModeDropdown');
+  var recordingResolutionDropdownEl = getEl(recordingResolutionDropdown, 'recordingResolutionDropdown');
+  var slowMotionSensorModeDropdownEl = getEl(slowMotionSensorModeDropdown, 'slowMotionSensorModeDropdown');
+  var slowMotionRecordingResolutionDropdownEl = getEl(slowMotionRecordingResolutionDropdown, 'slowMotionRecordingResolutionDropdown');
+  var slowMotionAspectRatioSelectEl = getEl(slowMotionAspectRatioSelect, 'slowMotionAspectRatioSelect');
+  var monitoringConfigurationSelectEl = getEl(monitoringConfigurationSelect, 'monitoringConfigurationSelect');
+  var monitorSelectEl = getEl(monitorSelect, 'monitorSelect');
+  var batteryPlateSelectEl = getEl(batteryPlateSelect, 'batteryPlateSelect');
+  var batterySelectEl = getEl(batterySelect, 'batterySelect');
+  if (!cameraSelectEl && document.readyState === 'loading') {
+    return false;
+  }
+  forEachTrackedSelect(getTrackedPowerSelects(), function (sel) {
+    sel.removeEventListener('change', updateCalculations);
+    sel.addEventListener('change', updateCalculations);
+  });
+  if (cameraSelectEl) {
+    if (!cameraSelectEl.dataset.sessionBound) {
+      cameraSelectEl.dataset.sessionBound = 'true';
+      cameraSelectEl.addEventListener('change', function () {
+        updateBatteryPlateVisibility();
+        updateBatteryOptions();
+        if (typeof updateCageSelectOptions === 'function') {
+          updateCageSelectOptions();
+        }
+        var desiredFrameRate = currentProjectInfo && currentProjectInfo.recordingFrameRate;
+        var desiredSlowMotionFrameRate = currentProjectInfo && currentProjectInfo.slowMotionRecordingFrameRate;
+        populateRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.recordingResolution);
+        populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
+        populateSlowMotionRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.slowMotionRecordingResolution);
+        populateSlowMotionSensorModeDropdown(currentProjectInfo && currentProjectInfo.slowMotionSensorMode);
+        if (typeof populateFrameRateDropdown === 'function') {
+          populateFrameRateDropdown(desiredFrameRate);
+        }
+        if (typeof populateSlowMotionFrameRateDropdown === 'function') {
+          populateSlowMotionFrameRateDropdown(desiredSlowMotionFrameRate);
+        }
+        if (typeof updateStorageRequirementTypeOptions === 'function') {
+          updateStorageRequirementTypeOptions();
+        }
+        if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
+          try {
+            document.dispatchEvent(new CustomEvent('camera-selection-changed'));
+          } catch (error) {
+            void error;
+          }
+        }
+      });
     }
-    var desiredFrameRate = currentProjectInfo && currentProjectInfo.recordingFrameRate;
-    var desiredSlowMotionFrameRate = currentProjectInfo && currentProjectInfo.slowMotionRecordingFrameRate;
-    populateRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.recordingResolution);
-    populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
-    populateSlowMotionRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.slowMotionRecordingResolution);
-    populateSlowMotionSensorModeDropdown(currentProjectInfo && currentProjectInfo.slowMotionSensorMode);
-    if (typeof populateFrameRateDropdown === 'function') {
-      populateFrameRateDropdown(desiredFrameRate);
-    }
-    if (typeof populateSlowMotionFrameRateDropdown === 'function') {
-      populateSlowMotionFrameRateDropdown(desiredSlowMotionFrameRate);
-    }
-    if (typeof updateStorageRequirementTypeOptions === 'function') {
-      updateStorageRequirementTypeOptions();
-    }
-    if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
-      try {
-        document.dispatchEvent(new CustomEvent('camera-selection-changed'));
-      } catch (error) {
-        void error;
+  }
+  if (sensorModeDropdownEl && !sensorModeDropdownEl.dataset.sessionBound) {
+    sensorModeDropdownEl.dataset.sessionBound = 'true';
+    sensorModeDropdownEl.addEventListener('change', function () {
+      if (typeof populateFrameRateDropdown === 'function') {
+        populateFrameRateDropdown(getCurrentFrameRateInputValue());
       }
-    }
-  });
+    });
+  }
+  if (recordingResolutionDropdownEl && !recordingResolutionDropdownEl.dataset.sessionBound) {
+    recordingResolutionDropdownEl.dataset.sessionBound = 'true';
+    recordingResolutionDropdownEl.addEventListener('change', function () {
+      if (typeof populateFrameRateDropdown === 'function') {
+        populateFrameRateDropdown(getCurrentFrameRateInputValue());
+      }
+    });
+  }
+  if (slowMotionSensorModeDropdownEl && !slowMotionSensorModeDropdownEl.dataset.sessionBound) {
+    slowMotionSensorModeDropdownEl.dataset.sessionBound = 'true';
+    slowMotionSensorModeDropdownEl.addEventListener('change', function () {
+      if (typeof populateSlowMotionFrameRateDropdown === 'function') {
+        populateSlowMotionFrameRateDropdown(getFrameRateInputValue(slowMotionRecordingFrameRateInput));
+      }
+    });
+  }
+  if (slowMotionRecordingResolutionDropdownEl && !slowMotionRecordingResolutionDropdownEl.dataset.sessionBound) {
+    slowMotionRecordingResolutionDropdownEl.dataset.sessionBound = 'true';
+    slowMotionRecordingResolutionDropdownEl.addEventListener('change', function () {
+      if (typeof populateSlowMotionFrameRateDropdown === 'function') {
+        populateSlowMotionFrameRateDropdown(getFrameRateInputValue(slowMotionRecordingFrameRateInput));
+      }
+    });
+  }
+  if (slowMotionAspectRatioSelectEl && !slowMotionAspectRatioSelectEl.dataset.sessionBound) {
+    slowMotionAspectRatioSelectEl.dataset.sessionBound = 'true';
+    slowMotionAspectRatioSelectEl.addEventListener('change', function () {
+      if (typeof populateSlowMotionFrameRateDropdown === 'function') {
+        populateSlowMotionFrameRateDropdown(getFrameRateInputValue(slowMotionRecordingFrameRateInput));
+      }
+    });
+  }
+  if (monitoringConfigurationSelectEl && !monitoringConfigurationSelectEl.dataset.sessionBound) {
+    monitoringConfigurationSelectEl.dataset.sessionBound = 'true';
+    monitoringConfigurationSelectEl.addEventListener('change', function () {
+      monitoringConfigurationUserChanged = true;
+      updateViewfinderSettingsVisibility();
+    });
+  }
+  if (monitorSelectEl && !monitorSelectEl.dataset.sessionBound) {
+    monitorSelectEl.dataset.sessionBound = 'true';
+    monitorSelectEl.addEventListener('change', updateMonitoringConfigurationOptions);
+  }
+  if (typeof updateBatteryOptions === 'function') {
+    if (batteryPlateSelectEl) batteryPlateSelectEl.addEventListener('change', updateBatteryOptions);
+    if (batterySelect) batterySelect.addEventListener('change', updateBatteryOptions);
+  }
+  if (hotswapSelect) hotswapSelect.addEventListener('change', updateCalculations);
+  return true;
+};
+if (!bindPowerSessionEvents()) {
+  document.addEventListener('DOMContentLoaded', bindPowerSessionEvents);
 }
-if (sensorModeDropdown) {
-  sensorModeDropdown.addEventListener('change', function () {
-    if (typeof populateFrameRateDropdown === 'function') {
-      populateFrameRateDropdown(getCurrentFrameRateInputValue());
-    }
-  });
-}
-if (recordingResolutionDropdown) {
-  recordingResolutionDropdown.addEventListener('change', function () {
-    if (typeof populateFrameRateDropdown === 'function') {
-      populateFrameRateDropdown(getCurrentFrameRateInputValue());
-    }
-  });
-}
-if (slowMotionSensorModeDropdown) {
-  slowMotionSensorModeDropdown.addEventListener('change', function () {
-    if (typeof populateSlowMotionFrameRateDropdown === 'function') {
-      populateSlowMotionFrameRateDropdown(getFrameRateInputValue(slowMotionRecordingFrameRateInput));
-    }
-  });
-}
-if (slowMotionRecordingResolutionDropdown) {
-  slowMotionRecordingResolutionDropdown.addEventListener('change', function () {
-    if (typeof populateSlowMotionFrameRateDropdown === 'function') {
-      populateSlowMotionFrameRateDropdown(getFrameRateInputValue(slowMotionRecordingFrameRateInput));
-    }
-  });
-}
-if (slowMotionAspectRatioSelect) {
-  slowMotionAspectRatioSelect.addEventListener('change', function () {
-    if (typeof populateSlowMotionFrameRateDropdown === 'function') {
-      populateSlowMotionFrameRateDropdown(getFrameRateInputValue(slowMotionRecordingFrameRateInput));
-    }
-  });
-}
-if (monitoringConfigurationSelect) {
-  monitoringConfigurationSelect.addEventListener('change', function () {
-    monitoringConfigurationUserChanged = true;
-    updateViewfinderSettingsVisibility();
-  });
-}
-if (monitorSelect) {
-  monitorSelect.addEventListener('change', updateMonitoringConfigurationOptions);
-}
-if (typeof updateBatteryOptions === 'function') {
-  if (batteryPlateSelect) batteryPlateSelect.addEventListener('change', updateBatteryOptions);
-  if (batterySelect) batterySelect.addEventListener('change', updateBatteryOptions);
-}
-if (hotswapSelect) hotswapSelect.addEventListener('change', updateCalculations);
-forEachTrackedSelect(motorSelects, function (sel) {
-  if (sel) sel.addEventListener('change', updateCalculations);
-});
-forEachTrackedSelect(controllerSelects, function (sel) {
-  if (sel) sel.addEventListener('change', updateCalculations);
-});
 forEachTrackedSelect(getTrackedPowerSelectsWithSetup(), function (sel) {
   sel.addEventListener('change', saveCurrentSession);
 });
@@ -5545,8 +5808,22 @@ var appearanceContext = {
     applyIconGlyph: typeof applyIconGlyph === 'function' ? function (element, glyph) {
       return applyIconGlyph(element, glyph);
     } : null,
-    ensureSvgHasAriaHidden: typeof ensureSvgHasAriaHidden === 'function' ? ensureSvgHasAriaHidden : null,
-    pinkModeIcons: (typeof pinkModeIcons === "undefined" ? "undefined" : _typeof(pinkModeIcons)) === 'object' ? pinkModeIcons : null,
+    get ensureSvgHasAriaHidden() {
+      if (typeof ensureSvgHasAriaHidden === 'function') return ensureSvgHasAriaHidden;
+      if (typeof window !== 'undefined' && typeof window.ensureSvgHasAriaHidden === 'function') return window.ensureSvgHasAriaHidden;
+      return null;
+    },
+    get ensurePinkModeLottieRuntime() {
+      var scope = typeof window !== 'undefined' ? window : {};
+      var support = scope.cineCorePinkModeSupport || scope.PINK_MODE_SUPPORT_API || {};
+      return (typeof ensurePinkModeLottieRuntime === 'function' ? ensurePinkModeLottieRuntime : null) || (typeof scope.ensurePinkModeLottieRuntime === 'function' ? scope.ensurePinkModeLottieRuntime : null) || (typeof support.ensurePinkModeLottieRuntime === 'function' ? support.ensurePinkModeLottieRuntime : null) || (typeof support.resolvePinkModeLottieRuntime === 'function' ? support.resolvePinkModeLottieRuntime : null) || null;
+    },
+    get pinkModeIcons() {
+      if ((typeof pinkModeIcons === "undefined" ? "undefined" : _typeof(pinkModeIcons)) === 'object' && pinkModeIcons) return pinkModeIcons;
+      if (typeof window !== 'undefined' && window.pinkModeIcons) return window.pinkModeIcons;
+      if (typeof globalThis !== 'undefined' && globalThis.pinkModeIcons) return globalThis.pinkModeIcons;
+      return null;
+    },
     startPinkModeAnimatedIcons: function startPinkModeAnimatedIcons() {
       var impl = (typeof window !== 'undefined' && typeof window.startPinkModeAnimatedIcons === 'function' ? window.startPinkModeAnimatedIcons : null) || sessionStartPinkModeAnimatedIcons;
       return typeof impl === 'function' ? impl.apply(void 0, arguments) : undefined;
@@ -6241,6 +6518,8 @@ if (themePreferenceGlobalScope) {
     console.warn('Unable to expose theme preference bridge', exposeError);
   }
 }
+var PINK_MODE_STORAGE_KEY = 'cameraPowerPlanner_pinkMode';
+var LEGACY_PINK_MODE_STORAGE_KEY = 'pinkMode';
 var sessionFocusScale = typeof focusScalePreference === 'string' ? focusScalePreference : 'metric';
 var highContrastEnabled = false;
 try {
@@ -6257,7 +6536,11 @@ if (typeof window !== 'undefined') {
 }
 var pinkModeEnabled = false;
 try {
-  pinkModeEnabled = localStorage.getItem('pinkMode') === 'true';
+  var storedPinkMode = localStorage.getItem(PINK_MODE_STORAGE_KEY);
+  if (storedPinkMode === null || storedPinkMode === undefined || storedPinkMode === '') {
+    storedPinkMode = localStorage.getItem(LEGACY_PINK_MODE_STORAGE_KEY);
+  }
+  pinkModeEnabled = storedPinkMode === 'true';
 } catch (e) {
   console.warn('Could not load pink mode preference', e);
 }
@@ -6267,10 +6550,19 @@ rememberSettingsTemperatureUnitBaseline();
 rememberSettingsFocusScaleBaseline();
 rememberSettingsShowAutoBackupsBaseline();
 rememberSettingsMountVoltagesBaseline();
-if (pinkModeToggle) {
-  pinkModeToggle.addEventListener('click', function () {
-    persistPinkModePreference(!document.body.classList.contains('pink-mode'));
+if (typeof document !== 'undefined') {
+  document.addEventListener('click', function (event) {
+    if (!event || !event.target) return;
+    var toggle = event.target.closest('#pinkModeToggle');
+    if (toggle) {
+      persistPinkModePreference(!document.body.classList.contains('pink-mode'));
+    }
   });
+  if (typeof window !== 'undefined') {
+    window.togglePinkMode = function () {
+      persistPinkModePreference(!document.body.classList.contains('pink-mode'));
+    };
+  }
 }
 if (settingsPinkMode) {
   settingsPinkMode.addEventListener('change', function () {
@@ -8626,11 +8918,17 @@ function renderBackupDiff() {
   if (backupDiffExportButtonEl) backupDiffExportButtonEl.disabled = false;
 }
 function populateBackupDiffSelectors() {
+  var resolve = function resolve(val, id) {
+    return val || (typeof document !== 'undefined' ? document.getElementById(id) : null);
+  };
+  var primary = resolve(backupDiffPrimarySelectEl, 'backupDiffPrimary');
+  var secondary = resolve(backupDiffSecondarySelectEl, 'backupDiffSecondary');
+  var emptyState = resolve(backupDiffEmptyStateEl, 'backupDiffEmptyState');
   backupDiffOptionsCache = collectBackupDiffOptions();
-  fillBackupDiffSelect(backupDiffPrimarySelectEl, backupDiffOptionsCache, backupDiffState.baseline);
-  fillBackupDiffSelect(backupDiffSecondarySelectEl, backupDiffOptionsCache, backupDiffState.comparison);
-  if (backupDiffEmptyStateEl) {
-    backupDiffEmptyStateEl.hidden = backupDiffOptionsCache.length > 0;
+  fillBackupDiffSelect(primary, backupDiffOptionsCache, backupDiffState.baseline);
+  fillBackupDiffSelect(secondary, backupDiffOptionsCache, backupDiffState.comparison);
+  if (emptyState) {
+    emptyState.hidden = backupDiffOptionsCache.length > 0;
   }
   renderBackupDiff();
 }
@@ -8889,7 +9187,11 @@ function applyPreferencesFromStorage(safeGetItem) {
     console.warn('Failed to apply restored dark mode preference', error);
   }
   try {
-    applyPinkMode(safeGetItem('pinkMode') === 'true');
+    var _storedPinkMode = safeGetItem(PINK_MODE_STORAGE_KEY);
+    if (_storedPinkMode === null || _storedPinkMode === undefined || _storedPinkMode === '') {
+      _storedPinkMode = safeGetItem(LEGACY_PINK_MODE_STORAGE_KEY);
+    }
+    applyPinkMode(_storedPinkMode === 'true');
   } catch (error) {
     console.warn('Failed to apply restored pink mode preference', error);
   }
@@ -9431,7 +9733,12 @@ function performSettingsBackup() {
       if (downloadResult.method === 'window-fallback') {
         var manualMessage = getManualDownloadFallbackMessage();
         showNotification('warning', manualMessage);
-        if (typeof alert === 'function') {
+        if (typeof window.cineShowAlertDialog === 'function') {
+          window.cineShowAlertDialog({
+            title: 'Download Blocked',
+            message: manualMessage
+          });
+        } else if (typeof alert === 'function') {
           alert(manualMessage);
         }
       } else if (shouldNotify) {
@@ -10545,8 +10852,8 @@ function refreshStoragePersistenceStatus() {
 function _refreshStoragePersistenceStatus() {
   _refreshStoragePersistenceStatus = _asyncToGenerator(_regenerator().m(function _callee6() {
     var options,
-      _ref35,
-      _ref35$fromRequest,
+      _ref29,
+      _ref29$fromRequest,
       fromRequest,
       checkToken,
       storageManager,
@@ -10568,7 +10875,7 @@ function _refreshStoragePersistenceStatus() {
           }
           return _context6.a(2);
         case 1:
-          _ref35 = options || {}, _ref35$fromRequest = _ref35.fromRequest, fromRequest = _ref35$fromRequest === void 0 ? false : _ref35$fromRequest;
+          _ref29 = options || {}, _ref29$fromRequest = _ref29.fromRequest, fromRequest = _ref29$fromRequest === void 0 ? false : _ref29$fromRequest;
           checkToken = ++storagePersistenceCheckToken;
           storagePersistenceState.checking = true;
           if (!fromRequest) {
@@ -10782,27 +11089,41 @@ ensureSessionRuntimePlaceholder('renderStoragePersistenceStatus', function () {
 ensureSessionRuntimePlaceholder('refreshStoragePersistenceStatus', function () {
   return refreshStoragePersistenceStatus;
 });
-if (backupDiffToggleButtonEl) {
-  backupDiffToggleButtonEl.addEventListener('click', handleBackupDiffToggle);
-}
-if (backupDiffCloseButtonEl) {
-  backupDiffCloseButtonEl.addEventListener('click', function () {
+var bindBackupDiffEvents = function bindBackupDiffEvents() {
+  var resolve = function resolve(id) {
+    return typeof document !== 'undefined' ? document.getElementById(id) : null;
+  };
+  var safeBind = function safeBind(id, type, handler) {
+    var el = resolve(id);
+    if (el) {
+      el.addEventListener(type, handler);
+    } else if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+      cineCoreUiHelpers.whenElementAvailable(id, function (found) {
+        return found.addEventListener(type, handler);
+      });
+    }
+  };
+  safeBind('backupDiffToggleButton', 'click', handleBackupDiffToggle);
+  safeBind('backupDiffClose', 'click', function () {
     return collapseBackupDiffSection();
   });
-}
-if (backupDiffPrimarySelectEl) {
-  backupDiffPrimarySelectEl.addEventListener('change', handleBackupDiffSelectionChange);
-}
-if (backupDiffSecondarySelectEl) {
-  backupDiffSecondarySelectEl.addEventListener('change', handleBackupDiffSelectionChange);
-}
-if (backupDiffExportButtonEl) {
-  backupDiffExportButtonEl.addEventListener('click', handleBackupDiffExport);
-  backupDiffExportButtonEl.disabled = true;
-}
-if (backupDiffSummaryEl) {
-  backupDiffSummaryEl.textContent = getDiffText('versionCompareNoSelection', 'Choose two versions to generate a diff.');
-}
+  safeBind('backupDiffPrimary', 'change', handleBackupDiffSelectionChange);
+  safeBind('backupDiffSecondary', 'change', handleBackupDiffSelectionChange);
+  safeBind('backupDiffExport', 'click', handleBackupDiffExport);
+  var summary = resolve('backupDiffSummary');
+  if (summary) {
+    summary.textContent = getDiffText('versionCompareNoSelection', 'Choose two versions to generate a diff.');
+  } else if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+    cineCoreUiHelpers.whenElementAvailable('backupDiffSummary', function (found) {
+      found.textContent = getDiffText('versionCompareNoSelection', 'Choose two versions to generate a diff.');
+    });
+  }
+  var exportBtn = resolve('backupDiffExport');
+  if (exportBtn) {
+    exportBtn.disabled = true;
+  }
+};
+bindBackupDiffEvents();
 if (backupDiffNotesEl) {
   backupDiffNotesEl.disabled = true;
 }
@@ -10821,19 +11142,45 @@ function handleRestoreSettingsInputChange() {
   var fallbackTexts = texts.en || {};
   var restoreFailureMessage = langTexts.restoreFailed || fallbackTexts.restoreFailed || 'Restore failed. Check the backup file and try again.';
   var backupFileName = null;
+  var backupDownloadResult = null;
   try {
-    backupFileName = createSettingsBackup(false, new Date());
+    var backupResult = performSettingsBackup(false, new Date());
+    backupFileName = backupResult ? backupResult.fileName : null;
+    backupDownloadResult = backupResult ? backupResult.downloadResult : null;
   } catch (error) {
     console.error('Backup before restore failed', error);
   }
-  if (!backupFileName) {
+  if (!backupFileName || !backupDownloadResult || !backupDownloadResult.success && !backupDownloadResult.queued) {
     var failureMessage = langTexts.restoreBackupFailed || fallbackTexts.restoreBackupFailed || 'Backup failed. Restore cancelled.';
     showNotification('error', failureMessage);
-    alert(failureMessage);
+    if (typeof window.cineShowAlertDialog === 'function') {
+      window.cineShowAlertDialog({
+        title: 'Restore Failed',
+        message: failureMessage
+      });
+    } else {
+      alert(failureMessage);
+    }
     restoreSettingsInput.value = '';
     return;
   }
-  showNotification('success', 'Full app backup downloaded');
+  if (backupDownloadResult.success) {
+    showNotification('success', 'Full app backup downloaded');
+  } else if (backupDownloadResult.queued) {
+    var queuedBackupMessage = backupDownloadResult.queueMessage || fallbackTexts.queuedBackupDownloadDeferred || 'Automatic downloads were blocked. The backup was saved to the local vault.';
+    var queuedConfirmMessage = langTexts.restoreBackupQueuedConfirm || fallbackTexts.restoreBackupQueuedConfirm || 'The safety backup is waiting in the local vault. Continue with the restore now?';
+    showNotification('warning', queuedBackupMessage);
+    var restoreConfirmed = false;
+    if (typeof confirm === 'function') {
+      restoreConfirmed = confirm("".concat(queuedBackupMessage, "\n\n").concat(queuedConfirmMessage));
+    } else if (typeof alert === 'function') {
+      alert("".concat(queuedBackupMessage, "\n\n").concat(queuedConfirmMessage));
+    }
+    if (!restoreConfirmed) {
+      restoreSettingsInput.value = '';
+      return;
+    }
+  }
   var safeStorage = resolveSafeLocalStorage();
   var storedSettingsSnapshot = captureStorageSnapshot(safeStorage);
   var storedSessionSnapshot = captureStorageSnapshot(typeof sessionStorage !== 'undefined' ? sessionStorage : null);
@@ -10933,12 +11280,19 @@ function handleRestoreSettingsInputChange() {
   var handleRestoreError = function handleRestoreError(error) {
     console.warn('Restore failed', error);
     showNotification('error', restoreFailureMessage);
-    alert(restoreFailureMessage);
+    if (typeof window.cineShowAlertDialog === 'function') {
+      window.cineShowAlertDialog({
+        title: 'Restore Failed',
+        message: restoreFailureMessage
+      });
+    } else {
+      alert(restoreFailureMessage);
+    }
     finalizeRestore();
   };
   var processBackupPayload = function () {
     var _ref12 = _asyncToGenerator(_regenerator().m(function _callee4(rawPayload) {
-      var sanitizedPayload, parsed, _extractBackupSection2, restoredSettings, restoredSession, data, fileVersion, hasSettings, hasSessionEntries, hasDataEntries, normalizedFileVersion, normalizedAppVersion, compatibilityMessage, preferenceReader, restoredPreferenceState, verificationResult, successMessage, alertSegments, _t2, _t3;
+      var sanitizedPayload, parsed, _extractBackupSection2, restoredSettings, restoredSession, data, fileVersion, hasSettings, hasSessionEntries, hasDataEntries, normalizedFileVersion, normalizedAppVersion, compatibilityMessage, shouldRestoreSettings, shouldRestoreSession, preferenceReader, restoredPreferenceState, verificationResult, successMessage, alertSegments, message, _t2, _t3;
       return _regenerator().w(function (_context4) {
         while (1) switch (_context4.p = _context4.n) {
           case 0:
@@ -10974,42 +11328,24 @@ function handleRestoreSettingsInputChange() {
                 sessionSnapshot: restoredSession,
                 backupFileName: backupFileName
               });
-              alert(compatibilityMessage);
-            }
-            if (restoredSettings && _typeof(restoredSettings) === 'object') {
-              if (safeStorage && typeof safeStorage.setItem === 'function') {
-                restoreMutated = true;
-                Object.entries(restoredSettings).forEach(function (_ref13) {
-                  var _ref14 = _slicedToArray(_ref13, 2),
-                    k = _ref14[0],
-                    v = _ref14[1];
-                  if (typeof k !== 'string') return;
-                  try {
-                    if (v === null || v === undefined) {
-                      if (typeof safeStorage.removeItem === 'function') {
-                        safeStorage.removeItem(k);
-                      }
-                    } else {
-                      safeStorage.setItem(k, String(v));
-                    }
-                  } catch (storageError) {
-                    console.warn('Failed to restore storage entry', k, storageError);
-                  }
+              if (typeof window.cineShowAlertDialog === 'function') {
+                window.cineShowAlertDialog({
+                  title: 'Version Compatibility',
+                  message: compatibilityMessage
                 });
+              } else {
+                alert(compatibilityMessage);
               }
             }
-            if (restoredSession && typeof sessionStorage !== 'undefined') {
+            shouldRestoreSettings = restoredSettings && _typeof(restoredSettings) === 'object' && !Array.isArray(restoredSettings);
+            shouldRestoreSession = restoredSession && _typeof(restoredSession) === 'object' && !Array.isArray(restoredSession);
+            if (shouldRestoreSettings) {
               restoreMutated = true;
-              Object.entries(restoredSession).forEach(function (_ref15) {
-                var _ref16 = _slicedToArray(_ref15, 2),
-                  key = _ref16[0],
-                  value = _ref16[1];
-                try {
-                  sessionStorage.setItem(key, value);
-                } catch (sessionError) {
-                  console.warn('Failed to restore sessionStorage entry', key, sessionError);
-                }
-              });
+              restoreLocalStorageSnapshot(safeStorage, restoredSettings);
+            }
+            if (shouldRestoreSession) {
+              restoreMutated = true;
+              restoreSessionStorageSnapshot(restoredSession);
             }
             try {
               safeLoadStoredLogoPreview();
@@ -11048,17 +11384,8 @@ function handleRestoreSettingsInputChange() {
               }
             }
           case 4:
-            if (restoredSession && typeof sessionStorage !== 'undefined') {
-              Object.entries(restoredSession).forEach(function (_ref17) {
-                var _ref18 = _slicedToArray(_ref17, 2),
-                  key = _ref18[0],
-                  value = _ref18[1];
-                try {
-                  sessionStorage.setItem(key, value);
-                } catch (sessionError) {
-                  console.warn('Failed to refresh sessionStorage entry after restore', key, sessionError);
-                }
-              });
+            if (shouldRestoreSession) {
+              restoreSessionStorageSnapshot(restoredSession);
             }
             verificationResult = null;
             try {
@@ -11075,7 +11402,15 @@ function handleRestoreSettingsInputChange() {
             if (verificationResult && verificationResult.alertMessage) {
               alertSegments.push(verificationResult.alertMessage);
             }
-            alert(alertSegments.join('\n\n'));
+            message = alertSegments.join('\n\n');
+            if (typeof window.cineShowAlertDialog === 'function') {
+              window.cineShowAlertDialog({
+                title: 'Restore Successful',
+                message: message
+              });
+            } else {
+              alert(message);
+            }
             finalizeRestore();
             _context4.n = 10;
             break;
@@ -11458,15 +11793,15 @@ function resetPlannerStateAfterFactoryReset() {
   }
 }
 window.cineShowConfirmDialog = function (options) {
-  var _ref19 = options || {},
-    title = _ref19.title,
-    message = _ref19.message,
-    confirmLabel = _ref19.confirmLabel,
-    cancelLabel = _ref19.cancelLabel,
-    onConfirm = _ref19.onConfirm,
-    onCancel = _ref19.onCancel,
-    _ref19$danger = _ref19.danger,
-    danger = _ref19$danger === void 0 ? false : _ref19$danger;
+  var _ref13 = options || {},
+    title = _ref13.title,
+    message = _ref13.message,
+    confirmLabel = _ref13.confirmLabel,
+    cancelLabel = _ref13.cancelLabel,
+    onConfirm = _ref13.onConfirm,
+    onCancel = _ref13.onCancel,
+    _ref13$danger = _ref13.danger,
+    danger = _ref13$danger === void 0 ? false : _ref13$danger;
   var dialog = document.getElementById('appConfirmDialog');
   var titleEl = document.getElementById('appConfirmTitle');
   var messageEl = document.getElementById('appConfirmMessage');
@@ -11477,9 +11812,16 @@ window.cineShowConfirmDialog = function (options) {
     return;
   }
   if (titleEl) titleEl.textContent = title || 'Confirm';
-  if (messageEl) messageEl.textContent = message || 'Are you sure?';
+  if (messageEl) {
+    if (typeof message === 'string' && message.includes('\n')) {
+      messageEl.innerHTML = message.replace(/\n/g, '<br>');
+    } else {
+      messageEl.textContent = message || 'Are you sure?';
+    }
+  }
   confirmBtn.textContent = confirmLabel || 'Confirm';
   cancelBtn.textContent = cancelLabel || 'Cancel';
+  cancelBtn.style.display = 'inline-block';
   if (danger) {
     confirmBtn.classList.add('danger');
   } else {
@@ -11505,6 +11847,54 @@ window.cineShowConfirmDialog = function (options) {
     close();
     if (typeof onCancel === 'function') {
       onCancel();
+    }
+  });
+  dialog.removeAttribute('hidden');
+  if (typeof dialog.showModal === 'function') {
+    dialog.showModal();
+  }
+};
+window.cineShowAlertDialog = function (options) {
+  var config = typeof options === 'string' ? {
+    message: options
+  } : options || {};
+  var title = config.title,
+    message = config.message,
+    confirmLabel = config.confirmLabel,
+    onConfirm = config.onConfirm;
+  var dialog = document.getElementById('appConfirmDialog');
+  var titleEl = document.getElementById('appConfirmTitle');
+  var messageEl = document.getElementById('appConfirmMessage');
+  var confirmBtn = document.getElementById('appConfirmBtn');
+  var cancelBtn = document.getElementById('appConfirmCancelBtn');
+  if (!dialog || !confirmBtn || !cancelBtn) {
+    console.warn('Alert dialog elements missing');
+    if (typeof alert === 'function') alert(message);
+    return;
+  }
+  if (titleEl) titleEl.textContent = title || 'Notification';
+  if (messageEl) {
+    if (typeof message === 'string' && message.includes('\n')) {
+      messageEl.innerHTML = message.replace(/\n/g, '<br>');
+    } else {
+      messageEl.textContent = message || '';
+    }
+  }
+  confirmBtn.textContent = confirmLabel || 'OK';
+  confirmBtn.classList.remove('danger');
+  cancelBtn.style.display = 'none';
+  var newConfirmBtn = confirmBtn.cloneNode(true);
+  confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+  var close = function close() {
+    if (typeof dialog.close === 'function') {
+      dialog.close();
+    }
+    dialog.setAttribute('hidden', '');
+  };
+  newConfirmBtn.addEventListener('click', function () {
+    close();
+    if (typeof onConfirm === 'function') {
+      onConfirm();
     }
   });
   dialog.removeAttribute('hidden');
@@ -11902,9 +12292,9 @@ function collectFallbackUiCacheStorages() {
       label: '__cineGlobal'
     });
   }
-  scopeCandidates.forEach(function (_ref20) {
-    var scope = _ref20.scope,
-      label = _ref20.label;
+  scopeCandidates.forEach(function (_ref14) {
+    var scope = _ref14.scope,
+      label = _ref14.label;
     _inspectScope(scope, label);
   });
   if (typeof localStorage !== 'undefined') {
@@ -13255,60 +13645,81 @@ function copyTextToClipboardBestEffort(text) {
     }
   }
 }
-if (downloadDiagramButton) {
-  downloadDiagramButton.addEventListener('click', function (e) {
-    var source = exportDiagramSvg();
-    if (!source) return;
-    copyTextToClipboardBestEffort(source);
-    var pad = function pad(n) {
-      return String(n).padStart(2, '0');
+var bindDownloadDiagramListener = function bindDownloadDiagramListener() {
+  var btn = downloadDiagramButton || document.getElementById('downloadDiagram');
+  if (!btn) return false;
+  btn.removeEventListener('click', handleDownloadDiagramClick);
+  btn.addEventListener('click', handleDownloadDiagramClick);
+  return true;
+};
+function handleDownloadDiagramClick(e) {
+  var source = exportDiagramSvg();
+  if (!source) return;
+  copyTextToClipboardBestEffort(source);
+  var pad = function pad(n) {
+    return String(n).padStart(2, '0');
+  };
+  var now = new Date();
+  var datePart = "".concat(now.getFullYear(), "-").concat(pad(now.getMonth() + 1), "-").concat(pad(now.getDate()), "_").concat(pad(now.getHours()), "-").concat(pad(now.getMinutes()));
+  var namePart = (safeGetCurrentProjectName('setup') || 'setup').replace(/\s+/g, '-').replace(/[^a-z0-9-_]/gi, '');
+  var baseName = "".concat(datePart, "_").concat(namePart, "_diagram");
+  var saveSvg = function saveSvg() {
+    var blob = new Blob([source], {
+      type: 'image/svg+xml;charset=utf-8'
+    });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = "".concat(baseName, ".svg");
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+  if (e.shiftKey) {
+    var img = new Image();
+    img.onload = function () {
+      var canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      canvas.toBlob(function (blob) {
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = "".concat(baseName, ".jpg");
+        a.click();
+        URL.revokeObjectURL(url);
+      }, 'image/jpeg', 0.95);
     };
-    var now = new Date();
-    var datePart = "".concat(now.getFullYear(), "-").concat(pad(now.getMonth() + 1), "-").concat(pad(now.getDate()), "_").concat(pad(now.getHours()), "-").concat(pad(now.getMinutes()));
-    var namePart = (safeGetCurrentProjectName('setup') || 'setup').replace(/\s+/g, '-').replace(/[^a-z0-9-_]/gi, '');
-    var baseName = "".concat(datePart, "_").concat(namePart, "_diagram");
-    var saveSvg = function saveSvg() {
-      var blob = new Blob([source], {
-        type: 'image/svg+xml;charset=utf-8'
-      });
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement('a');
-      a.href = url;
-      a.download = "".concat(baseName, ".svg");
-      a.click();
-      URL.revokeObjectURL(url);
-    };
-    if (e.shiftKey) {
-      var img = new Image();
-      img.onload = function () {
-        var canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        var ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0);
-        canvas.toBlob(function (blob) {
-          var url = URL.createObjectURL(blob);
-          var a = document.createElement('a');
-          a.href = url;
-          a.download = "".concat(baseName, ".jpg");
-          a.click();
-          URL.revokeObjectURL(url);
-        }, 'image/jpeg', 0.95);
-      };
-      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(source);
-    } else {
-      saveSvg();
-    }
-  });
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(source);
+  } else {
+    saveSvg();
+  }
 }
-if (gridSnapToggleButton) {
-  gridSnapToggleButton.addEventListener('click', function () {
-    var nextState = !readGridSnapState();
-    var finalState = writeGridSnapState(nextState);
-    applyGridSnapUiState(finalState);
-  });
+var bindGridSnapListener = function bindGridSnapListener() {
+  var btn = gridSnapToggleButton || document.getElementById('gridSnapToggle');
+  if (!btn) return false;
+  btn.removeEventListener('click', handleGridSnapClick);
+  btn.addEventListener('click', handleGridSnapClick);
+  return true;
+};
+function handleGridSnapClick() {
+  var nextState = !readGridSnapState();
+  var finalState = writeGridSnapState(nextState);
+  applyGridSnapUiState(finalState);
 }
-if (helpButton && helpDialog) {
+if (!bindDownloadDiagramListener()) {
+  document.addEventListener('DOMContentLoaded', bindDownloadDiagramListener);
+}
+if (!bindGridSnapListener()) {
+  document.addEventListener('DOMContentLoaded', bindGridSnapListener);
+}
+var setupHelpSystem = function setupHelpSystem() {
+  var btn = helpButton || document.getElementById('helpButton');
+  var dialog = helpDialog || document.getElementById('helpDialog');
+  if (!btn || !dialog) return false;
+  if (btn.dataset.helpInitialized) return true;
+  btn.dataset.helpInitialized = 'true';
   var helpContent = helpDialog.querySelector('.help-content');
   var helpQuickLinkItems = new Map();
   var helpSectionHighlightTimers = new Map();
@@ -13631,8 +14042,8 @@ if (helpButton && helpDialog) {
       }
       hiddenItems.sort(function (a, b) {
         return a.index - b.index;
-      }).forEach(function (_ref21) {
-        var node = _ref21.node;
+      }).forEach(function (_ref15) {
+        var node = _ref15.node;
         return fragment.appendChild(node);
       });
       if (fragment.childNodes.length) {
@@ -13666,10 +14077,10 @@ if (helpButton && helpDialog) {
       return;
     }
     var hasVisible = false;
-    helpQuickLinkItems.forEach(function (_ref22) {
-      var section = _ref22.section,
-        listItem = _ref22.listItem,
-        button = _ref22.button;
+    helpQuickLinkItems.forEach(function (_ref16) {
+      var section = _ref16.section,
+        listItem = _ref16.listItem,
+        button = _ref16.button;
       if (section && !section.hasAttribute('hidden')) {
         listItem.removeAttribute('hidden');
         hasVisible = true;
@@ -13702,9 +14113,9 @@ if (helpButton && helpDialog) {
       helpQuickLinksNav.removeAttribute('data-help');
     }
     var template = langTexts.helpQuickLinkButtonHelp || fallbackTexts.helpQuickLinkButtonHelp;
-    helpQuickLinkItems.forEach(function (_ref23) {
-      var button = _ref23.button,
-        label = _ref23.label;
+    helpQuickLinkItems.forEach(function (_ref17) {
+      var button = _ref17.button,
+        label = _ref17.label;
       if (!button) return;
       if (template) {
         var helpText = template.replace('%s', label);
@@ -13915,11 +14326,11 @@ if (helpButton && helpDialog) {
     return "(".concat(parts.join(''), ")");
   };
   updateHelpResultsSummaryText = function updateHelpResultsSummaryText() {
-    var _ref24 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      totalCount = _ref24.totalCount,
-      visibleCount = _ref24.visibleCount,
-      hasQuery = _ref24.hasQuery,
-      queryText = _ref24.queryText;
+    var _ref18 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      totalCount = _ref18.totalCount,
+      visibleCount = _ref18.visibleCount,
+      hasQuery = _ref18.hasQuery,
+      queryText = _ref18.queryText;
     var hideAssist = function hideAssist() {
       if (!helpResultsAssist) return;
       helpResultsAssist.textContent = '';
@@ -14474,11 +14885,11 @@ if (helpButton && helpDialog) {
       return addUnique(value, shortcutParts);
     };
     var addTextFromElement = function addTextFromElement(element) {
-      var _ref25 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        _ref25$includeTextCon = _ref25.includeTextContent,
-        includeTextContent = _ref25$includeTextCon === void 0 ? false : _ref25$includeTextCon,
-        _ref25$preferTextAsLa = _ref25.preferTextAsLabel,
-        preferTextAsLabel = _ref25$preferTextAsLa === void 0 ? false : _ref25$preferTextAsLa;
+      var _ref19 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref19$includeTextCon = _ref19.includeTextContent,
+        includeTextContent = _ref19$includeTextCon === void 0 ? false : _ref19$includeTextCon,
+        _ref19$preferTextAsLa = _ref19.preferTextAsLabel,
+        preferTextAsLabel = _ref19$preferTextAsLa === void 0 ? false : _ref19$preferTextAsLa;
       if (!element) return;
       addDetailText(element.getAttribute('data-help'));
       addDetailText(element.getAttribute('aria-description'));
@@ -14510,9 +14921,9 @@ if (helpButton && helpDialog) {
       }
     };
     var applyFromIds = function applyFromIds(ids) {
-      var _ref26 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        _ref26$preferTextAsLa = _ref26.preferTextAsLabel,
-        preferTextAsLabel = _ref26$preferTextAsLa === void 0 ? false : _ref26$preferTextAsLa;
+      var _ref20 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref20$preferTextAsLa = _ref20.preferTextAsLabel,
+        preferTextAsLabel = _ref20$preferTextAsLa === void 0 ? false : _ref20$preferTextAsLa;
       if (!ids) return;
       ids.split(/\s+/).map(function (id) {
         return id.trim();
@@ -15375,9 +15786,9 @@ if (helpButton && helpDialog) {
       }
     };
     var setActiveDropdownOption = function setActiveDropdownOption(index) {
-      var _ref27 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        _ref27$focusOption = _ref27.focusOption,
-        focusOption = _ref27$focusOption === void 0 ? false : _ref27$focusOption;
+      var _ref21 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref21$focusOption = _ref21.focusOption,
+        focusOption = _ref21$focusOption === void 0 ? false : _ref21$focusOption;
       var options = getDropdownOptions();
       if (!options.length) {
         if (featureSearch && featureSearch.hasAttribute('aria-activedescendant')) {
@@ -15607,22 +16018,16 @@ if (helpButton && helpDialog) {
       });
     }
   }
-  helpButton.addEventListener('click', toggleHelp);
-  if (closeHelpBtn) closeHelpBtn.addEventListener('click', closeHelp);
-  if (helpSearch) helpSearch.addEventListener('input', filterHelp);
-  if (helpSearchClear) helpSearchClear.addEventListener('click', function () {
-    if (helpSearch) {
-      helpSearch.value = '';
-      filterHelp();
-      helpSearch.focus();
-    }
-  });
   function safeShowPicker(input) {
-    if (!input || typeof input.showPicker !== 'function') return;
+    if (!input || typeof input.showPicker !== 'function') {
+      return;
+    }
     try {
       input.showPicker();
     } catch (err) {
-      if (err && err.name === 'NotAllowedError') return;
+      if (err && err.name === 'NotAllowedError') {
+        return;
+      }
       console.warn('Unable to show picker', err);
     }
   }
@@ -15682,13 +16087,17 @@ if (helpButton && helpDialog) {
       persistPinkModePreference(!document.body.classList.contains('pink-mode'));
     }
   });
-  helpDialog.addEventListener('click', function (e) {
-    if (e.target === helpDialog) closeHelp();
+  dialog.addEventListener('click', function (e) {
+    if (e.target === dialog) closeHelp();
   });
-  helpDialog.addEventListener('cancel', function (e) {
+  dialog.addEventListener('cancel', function (e) {
     e.preventDefault();
     closeHelp();
   });
+  return true;
+};
+if (!setupHelpSystem()) {
+  document.addEventListener('DOMContentLoaded', setupHelpSystem);
 }
 var scenarioIcons = {
   Indoor: iconGlyph("\uF194", ICON_FONT_KEYS.ESSENTIAL),
@@ -15764,10 +16173,10 @@ function getRequiredScenarioOptionEntries() {
     }
     options.set(value, value);
   });
-  return Array.from(options.entries()).map(function (_ref28) {
-    var _ref29 = _slicedToArray(_ref28, 2),
-      value = _ref29[0],
-      label = _ref29[1];
+  return Array.from(options.entries()).map(function (_ref22) {
+    var _ref23 = _slicedToArray(_ref22, 2),
+      value = _ref23[0],
+      label = _ref23[1];
     return {
       value: value,
       label: label
@@ -15919,15 +16328,69 @@ function initApp() {
   }
   restoreSessionState();
   applySharedSetupFromUrl();
-  if (requiredScenariosSelect) {
-    requiredScenariosSelect.addEventListener('change', updateRequiredScenariosSummary);
-    updateRequiredScenariosSummary();
-  }
-  if (tripodHeadBrandSelect) {
-    tripodHeadBrandSelect.addEventListener('change', updateTripodOptions);
-  }
-  if (tripodBowlSelect) {
-    tripodBowlSelect.addEventListener('change', updateTripodOptions);
+  if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+    cineCoreUiHelpers.whenElementAvailable('requiredScenarios', function (el) {
+      if (typeof requiredScenariosSelect === 'undefined' || !requiredScenariosSelect) {
+        try {
+          if (typeof window !== 'undefined') window.requiredScenariosSelect = el;
+        } catch (e) {
+          void e;
+        }
+      }
+      el.addEventListener('change', updateRequiredScenariosSummary);
+      updateRequiredScenariosSummary();
+    });
+    cineCoreUiHelpers.whenElementAvailable('tripodHeadBrand', function (el) {
+      if (typeof tripodHeadBrandSelect === 'undefined' || !tripodHeadBrandSelect) {
+        try {
+          if (typeof window !== 'undefined') window.tripodHeadBrandSelect = el;
+        } catch (e) {
+          void e;
+        }
+      }
+      el.addEventListener('change', updateTripodOptions);
+    });
+    cineCoreUiHelpers.whenElementAvailable('tripodBowl', function (el) {
+      if (typeof tripodBowlSelect === 'undefined' || !tripodBowlSelect) {
+        try {
+          if (typeof window !== 'undefined') window.tripodBowlSelect = el;
+        } catch (e) {
+          void e;
+        }
+      }
+      el.addEventListener('change', updateTripodOptions);
+    });
+    cineCoreUiHelpers.whenElementAvailable('tripodTypes', function (el) {
+      if (typeof tripodTypesSelect === 'undefined' || !tripodTypesSelect) {
+        try {
+          if (typeof window !== 'undefined') window.tripodTypesSelect = el;
+        } catch (e) {
+          void e;
+        }
+      }
+      el.addEventListener('change', updateTripodOptions);
+    });
+    cineCoreUiHelpers.whenElementAvailable('tripodSpreader', function (el) {
+      if (typeof tripodSpreaderSelect === 'undefined' || !tripodSpreaderSelect) {
+        try {
+          if (typeof window !== 'undefined') window.tripodSpreaderSelect = el;
+        } catch (e) {
+          void e;
+        }
+      }
+      el.addEventListener('change', updateTripodOptions);
+    });
+  } else {
+    if (requiredScenariosSelect) {
+      requiredScenariosSelect.addEventListener('change', updateRequiredScenariosSummary);
+      updateRequiredScenariosSummary();
+    }
+    if (tripodHeadBrandSelect) {
+      tripodHeadBrandSelect.addEventListener('change', updateTripodOptions);
+    }
+    if (tripodBowlSelect) {
+      tripodBowlSelect.addEventListener('change', updateTripodOptions);
+    }
   }
   updateTripodOptions();
   updateViewfinderExtensionVisibility();
@@ -16016,14 +16479,42 @@ function schedulePostRenderTask(task) {
   }
 }
 function populateEnvironmentDropdowns() {
+  var populate = function populate(tempSelect) {
+    if (tempSelect) {
+      if (typeof ensureFeedbackTemperatureOptionsSafe === 'function') {
+        ensureFeedbackTemperatureOptionsSafe(tempSelect);
+      }
+      if (typeof updateFeedbackTemperatureOptionsSafe === 'function') {
+        updateFeedbackTemperatureOptionsSafe();
+      }
+    }
+  };
   var tempSelect = document.getElementById('fbTemperature');
   if (tempSelect) {
-    ensureFeedbackTemperatureOptionsSafe(tempSelect);
-    updateFeedbackTemperatureOptionsSafe();
+    populate(tempSelect);
+  } else if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+    cineCoreUiHelpers.whenElementAvailable('fbTemperature', populate);
   }
 }
 function populateLensDropdown() {
-  if (!lensSelect) return;
+  var resolveLensSelect = function resolveLensSelect() {
+    if (typeof lensSelect !== 'undefined' && lensSelect) return lensSelect;
+    if (typeof document !== 'undefined') return document.getElementById('lenses');
+    return null;
+  };
+  var resolvedLensSelect = resolveLensSelect();
+  if (!resolvedLensSelect) {
+    if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+      cineCoreUiHelpers.whenElementAvailable('lenses', function (el) {
+        if (typeof lensSelect === 'undefined' || !lensSelect) {
+          if (typeof window !== 'undefined') window.lensSelect = el;
+        }
+        populateLensDropdown();
+      });
+    }
+    return;
+  }
+  var targetSelect = resolvedLensSelect;
   var normalizeFocusScaleValue = function normalizeFocusScaleValue(value) {
     if (typeof value !== 'string') {
       return '';
@@ -16167,11 +16658,11 @@ function populateLensDropdown() {
   if (!lensData || Object.keys(lensData).length === 0) {
     return;
   }
-  var previousSelection = new Set(Array.from(lensSelect.selectedOptions || []).map(function (opt) {
+  var previousSelection = new Set(Array.from(targetSelect.selectedOptions || []).map(function (opt) {
     return opt.value;
   }));
   var fragment = document.createDocumentFragment();
-  if (!lensSelect.multiple) {
+  if (!targetSelect.multiple) {
     var emptyOpt = document.createElement('option');
     emptyOpt.value = '';
     fragment.appendChild(emptyOpt);
@@ -16180,7 +16671,7 @@ function populateLensDropdown() {
   var sortFn = typeof localeSort === 'function' ? localeSort : undefined;
   lensNames.sort(sortFn);
   for (var _index19 = 0; _index19 < lensNames.length; _index19 += 1) {
-    var _ref30, _lens$minFocusMeters;
+    var _ref24, _lens$minFocusMeters;
     var name = lensNames[_index19];
     var opt = document.createElement('option');
     opt.value = name;
@@ -16197,7 +16688,7 @@ function populateLensDropdown() {
     } else if (lens.clampOn === false) {
       attrs.push('no clamp-on');
     }
-    var minFocus = (_ref30 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref30 !== void 0 ? _ref30 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
+    var minFocus = (_ref24 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref24 !== void 0 ? _ref24 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
     if (Number.isFinite(minFocus) && minFocus > 0) {
       var formattedMinFocus = formatLensMinFocus(minFocus, lensFocusScaleMode);
       if (formattedMinFocus) {
@@ -16210,8 +16701,8 @@ function populateLensDropdown() {
     }
     fragment.appendChild(opt);
   }
-  lensSelect.innerHTML = '';
-  lensSelect.appendChild(fragment);
+  targetSelect.innerHTML = '';
+  targetSelect.appendChild(fragment);
   if (typeof updateLensWorkflowCatalog === 'function') {
     try {
       updateLensWorkflowCatalog({
@@ -16226,22 +16717,28 @@ function populateLensDropdown() {
 }
 function populateCameraPropertyDropdown(selectId, property) {
   var selected = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+  var populate = function populate(dropdown) {
+    dropdown.innerHTML = '';
+    var emptyOpt = document.createElement('option');
+    emptyOpt.value = '';
+    dropdown.appendChild(emptyOpt);
+    var camKey = typeof cameraSelect !== 'undefined' && cameraSelect ? cameraSelect.value : '';
+    var values = camKey && devices && devices.cameras && devices.cameras[camKey] ? devices.cameras[camKey][property] : null;
+    if (Array.isArray(values)) {
+      values.forEach(function (v) {
+        var opt = document.createElement('option');
+        opt.value = v;
+        opt.textContent = v;
+        if (v === selected) opt.selected = true;
+        dropdown.appendChild(opt);
+      });
+    }
+  };
   var dropdown = document.getElementById(selectId);
-  if (!dropdown) return;
-  dropdown.innerHTML = '';
-  var emptyOpt = document.createElement('option');
-  emptyOpt.value = '';
-  dropdown.appendChild(emptyOpt);
-  var camKey = cameraSelect && cameraSelect.value;
-  var values = camKey && devices && devices.cameras && devices.cameras[camKey] ? devices.cameras[camKey][property] : null;
-  if (Array.isArray(values)) {
-    values.forEach(function (v) {
-      var opt = document.createElement('option');
-      opt.value = v;
-      opt.textContent = v;
-      if (v === selected) opt.selected = true;
-      dropdown.appendChild(opt);
-    });
+  if (dropdown) {
+    populate(dropdown);
+  } else if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+    cineCoreUiHelpers.whenElementAvailable(selectId, populate);
   }
 }
 function populateRecordingResolutionDropdown() {
@@ -16475,9 +16972,9 @@ function buildFrameRateSuggestions(entries, contextTokens) {
     return a[0].localeCompare(b[0]);
   });
   return {
-    values: sortedEntries.map(function (_ref31) {
-      var _ref32 = _slicedToArray(_ref31, 1),
-        value = _ref32[0];
+    values: sortedEntries.map(function (_ref25) {
+      var _ref26 = _slicedToArray(_ref25, 1),
+        value = _ref26[0];
       return value;
     }),
     metadata: new Map(sortedEntries)
@@ -16721,25 +17218,45 @@ function populateFrameRateDropdownFor() {
 }
 function populateFrameRateDropdown() {
   var selected = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var resolve = function resolve(val, id) {
+    return val || (typeof document !== 'undefined' ? document.getElementById(id) : null);
+  };
+  var inputEl = resolve(recordingFrameRateInput, 'recordingFrameRate');
+  if (!inputEl && typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+    cineCoreUiHelpers.whenElementAvailable('recordingFrameRate', function () {
+      return populateFrameRateDropdown(selected);
+    });
+    return;
+  }
   populateFrameRateDropdownFor({
     selected: selected,
-    recordingInput: recordingFrameRateInput,
-    optionsList: recordingFrameRateOptionsList,
-    sensorSelect: sensorModeDropdown,
-    resolutionSelect: recordingResolutionDropdown,
-    hintElement: recordingFrameRateHint
+    recordingInput: inputEl,
+    optionsList: resolve(recordingFrameRateOptionsList, 'recordingFrameRateOptions'),
+    sensorSelect: resolve(sensorModeDropdown, 'sensorMode'),
+    resolutionSelect: resolve(recordingResolutionDropdown, 'recordingResolution'),
+    hintElement: resolve(recordingFrameRateHint, 'recordingFrameRateHint')
   });
 }
 function populateSlowMotionFrameRateDropdown() {
   var selected = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var resolve = function resolve(val, id) {
+    return val || (typeof document !== 'undefined' ? document.getElementById(id) : null);
+  };
+  var inputEl = resolve(slowMotionRecordingFrameRateInput, 'slowMotionRecordingFrameRate');
+  if (!inputEl && typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+    cineCoreUiHelpers.whenElementAvailable('slowMotionRecordingFrameRate', function () {
+      return populateSlowMotionFrameRateDropdown(selected);
+    });
+    return;
+  }
   populateFrameRateDropdownFor({
     selected: selected,
-    recordingInput: slowMotionRecordingFrameRateInput,
-    optionsList: slowMotionRecordingFrameRateOptionsList,
-    sensorSelect: slowMotionSensorModeDropdown,
-    resolutionSelect: slowMotionRecordingResolutionDropdown,
-    aspectSelect: slowMotionAspectRatioSelect,
-    hintElement: slowMotionRecordingFrameRateHint
+    recordingInput: inputEl,
+    optionsList: resolve(slowMotionRecordingFrameRateOptionsList, 'slowMotionRecordingFrameRateOptions'),
+    sensorSelect: resolve(slowMotionSensorModeDropdown, 'slowMotionSensorMode'),
+    resolutionSelect: resolve(slowMotionRecordingResolutionDropdown, 'slowMotionRecordingResolution'),
+    aspectSelect: resolve(slowMotionAspectRatioSelect, 'slowMotionAspectRatio'),
+    hintElement: resolve(slowMotionRecordingFrameRateHint, 'slowMotionRecordingFrameRateHint')
   });
 }
 function populateSlowMotionRecordingResolutionDropdown() {
@@ -16759,23 +17276,35 @@ function populateCodecDropdown() {
   populateCameraPropertyDropdown('codec', 'recordingCodecs', selected);
 }
 function populateFilterDropdown() {
+  var populate = function populate(select) {
+    if (select && devices && Array.isArray(devices.filterOptions)) {
+      var fragment = document.createDocumentFragment();
+      if (!select.multiple) {
+        var emptyOpt = document.createElement('option');
+        emptyOpt.value = '';
+        fragment.appendChild(emptyOpt);
+      }
+      for (var _index20 = 0; _index20 < devices.filterOptions.length; _index20 += 1) {
+        var value = devices.filterOptions[_index20];
+        var opt = document.createElement('option');
+        opt.value = value;
+        opt.textContent = value;
+        fragment.appendChild(opt);
+      }
+      select.innerHTML = '';
+      select.appendChild(fragment);
+    }
+  };
   var select = resolveFilterSelectElement();
-  if (select && devices && Array.isArray(devices.filterOptions)) {
-    var fragment = document.createDocumentFragment();
-    if (!select.multiple) {
-      var emptyOpt = document.createElement('option');
-      emptyOpt.value = '';
-      fragment.appendChild(emptyOpt);
-    }
-    for (var _index20 = 0; _index20 < devices.filterOptions.length; _index20 += 1) {
-      var value = devices.filterOptions[_index20];
-      var opt = document.createElement('option');
-      opt.value = value;
-      opt.textContent = value;
-      fragment.appendChild(opt);
-    }
-    select.innerHTML = '';
-    select.appendChild(fragment);
+  if (select) {
+    populate(select);
+  } else if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+    cineCoreUiHelpers.whenElementAvailable('filter', function (el) {
+      if (typeof filterSelectElem !== 'undefined' && (!filterSelectElem || (typeof filterSelectElem === "undefined" ? "undefined" : _typeof(filterSelectElem)) !== 'object')) {
+        filterSelectElem = el;
+      }
+      populate(el);
+    });
   }
 }
 var filterId = function filterId(t) {
@@ -16988,11 +17517,11 @@ function resolveFilterDisplayInfo(type) {
 function buildFilterGearEntries() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var entries = [];
-  filters.forEach(function (_ref33) {
-    var type = _ref33.type,
-      _ref33$size = _ref33.size,
-      size = _ref33$size === void 0 ? SESSION_DEFAULT_FILTER_SIZE : _ref33$size,
-      values = _ref33.values;
+  filters.forEach(function (_ref27) {
+    var type = _ref27.type,
+      _ref27$size = _ref27.size,
+      size = _ref27$size === void 0 ? SESSION_DEFAULT_FILTER_SIZE : _ref27$size,
+      values = _ref27.values;
     if (!type) return;
     var sizeValue = size || SESSION_DEFAULT_FILTER_SIZE;
     var idBase = "filter-".concat(filterId(type));
@@ -17612,8 +18141,8 @@ function buildFilterSelectHtml() {
 function collectFilterAccessories() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var items = [];
-  filters.forEach(function (_ref34) {
-    var type = _ref34.type;
+  filters.forEach(function (_ref28) {
+    var type = _ref28.type;
     switch (type) {
       case 'ND Grad HE':
       case 'ND Grad SE':
@@ -17625,18 +18154,6 @@ function collectFilterAccessories() {
   return items;
 }
 var USER_BUTTON_FUNCTION_ITEMS = [{
-  key: 'user1',
-  value: 'User 1'
-}, {
-  key: 'user2',
-  value: 'User 2'
-}, {
-  key: 'user3',
-  value: 'User 3'
-}, {
-  key: 'user4',
-  value: 'User 4'
-}, {
   key: 'toggleLut',
   value: 'Toggle LUT'
 }, {
@@ -17714,41 +18231,47 @@ function populateUserButtonDropdowns() {
     return item.value;
   }));
   ['monitorUserButtons', 'cameraUserButtons', 'viewfinderUserButtons'].forEach(function (id) {
-    var sel = document.getElementById(id);
-    if (!sel) return;
-    var previouslySelected = new Set(Array.from(sel.selectedOptions || []).map(function (opt) {
-      return opt.value;
-    }));
-    var fragment = document.createDocumentFragment();
-    for (var _index23 = 0; _index23 < items.length; _index23 += 1) {
-      var _items$_index = items[_index23],
-        value = _items$_index.value,
-        label = _items$_index.label;
-      if (!value) {
-        continue;
+    var populate = function populate(sel) {
+      if (!sel) return;
+      var previouslySelected = new Set(Array.from(sel.selectedOptions || []).map(function (opt) {
+        return opt.value;
+      }));
+      var fragment = document.createDocumentFragment();
+      for (var _index23 = 0; _index23 < items.length; _index23 += 1) {
+        var _items$_index = items[_index23],
+          value = _items$_index.value,
+          label = _items$_index.label;
+        if (!value) {
+          continue;
+        }
+        var opt = document.createElement('option');
+        opt.value = value;
+        opt.textContent = label;
+        if (previouslySelected.has(value)) {
+          opt.selected = true;
+        }
+        fragment.appendChild(opt);
       }
-      var opt = document.createElement('option');
-      opt.value = value;
-      opt.textContent = label;
-      if (previouslySelected.has(value)) {
+      previouslySelected.forEach(function (value) {
+        if (knownValues.has(value)) {
+          return;
+        }
+        var opt = document.createElement('option');
+        opt.value = value;
+        opt.textContent = value;
         opt.selected = true;
-      }
-      fragment.appendChild(opt);
+        fragment.appendChild(opt);
+      });
+      sel.innerHTML = '';
+      sel.appendChild(fragment);
+      var optionCount = sel.options ? sel.options.length : 0;
+      sel.size = optionCount > 0 ? optionCount : USER_BUTTON_FUNCTION_ITEMS.length;
+    };
+    if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+      cineCoreUiHelpers.whenElementAvailable(id, populate);
+    } else {
+      populate(document.getElementById(id));
     }
-    previouslySelected.forEach(function (value) {
-      if (knownValues.has(value)) {
-        return;
-      }
-      var opt = document.createElement('option');
-      opt.value = value;
-      opt.textContent = value;
-      opt.selected = true;
-      fragment.appendChild(opt);
-    });
-    sel.innerHTML = '';
-    sel.appendChild(fragment);
-    var optionCount = sel.options ? sel.options.length : 0;
-    sel.size = optionCount > 0 ? optionCount : USER_BUTTON_FUNCTION_ITEMS.length;
   });
 }
 var runInitAppWithInitialLoadingIndicator = function runInitAppWithInitialLoadingIndicator() {

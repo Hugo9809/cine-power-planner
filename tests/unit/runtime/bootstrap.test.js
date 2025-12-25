@@ -20,7 +20,7 @@ describe('runtime/bootstrap', () => {
   });
 
   test('fallback resolver reuses global loader when available', () => {
-    jest.doMock('../../../src/scripts/modules/core/runtime-module-loader.js', () => null);
+    jest.doMock('../../../src/scripts/core/modules/core/runtime-module-loader.js', () => null);
     const loader = {
       resolveCoreRuntimeModule: jest.fn(() => 'resolved-value'),
     };

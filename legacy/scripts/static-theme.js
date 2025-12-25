@@ -57,7 +57,11 @@
     var relaxedSpacingEnabled = safeGet('relaxedSpacing') === 'true';
     if (root) root.classList.toggle('relaxed-spacing', relaxedSpacingEnabled);
     if (body) body.classList.toggle('relaxed-spacing', relaxedSpacingEnabled);
-    var pinkModeEnabled = safeGet('pinkMode') === 'true';
+    var storedPinkMode = safeGet('cameraPowerPlanner_pinkMode');
+    if (storedPinkMode === null || storedPinkMode === undefined || storedPinkMode === '') {
+      storedPinkMode = safeGet('pinkMode');
+    }
+    var pinkModeEnabled = storedPinkMode === 'true';
     if (root) root.classList.toggle('pink-mode', pinkModeEnabled);
     if (body) body.classList.toggle('pink-mode', pinkModeEnabled);
     var storedFontSize = safeGet('fontSize');

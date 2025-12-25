@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT_DIR = path.resolve(__dirname, '..');
-const SOURCE_FILE = path.join(ROOT_DIR, 'src', 'scripts', 'modules', 'core', 'pink-mode.js');
+const SOURCE_FILE = path.join(ROOT_DIR, 'src', 'scripts', 'core', 'modules', 'core', 'pink-mode.js');
 const OUTPUT_FILE = path.join(ROOT_DIR, 'src', 'scripts', 'data', 'pink-mode-animated-icons.js');
 
 function readPinkModeModule() {

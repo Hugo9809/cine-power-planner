@@ -1612,30 +1612,27 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         scale = targetScale;
         apply();
       };
-      var zoomInBtn = resolveZoomInButton();
-      if (zoomInBtn) {
-        zoomInBtn.onclick = function () {
-          zoomWithCenter(1.1);
-        };
-      }
-      var zoomOutBtn = resolveZoomOutButton();
-      if (zoomOutBtn) {
-        zoomOutBtn.onclick = function () {
-          zoomWithCenter(0.9);
-        };
-      }
-      var resetViewBtn = resolveResetButton();
-      if (resetViewBtn) {
-        resetViewBtn.onclick = function () {
-          pan = _objectSpread({}, initialPan);
-          scale = INITIAL_SCALE;
-          apply();
-          manualPositions = {};
-          renderSetupDiagram();
-          if (scheduleProjectAutoSave) scheduleProjectAutoSave();else if (saveCurrentSession) saveCurrentSession();
-          if (checkSetupChanged) checkSetupChanged();
-        };
-      }
+      var attachDiagramButtonListener = function attachDiagramButtonListener(resolver, handler) {
+        var btn = resolver();
+        if (btn) {
+          btn.onclick = handler;
+        }
+      };
+      attachDiagramButtonListener(resolveZoomInButton, function () {
+        zoomWithCenter(1.1);
+      });
+      attachDiagramButtonListener(resolveZoomOutButton, function () {
+        zoomWithCenter(0.9);
+      });
+      attachDiagramButtonListener(resolveResetButton, function () {
+        pan = _objectSpread({}, initialPan);
+        scale = INITIAL_SCALE;
+        apply();
+        manualPositions = {};
+        renderSetupDiagram();
+        if (scheduleProjectAutoSave) scheduleProjectAutoSave();else if (saveCurrentSession) saveCurrentSession();
+        if (checkSetupChanged) checkSetupChanged();
+      });
       var onSvgMouseDown = function onSvgMouseDown(e) {
         if (e.target.closest('.diagram-node')) return;
         var pos = getPos(e);
@@ -1834,6 +1831,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (!Number.isFinite(viewportHeight) || viewportHeight <= margin * 2) return;
         var availableHeight = viewportHeight - margin * 2;
         if (availableHeight <= 0) return;
+        if (!popup) return;
         var currentHeight = popup.scrollHeight;
         if (!Number.isFinite(currentHeight) || currentHeight <= availableHeight) return;
         var maxWidth = Number.isFinite(viewportWidth) && viewportWidth > margin * 2 ? Math.max(260, viewportWidth - margin * 2) : Infinity;

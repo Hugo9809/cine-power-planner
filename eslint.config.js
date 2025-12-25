@@ -31,19 +31,35 @@ const additionalAppScriptFiles = {
 };
 
 const scriptDir = path.join(__dirname, 'src', 'scripts');
+const coreScriptDir = path.join(__dirname, 'src', 'scripts', 'core');
 let discoveredAppCoreFiles = [];
 
 try {
-  discoveredAppCoreFiles = fs
+  const rootFiles = fs
     .readdirSync(scriptDir)
     .filter(name => name.startsWith('app-core-') && name.endsWith('.js'))
     .map(name => name.slice(0, -3));
+
+  const coreFiles = fs
+    .readdirSync(coreScriptDir)
+    // Accept all JS files in core, or just app-core-*?
+    // The previous logic filtered for app-core-*, let's keep it broad for core/
+    // effectively treating everything in core/ as an app-core file needing globals.
+    .filter(name => name.endsWith('.js'))
+    .map(name => `core/${name.slice(0, -3)}`);
+
+  discoveredAppCoreFiles = [...rootFiles, ...coreFiles];
 } catch (readError) {
   void readError;
 }
 
 if (Array.isArray(discoveredAppCoreFiles) && discoveredAppCoreFiles.length) {
   const existing = additionalAppScriptFiles['app-core'] || [];
+  // existing list might contain "app-core-new-1", but now we found "core/app-core-new-1"
+  // We should deduplicate or prefer the found one.
+  // Actually, additionalAppScriptFiles hardcodes some names.
+  // If I moved them, I should probably remove them from the hardcoded list or let discovery handle it.
+
   additionalAppScriptFiles['app-core'] = Array.from(
     new Set([...existing, ...discoveredAppCoreFiles])
   );
@@ -53,7 +69,22 @@ const appScriptConfigs = Object.entries(appScriptGlobals).flatMap(([key, names])
   const fileKeys = [key, ...(additionalAppScriptFiles[key] || [])];
   const combinedNames = [...new Set([...names, ...(additionalGlobalsByKey[key] || [])])];
   return fileKeys
-    .map(fileKey => `src/scripts/${fileKey}.js`)
+    .map(fileKey => {
+      // Check if it's a core file path (already includes directory) or standard
+      if (fileKey.startsWith('core/')) {
+        return `src/scripts/${fileKey}.js`;
+      }
+      // Check if it exists in root, otherwise check core (fallback for hardcoded keys)
+      const rootPath = `src/scripts/${fileKey}.js`;
+      if (fs.existsSync(path.join(__dirname, rootPath))) {
+        return rootPath;
+      }
+      const corePath = `src/scripts/core/${fileKey}.js`;
+      if (fs.existsSync(path.join(__dirname, corePath))) {
+        return corePath;
+      }
+      return rootPath; // Fallback to root if neither found (will be filtered out next)
+    })
     .filter(srcFilePath => fs.existsSync(path.join(__dirname, srcFilePath)))
     .map(srcFilePath => ({
       files: [srcFilePath, `./${srcFilePath}`, `**/${srcFilePath}`],

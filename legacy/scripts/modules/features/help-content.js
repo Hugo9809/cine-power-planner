@@ -64,7 +64,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var localization = resolveLocalization(GLOBAL_SCOPE);
     if (!localization || typeof localization.getString !== 'function') return;
     list.innerHTML = '';
-    var topics = ['projectManagement', 'saveShareBackup', 'deviceConfiguration', 'powerCalculation', 'connectionDiagram', 'gearList', 'contacts', 'ownGear', 'settings', 'offlineUse'];
+    var topics = ['projectManagement', 'saveShareBackup', 'deviceConfiguration', 'powerCalculation', 'connectionDiagram', 'gearList', 'contacts', 'ownGear', 'settings', 'offlineUse', 'troubleshooting', 'shortcuts', 'pinkMode'];
     var hasTopics = false;
     topics.forEach(function (topicKey) {
       var title = localization.getString("helpTopics.".concat(topicKey, ".title"));
@@ -80,7 +80,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var contentDiv = doc.createElement('div');
       contentDiv.className = 'help-topic-content';
       contentDiv.hidden = true;
-      contentDiv.innerHTML = "<p>".concat(content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'), "</p>");
+      var parseMarkdown = function parseMarkdown(text) {
+        if (!text) return '';
+        var html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>').replace(/`(.*?)`/g, '<code>$1</code>');
+        return html.split(/\n\n+/).map(function (block) {
+          if (block.trim().startsWith('- ')) {
+            var items = block.trim().split(/\n/).map(function (line) {
+              return "<li>".concat(line.replace(/^- /, ''), "</li>");
+            }).join('');
+            return "<ul>".concat(items, "</ul>");
+          }
+          return "<p>".concat(block, "</p>");
+        }).join('');
+      };
+      contentDiv.innerHTML = parseMarkdown(content);
       button.addEventListener('click', function () {
         var isExpanded = button.getAttribute('aria-expanded') === 'true';
         var allButtons = list.querySelectorAll('.help-topic-link');

@@ -1,4 +1,4 @@
-var _localAutoGearConditi, _localAutoGearConditi2, _localAutoGearConditi3, _localAutoGearConditi4, _localAutoGearConditi5, _localAutoGearConditi6, _localAutoGearConditi7, _localAutoGearConditi8, _localAutoGearConditi9, _localAutoGearConditi0, _localAutoGearConditi1, _localAutoGearConditi10, _localAutoGearConditi11, _localAutoGearConditi12, _localAutoGearConditi13, _localAutoGearConditi14, _localAutoGearConditi15, _localAutoGearConditi16, _localAutoGearConditi17, _localAutoGearConditi18, _localAutoGearConditi19, _localAutoGearConditi20, _localAutoGearConditi21, _localAutoGearConditi22, _localAutoGearConditi23, _localAutoGearConditi24, _localAutoGearConditi25, _localAutoGearConditi26, _localAutoGearConditi27, _localAutoGearConditi28, _localAutoGearConditi29, _localAutoGearConditi30, _localAutoGearConditi31, _localAutoGearConditi32, _localAutoGearConditi33, _localAutoGearConditi34, _localAutoGearConditi35, _localAutoGearConditi36, _localAutoGearConditi37, _localAutoGearConditi38, _localAutoGearConditi39, _localAutoGearConditi40, _localAutoGearConditi41, _localAutoGearConditi42, _settingsButton$query;
+var _settingsButton$query;
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -22,12 +22,6 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function () {
   if (typeof window !== 'undefined') {
-    if (!window.resolvePinkModeLottieRuntime) window.resolvePinkModeLottieRuntime = function () {
-      return null;
-    };
-    if (!window.ensurePinkModeLottieRuntime) window.ensurePinkModeLottieRuntime = function () {
-      return Promise.resolve(null);
-    };
     if (!window.ensureSvgHasAriaHidden) window.ensureSvgHasAriaHidden = function (m) {
       return m;
     };
@@ -322,6 +316,15 @@ var CORE_RUNTIME_TOOL_FALLBACK_NAMESPACE = resolveCoreSupportModule('cineCoreRun
 var RUNTIME_TOOL_INLINE_FALLBACK_TOOLS = resolveCoreSupportModule('cineCoreAppRuntimeToolInlineFallbacks', './modules/app-core/runtime.js');
 var SETTINGS_DOCUMENTATION_TRACKER_TOOLS = resolveCoreSupportModule('cineCoreAppSettingsDocumentationTracker', './modules/app-core/settings-documentation-tracker.js');
 var pinkModeSupportApiRef = typeof PINK_MODE_SUPPORT_API !== 'undefined' ? PINK_MODE_SUPPORT_API : null;
+if (!pinkModeSupportApiRef) {
+  if (typeof cineCorePinkModeSupport !== 'undefined') {
+    pinkModeSupportApiRef = cineCorePinkModeSupport;
+  } else if (typeof window !== 'undefined' && window.cineCorePinkModeSupport) {
+    pinkModeSupportApiRef = window.cineCorePinkModeSupport;
+  } else if (typeof globalThis !== 'undefined' && globalThis.cineCorePinkModeSupport) {
+    pinkModeSupportApiRef = globalThis.cineCorePinkModeSupport;
+  }
+}
 if (!pinkModeSupportApiRef && typeof require === 'function') {
   try {
     var pinkModeModule = require('./app-core-pink-mode.js');
@@ -410,6 +413,14 @@ exposeCoreRuntimeConstant('formatSvgCoordinate', formatSvgCoordinate);
 exposeCoreRuntimeConstant('positionSvgMarkup', positionSvgMarkup);
 exposeCoreRuntimeConstant('iconMarkup', iconMarkup);
 exposeCoreRuntimeConstant('ICON_GLYPHS', ICON_GLYPHS);
+exposeCoreRuntimeConstant('pinkModeIcons', pinkModeIcons);
+exposeCoreRuntimeConstant('setPinkModeIconSequence', setPinkModeIconSequence);
+exposeCoreRuntimeConstant('ensureSvgHasAriaHidden', ensureSvgHasAriaHidden);
+exposeCoreRuntimeConstant('ensurePinkModeLottieRuntime', ensurePinkModeLottieRuntime);
+exposeCoreRuntimeConstant('resolvePinkModeLottieRuntime', localResolvePinkModeLottieRuntime);
+exposeCoreRuntimeConstant('startPinkModeAnimatedIcons', startPinkModeAnimatedIcons);
+exposeCoreRuntimeConstant('stopPinkModeAnimatedIcons', stopPinkModeAnimatedIcons);
+exposeCoreRuntimeConstant('triggerPinkModeIconRain', triggerPinkModeIconRain);
 var CORE_RUNTIME_STATE_SUPPORT = function resolveCoreRuntimeStateSupport() {
   var resolvedSupport = null;
   if (typeof resolveCoreSupportModule === 'function') {
@@ -512,30 +523,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
   }
 }
-var localAutoGearConditionSections = {
-  always: document.getElementById('autoGearCondition-always'),
-  scenarios: document.getElementById('autoGearCondition-scenarios'),
-  shootingDays: document.getElementById('autoGearCondition-shootingDays'),
-  mattebox: document.getElementById('autoGearCondition-mattebox'),
-  cameraHandle: document.getElementById('autoGearCondition-cameraHandle'),
-  viewfinderExtension: document.getElementById('autoGearCondition-viewfinderExtension'),
-  deliveryResolution: document.getElementById('autoGearCondition-deliveryResolution'),
-  videoDistribution: document.getElementById('autoGearCondition-videoDistribution'),
-  camera: document.getElementById('autoGearCondition-camera'),
-  ownGear: document.getElementById('autoGearCondition-ownGear'),
-  cameraWeight: document.getElementById('autoGearCondition-cameraWeight'),
-  monitor: document.getElementById('autoGearCondition-monitor'),
-  tripodHeadBrand: document.getElementById('autoGearCondition-tripodHeadBrand'),
-  tripodBowl: document.getElementById('autoGearCondition-tripodBowl'),
-  tripodTypes: document.getElementById('autoGearCondition-tripodTypes'),
-  tripodSpreader: document.getElementById('autoGearCondition-tripodSpreader'),
-  crewPresent: document.getElementById('autoGearCondition-crewPresent'),
-  crewAbsent: document.getElementById('autoGearCondition-crewAbsent'),
-  wireless: document.getElementById('autoGearCondition-wireless'),
-  motors: document.getElementById('autoGearCondition-motors'),
-  controllers: document.getElementById('autoGearCondition-controllers'),
-  distance: document.getElementById('autoGearCondition-distance')
-};
+var localAutoGearConditionSections = {};
 var CORE_RUNTIME_TOOL_FALLBACK_FACTORY = CORE_RUNTIME_TOOL_FALLBACK_NAMESPACE && typeof CORE_RUNTIME_TOOL_FALLBACK_NAMESPACE.createRuntimeToolFallbacks === 'function' ? CORE_RUNTIME_TOOL_FALLBACK_NAMESPACE.createRuntimeToolFallbacks : null;
 if (!CORE_RUNTIME_TOOL_FALLBACK_FACTORY) {
   var runtimeToolFallbacks = resolvedRequireCoreRuntimeModule('modules/core/runtime-tool-fallbacks.js', {
@@ -2072,11 +2060,24 @@ var localOptimiseAvatarDataUrl = typeof resolvedOptimiseAvatarDataUrl === 'funct
   }
   return Promise.resolve(typeof dataUrl === 'string' ? dataUrl : '');
 };
-var localReadAvatarFile = typeof resolvedReadAvatarFile === 'function' ? resolvedReadAvatarFile : function () {
-  return Promise.reject(new Error('Avatar file reader unavailable'));
+var localReadAvatarFile = typeof resolvedReadAvatarFile === 'function' ? resolvedReadAvatarFile : typeof readAvatarFile === 'function' ? readAvatarFile : typeof window !== 'undefined' && typeof window.readAvatarFile === 'function' ? window.readAvatarFile : function (file, onSuccess, onError) {
+  if (!file) return;
+  try {
+    var reader = new FileReader();
+    reader.onload = function () {
+      if (typeof onSuccess === 'function') onSuccess(reader.result);
+    };
+    reader.onerror = function () {
+      if (typeof onError === 'function') onError('readError');
+    };
+    reader.readAsDataURL(file);
+  } catch (e) {
+    if (typeof onError === 'function') onError('readError');
+  }
 };
-var localIsSafeImageUrl = typeof resolvedIsSafeImageUrl === 'function' ? resolvedIsSafeImageUrl : function () {
-  return false;
+var localIsSafeImageUrl = typeof resolvedIsSafeImageUrl === 'function' ? resolvedIsSafeImageUrl : function (url) {
+  if (typeof url !== 'string') return false;
+  return url.startsWith('data:image/');
 };
 var sanitizeContactValueHelper = typeof resolvedSanitizeContactValue === 'function' ? resolvedSanitizeContactValue : fallbackSanitizeContactValue;
 var normalizeContactEntryHelper = typeof resolvedNormalizeContactEntry === 'function' ? resolvedNormalizeContactEntry : fallbackNormalizeContactEntry;
@@ -3585,7 +3586,15 @@ function setupSideMenu() {
   var menu = document.getElementById('sideMenu');
   var overlay = document.getElementById('menuOverlay');
   var closeButton = document.getElementById('closeMenuButton');
-  if (!toggle || !menu || !overlay) return;
+  if (!toggle || !menu || !overlay) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', setupSideMenu);
+    }
+    return;
+  }
+  if (toggle.dataset.menuInitialized) return;
+  toggle.dataset.menuInitialized = 'true';
+  var originalDisplay = overlay.style.display;
   toggle.addEventListener('click', function () {
     if (menu.classList.contains('open')) {
       closeSideMenu();
@@ -3654,7 +3663,14 @@ function setupResponsiveControls() {
   var featureSearch = topBar === null || topBar === void 0 ? void 0 : topBar.querySelector('.feature-search');
   var controls = topBar === null || topBar === void 0 ? void 0 : topBar.querySelector('.controls');
   var sidebarControls = document.querySelector('#sideMenu .sidebar-controls');
-  if (!topBar || !featureSearch || !controls || !sidebarControls || typeof window.matchMedia !== 'function') return;
+  if (!topBar || !featureSearch || !controls || !sidebarControls || typeof window.matchMedia !== 'function') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', setupResponsiveControls);
+    }
+    return;
+  }
+  if (topBar.dataset.responsiveInitialized) return;
+  topBar.dataset.responsiveInitialized = 'true';
   var mql = window.matchMedia('(max-width: 768px)');
   var relocate = function relocate() {
     if (mql.matches) {
@@ -4777,7 +4793,7 @@ function updateViewfinderSettingsVisibility() {
     } else {
       viewfinderSettingsRow.classList.add('hidden');
       var vfSelect = document.getElementById('viewfinderSettings');
-      if (vfSelect) {
+      if (vfSelect && vfSelect.options) {
         Array.from(vfSelect.options).forEach(function (o) {
           o.selected = false;
         });
@@ -4928,7 +4944,7 @@ function updateBatteryOptions() {
     }));
   }
   populateSelect(hotswapSelect, swaps, true);
-  if (Array.from(batterySelect.options).some(function (o) {
+  if (batterySelect.options && Array.from(batterySelect.options).some(function (o) {
     return o.value === current;
   })) {
     batterySelect.value = current;
@@ -4942,7 +4958,7 @@ function updateBatteryOptions() {
       }
     });
   }
-  if (Array.from(hotswapSelect.options).some(function (o) {
+  if (hotswapSelect.options && Array.from(hotswapSelect.options).some(function (o) {
     return o.value === currentSwap;
   })) {
     hotswapSelect.value = currentSwap;
@@ -5354,124 +5370,49 @@ if (typeof texts === 'undefined') {
 } else {
   gearItemTranslations = typeof gearItems !== 'undefined' ? gearItems : {};
 }
-var autoGearHeadingElem = document.getElementById('autoGearHeading');
-var autoGearDescriptionElem = document.getElementById('autoGearDescription');
-var autoGearMonitorDefaultsSection = document.getElementById('autoGearMonitorDefaultsSection');
-var autoGearMonitorDefaultsHeading = document.getElementById('autoGearMonitorDefaultsHeading');
-var autoGearMonitorDefaultsDescription = document.getElementById('autoGearMonitorDefaultsDescription');
-var autoGearDefaultFocusMonitorSelect = document.getElementById('autoGearDefaultFocusMonitor');
-var autoGearDefaultHandheldMonitorSelect = document.getElementById('autoGearDefaultHandheldMonitor');
-var autoGearDefaultComboMonitorSelect = document.getElementById('autoGearDefaultComboMonitor');
-var autoGearDefaultDirectorMonitorSelect = document.getElementById('autoGearDefaultDirectorMonitor');
-var autoGearDefaultFocusMonitorLabel = document.getElementById('autoGearDefaultFocusMonitorLabel');
-var autoGearDefaultHandheldMonitorLabel = document.getElementById('autoGearDefaultHandheldMonitorLabel');
-var autoGearDefaultComboMonitorLabel = document.getElementById('autoGearDefaultComboMonitorLabel');
-var autoGearDefaultDirectorMonitorLabel = document.getElementById('autoGearDefaultDirectorMonitorLabel');
-var autoGearMonitorDefaultControls = [{
-  key: 'focus',
-  select: autoGearDefaultFocusMonitorSelect,
-  label: autoGearDefaultFocusMonitorLabel
-}, {
-  key: 'handheld7',
-  select: autoGearDefaultHandheldMonitorSelect,
-  label: autoGearDefaultHandheldMonitorLabel
-}, {
-  key: 'combo15',
-  select: autoGearDefaultComboMonitorSelect,
-  label: autoGearDefaultComboMonitorLabel
-}, {
-  key: 'director15',
-  select: autoGearDefaultDirectorMonitorSelect,
-  label: autoGearDefaultDirectorMonitorLabel
-}];
-autoGearMonitorDefaultControls.forEach(function (control) {
-  if (!control || !control.select) return;
-  control.select.addEventListener('change', function (event) {
-    setAutoGearMonitorDefault(control.key, event.target.value);
-  });
-});
-var autoGearSearchInput = document.getElementById('autoGearSearch');
-var autoGearSearchLabel = document.getElementById('autoGearSearchLabel');
-var autoGearFilterScenarioLabel = document.getElementById('autoGearFilterScenarioLabel');
-var autoGearFilterScenarioSelect = document.getElementById('autoGearFilterScenario');
-var autoGearFilterClearButton = document.getElementById('autoGearFilterClear');
-var autoGearSummarySection = document.getElementById('autoGearSummary');
-var autoGearSummaryHeadingElem = document.getElementById('autoGearSummaryHeading');
-var autoGearSummaryDescriptionElem = document.getElementById('autoGearSummaryDescription');
-var autoGearSummaryCards = document.getElementById('autoGearSummaryCards');
-var autoGearSummaryDetails = document.getElementById('autoGearSummaryDetails');
-var autoGearRulesList = document.getElementById('autoGearRulesList');
-var autoGearPresetDescription = document.getElementById('autoGearPresetDescription');
-var autoGearPresetLabel = document.getElementById('autoGearPresetLabel');
-var autoGearPresetSelect = document.getElementById('autoGearPresetSelect');
-var autoGearSavePresetButton = document.getElementById('autoGearSavePreset');
-var autoGearDeletePresetButton = document.getElementById('autoGearDeletePreset');
-var autoGearAddRuleBtn = document.getElementById('autoGearAddRule');
-var autoGearResetFactoryButton = document.getElementById('autoGearResetFactory');
-var autoGearEditor = document.getElementById('autoGearEditor');
-var autoGearConditionControls = document.getElementById('autoGearConditionControls');
-var autoGearConditionSelectLabel = document.getElementById('autoGearConditionSelectLabel');
-var autoGearConditionSelect = document.getElementById('autoGearConditionSelect');
-var autoGearConditionAddButton = document.getElementById('autoGearConditionAdd');
-var autoGearConditionList = document.getElementById('autoGearConditionList');
-var autoGearAlwaysLabel = document.getElementById('autoGearAlwaysLabel');
-var autoGearAlwaysHelp = document.getElementById('autoGearAlwaysHelp');
-var autoGearCameraWeightSection = document.getElementById('autoGearCondition-cameraWeight');
-var autoGearConditionAddShortcuts = {
-  always: ((_localAutoGearConditi = localAutoGearConditionSections.always) === null || _localAutoGearConditi === void 0 ? void 0 : _localAutoGearConditi.querySelector('.auto-gear-condition-add')) || null,
-  scenarios: ((_localAutoGearConditi2 = localAutoGearConditionSections.scenarios) === null || _localAutoGearConditi2 === void 0 ? void 0 : _localAutoGearConditi2.querySelector('.auto-gear-condition-add')) || null,
-  shootingDays: ((_localAutoGearConditi3 = localAutoGearConditionSections.shootingDays) === null || _localAutoGearConditi3 === void 0 ? void 0 : _localAutoGearConditi3.querySelector('.auto-gear-condition-add')) || null,
-  mattebox: ((_localAutoGearConditi4 = localAutoGearConditionSections.mattebox) === null || _localAutoGearConditi4 === void 0 ? void 0 : _localAutoGearConditi4.querySelector('.auto-gear-condition-add')) || null,
-  cameraHandle: ((_localAutoGearConditi5 = localAutoGearConditionSections.cameraHandle) === null || _localAutoGearConditi5 === void 0 ? void 0 : _localAutoGearConditi5.querySelector('.auto-gear-condition-add')) || null,
-  viewfinderExtension: ((_localAutoGearConditi6 = localAutoGearConditionSections.viewfinderExtension) === null || _localAutoGearConditi6 === void 0 ? void 0 : _localAutoGearConditi6.querySelector('.auto-gear-condition-add')) || null,
-  deliveryResolution: ((_localAutoGearConditi7 = localAutoGearConditionSections.deliveryResolution) === null || _localAutoGearConditi7 === void 0 ? void 0 : _localAutoGearConditi7.querySelector('.auto-gear-condition-add')) || null,
-  videoDistribution: ((_localAutoGearConditi8 = localAutoGearConditionSections.videoDistribution) === null || _localAutoGearConditi8 === void 0 ? void 0 : _localAutoGearConditi8.querySelector('.auto-gear-condition-add')) || null,
-  camera: ((_localAutoGearConditi9 = localAutoGearConditionSections.camera) === null || _localAutoGearConditi9 === void 0 ? void 0 : _localAutoGearConditi9.querySelector('.auto-gear-condition-add')) || null,
-  ownGear: ((_localAutoGearConditi0 = localAutoGearConditionSections.ownGear) === null || _localAutoGearConditi0 === void 0 ? void 0 : _localAutoGearConditi0.querySelector('.auto-gear-condition-add')) || null,
-  cameraWeight: ((_localAutoGearConditi1 = localAutoGearConditionSections.cameraWeight) === null || _localAutoGearConditi1 === void 0 ? void 0 : _localAutoGearConditi1.querySelector('.auto-gear-condition-add')) || null,
-  monitor: ((_localAutoGearConditi10 = localAutoGearConditionSections.monitor) === null || _localAutoGearConditi10 === void 0 ? void 0 : _localAutoGearConditi10.querySelector('.auto-gear-condition-add')) || null,
-  tripodHeadBrand: ((_localAutoGearConditi11 = localAutoGearConditionSections.tripodHeadBrand) === null || _localAutoGearConditi11 === void 0 ? void 0 : _localAutoGearConditi11.querySelector('.auto-gear-condition-add')) || null,
-  tripodBowl: ((_localAutoGearConditi12 = localAutoGearConditionSections.tripodBowl) === null || _localAutoGearConditi12 === void 0 ? void 0 : _localAutoGearConditi12.querySelector('.auto-gear-condition-add')) || null,
-  tripodTypes: ((_localAutoGearConditi13 = localAutoGearConditionSections.tripodTypes) === null || _localAutoGearConditi13 === void 0 ? void 0 : _localAutoGearConditi13.querySelector('.auto-gear-condition-add')) || null,
-  tripodSpreader: ((_localAutoGearConditi14 = localAutoGearConditionSections.tripodSpreader) === null || _localAutoGearConditi14 === void 0 ? void 0 : _localAutoGearConditi14.querySelector('.auto-gear-condition-add')) || null,
-  crewPresent: ((_localAutoGearConditi15 = localAutoGearConditionSections.crewPresent) === null || _localAutoGearConditi15 === void 0 ? void 0 : _localAutoGearConditi15.querySelector('.auto-gear-condition-add')) || null,
-  crewAbsent: ((_localAutoGearConditi16 = localAutoGearConditionSections.crewAbsent) === null || _localAutoGearConditi16 === void 0 ? void 0 : _localAutoGearConditi16.querySelector('.auto-gear-condition-add')) || null,
-  wireless: ((_localAutoGearConditi17 = localAutoGearConditionSections.wireless) === null || _localAutoGearConditi17 === void 0 ? void 0 : _localAutoGearConditi17.querySelector('.auto-gear-condition-add')) || null,
-  motors: ((_localAutoGearConditi18 = localAutoGearConditionSections.motors) === null || _localAutoGearConditi18 === void 0 ? void 0 : _localAutoGearConditi18.querySelector('.auto-gear-condition-add')) || null,
-  controllers: ((_localAutoGearConditi19 = localAutoGearConditionSections.controllers) === null || _localAutoGearConditi19 === void 0 ? void 0 : _localAutoGearConditi19.querySelector('.auto-gear-condition-add')) || null,
-  distance: ((_localAutoGearConditi20 = localAutoGearConditionSections.distance) === null || _localAutoGearConditi20 === void 0 ? void 0 : _localAutoGearConditi20.querySelector('.auto-gear-condition-add')) || null
-};
-var autoGearConditionRemoveButtons = {
-  always: ((_localAutoGearConditi21 = localAutoGearConditionSections.always) === null || _localAutoGearConditi21 === void 0 ? void 0 : _localAutoGearConditi21.querySelector('.auto-gear-condition-remove')) || null,
-  scenarios: ((_localAutoGearConditi22 = localAutoGearConditionSections.scenarios) === null || _localAutoGearConditi22 === void 0 ? void 0 : _localAutoGearConditi22.querySelector('.auto-gear-condition-remove')) || null,
-  shootingDays: ((_localAutoGearConditi23 = localAutoGearConditionSections.shootingDays) === null || _localAutoGearConditi23 === void 0 ? void 0 : _localAutoGearConditi23.querySelector('.auto-gear-condition-remove')) || null,
-  mattebox: ((_localAutoGearConditi24 = localAutoGearConditionSections.mattebox) === null || _localAutoGearConditi24 === void 0 ? void 0 : _localAutoGearConditi24.querySelector('.auto-gear-condition-remove')) || null,
-  cameraHandle: ((_localAutoGearConditi25 = localAutoGearConditionSections.cameraHandle) === null || _localAutoGearConditi25 === void 0 ? void 0 : _localAutoGearConditi25.querySelector('.auto-gear-condition-remove')) || null,
-  viewfinderExtension: ((_localAutoGearConditi26 = localAutoGearConditionSections.viewfinderExtension) === null || _localAutoGearConditi26 === void 0 ? void 0 : _localAutoGearConditi26.querySelector('.auto-gear-condition-remove')) || null,
-  deliveryResolution: ((_localAutoGearConditi27 = localAutoGearConditionSections.deliveryResolution) === null || _localAutoGearConditi27 === void 0 ? void 0 : _localAutoGearConditi27.querySelector('.auto-gear-condition-remove')) || null,
-  videoDistribution: ((_localAutoGearConditi28 = localAutoGearConditionSections.videoDistribution) === null || _localAutoGearConditi28 === void 0 ? void 0 : _localAutoGearConditi28.querySelector('.auto-gear-condition-remove')) || null,
-  camera: ((_localAutoGearConditi29 = localAutoGearConditionSections.camera) === null || _localAutoGearConditi29 === void 0 ? void 0 : _localAutoGearConditi29.querySelector('.auto-gear-condition-remove')) || null,
-  ownGear: ((_localAutoGearConditi30 = localAutoGearConditionSections.ownGear) === null || _localAutoGearConditi30 === void 0 ? void 0 : _localAutoGearConditi30.querySelector('.auto-gear-condition-remove')) || null,
-  cameraWeight: ((_localAutoGearConditi31 = localAutoGearConditionSections.cameraWeight) === null || _localAutoGearConditi31 === void 0 ? void 0 : _localAutoGearConditi31.querySelector('.auto-gear-condition-remove')) || null,
-  monitor: ((_localAutoGearConditi32 = localAutoGearConditionSections.monitor) === null || _localAutoGearConditi32 === void 0 ? void 0 : _localAutoGearConditi32.querySelector('.auto-gear-condition-remove')) || null,
-  tripodHeadBrand: ((_localAutoGearConditi33 = localAutoGearConditionSections.tripodHeadBrand) === null || _localAutoGearConditi33 === void 0 ? void 0 : _localAutoGearConditi33.querySelector('.auto-gear-condition-remove')) || null,
-  tripodBowl: ((_localAutoGearConditi34 = localAutoGearConditionSections.tripodBowl) === null || _localAutoGearConditi34 === void 0 ? void 0 : _localAutoGearConditi34.querySelector('.auto-gear-condition-remove')) || null,
-  tripodTypes: ((_localAutoGearConditi35 = localAutoGearConditionSections.tripodTypes) === null || _localAutoGearConditi35 === void 0 ? void 0 : _localAutoGearConditi35.querySelector('.auto-gear-condition-remove')) || null,
-  tripodSpreader: ((_localAutoGearConditi36 = localAutoGearConditionSections.tripodSpreader) === null || _localAutoGearConditi36 === void 0 ? void 0 : _localAutoGearConditi36.querySelector('.auto-gear-condition-remove')) || null,
-  crewPresent: ((_localAutoGearConditi37 = localAutoGearConditionSections.crewPresent) === null || _localAutoGearConditi37 === void 0 ? void 0 : _localAutoGearConditi37.querySelector('.auto-gear-condition-remove')) || null,
-  crewAbsent: ((_localAutoGearConditi38 = localAutoGearConditionSections.crewAbsent) === null || _localAutoGearConditi38 === void 0 ? void 0 : _localAutoGearConditi38.querySelector('.auto-gear-condition-remove')) || null,
-  wireless: ((_localAutoGearConditi39 = localAutoGearConditionSections.wireless) === null || _localAutoGearConditi39 === void 0 ? void 0 : _localAutoGearConditi39.querySelector('.auto-gear-condition-remove')) || null,
-  motors: ((_localAutoGearConditi40 = localAutoGearConditionSections.motors) === null || _localAutoGearConditi40 === void 0 ? void 0 : _localAutoGearConditi40.querySelector('.auto-gear-condition-remove')) || null,
-  controllers: ((_localAutoGearConditi41 = localAutoGearConditionSections.controllers) === null || _localAutoGearConditi41 === void 0 ? void 0 : _localAutoGearConditi41.querySelector('.auto-gear-condition-remove')) || null,
-  distance: ((_localAutoGearConditi42 = localAutoGearConditionSections.distance) === null || _localAutoGearConditi42 === void 0 ? void 0 : _localAutoGearConditi42.querySelector('.auto-gear-condition-remove')) || null
-};
-if (autoGearAddRuleBtn) {
-  autoGearAddRuleBtn.setAttribute('aria-controls', 'autoGearEditor');
-  autoGearAddRuleBtn.setAttribute('aria-expanded', autoGearEditor && !autoGearEditor.hidden ? 'true' : 'false');
-}
-if (autoGearEditor) {
-  autoGearEditor.setAttribute('aria-hidden', autoGearEditor.hidden ? 'true' : 'false');
-}
+var autoGearHeadingElem = null;
+var autoGearDescriptionElem = null;
+var autoGearMonitorDefaultsSection = null;
+var autoGearMonitorDefaultsHeading = null;
+var autoGearMonitorDefaultsDescription = null;
+var autoGearDefaultFocusMonitorSelect = null;
+var autoGearDefaultHandheldMonitorSelect = null;
+var autoGearDefaultComboMonitorSelect = null;
+var autoGearDefaultDirectorMonitorSelect = null;
+var autoGearDefaultFocusMonitorLabel = null;
+var autoGearDefaultHandheldMonitorLabel = null;
+var autoGearDefaultComboMonitorLabel = null;
+var autoGearDefaultDirectorMonitorLabel = null;
+var autoGearMonitorDefaultControls = [];
+var autoGearSearchInput = null;
+var autoGearSearchLabel = null;
+var autoGearFilterScenarioLabel = null;
+var autoGearFilterScenarioSelect = null;
+var autoGearFilterClearButton = null;
+var autoGearSummarySection = null;
+var autoGearSummaryHeadingElem = null;
+var autoGearSummaryDescriptionElem = null;
+var autoGearSummaryCards = null;
+var autoGearSummaryDetails = null;
+var autoGearRulesList = null;
+var autoGearPresetDescription = null;
+var autoGearPresetLabel = null;
+var autoGearPresetSelect = null;
+var autoGearSavePresetButton = null;
+var autoGearDeletePresetButton = null;
+var autoGearAddRuleBtn = null;
+var autoGearResetFactoryButton = null;
+var autoGearEditor = null;
+var autoGearConditionControls = null;
+var autoGearConditionSelectLabel = null;
+var autoGearConditionSelect = null;
+var autoGearConditionAddButton = null;
+var autoGearConditionList = null;
+var autoGearAlwaysLabel = null;
+var autoGearAlwaysHelp = null;
+var autoGearCameraWeightSection = null;
+var autoGearConditionAddShortcuts = {};
+var autoGearConditionRemoveButtons = {};
 var AUTO_GEAR_UI_EXPORTS = function resolveAutoGearUiExports() {
   if (typeof resolveCoreSupportModule === 'function') {
     try {
@@ -5881,7 +5822,7 @@ function setLanguage(_x) {
 function _setLanguage() {
   _setLanguage = _asyncToGenerator(_regenerator().m(function _callee2(lang) {
     var _texts$en54, _texts$en55, _texts$en56, _texts$en57, _texts$en58, _texts$en59, _texts$en60, _texts$en61, _texts$en62, _texts$en63, _texts$en64, _texts$en65, _texts$en66, _texts$en67, _texts$en68, _texts$en69, _texts$en70, _texts$en71, _texts$en72, _texts$en73, _texts$en75, _texts$en180, _texts$en181, _texts$lang, _texts$en182, _texts$lang2, _texts$en183, _texts$lang3, _texts$en184, _texts$lang4, _texts$en185, _texts$en247;
-    var requested, resolved, normalizedLang, loadResult, translationSource, previousLang, shouldDispatchLanguageChange, dispatchLanguageChange, doc, runtimeScope, attemptRefreshDeviceLists, retryRefresh, fallbackLocale, normalizeTemperatureUnitSafe, FALLBACK_NORMALIZE_FOCUS_SCALE, ensureNormalizeFocusScaleHelper, normalizeFocusScaleSafe, resolveFocusScalePreference, resolveLocaleString, applyTextContent, createHelpLink, applySuggestionTemplate, applySuggestionText, resolveRuntimeValue, registerResolvedElement, resolveElement, settingsShowAutoBackupsEl, backupSettingsButton, backupDiffToggleButtonEl, backupDiffHeadingEl, backupDiffIntroEl, backupDiffPrimaryLabelEl, backupDiffPrimarySelectEl, backupDiffSecondaryLabelEl, backupDiffSecondarySelectEl, backupDiffEmptyStateEl, backupDiffNotesLabelEl, backupDiffNotesEl, backupDiffExportButtonEl, backupDiffCloseButtonEl, restoreRehearsalButton, restoreRehearsalHeading, restoreRehearsalIntro, restoreRehearsalModeLabel, restoreRehearsalModeBackupText, restoreRehearsalModeProjectText, restoreRehearsalFileLabel, restoreRehearsalBrowse, restoreRehearsalFileName, restoreRehearsalStatus, restoreRehearsalRuleHeading, restoreRehearsalRuleIntro, restoreRehearsalRuleEmpty, restoreRehearsalTableCaption, restoreRehearsalMetricHeader, restoreRehearsalLiveHeader, restoreRehearsalSandboxHeader, restoreRehearsalDifferenceHeader, restoreRehearsalCloseButton, restoreRehearsalProceedButton, restoreRehearsalAbortButton, offlineElem, offlineLabel, offlineNotice, offlineHelp, isExplicitlyOffline, legalLinks, impressumElem, privacyElem, setupManageHeadingElem, deviceSelectionHeadingElem, resultsHeadingElem, deviceManagerHeadingElem, batteryComparisonHeadingElem, batteryComparisonDescriptionElem, batteryTableElem, setupDiagramHeadingElem, sideMenuLinks, savedSetupsLabelElem, setupNameLabelElem, sharedLinkLabelElem, deleteGearListHelp, editProjectBtnElem, addExtraGearBtnElem, _texts$en27, extraLabel, _texts$en28, heading, _texts$en29, filenameLabel, _texts$en30, confirmLabel, _texts$en31, cancelLabel, _texts$en32, _texts$en33, label, help, _texts$en34, _texts$en35, _label3, _help2, sharedImportLegendText, _texts$en36, title, _texts$en37, message, _texts$en38, _label4, _texts$en39, _label5, _texts$en40, legend, _texts$en41, _texts$en42, _label6, _help3, _texts$en43, _texts$en44, _label7, _help4, _texts$en45, _texts$en46, _label8, _help5, cameraLabelElem, monitorLabelElem, videoLabelElem, cageLabelElem, distanceLabelElem, batteryPlateLabelElem, batteryHotswapLabelElem, fizLegendElem, fizMotorsLabelElem, fizControllersLabelElem, cineResultsModule, resultsLocalizationApplied, batteryComparisonLocalized, resultsPlainSummaryElem, resultsPlainSummaryTitleElem, resultsPlainSummaryTextElem, resultsPlainSummaryNoteElem, breakdownListTarget, totalPowerLabelElem, batteryCountLabelElem, unitElem, fb, _label9, userNote, idx, tempNoteElem, lensDeviceMountHeadingElem, lensDeviceMountLabelElem, lensFocusScaleLabelElem, focusScaleLabel, focusScaleHelp, monitorLatencyLabelElem, monitorLatencyHelpText, viewfinderLatencyLabelElem, viewfinderLatencyHelpText, videoPowerHeadingElem, videoPowerLabelElem, powerHelp, addDeviceLabel, updateDeviceLabel, noneMap, existingDevicesHeading, settingsTitleElem, _texts$en47, sectionsLabel, getSettingsTabLabelText, summarizeSettingsTabHelp, applySettingsTabLabel, _texts$en48, _texts$en49, generalLabel, generalHelp, _texts$en50, sectionHeading, _texts$en51, _sectionHeading, _texts$en52, _sectionHeading2, _texts$en53, _sectionHeading3, settingsLanguageLabel, languageHelp, settingsDarkLabel, darkModeHelp, settingsPinkLabel, pinkModeHelp, accentLabel, accentHelp, _texts$en74, description, cameraColorHelpTemplate, cameraColorLabelEntries, accentResetLabel, accentResetHelp, settingsTemperatureUnitLabel, tempUnitHelp, settingsFocusScaleLabel, _focusScaleHelp, fontSizeLabel, sizeHelp, fontFamilyLabel, familyHelp, localFontsHelp, builtInLabel, localLabel, localFontsLabel, statusKey, arg, template, settingsLogoLabel, logoHelp, _texts$en77, _texts$en78, headingHelp, _texts$en79, _texts$en80, _heading, _texts$en81, _description, _texts$en83, _texts$en84, _texts$en85, _label0, _help6, _texts$en86, _label1, _texts$en87, _label10, _texts$en88, _texts$en89, _label11, _help7, _texts$en90, _texts$en91, _label12, _help8, _texts$en92, _texts$en93, _label13, _help9, _texts$en94, _texts$en95, _label14, _help0, _texts$en96, _texts$en97, _label15, _help1, _texts$en98, placeholder, _texts$en99, _texts$en100, _label16, _help10, _texts$en101, _label17, _texts$en102, _texts$en103, _description2, _texts$en104, _texts$en105, _label18, _help11, _texts$en106, hiddenText, _texts$en107, _texts$en108, _label19, _help12, _texts$en109, _label20, _texts$en110, _label21, _texts$en111, emptyText, _texts$en112, _texts$en113, _label22, _help13, _texts$en114, _texts$en115, _label23, _help14, _texts$en116, _label24, _texts$en117, _texts$en118, _label25, _help15, _texts$en119, _texts$en120, _label26, _help16, _texts$en121, _texts$en122, modeLabel, modeHelp, _texts$en123, _texts$en124, baseLabel, baseHelp, _texts$en125, _texts$en126, factorLabel, factorHelp, _texts$en127, _texts$en128, _texts$en129, _texts$en130, _texts$en131, _texts$en132, _label27, _help17, minimumLabel, maximumLabel, everyLabel, valueLabel, _texts$en133, _texts$en134, _label28, _help18, _texts$en135, _texts$en136, _label29, _help19, _texts$en137, _texts$en138, _label30, _help20, _texts$en139, _texts$en140, _label31, _help21, _texts$en141, _texts$en142, _label32, _help22, _texts$en143, _texts$en144, _label33, _help23, _texts$en145, _texts$en146, _texts$en147, _texts$en148, _label34, _help24, _texts$en149, _texts$en150, _label35, _help25, _texts$en151, _label36, _texts$en152, _texts$en153, _texts$en154, greaterLabel, lessLabel, equalLabel, _texts$en155, _texts$en156, _label37, _help26, _texts$en157, _help27, _texts$en158, _texts$en159, _label38, _help28, _texts$en160, _texts$en161, _label39, _help29, _texts$en162, _texts$en163, _label40, _help30, _texts$en164, _texts$en165, _label41, _help31, _texts$en166, _texts$en167, _label42, _help32, _texts$en168, _texts$en169, _label43, _help33, _texts$en170, _texts$en171, _label44, _help34, _texts$en172, _texts$en173, _label45, _help35, _texts$en174, _texts$en175, _label46, _help36, _texts$en176, _texts$en177, _label47, _help37, _texts$en178, _texts$en179, _label48, _help38, logicLabelText, logicHelpText, logicOptionTexts, _texts$en186, _texts$en187, _texts$en188, _texts$en189, _label49, _help39, _placeholder, _texts$en190, _texts$en191, _label50, hint, helpText, _texts$en192, _label51, _texts$en193, _label52, _texts$en194, _label53, _texts$en195, _label54, _texts$en196, _texts$en197, _texts$en198, _texts$en199, _texts$en200, _texts$en201, _texts$en202, noneLabel, monitorLabel, directorLabel, tripodHeadLabel, _tripodBowlLabel, _tripodTypesLabel, _tripodSpreaderLabel, selectorLabels, _texts$en203, _label55, _texts$en204, _label56, _texts$en205, _texts$en206, _texts$en207, _texts$en208, _label57, _help40, _placeholder2, _texts$en209, _texts$en210, _label58, _hint, _helpText, _texts$en211, _label59, _texts$en212, _label60, _texts$en213, _label61, _texts$en214, _label62, _texts$en215, _texts$en216, _texts$en217, _texts$en218, _texts$en219, _texts$en220, _texts$en221, _noneLabel, _monitorLabel, _directorLabel, _tripodHeadLabel, _tripodBowlLabel2, _tripodTypesLabel2, _tripodSpreaderLabel2, _selectorLabels, _texts$en222, _label63, _texts$en223, _label64, _texts$en224, _heading2, _texts$en225, _description3, _texts$en226, _heading3, _texts$en227, _label65, _texts$en228, _label66, contrastLabel, contrastHelp, accessibilityHeading, backupHeading, projectBackupsHeading, headingText, descriptionText, projectBackupsDescription, _descriptionText, dataHelp, _texts$en229, _texts$en230, _headingText, _headingHelp, _texts$en231, _texts$en232, _texts$en233, requestLabel, requestHelp, _texts$en234, idleText, _texts$en235, _texts$en236, _headingText2, _headingHelp2, _texts$en237, _texts$en238, _texts$en239, backupLabel, backupHelp, _texts$en240, _texts$en241, openLabel, openHelp, _texts$en242, _texts$en243, statusHeading, statusHelp, _texts$en244, _texts$en245, _texts$en246, statusDefaultText, _texts$en248, sectionHelp, _texts$en249, _texts$en250, _headingText3, _headingHelp3, _texts$en251, _texts$en252, _filterLabel, _texts$en253, _texts$en254, _texts$en255, _texts$en256, _texts$en257, optionTexts, filterHelp, _texts$en258, namespaceLabel, _texts$en259, _texts$en260, _placeholder3, namespaceHelp, _texts$en261, historyLabel, _texts$en262, historyHelp, _texts$en263, _texts$en264, limitHelp, limitAria, _texts$en265, consoleLabel, _texts$en266, consoleHelp, _texts$en267, consoleCaptureLabel, _texts$en268, consoleCaptureHelp, _texts$en269, captureLabel, _texts$en270, captureHelp, _texts$en271, persistLabel, _texts$en272, persistHelp, _texts$en273, exportLabel, _texts$en274, exportHelp, _texts$en275, statusText, _texts$en276, _emptyText, _texts$en277, showAutoBackupsLabel, autoBackupsHelp, compareLabel, compareHelp, primaryLabel, compareLabelText, _placeholder4, _exportLabel, _exportHelp, closeLabel, _backupLabel, _backupHelp, restoreLabel, restoreHelp, rehearsalLabel, rehearsalHelp, browseLabel, _texts$en278, _texts$en279, _texts$en280, resolvedRestoreRehearsalCloseButton, _closeLabel, _texts$en281, _texts$en282, proceedLabel, proceedHelp, _texts$en283, _texts$en284, abortLabel, abortHelp, resetLabel, resetHelp, aboutHeading, aboutVersionElem, supportLinkConfigs, langTexts, fallbackTexts, _texts$en285, _label67, saveHelp, _texts$en286, _cancelLabel, cancelHelp, menuToggle, _texts$en287, _texts$en288, menuLabel, _closeLabel2, closeHelp, menuHelp, sideMenu, sideMenuHelp, sideMenuTitle, _texts$en289, titleLabel, titleHelp, closeMenuButton, closeMenuLabel, _texts$en290, _closeLabel3, _closeHelp, reloadLabel, reloadHelp, _offlineNotice, helpShortcutList, helpAriaShortcuts, quickStartHeading, fallback, onboardingCopyElement, fallbackCopy, dataSafetyHeading, _fallback, restoreDrillHeading, _fallback2, restoreDrillNote, _fallback3, _fallback4, _fallback5, exportRevert, downloadDiagramButton, snapActive, resetViewBtn, zoomInBtn, zoomOutBtn, diagramHint, fallbackProjectForm, projectFormTexts, _texts$en291, _texts$lang5, setLabelText, setPlaceholder, setOptionText, crewLabelText, rangeTemplate, defaultHint, legendText, slowRangeTemplate, slowDefaultHint, seriesEmptyText, optionsEmptyText, removeTemplate, mountLabelText, _noneLabel2, yesLabel, projectCancelButton, cancelText, submitText, crewPlaceholders, crewRoleLabels, fallbackContacts, contactsTexts, profileSnapshot, stripTrailingPunctuation, addEntryLabel, crewLabel, _label68, prepLabel, _label69, shootLabel, _label70, returnLabel, _label71, closeText, _t;
+    var requested, resolved, normalizedLang, loadResult, translationSource, previousLang, shouldDispatchLanguageChange, dispatchLanguageChange, doc, runtimeScope, attemptRefreshDeviceLists, retryRefresh, fallbackLocale, normalizeTemperatureUnitSafe, FALLBACK_NORMALIZE_FOCUS_SCALE, ensureNormalizeFocusScaleHelper, normalizeFocusScaleSafe, resolveFocusScalePreference, resolveLocaleString, applyTextContent, createHelpLink, applySuggestionTemplate, applySuggestionText, resolveRuntimeValue, registerResolvedElement, resolveElement, settingsShowAutoBackupsEl, backupSettingsButton, backupDiffToggleButtonEl, backupDiffHeadingEl, backupDiffIntroEl, backupDiffPrimaryLabelEl, backupDiffPrimarySelectEl, backupDiffSecondaryLabelEl, backupDiffSecondarySelectEl, backupDiffEmptyStateEl, backupDiffNotesLabelEl, backupDiffNotesEl, backupDiffExportButtonEl, backupDiffCloseButtonEl, restoreRehearsalButton, restoreRehearsalHeading, restoreRehearsalIntro, restoreRehearsalModeLabel, restoreRehearsalModeBackupText, restoreRehearsalModeProjectText, restoreRehearsalFileLabel, restoreRehearsalBrowse, restoreRehearsalFileName, restoreRehearsalStatus, restoreRehearsalRuleHeading, restoreRehearsalRuleIntro, restoreRehearsalRuleEmpty, restoreRehearsalTableCaption, restoreRehearsalMetricHeader, restoreRehearsalLiveHeader, restoreRehearsalSandboxHeader, restoreRehearsalDifferenceHeader, restoreRehearsalCloseButton, restoreRehearsalProceedButton, restoreRehearsalAbortButton, offlineElem, offlineLabel, offlineNotice, offlineHelp, isExplicitlyOffline, legalLinks, impressumElem, privacyElem, setupManageHeadingElem, deviceSelectionHeadingElem, resultsHeadingElem, deviceManagerHeadingElem, batteryComparisonHeadingElem, batteryComparisonDescriptionElem, batteryTableElem, setupDiagramHeadingElem, sideMenuLinks, savedSetupsLabelElem, setupNameLabelElem, sharedLinkLabelElem, deleteGearListHelp, editProjectBtnElem, addExtraGearBtnElem, _texts$en27, extraLabel, _texts$en28, heading, _texts$en29, filenameLabel, _texts$en30, confirmLabel, _texts$en31, cancelLabel, _texts$en32, _texts$en33, label, help, _texts$en34, _texts$en35, _label3, _help2, sharedImportLegendText, _texts$en36, title, _texts$en37, message, _texts$en38, _label4, _texts$en39, _label5, _texts$en40, legend, _texts$en41, _texts$en42, _label6, _help3, _texts$en43, _texts$en44, _label7, _help4, _texts$en45, _texts$en46, _label8, _help5, cameraLabelElem, monitorLabelElem, videoLabelElem, cageLabelElem, distanceLabelElem, batteryPlateLabelElem, batteryHotswapLabelElem, fizLegendElem, fizMotorsLabelElem, fizControllersLabelElem, cineResultsModule, resultsLocalizationApplied, batteryComparisonLocalized, resultsPlainSummaryElem, resultsPlainSummaryTitleElem, resultsPlainSummaryTextElem, resultsPlainSummaryNoteElem, breakdownListTarget, totalPowerLabelElem, batteryCountLabelElem, unitElem, fb, _label9, userNote, idx, tempNoteElem, lensDeviceMountHeadingElem, lensDeviceMountLabelElem, lensFocusScaleLabelElem, focusScaleLabel, focusScaleHelp, monitorLatencyLabelElem, monitorLatencyHelpText, viewfinderLatencyLabelElem, viewfinderLatencyHelpText, videoPowerHeadingElem, videoPowerLabelElem, powerHelp, addDeviceLabel, updateDeviceLabel, noneMap, existingDevicesHeading, settingsTitleElem, settingsTablistRef, _texts$en47, sectionsLabel, getSettingsTabLabelText, summarizeSettingsTabHelp, applySettingsTabLabel, _texts$en48, _texts$en49, generalLabel, generalHelp, _texts$en50, sectionHeading, _texts$en51, _sectionHeading, _texts$en52, _sectionHeading2, _texts$en53, _sectionHeading3, settingsLanguageLabel, languageHelp, settingsDarkLabel, darkModeHelp, settingsPinkLabel, pinkModeHelp, accentLabel, accentHelp, _texts$en74, description, cameraColorHelpTemplate, cameraColorLabelEntries, accentResetLabel, accentResetHelp, settingsTemperatureUnitLabel, tempUnitHelp, settingsFocusScaleLabel, _focusScaleHelp, fontSizeLabel, sizeHelp, fontFamilyLabel, familyHelp, localFontsHelp, builtInLabel, localLabel, localFontsLabel, statusKey, arg, template, settingsLogoLabel, logoHelp, _texts$en77, _texts$en78, headingHelp, _texts$en79, _texts$en80, _heading, _texts$en81, _description, _texts$en83, _texts$en84, _texts$en85, _label0, _help6, _texts$en86, _label1, _texts$en87, _label10, _texts$en88, _texts$en89, _label11, _help7, _texts$en90, _texts$en91, _label12, _help8, _texts$en92, _texts$en93, _label13, _help9, _texts$en94, _texts$en95, _label14, _help0, _texts$en96, _texts$en97, _label15, _help1, _texts$en98, placeholder, _texts$en99, _texts$en100, _label16, _help10, _texts$en101, _label17, _texts$en102, _texts$en103, _description2, _texts$en104, _texts$en105, _label18, _help11, _texts$en106, hiddenText, _texts$en107, _texts$en108, _label19, _help12, _texts$en109, _label20, _texts$en110, _label21, _texts$en111, emptyText, _texts$en112, _texts$en113, _label22, _help13, _texts$en114, _texts$en115, _label23, _help14, _texts$en116, _label24, _texts$en117, _texts$en118, _label25, _help15, _texts$en119, _texts$en120, _label26, _help16, _texts$en121, _texts$en122, modeLabel, modeHelp, _texts$en123, _texts$en124, baseLabel, baseHelp, _texts$en125, _texts$en126, factorLabel, factorHelp, _texts$en127, _texts$en128, _texts$en129, _texts$en130, _texts$en131, _texts$en132, _label27, _help17, minimumLabel, maximumLabel, everyLabel, valueLabel, _texts$en133, _texts$en134, _label28, _help18, _texts$en135, _texts$en136, _label29, _help19, _texts$en137, _texts$en138, _label30, _help20, _texts$en139, _texts$en140, _label31, _help21, _texts$en141, _texts$en142, _label32, _help22, _texts$en143, _texts$en144, _label33, _help23, _texts$en145, _texts$en146, _texts$en147, _texts$en148, _label34, _help24, _texts$en149, _texts$en150, _label35, _help25, _texts$en151, _label36, _texts$en152, _texts$en153, _texts$en154, greaterLabel, lessLabel, equalLabel, _texts$en155, _texts$en156, _label37, _help26, _texts$en157, _help27, _texts$en158, _texts$en159, _label38, _help28, _texts$en160, _texts$en161, _label39, _help29, _texts$en162, _texts$en163, _label40, _help30, _texts$en164, _texts$en165, _label41, _help31, _texts$en166, _texts$en167, _label42, _help32, _texts$en168, _texts$en169, _label43, _help33, _texts$en170, _texts$en171, _label44, _help34, _texts$en172, _texts$en173, _label45, _help35, _texts$en174, _texts$en175, _label46, _help36, _texts$en176, _texts$en177, _label47, _help37, _texts$en178, _texts$en179, _label48, _help38, logicLabelText, logicHelpText, logicOptionTexts, _texts$en186, _texts$en187, _texts$en188, _texts$en189, _label49, _help39, _placeholder, _texts$en190, _texts$en191, _label50, hint, helpText, _texts$en192, _label51, _texts$en193, _label52, _texts$en194, _label53, _texts$en195, _label54, _texts$en196, _texts$en197, _texts$en198, _texts$en199, _texts$en200, _texts$en201, _texts$en202, noneLabel, monitorLabel, directorLabel, tripodHeadLabel, _tripodBowlLabel, _tripodTypesLabel, _tripodSpreaderLabel, selectorLabels, _texts$en203, _label55, _texts$en204, _label56, _texts$en205, _texts$en206, _texts$en207, _texts$en208, _label57, _help40, _placeholder2, _texts$en209, _texts$en210, _label58, _hint, _helpText, _texts$en211, _label59, _texts$en212, _label60, _texts$en213, _label61, _texts$en214, _label62, _texts$en215, _texts$en216, _texts$en217, _texts$en218, _texts$en219, _texts$en220, _texts$en221, _noneLabel, _monitorLabel, _directorLabel, _tripodHeadLabel, _tripodBowlLabel2, _tripodTypesLabel2, _tripodSpreaderLabel2, _selectorLabels, _texts$en222, _label63, _texts$en223, _label64, _texts$en224, _heading2, _texts$en225, _description3, _texts$en226, _heading3, _texts$en227, _label65, _texts$en228, _label66, contrastLabel, contrastHelp, accessibilityHeading, backupHeading, projectBackupsHeading, headingText, descriptionText, projectBackupsDescription, _descriptionText, dataHelp, _texts$en229, _texts$en230, _headingText, _headingHelp, _texts$en231, _texts$en232, _texts$en233, requestLabel, requestHelp, _texts$en234, idleText, _texts$en235, _texts$en236, _headingText2, _headingHelp2, _texts$en237, _texts$en238, _texts$en239, backupLabel, backupHelp, _texts$en240, _texts$en241, openLabel, openHelp, _texts$en242, _texts$en243, statusHeading, statusHelp, _texts$en244, _texts$en245, _texts$en246, statusDefaultText, _texts$en248, sectionHelp, _texts$en249, _texts$en250, _headingText3, _headingHelp3, _texts$en251, _texts$en252, _filterLabel, _texts$en253, _texts$en254, _texts$en255, _texts$en256, _texts$en257, optionTexts, filterHelp, _texts$en258, namespaceLabel, _texts$en259, _texts$en260, _placeholder3, namespaceHelp, _texts$en261, historyLabel, _texts$en262, historyHelp, _texts$en263, _texts$en264, limitHelp, limitAria, _texts$en265, consoleLabel, _texts$en266, consoleHelp, _texts$en267, consoleCaptureLabel, _texts$en268, consoleCaptureHelp, _texts$en269, captureLabel, _texts$en270, captureHelp, _texts$en271, persistLabel, _texts$en272, persistHelp, _texts$en273, exportLabel, _texts$en274, exportHelp, _texts$en275, statusText, _texts$en276, _emptyText, _texts$en277, showAutoBackupsLabel, autoBackupsHelp, compareLabel, compareHelp, primaryLabel, compareLabelText, _placeholder4, _exportLabel, _exportHelp, closeLabel, _backupLabel, _backupHelp, restoreLabel, restoreHelp, rehearsalLabel, rehearsalHelp, browseLabel, _texts$en278, _texts$en279, _texts$en280, resolvedRestoreRehearsalCloseButton, _closeLabel, _texts$en281, _texts$en282, proceedLabel, proceedHelp, _texts$en283, _texts$en284, abortLabel, abortHelp, resetLabel, resetHelp, aboutHeading, aboutVersionElem, supportLinkConfigs, langTexts, fallbackTexts, _texts$en285, _label67, saveHelp, _texts$en286, _cancelLabel, cancelHelp, menuToggle, _texts$en287, _texts$en288, menuLabel, _closeLabel2, closeHelp, menuHelp, sideMenu, sideMenuHelp, sideMenuTitle, _texts$en289, titleLabel, titleHelp, closeMenuButton, closeMenuLabel, _texts$en290, _closeLabel3, _closeHelp, reloadLabel, reloadHelp, _offlineNotice, helpShortcutList, helpAriaShortcuts, quickStartHeading, fallback, onboardingCopyElement, fallbackCopy, dataSafetyHeading, _fallback, restoreDrillHeading, _fallback2, restoreDrillNote, _fallback3, _fallback4, _fallback5, exportRevert, downloadDiagramButton, snapActive, resetViewBtn, zoomInBtn, zoomOutBtn, diagramHint, fallbackProjectForm, projectFormTexts, _texts$en291, _texts$lang5, setLabelText, setPlaceholder, setOptionText, crewLabelText, rangeTemplate, defaultHint, legendText, slowRangeTemplate, slowDefaultHint, seriesEmptyText, optionsEmptyText, removeTemplate, mountLabelText, _noneLabel2, yesLabel, projectCancelButton, cancelText, submitText, crewPlaceholders, crewRoleLabels, fallbackContacts, contactsTexts, profileSnapshot, stripTrailingPunctuation, addEntryLabel, crewLabel, _label68, prepLabel, _label69, shootLabel, _label70, returnLabel, _label71, closeText, _t;
     return _regenerator().w(function (_context2) {
       while (1) switch (_context2.p = _context2.n) {
         case 0:
@@ -6117,11 +6058,11 @@ function _setLanguage() {
             element.textContent = text;
           };
           createHelpLink = function createHelpLink(href, text) {
-            var _ref68 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-              target = _ref68.target,
-              highlight = _ref68.highlight,
-              _ref68$isButton = _ref68.isButton,
-              isButton = _ref68$isButton === void 0 ? true : _ref68$isButton;
+            var _ref66 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+              target = _ref66.target,
+              highlight = _ref66.highlight,
+              _ref66$isButton = _ref66.isButton,
+              isButton = _ref66$isButton === void 0 ? true : _ref66$isButton;
             if (!doc) {
               return null;
             }
@@ -6513,7 +6454,7 @@ function _setLanguage() {
           runtimeFeedbackBtn.setAttribute("title", texts[lang].runtimeFeedbackBtn);
           runtimeFeedbackBtn.setAttribute("data-help", texts[lang].runtimeFeedbackBtnHelp);
           setButtonLabelWithIconBinding(runtimeFeedbackBtn, texts[lang].runtimeFeedbackBtn, ICON_GLYPHS.feedback);
-          if (setupSelect.options.length > 0) {
+          if (setupSelect && setupSelect.options && setupSelect.options.length > 0) {
             setupSelect.options[0].textContent = texts[lang].newSetupOption;
           }
           checkSetupChanged();
@@ -6876,9 +6817,11 @@ function _setLanguage() {
             toggleDeviceBtn.setAttribute("data-help", texts[lang].hideDeviceManagerHelp);
             toggleDeviceBtn.setAttribute("aria-expanded", "true");
           }
-          Array.from(newCategorySelect.options).forEach(function (opt) {
-            opt.textContent = getCategoryLabel(opt.value, lang);
-          });
+          if (newCategorySelect.options) {
+            Array.from(newCategorySelect.options).forEach(function (opt) {
+              opt.textContent = getCategoryLabel(opt.value, lang);
+            });
+          }
           noneMap = {
             de: "Keine Auswahl",
             es: "Ninguno",
@@ -6923,9 +6866,10 @@ function _setLanguage() {
             settingsTitleElem.textContent = texts[lang].settingsHeading;
             settingsTitleElem.setAttribute("data-help", texts[lang].settingsHeadingHelp || texts[lang].settingsHeading);
           }
-          if (settingsTablist) {
-            sectionsLabel = texts[lang].settingsSectionsLabel || ((_texts$en47 = texts.en) === null || _texts$en47 === void 0 ? void 0 : _texts$en47.settingsSectionsLabel) || settingsTablist.getAttribute('aria-label') || texts[lang].settingsHeading || 'Settings sections';
-            settingsTablist.setAttribute('aria-label', sectionsLabel);
+          settingsTablistRef = document.getElementById("settingsTablist");
+          if (settingsTablistRef) {
+            sectionsLabel = texts[lang].settingsSectionsLabel || ((_texts$en47 = texts.en) === null || _texts$en47 === void 0 ? void 0 : _texts$en47.settingsSectionsLabel) || settingsTablistRef.getAttribute('aria-label') || texts[lang].settingsHeading || 'Settings sections';
+            settingsTablistRef.setAttribute('aria-label', sectionsLabel);
           }
           getSettingsTabLabelText = function getSettingsTabLabelText(button) {
             var _button$querySelector2;
@@ -7081,12 +7025,12 @@ function _setLanguage() {
           }
           cameraColorHelpTemplate = texts[lang].cameraColorInputHelp || ((_texts$en75 = texts.en) === null || _texts$en75 === void 0 ? void 0 : _texts$en75.cameraColorInputHelp) || '';
           cameraColorLabelEntries = [['A', cameraColorALabel, cameraColorA], ['B', cameraColorBLabel, cameraColorB], ['C', cameraColorCLabel, cameraColorC], ['D', cameraColorDLabel, cameraColorD], ['E', cameraColorELabel, cameraColorE]];
-          cameraColorLabelEntries.forEach(function (_ref69) {
+          cameraColorLabelEntries.forEach(function (_ref67) {
             var _texts$en76;
-            var _ref70 = _slicedToArray(_ref69, 3),
-              letter = _ref70[0],
-              labelElement = _ref70[1],
-              inputElement = _ref70[2];
+            var _ref68 = _slicedToArray(_ref67, 3),
+              letter = _ref68[0],
+              labelElement = _ref68[1],
+              inputElement = _ref68[2];
             if (!labelElement) {
               return;
             }
@@ -7742,10 +7686,10 @@ function _setLanguage() {
             none: ((_texts$lang3 = texts[lang]) === null || _texts$lang3 === void 0 ? void 0 : _texts$lang3.autoGearConditionLogicNone) || ((_texts$en184 = texts.en) === null || _texts$en184 === void 0 ? void 0 : _texts$en184.autoGearConditionLogicNone) || 'Require none of the selected values',
             multiplier: ((_texts$lang4 = texts[lang]) === null || _texts$lang4 === void 0 ? void 0 : _texts$lang4.autoGearConditionLogicMultiplier) || ((_texts$en185 = texts.en) === null || _texts$en185 === void 0 ? void 0 : _texts$en185.autoGearConditionLogicMultiplier) || 'Multiply by matched values'
           };
-          Object.entries(autoGearConditionLogicSelects).forEach(function (_ref71) {
-            var _ref72 = _slicedToArray(_ref71, 2),
-              key = _ref72[0],
-              select = _ref72[1];
+          Object.entries(autoGearConditionLogicSelects).forEach(function (_ref69) {
+            var _ref70 = _slicedToArray(_ref69, 2),
+              key = _ref70[0],
+              select = _ref70[1];
             var label = autoGearConditionLogicLabels[key];
             if (label) {
               label.textContent = logicLabelText;
@@ -9495,6 +9439,8 @@ var projectFieldIcons = {
   productionCompany: PRODUCTION_COMPANY_ICON,
   productionCompanyAddress: ICON_GLYPHS.pin,
   rentalHouse: RENTAL_HOUSE_ICON,
+  rentalHouseContact: ICON_GLYPHS.contacts,
+  rentalHouseAddress: ICON_GLYPHS.pin,
   crew: iconGlyph("\uF404", ICON_FONT_KEYS.UICONS),
   prepDays: iconGlyph("\uE312", ICON_FONT_KEYS.UICONS),
   returnDays: iconGlyph("\uE312", ICON_FONT_KEYS.UICONS),
@@ -10546,6 +10492,32 @@ function loadUserProfileState() {
   profileController.load();
   applyUserProfileToDom();
 }
+function setAvatar(dataUrl) {
+  assignUserProfileState({
+    avatar: typeof dataUrl === 'string' ? dataUrl : ''
+  });
+  persistUserProfileState();
+}
+function clearAvatar() {
+  assignUserProfileState({
+    avatar: ''
+  });
+  persistUserProfileState();
+}
+if (typeof window !== 'undefined') {
+  if (typeof window.setAvatar !== 'function') {
+    window.setAvatar = setAvatar;
+  }
+  if (typeof window.clearAvatar !== 'function') {
+    window.clearAvatar = clearAvatar;
+  }
+  if (typeof window.assignUserProfileState !== 'function') {
+    window.assignUserProfileState = assignUserProfileState;
+  }
+  if (typeof window.persistUserProfileState !== 'function') {
+    window.persistUserProfileState = persistUserProfileState;
+  }
+}
 function persistUserProfileState() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   if (!profileController || typeof profileController.schedulePersist !== 'function') {
@@ -11153,8 +11125,21 @@ function createContactCard(contact) {
   setButtonLabelWithIconBinding(deleteButton, getContactsText('deleteContact', 'Delete contact'), ICON_GLYPHS.trash);
   deleteButton.addEventListener('click', function () {
     var confirmMessage = getContactsText('deleteConfirm', 'Remove this contact? Project rows will keep their details.');
-    if (typeof window !== 'undefined' && !window.confirm(confirmMessage)) return;
-    deleteContact(contact.id);
+    var performDelete = function performDelete() {
+      return deleteContact(contact.id);
+    };
+    if (typeof window.cineShowConfirmDialog === 'function') {
+      window.cineShowConfirmDialog({
+        title: getContactsText('deleteContact', 'Delete contact'),
+        message: confirmMessage,
+        confirmLabel: getContactsText('deleteButton', 'Delete') || 'Delete',
+        cancelLabel: getContactsText('cancel', 'Cancel') || 'Cancel',
+        danger: true,
+        onConfirm: performDelete
+      });
+      return;
+    }
+    console.warn('Missing window.cineShowConfirmDialog for delete contact');
   });
   actions.appendChild(deleteButton);
   card.appendChild(actions);
@@ -11925,6 +11910,16 @@ function getAvailableStorageMediaTypes() {
     normalizedTypes.add(normalized);
     typeOrder.push(trimmed);
   };
+  var selectedName = typeof (cameraSelect === null || cameraSelect === void 0 ? void 0 : cameraSelect.value) === 'string' ? cameraSelect.value : '';
+  if (selectedName && cameraDb[selectedName]) {
+    var cam = cameraDb[selectedName];
+    (cam.recordingMedia || []).forEach(function (media) {
+      if (media && media.type) {
+        addType(media.type);
+      }
+    });
+    return typeOrder;
+  }
   var addCameraTypes = function addCameraTypes(cam) {
     if (!cam) return;
     (cam.recordingMedia || []).forEach(function (media) {
@@ -11933,37 +11928,29 @@ function getAvailableStorageMediaTypes() {
       }
     });
   };
-  var selectedName = typeof (cameraSelect === null || cameraSelect === void 0 ? void 0 : cameraSelect.value) === 'string' ? cameraSelect.value : '';
-  if (selectedName && cameraDb[selectedName]) {
-    addCameraTypes(cameraDb[selectedName]);
-  }
-  Object.entries(cameraDb).forEach(function (_ref35) {
-    var _ref36 = _slicedToArray(_ref35, 2),
-      name = _ref36[0],
-      cam = _ref36[1];
-    if (name === selectedName) return;
-    addCameraTypes(cam);
+  Object.values(cameraDb).forEach(function (cam) {
+    return addCameraTypes(cam);
   });
-  Object.values(mediaDb).forEach(function (info) {
-    var interfaceStr = typeof (info === null || info === void 0 ? void 0 : info.interface) === 'string' ? info.interface.trim() : '';
-    if (interfaceStr) {
-      addType(interfaceStr);
-      var canonical = interfaceStr.replace(/\s*\([^)]*\)/g, ' ').replace(/\s+/g, ' ').trim();
-      if (canonical && canonical !== interfaceStr) {
-        addType(canonical);
+  var _traverseMedia = function traverseMedia(obj) {
+    Object.values(obj).forEach(function (info) {
+      if (!info) return;
+      if (info.brand || info.model || info.type || info.capacityGB || info.capacity) {
+        if (info.type) addType(info.type);
+        var interfaceStr = typeof info.interface === 'string' ? info.interface.trim() : '';
+        if (interfaceStr) {
+          addType(interfaceStr);
+        }
+        if (Array.isArray(info.supportedMedia)) {
+          info.supportedMedia.forEach(function (mediaType) {
+            return addType(mediaType);
+          });
+        }
+      } else if (_typeof(info) === 'object') {
+        _traverseMedia(info);
       }
-    }
-    if (Array.isArray(info === null || info === void 0 ? void 0 : info.supportedMedia)) {
-      info.supportedMedia.forEach(function (mediaType) {
-        return addType(mediaType);
-      });
-    }
-    var variantHint = typeof (info === null || info === void 0 ? void 0 : info.model) === 'string' ? info.model : '';
-    var match = variantHint.match(/(CFexpress Type [AB](?: \(v\d(?:\.\d)?\))?|CFast 2\.0|microSDXC UHS-I|SDXC UHS-II|SDXC UHS-I|XQD|RED MINI-MAG|Codex Compact Drive)/i);
-    if (match) {
-      addType(match[0].replace(/\s+/g, ' ').trim());
-    }
-  });
+    });
+  };
+  _traverseMedia(mediaDb);
   return typeOrder.sort(localeSort);
 }
 function getStorageVariantOptions(type) {
@@ -11971,38 +11958,64 @@ function getStorageVariantOptions(type) {
   var variants = [];
   if (!type) return variants;
   var normalizedType = type.toLowerCase();
+  var items = [];
   var mediaDb = ((_devices9 = devices) === null || _devices9 === void 0 || (_devices9 = _devices9.gearList) === null || _devices9 === void 0 ? void 0 : _devices9.media) || {};
+  var _traverse = function traverse(obj) {
+    Object.entries(obj).forEach(function (_ref35) {
+      var _ref36 = _slicedToArray(_ref35, 2),
+        key = _ref36[0],
+        value = _ref36[1];
+      if (!value) return;
+      if (value.brand || value.model || value.type || value.capacityGB || value.capacity) {
+        items.push(_objectSpread({
+          id: key
+        }, value));
+      } else if (_typeof(value) === 'object') {
+        _traverse(value);
+      }
+    });
+  };
+  _traverse(mediaDb);
   var seen = new Set();
   var addVariant = function addVariant(value, label) {
     if (!value || seen.has(value)) return;
+    var lowerLabel = (label || value).toLowerCase();
+    if (lowerLabel.includes('dual slots') || lowerLabel.includes('slot 1') || lowerLabel === 'adapter' || lowerLabel.includes('via adapter') || lowerLabel === 'red pro') {
+      return;
+    }
+    if (!/\d/.test(lowerLabel)) {
+      return;
+    }
     variants.push({
       value: value,
       label: label || value
     });
     seen.add(value);
   };
-  Object.entries(mediaDb).forEach(function (_ref37) {
-    var _ref38 = _slicedToArray(_ref37, 2),
-      name = _ref38[0],
-      info = _ref38[1];
-    if (!name) return;
-    var fields = [name, info === null || info === void 0 ? void 0 : info.model, info === null || info === void 0 ? void 0 : info.interface];
-    var matches = fields.some(function (field) {
-      return typeof field === 'string' && field.toLowerCase().includes(normalizedType);
-    });
+  items.forEach(function (info) {
+    var matches = false;
+    if (info.type) {
+      matches = info.type.toLowerCase() === normalizedType;
+    }
+    if (!matches) {
+      var fields = [info.id, info.model, info.interface];
+      matches = fields.some(function (field) {
+        return typeof field === 'string' && field.toLowerCase().includes(normalizedType);
+      });
+    }
     if (!matches) return;
     var parts = [];
-    if (info !== null && info !== void 0 && info.brand) parts.push(info.brand);
-    var model = (info === null || info === void 0 ? void 0 : info.model) || '';
+    if (info.brand) parts.push(info.brand);
+    var model = info.model || '';
     if (model && (!info.brand || model.toLowerCase() !== info.brand.toLowerCase())) {
       parts.push(model);
     }
-    var capacityGb = Number(info === null || info === void 0 ? void 0 : info.capacityGb);
-    var capacityTb = Number(info === null || info === void 0 ? void 0 : info.capacityTb);
+    var capacityGb = Number(info.capacityGB || info.capacity);
+    var capacityTb = Number(info.capacityTb);
     var capacityLabel = '';
     if (Number.isFinite(capacityGb) && capacityGb > 0) {
-      if (capacityGb >= 1000 && Number.isFinite(capacityTb) && capacityTb > 0) {
-        capacityLabel = formatCapacity(capacityTb, 'TB');
+      if (capacityGb >= 1000) {
+        capacityLabel = formatCapacity(capacityGb / 1000, 'TB');
       } else {
         capacityLabel = formatCapacity(capacityGb, 'GB');
       }
@@ -12010,7 +12023,7 @@ function getStorageVariantOptions(type) {
       capacityLabel = formatCapacity(capacityTb, 'TB');
     }
     if (capacityLabel) parts.push(capacityLabel);
-    addVariant(name, parts.length ? parts.join(' • ') : name);
+    addVariant(info.id, parts.length ? parts.join(' • ') : info.id);
   });
   var noteVariants = new Set();
   gatherMediaEntriesForType(type).forEach(function (media) {
@@ -12049,7 +12062,7 @@ function updateStorageVariantOptions(select, type, selectedValue) {
     select.appendChild(option);
   });
   if (previous) {
-    var hasMatch = Array.from(select.options).some(function (opt) {
+    var hasMatch = select.options && Array.from(select.options).some(function (opt) {
       return opt.value === previous;
     });
     if (!hasMatch) {
@@ -12100,6 +12113,11 @@ function updateStorageRequirementTypeOptions() {
     }
     updateStorageVariantOptions(variantSelect, typeSelect.value, previousVariant);
   });
+}
+if (typeof window !== 'undefined') {
+  window.getAvailableStorageMediaTypes = getAvailableStorageMediaTypes;
+  window.getStorageVariantOptions = getStorageVariantOptions;
+  window.updateStorageRequirementTypeOptions = updateStorageRequirementTypeOptions;
 }
 function createStorageRequirementRow() {
   var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -12233,11 +12251,13 @@ function updateRequiredScenariosTranslations(lang) {
   var currentTexts = texts[lang] || {};
   var scenarios = currentTexts.scenarios || {};
   var fallback = texts.en && texts.en.scenarios ? texts.en.scenarios : {};
-  Array.from(select.options).forEach(function (option) {
-    var key = option.value;
-    var translated = scenarios[key] || fallback[key] || option.value;
-    option.textContent = translated;
-  });
+  if (select.options) {
+    Array.from(select.options).forEach(function (option) {
+      var key = option.value;
+      var translated = scenarios[key] || fallback[key] || option.value;
+      option.textContent = translated;
+    });
+  }
 }
 function updateStorageRequirementTranslations(projectFormTexts, fallbackProjectForm) {
   var headingText = projectFormTexts.storageHeading || fallbackProjectForm.storageHeading || 'Storage & Media';
@@ -12258,10 +12278,12 @@ function updateStorageRequirementTranslations(projectFormTexts, fallbackProjectF
   var duplicateActionLabel = projectFormTexts.storageDuplicateEntry || fallbackProjectForm.storageDuplicateEntry || 'Duplicate media row';
   var removeBase = projectFormTexts.removeEntry || fallbackProjectForm.removeEntry || 'Remove';
   document.querySelectorAll('#storageNeedsContainer .storage-type').forEach(function (select) {
+    if (!select.options) return;
     var firstOption = select.options[0];
     if (firstOption) firstOption.textContent = typePlaceholder;
   });
   document.querySelectorAll('#storageNeedsContainer .storage-variant').forEach(function (select) {
+    if (!select.options) return;
     var firstOption = select.options[0];
     if (firstOption) firstOption.textContent = variantPlaceholder;
   });
@@ -12303,8 +12325,8 @@ if (addReturnBtn) {
 function updateTripodOptions() {
   var headBrand = tripodHeadBrandSelect ? tripodHeadBrandSelect.value : '';
   var bowl = tripodBowlSelect ? tripodBowlSelect.value : '';
-  var headOpts = tripodHeadBrandSelect ? Array.from(tripodHeadBrandSelect.options) : [];
-  var bowlOpts = tripodBowlSelect ? Array.from(tripodBowlSelect.options) : [];
+  var headOpts = tripodHeadBrandSelect && tripodHeadBrandSelect.options ? Array.from(tripodHeadBrandSelect.options) : [];
+  var bowlOpts = tripodBowlSelect && tripodBowlSelect.options ? Array.from(tripodBowlSelect.options) : [];
   headOpts.forEach(function (o) {
     o.hidden = false;
   });
@@ -12398,14 +12420,14 @@ function dismissPowerWarningDialog() {
 function showPowerWarningDialog(context) {
   var _texts$en1, _texts$en10, _texts$en11;
   if (!powerWarningDialog) return;
-  var _ref39 = context || {},
-    batteryName = _ref39.batteryName,
-    current = _ref39.current,
-    hasPinLimit = _ref39.hasPinLimit,
-    pinLimit = _ref39.pinLimit,
-    hasDtapRating = _ref39.hasDtapRating,
-    dtapLimit = _ref39.dtapLimit,
-    dtapAllowed = _ref39.dtapAllowed;
+  var _ref37 = context || {},
+    batteryName = _ref37.batteryName,
+    current = _ref37.current,
+    hasPinLimit = _ref37.hasPinLimit,
+    pinLimit = _ref37.pinLimit,
+    hasDtapRating = _ref37.hasDtapRating,
+    dtapLimit = _ref37.dtapLimit,
+    dtapAllowed = _ref37.dtapAllowed;
   var safeBatteryName = batteryName && batteryName.trim() ? batteryName.trim() : (batterySelect === null || batterySelect === void 0 ? void 0 : batterySelect.value) || '';
   var formattedCurrent = formatCurrentValue(Number(current) || 0);
   var langTexts = texts[currentLang] || texts.en || {};
@@ -12489,7 +12511,7 @@ function drawPowerDiagram(availableWatt, segments, maxPinA) {
   if (heroAvailablePower) {
     heroAvailablePower.textContent = "".concat(availableWatt.toFixed(0), " W");
   }
-  if (heroBatteryLabel && batterySelect) {
+  if (heroBatteryLabel && batterySelect && batterySelect.options) {
     var selectedOption = batterySelect.options[batterySelect.selectedIndex];
     var batteryName = selectedOption ? selectedOption.text : '';
     heroBatteryLabel.textContent = "Camera Setup draws ".concat(total.toFixed(0), "W from the ").concat(availableWatt.toFixed(0), "W available on the ").concat(batteryName);
@@ -12587,10 +12609,25 @@ function promptForSharedFilename(setupName) {
 }
 function confirmAutoGearSelection(defaultInclude) {
   var confirmMessage = getLocalizedText('shareIncludeAutoGearConfirm') || 'Include automatic gear rules in the shared file? Select OK to include them or Cancel to skip.';
-  if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
-    return window.confirm(confirmMessage);
-  }
-  return !!defaultInclude;
+  return new Promise(function (resolve) {
+    if (typeof window.cineShowConfirmDialog === 'function') {
+      window.cineShowConfirmDialog({
+        title: getLocalizedText('shareIncludeAutoGearTitle') || 'Include Auto Gear Rules?',
+        message: confirmMessage,
+        confirmLabel: getLocalizedText('include') || 'Include',
+        cancelLabel: getLocalizedText('skip') || 'Skip',
+        onConfirm: function onConfirm() {
+          return resolve(true);
+        },
+        onCancel: function onCancel() {
+          return resolve(false);
+        }
+      });
+      return;
+    }
+    console.warn('Missing window.cineShowConfirmDialog for confirmAutoGearSelection');
+    resolve(!!defaultInclude);
+  });
 }
 var shareDialog = document.getElementById("shareDialog");
 var shareForm = document.getElementById("shareForm");
@@ -13126,13 +13163,10 @@ function decodeSharedSetup(setup) {
   }
   return merged;
 }
-var deviceManagerSection = document.getElementById("device-manager");
-var toggleDeviceBtn = document.getElementById("toggleDeviceManager");
+var deviceManagerSection = typeof deviceManagerSection !== 'undefined' && deviceManagerSection ? deviceManagerSection : typeof document !== 'undefined' && typeof document.getElementById === 'function' ? document.getElementById('device-manager') : null;
+var toggleDeviceBtn = typeof toggleDeviceBtn !== 'undefined' && toggleDeviceBtn ? toggleDeviceBtn : typeof document !== 'undefined' && typeof document.getElementById === 'function' ? document.getElementById('toggleDeviceManager') : null;
 var deviceListContainerRef = null;
 function resolveDeviceListContainer() {
-  if (typeof document === 'undefined' || !document || typeof document.getElementById !== 'function') {
-    return deviceListContainerRef;
-  }
   var container = document.getElementById('deviceListContainer');
   if (container) {
     deviceListContainerRef = container;
@@ -13335,6 +13369,7 @@ function collectDeviceManagerCategories() {
   };
   var _traverseSchema = function traverseSchema(node) {
     var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+    if (path.length > 20) return;
     if (!node || _typeof(node) !== 'object') {
       return;
     }
@@ -13345,10 +13380,10 @@ function collectDeviceManagerCategories() {
         addCategory(path.join('.'));
       }
     }
-    Object.entries(node).forEach(function (_ref40) {
-      var _ref41 = _slicedToArray(_ref40, 2),
-        childKey = _ref41[0],
-        value = _ref41[1];
+    Object.entries(node).forEach(function (_ref38) {
+      var _ref39 = _slicedToArray(_ref38, 2),
+        childKey = _ref39[0],
+        value = _ref39[1];
       if (childKey === 'attributes') {
         return;
       }
@@ -13362,16 +13397,16 @@ function collectDeviceManagerCategories() {
   }
   var addFromData = function addFromData(data) {
     if (!data || _typeof(data) !== 'object' || Array.isArray(data)) return;
-    Object.entries(data).forEach(function (_ref42) {
-      var _ref43 = _slicedToArray(_ref42, 2),
-        key = _ref43[0],
-        value = _ref43[1];
+    Object.entries(data).forEach(function (_ref40) {
+      var _ref41 = _slicedToArray(_ref40, 2),
+        key = _ref41[0],
+        value = _ref41[1];
       if (key === 'accessories') {
         if (value && _typeof(value) === 'object') {
-          Object.entries(value).forEach(function (_ref44) {
-            var _ref45 = _slicedToArray(_ref44, 2),
-              subKey = _ref45[0],
-              subValue = _ref45[1];
+          Object.entries(value).forEach(function (_ref42) {
+            var _ref43 = _slicedToArray(_ref42, 2),
+              subKey = _ref43[0],
+              subValue = _ref43[1];
             if (subValue && _typeof(subValue) === 'object' && !Array.isArray(subValue)) {
               addCategory("accessories.".concat(subKey));
             }
@@ -13379,10 +13414,10 @@ function collectDeviceManagerCategories() {
         }
       } else if (key === 'fiz') {
         if (value && _typeof(value) === 'object') {
-          Object.entries(value).forEach(function (_ref46) {
-            var _ref47 = _slicedToArray(_ref46, 2),
-              subKey = _ref47[0],
-              subValue = _ref47[1];
+          Object.entries(value).forEach(function (_ref44) {
+            var _ref45 = _slicedToArray(_ref44, 2),
+              subKey = _ref45[0],
+              subValue = _ref45[1];
             if (subValue && _typeof(subValue) === 'object' && !Array.isArray(subValue)) {
               addCategory("fiz.".concat(subKey));
             }
@@ -13522,9 +13557,15 @@ function updateDeviceManagerLocalization() {
   }
 }
 function syncDeviceManagerCategories() {
+  console.log('app-core-new-1.js: syncDeviceManagerCategories starting');
   var container = resolveDeviceListContainer();
-  if (!container) return;
+  if (!container) {
+    console.log('app-core-new-1.js: syncDeviceManagerCategories: no container');
+    return;
+  }
+  console.log('app-core-new-1.js: syncDeviceManagerCategories: collecting categories');
   var categories = collectDeviceManagerCategories();
+  console.log('app-core-new-1.js: syncDeviceManagerCategories: categories collected', categories.length);
   var desiredSet = new Set(categories);
   var existingKeys = Array.from(deviceManagerLists.keys());
   categories.forEach(function (categoryKey) {
@@ -13547,7 +13588,9 @@ function syncDeviceManagerCategories() {
       container.appendChild(entry.section);
     }
   });
+  console.log('app-core-new-1.js: syncDeviceManagerCategories: updating localization');
   updateDeviceManagerLocalization(currentLang);
+  console.log('app-core-new-1.js: syncDeviceManagerCategories: finished');
 }
 function getCurrentProjectName() {
   var typedName = (setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value.trim() : '') || '';
@@ -13677,9 +13720,9 @@ function _populateCategoryOptions() {
     }
   }
   if ((typeof devices === "undefined" ? "undefined" : _typeof(devices)) === 'object') {
-    var existing = new Set(Array.from(newCategorySelect.options).map(function (o) {
+    var existing = new Set(newCategorySelect.options ? Array.from(newCategorySelect.options).map(function (o) {
       return o.value;
-    }));
+    }) : []);
     var addIfMissing = function addIfMissing(val) {
       if (!existing.has(val)) {
         addOpt(val);
@@ -13709,9 +13752,9 @@ function _populateCategoryOptions() {
 }
 _populateCategoryOptions();
 function getCategoryContainer(categoryKey, subcategory) {
-  var _ref48 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-    _ref48$create = _ref48.create,
-    create = _ref48$create === void 0 ? false : _ref48$create;
+  var _ref46 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+    _ref46$create = _ref46.create,
+    create = _ref46$create === void 0 ? false : _ref46$create;
   if (!categoryKey) {
     return null;
   }
@@ -13882,12 +13925,12 @@ function getTemperatureColumnLabelForLang() {
 }
 function formatTemperatureForDisplay(celsius) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  var _ref49 = options || {},
-    unit = _ref49.unit,
-    _ref49$lang = _ref49.lang,
-    lang = _ref49$lang === void 0 ? currentLang : _ref49$lang,
-    _ref49$includeSign = _ref49.includeSign,
-    includeSign = _ref49$includeSign === void 0 ? true : _ref49$includeSign;
+  var _ref47 = options || {},
+    unit = _ref47.unit,
+    _ref47$lang = _ref47.lang,
+    lang = _ref47$lang === void 0 ? currentLang : _ref47$lang,
+    _ref47$includeSign = _ref47.includeSign,
+    includeSign = _ref47$includeSign === void 0 ? true : _ref47$includeSign;
   var resolvedUnit = normalizeTemperatureUnit(typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit);
   var converted = convertCelsiusToUnit(celsius, resolvedUnit);
   if (!Number.isFinite(converted)) {
@@ -14074,10 +14117,10 @@ function formatTemperatureForDisplay(celsius) {
   var viewfinderInputsContainerEl = resolveContainer('viewfinderVideoInputsContainer');
   var viewfinderOutputsContainerEl = resolveContainer('viewfinderVideoOutputsContainer');
   var ensureContainers = [['setViewfinders', viewfinderContainerEl], ['getViewfinders', viewfinderContainerEl], ['clearViewfinders', viewfinderContainerEl]];
-  var missingRequiredContainer = ensureContainers.some(function (_ref50) {
-    var _ref51 = _slicedToArray(_ref50, 2),
-      name = _ref51[0],
-      container = _ref51[1];
+  var missingRequiredContainer = ensureContainers.some(function (_ref48) {
+    var _ref49 = _slicedToArray(_ref48, 2),
+      name = _ref49[0],
+      container = _ref49[1];
     if (container) {
       return false;
     }
@@ -14522,9 +14565,9 @@ var categoryExcludedAttrs = {
 function updateLensFocusScaleSelectOptions() {
   var _texts11;
   var lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : currentLang;
-  var _ref52 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-    _ref52$preserveValue = _ref52.preserveValue,
-    preserveValue = _ref52$preserveValue === void 0 ? true : _ref52$preserveValue;
+  var _ref50 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+    _ref50$preserveValue = _ref50.preserveValue,
+    preserveValue = _ref50$preserveValue === void 0 ? true : _ref50$preserveValue;
   if (!lensFocusScaleSelect) {
     return;
   }
@@ -14799,13 +14842,13 @@ function normalizeSchemaListValues(value) {
   return [];
 }
 function createSchemaListControl(options) {
-  var _ref53 = options || {},
-    attrId = _ref53.attrId,
-    labelText = _ref53.labelText,
-    _ref53$values = _ref53.values,
-    values = _ref53$values === void 0 ? [] : _ref53$values,
-    _ref53$placeholder = _ref53.placeholder,
-    placeholder = _ref53$placeholder === void 0 ? '' : _ref53$placeholder;
+  var _ref51 = options || {},
+    attrId = _ref51.attrId,
+    labelText = _ref51.labelText,
+    _ref51$values = _ref51.values,
+    values = _ref51$values === void 0 ? [] : _ref51$values,
+    _ref51$placeholder = _ref51.placeholder,
+    placeholder = _ref51$placeholder === void 0 ? '' : _ref51$placeholder;
   var ensureId = typeof ensureElementId === 'function' ? ensureElementId : function (element, baseText) {
     if (!element) return '';
     if (element.id) return element.id;
@@ -15085,7 +15128,12 @@ function clearDynamicFields() {
 function buildDynamicFields(category) {
   var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   var exclude = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-  if (!dynamicFieldsDiv) return;
+  if (typeof dynamicFieldsDiv === 'undefined' || !dynamicFieldsDiv) {
+    if (typeof document !== 'undefined') {
+      window.dynamicFieldsDiv = document.getElementById('dynamicFields');
+    }
+    if (!dynamicFieldsDiv) return;
+  }
   var attrs = getCombinedCategoryAttributes(category, data, exclude);
   dynamicFieldsDiv.innerHTML = '';
   if (!attrs.length) {
@@ -15333,6 +15381,7 @@ function applyDynamicFieldValues(target, category) {
   return writableTarget;
 }
 var languageSelect = document.getElementById("languageSelect");
+var settingsTablist = document.getElementById("settingsTablist");
 var pinkModeToggle = document.getElementById("pinkModeToggle");
 var pinkModeHelpIcon = document.getElementById("pinkModeHelpIcon");
 var darkModeToggle = document.getElementById("darkModeToggle");
@@ -16035,7 +16084,6 @@ if (settingsButtonIcon) {
 if (settingsDialog) {
   settingsDialog.setAttribute('data-allow-hover-help', '');
 }
-var settingsTablist = document.getElementById('settingsTablist');
 var settingsTabButtons = settingsTablist ? Array.from(settingsTablist.querySelectorAll('[role="tab"]')) : [];
 var settingsTabsContainer = settingsTablist ? settingsTablist.closest('.settings-tabs-container') || settingsTablist : null;
 var settingsTabsScrollPrev = document.getElementById('settingsTabsScrollPrev');
@@ -16174,11 +16222,11 @@ var settingsTabBackup = document.getElementById('settingsTab-backup');
 var settingsTabData = document.getElementById('settingsTab-data');
 var settingsTabAbout = document.getElementById('settingsTab-about');
 var settingsTabIconAssignments = [[settingsTabGeneral, ICON_GLYPHS.settingsGeneral], [settingsTabAutoGear, ICON_GLYPHS.settingsAutoGear], [settingsTabAccessibility, ICON_GLYPHS.settingsAccessibility], [settingsTabBackup, ICON_GLYPHS.settingsBackup], [settingsTabData, ICON_GLYPHS.settingsData], [settingsTabAbout, ICON_GLYPHS.settingsAbout]];
-settingsTabIconAssignments.forEach(function (_ref54) {
+settingsTabIconAssignments.forEach(function (_ref52) {
   var _button$querySelector;
-  var _ref55 = _slicedToArray(_ref54, 2),
-    button = _ref55[0],
-    glyph = _ref55[1];
+  var _ref53 = _slicedToArray(_ref52, 2),
+    button = _ref53[0],
+    glyph = _ref53[1];
   if (!button || !glyph) return;
   var iconElement = (_button$querySelector = button.querySelector) === null || _button$querySelector === void 0 ? void 0 : _button$querySelector.call(button, '.settings-tab-icon');
   if (!iconElement) return;
@@ -16292,9 +16340,9 @@ if (settingsTabButtons.length) {
 function activateSettingsTab(tabId) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   if (!settingsTabButtons.length) return;
-  var _ref56 = options || {},
-    _ref56$focusTab = _ref56.focusTab,
-    focusTab = _ref56$focusTab === void 0 ? false : _ref56$focusTab;
+  var _ref54 = options || {},
+    _ref54$focusTab = _ref54.focusTab,
+    focusTab = _ref54$focusTab === void 0 ? false : _ref54$focusTab;
   var target = settingsTabButtons.find(function (button) {
     return button.id === tabId;
   });
@@ -16570,9 +16618,9 @@ function focusAutoGearConditionSection(key) {
   }
   var section = config.section,
     select = config.select;
-  var _ref57 = options || {},
-    _ref57$flash = _ref57.flash,
-    flash = _ref57$flash === void 0 ? false : _ref57$flash;
+  var _ref55 = options || {},
+    _ref55$flash = _ref55.flash,
+    flash = _ref55$flash === void 0 ? false : _ref55$flash;
   if (section.hidden) {
     section.hidden = false;
     section.setAttribute('aria-hidden', 'false');
@@ -16799,9 +16847,9 @@ function removeAutoGearCondition(key) {
 }
 function clearAllAutoGearConditions() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  var _ref58 = options || {},
-    _ref58$preserveDraft = _ref58.preserveDraft,
-    preserveDraft = _ref58$preserveDraft === void 0 ? false : _ref58$preserveDraft;
+  var _ref56 = options || {},
+    _ref56$preserveDraft = _ref56.preserveDraft,
+    preserveDraft = _ref56$preserveDraft === void 0 ? false : _ref56$preserveDraft;
   Array.from(autoGearActiveConditions).forEach(function (key) {
     removeAutoGearCondition(key, {
       preserveDraft: preserveDraft,
@@ -16977,10 +17025,10 @@ if (autoGearShootingDaysInput) {
   autoGearShootingDaysInput.addEventListener('change', handleShootingDaysValueInput);
   autoGearShootingDaysInput.addEventListener('blur', handleShootingDaysValueInput);
 }
-Object.entries(autoGearConditionLogicSelects).forEach(function (_ref59) {
-  var _ref60 = _slicedToArray(_ref59, 2),
-    key = _ref60[0],
-    select = _ref60[1];
+Object.entries(autoGearConditionLogicSelects).forEach(function (_ref57) {
+  var _ref58 = _slicedToArray(_ref57, 2),
+    key = _ref58[0],
+    select = _ref58[1];
   if (!select) return;
   var property = AUTO_GEAR_CONDITION_LOGIC_FIELDS[key];
   var handleLogicChange = function handleLogicChange() {
@@ -17258,12 +17306,12 @@ if (autoGearBackupRetentionInput) {
   });
 }
 function computeAutoGearMultiSelectSize(optionCount) {
-  var _ref61 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-    fallback = _ref61.fallback,
-    _ref61$minRows = _ref61.minRows,
-    minRows = _ref61$minRows === void 0 ? AUTO_GEAR_MULTI_SELECT_MIN_ROWS : _ref61$minRows,
-    _ref61$maxRows = _ref61.maxRows,
-    maxRows = _ref61$maxRows === void 0 ? AUTO_GEAR_MULTI_SELECT_MAX_ROWS : _ref61$maxRows;
+  var _ref59 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+    fallback = _ref59.fallback,
+    _ref59$minRows = _ref59.minRows,
+    minRows = _ref59$minRows === void 0 ? AUTO_GEAR_MULTI_SELECT_MIN_ROWS : _ref59$minRows,
+    _ref59$maxRows = _ref59.maxRows,
+    maxRows = _ref59$maxRows === void 0 ? AUTO_GEAR_MULTI_SELECT_MAX_ROWS : _ref59$maxRows;
   var effectiveFallback = Number.isFinite(fallback) && fallback >= minRows ? fallback : minRows;
   if (!Number.isFinite(optionCount) || optionCount <= 0) {
     return effectiveFallback;
@@ -17496,18 +17544,18 @@ function collectAutoGearScenarioFilterOptions(rules) {
     });
   }
   if (!options.size) {
-    getAutoGearScenarioFallbackOptions().forEach(function (_ref62) {
-      var value = _ref62.value,
-        label = _ref62.label;
+    getAutoGearScenarioFallbackOptions().forEach(function (_ref60) {
+      var value = _ref60.value,
+        label = _ref60.label;
       if (!options.has(value)) {
         options.set(value, label);
       }
     });
   }
-  return Array.from(options.entries()).map(function (_ref63) {
-    var _ref64 = _slicedToArray(_ref63, 2),
-      value = _ref64[0],
-      label = _ref64[1];
+  return Array.from(options.entries()).map(function (_ref61) {
+    var _ref62 = _slicedToArray(_ref61, 2),
+      value = _ref62[0],
+      label = _ref62[1];
     return {
       value: value,
       label: label
@@ -17526,9 +17574,9 @@ function refreshAutoGearScenarioFilterOptions(rules) {
   anyOption.value = 'all';
   anyOption.textContent = anyLabel;
   autoGearFilterScenarioSelect.appendChild(anyOption);
-  options.forEach(function (_ref65) {
-    var value = _ref65.value,
-      label = _ref65.label;
+  options.forEach(function (_ref63) {
+    var value = _ref63.value,
+      label = _ref63.label;
     var option = document.createElement('option');
     option.value = value;
     option.textContent = label;
@@ -17691,10 +17739,10 @@ function getCrewRoleEntries() {
   var crewRoleMap = langTexts.crewRoles || ((_texts$en26 = texts.en) === null || _texts$en26 === void 0 ? void 0 : _texts$en26.crewRoles) || {};
   var seen = new Set();
   var entries = [];
-  Object.entries(crewRoleMap).forEach(function (_ref66) {
-    var _ref67 = _slicedToArray(_ref66, 2),
-      value = _ref67[0],
-      label = _ref67[1];
+  Object.entries(crewRoleMap).forEach(function (_ref64) {
+    var _ref65 = _slicedToArray(_ref64, 2),
+      value = _ref65[0],
+      label = _ref65[1];
     if (typeof value !== 'string') return;
     var trimmedValue = value.trim();
     if (!trimmedValue) return;
@@ -17828,4 +17876,159 @@ scheduleLayoutInitialization();
 if (typeof globalThis !== 'undefined') {
   globalThis.encodeSharedSetup = encodeSharedSetup;
   globalThis.decodeSharedSetup = decodeSharedSetup;
+}
+function initAppCoreNewDomReferences() {
+  var _localAutoGearConditi, _localAutoGearConditi2, _localAutoGearConditi3, _localAutoGearConditi4, _localAutoGearConditi5, _localAutoGearConditi6, _localAutoGearConditi7, _localAutoGearConditi8, _localAutoGearConditi9, _localAutoGearConditi0, _localAutoGearConditi1, _localAutoGearConditi10, _localAutoGearConditi11, _localAutoGearConditi12, _localAutoGearConditi13, _localAutoGearConditi14, _localAutoGearConditi15, _localAutoGearConditi16, _localAutoGearConditi17, _localAutoGearConditi18, _localAutoGearConditi19, _localAutoGearConditi20, _localAutoGearConditi21, _localAutoGearConditi22, _localAutoGearConditi23, _localAutoGearConditi24, _localAutoGearConditi25, _localAutoGearConditi26, _localAutoGearConditi27, _localAutoGearConditi28, _localAutoGearConditi29, _localAutoGearConditi30, _localAutoGearConditi31, _localAutoGearConditi32, _localAutoGearConditi33, _localAutoGearConditi34, _localAutoGearConditi35, _localAutoGearConditi36, _localAutoGearConditi37, _localAutoGearConditi38, _localAutoGearConditi39, _localAutoGearConditi40, _localAutoGearConditi41, _localAutoGearConditi42;
+  if (initAppCoreNewDomReferences.done) return;
+  initAppCoreNewDomReferences.done = true;
+  if (typeof document === 'undefined') return;
+  localAutoGearConditionSections = {
+    always: document.getElementById('autoGearCondition-always'),
+    scenarios: document.getElementById('autoGearCondition-scenarios'),
+    shootingDays: document.getElementById('autoGearCondition-shootingDays'),
+    mattebox: document.getElementById('autoGearCondition-mattebox'),
+    cameraHandle: document.getElementById('autoGearCondition-cameraHandle'),
+    viewfinderExtension: document.getElementById('autoGearCondition-viewfinderExtension'),
+    deliveryResolution: document.getElementById('autoGearCondition-deliveryResolution'),
+    videoDistribution: document.getElementById('autoGearCondition-videoDistribution'),
+    camera: document.getElementById('autoGearCondition-camera'),
+    ownGear: document.getElementById('autoGearCondition-ownGear'),
+    cameraWeight: document.getElementById('autoGearCondition-cameraWeight'),
+    monitor: document.getElementById('autoGearCondition-monitor'),
+    tripodHeadBrand: document.getElementById('autoGearCondition-tripodHeadBrand'),
+    tripodBowl: document.getElementById('autoGearCondition-tripodBowl'),
+    tripodTypes: document.getElementById('autoGearCondition-tripodTypes'),
+    tripodSpreader: document.getElementById('autoGearCondition-tripodSpreader'),
+    crewPresent: document.getElementById('autoGearCondition-crewPresent'),
+    crewAbsent: document.getElementById('autoGearCondition-crewAbsent'),
+    wireless: document.getElementById('autoGearCondition-wireless'),
+    motors: document.getElementById('autoGearCondition-motors'),
+    controllers: document.getElementById('autoGearCondition-controllers'),
+    distance: document.getElementById('autoGearCondition-distance')
+  };
+  autoGearHeadingElem = document.getElementById('autoGearHeading');
+  autoGearDescriptionElem = document.getElementById('autoGearDescription');
+  autoGearMonitorDefaultsSection = document.getElementById('autoGearMonitorDefaultsSection');
+  autoGearMonitorDefaultsHeading = document.getElementById('autoGearMonitorDefaultsHeading');
+  autoGearMonitorDefaultsDescription = document.getElementById('autoGearMonitorDefaultsDescription');
+  autoGearDefaultFocusMonitorSelect = document.getElementById('autoGearDefaultFocusMonitor');
+  autoGearDefaultHandheldMonitorSelect = document.getElementById('autoGearDefaultHandheldMonitor');
+  autoGearDefaultComboMonitorSelect = document.getElementById('autoGearDefaultComboMonitor');
+  autoGearDefaultDirectorMonitorSelect = document.getElementById('autoGearDefaultDirectorMonitor');
+  autoGearDefaultFocusMonitorLabel = document.getElementById('autoGearDefaultFocusMonitorLabel');
+  autoGearDefaultHandheldMonitorLabel = document.getElementById('autoGearDefaultHandheldMonitorLabel');
+  autoGearDefaultComboMonitorLabel = document.getElementById('autoGearDefaultComboMonitorLabel');
+  autoGearDefaultDirectorMonitorLabel = document.getElementById('autoGearDefaultDirectorMonitorLabel');
+  autoGearSearchInput = document.getElementById('autoGearSearch');
+  autoGearSearchLabel = document.getElementById('autoGearSearchLabel');
+  autoGearFilterScenarioLabel = document.getElementById('autoGearFilterScenarioLabel');
+  autoGearFilterScenarioSelect = document.getElementById('autoGearFilterScenario');
+  autoGearFilterClearButton = document.getElementById('autoGearFilterClear');
+  autoGearSummarySection = document.getElementById('autoGearSummary');
+  autoGearSummaryHeadingElem = document.getElementById('autoGearSummaryHeading');
+  autoGearSummaryDescriptionElem = document.getElementById('autoGearSummaryDescription');
+  autoGearSummaryCards = document.getElementById('autoGearSummaryCards');
+  autoGearSummaryDetails = document.getElementById('autoGearSummaryDetails');
+  autoGearRulesList = document.getElementById('autoGearRulesList');
+  autoGearPresetDescription = document.getElementById('autoGearPresetDescription');
+  autoGearPresetLabel = document.getElementById('autoGearPresetLabel');
+  autoGearPresetSelect = document.getElementById('autoGearPresetSelect');
+  autoGearSavePresetButton = document.getElementById('autoGearSavePreset');
+  autoGearDeletePresetButton = document.getElementById('autoGearDeletePreset');
+  autoGearAddRuleBtn = document.getElementById('autoGearAddRule');
+  autoGearResetFactoryButton = document.getElementById('autoGearResetFactory');
+  autoGearEditor = document.getElementById('autoGearEditor');
+  autoGearConditionControls = document.getElementById('autoGearConditionControls');
+  autoGearConditionSelectLabel = document.getElementById('autoGearConditionSelectLabel');
+  autoGearConditionSelect = document.getElementById('autoGearConditionSelect');
+  autoGearConditionAddButton = document.getElementById('autoGearConditionAdd');
+  autoGearConditionList = document.getElementById('autoGearConditionList');
+  autoGearAlwaysLabel = document.getElementById('autoGearAlwaysLabel');
+  autoGearAlwaysHelp = document.getElementById('autoGearAlwaysHelp');
+  autoGearCameraWeightSection = document.getElementById('autoGearCondition-cameraWeight');
+  autoGearMonitorDefaultControls = [{
+    key: 'focus',
+    select: autoGearDefaultFocusMonitorSelect,
+    label: autoGearDefaultFocusMonitorLabel
+  }, {
+    key: 'handheld7',
+    select: autoGearDefaultHandheldMonitorSelect,
+    label: autoGearDefaultHandheldMonitorLabel
+  }, {
+    key: 'combo15',
+    select: autoGearDefaultComboMonitorSelect,
+    label: autoGearDefaultComboMonitorLabel
+  }, {
+    key: 'director15',
+    select: autoGearDefaultDirectorMonitorSelect,
+    label: autoGearDefaultDirectorMonitorLabel
+  }];
+  autoGearMonitorDefaultControls.forEach(function (control) {
+    if (!control || !control.select) return;
+    control.select.addEventListener('change', function (event) {
+      setAutoGearMonitorDefault(control.key, event.target.value);
+    });
+  });
+  autoGearConditionAddShortcuts = {
+    always: ((_localAutoGearConditi = localAutoGearConditionSections.always) === null || _localAutoGearConditi === void 0 ? void 0 : _localAutoGearConditi.querySelector('.auto-gear-condition-add')) || null,
+    scenarios: ((_localAutoGearConditi2 = localAutoGearConditionSections.scenarios) === null || _localAutoGearConditi2 === void 0 ? void 0 : _localAutoGearConditi2.querySelector('.auto-gear-condition-add')) || null,
+    shootingDays: ((_localAutoGearConditi3 = localAutoGearConditionSections.shootingDays) === null || _localAutoGearConditi3 === void 0 ? void 0 : _localAutoGearConditi3.querySelector('.auto-gear-condition-add')) || null,
+    mattebox: ((_localAutoGearConditi4 = localAutoGearConditionSections.mattebox) === null || _localAutoGearConditi4 === void 0 ? void 0 : _localAutoGearConditi4.querySelector('.auto-gear-condition-add')) || null,
+    cameraHandle: ((_localAutoGearConditi5 = localAutoGearConditionSections.cameraHandle) === null || _localAutoGearConditi5 === void 0 ? void 0 : _localAutoGearConditi5.querySelector('.auto-gear-condition-add')) || null,
+    viewfinderExtension: ((_localAutoGearConditi6 = localAutoGearConditionSections.viewfinderExtension) === null || _localAutoGearConditi6 === void 0 ? void 0 : _localAutoGearConditi6.querySelector('.auto-gear-condition-add')) || null,
+    deliveryResolution: ((_localAutoGearConditi7 = localAutoGearConditionSections.deliveryResolution) === null || _localAutoGearConditi7 === void 0 ? void 0 : _localAutoGearConditi7.querySelector('.auto-gear-condition-add')) || null,
+    videoDistribution: ((_localAutoGearConditi8 = localAutoGearConditionSections.videoDistribution) === null || _localAutoGearConditi8 === void 0 ? void 0 : _localAutoGearConditi8.querySelector('.auto-gear-condition-add')) || null,
+    camera: ((_localAutoGearConditi9 = localAutoGearConditionSections.camera) === null || _localAutoGearConditi9 === void 0 ? void 0 : _localAutoGearConditi9.querySelector('.auto-gear-condition-add')) || null,
+    ownGear: ((_localAutoGearConditi0 = localAutoGearConditionSections.ownGear) === null || _localAutoGearConditi0 === void 0 ? void 0 : _localAutoGearConditi0.querySelector('.auto-gear-condition-add')) || null,
+    cameraWeight: ((_localAutoGearConditi1 = localAutoGearConditionSections.cameraWeight) === null || _localAutoGearConditi1 === void 0 ? void 0 : _localAutoGearConditi1.querySelector('.auto-gear-condition-add')) || null,
+    monitor: ((_localAutoGearConditi10 = localAutoGearConditionSections.monitor) === null || _localAutoGearConditi10 === void 0 ? void 0 : _localAutoGearConditi10.querySelector('.auto-gear-condition-add')) || null,
+    tripodHeadBrand: ((_localAutoGearConditi11 = localAutoGearConditionSections.tripodHeadBrand) === null || _localAutoGearConditi11 === void 0 ? void 0 : _localAutoGearConditi11.querySelector('.auto-gear-condition-add')) || null,
+    tripodBowl: ((_localAutoGearConditi12 = localAutoGearConditionSections.tripodBowl) === null || _localAutoGearConditi12 === void 0 ? void 0 : _localAutoGearConditi12.querySelector('.auto-gear-condition-add')) || null,
+    tripodTypes: ((_localAutoGearConditi13 = localAutoGearConditionSections.tripodTypes) === null || _localAutoGearConditi13 === void 0 ? void 0 : _localAutoGearConditi13.querySelector('.auto-gear-condition-add')) || null,
+    tripodSpreader: ((_localAutoGearConditi14 = localAutoGearConditionSections.tripodSpreader) === null || _localAutoGearConditi14 === void 0 ? void 0 : _localAutoGearConditi14.querySelector('.auto-gear-condition-add')) || null,
+    crewPresent: ((_localAutoGearConditi15 = localAutoGearConditionSections.crewPresent) === null || _localAutoGearConditi15 === void 0 ? void 0 : _localAutoGearConditi15.querySelector('.auto-gear-condition-add')) || null,
+    crewAbsent: ((_localAutoGearConditi16 = localAutoGearConditionSections.crewAbsent) === null || _localAutoGearConditi16 === void 0 ? void 0 : _localAutoGearConditi16.querySelector('.auto-gear-condition-add')) || null,
+    wireless: ((_localAutoGearConditi17 = localAutoGearConditionSections.wireless) === null || _localAutoGearConditi17 === void 0 ? void 0 : _localAutoGearConditi17.querySelector('.auto-gear-condition-add')) || null,
+    motors: ((_localAutoGearConditi18 = localAutoGearConditionSections.motors) === null || _localAutoGearConditi18 === void 0 ? void 0 : _localAutoGearConditi18.querySelector('.auto-gear-condition-add')) || null,
+    controllers: ((_localAutoGearConditi19 = localAutoGearConditionSections.controllers) === null || _localAutoGearConditi19 === void 0 ? void 0 : _localAutoGearConditi19.querySelector('.auto-gear-condition-add')) || null,
+    distance: ((_localAutoGearConditi20 = localAutoGearConditionSections.distance) === null || _localAutoGearConditi20 === void 0 ? void 0 : _localAutoGearConditi20.querySelector('.auto-gear-condition-add')) || null
+  };
+  autoGearConditionRemoveButtons = {
+    always: ((_localAutoGearConditi21 = localAutoGearConditionSections.always) === null || _localAutoGearConditi21 === void 0 ? void 0 : _localAutoGearConditi21.querySelector('.auto-gear-condition-remove')) || null,
+    scenarios: ((_localAutoGearConditi22 = localAutoGearConditionSections.scenarios) === null || _localAutoGearConditi22 === void 0 ? void 0 : _localAutoGearConditi22.querySelector('.auto-gear-condition-remove')) || null,
+    shootingDays: ((_localAutoGearConditi23 = localAutoGearConditionSections.shootingDays) === null || _localAutoGearConditi23 === void 0 ? void 0 : _localAutoGearConditi23.querySelector('.auto-gear-condition-remove')) || null,
+    mattebox: ((_localAutoGearConditi24 = localAutoGearConditionSections.mattebox) === null || _localAutoGearConditi24 === void 0 ? void 0 : _localAutoGearConditi24.querySelector('.auto-gear-condition-remove')) || null,
+    cameraHandle: ((_localAutoGearConditi25 = localAutoGearConditionSections.cameraHandle) === null || _localAutoGearConditi25 === void 0 ? void 0 : _localAutoGearConditi25.querySelector('.auto-gear-condition-remove')) || null,
+    viewfinderExtension: ((_localAutoGearConditi26 = localAutoGearConditionSections.viewfinderExtension) === null || _localAutoGearConditi26 === void 0 ? void 0 : _localAutoGearConditi26.querySelector('.auto-gear-condition-remove')) || null,
+    deliveryResolution: ((_localAutoGearConditi27 = localAutoGearConditionSections.deliveryResolution) === null || _localAutoGearConditi27 === void 0 ? void 0 : _localAutoGearConditi27.querySelector('.auto-gear-condition-remove')) || null,
+    videoDistribution: ((_localAutoGearConditi28 = localAutoGearConditionSections.videoDistribution) === null || _localAutoGearConditi28 === void 0 ? void 0 : _localAutoGearConditi28.querySelector('.auto-gear-condition-remove')) || null,
+    camera: ((_localAutoGearConditi29 = localAutoGearConditionSections.camera) === null || _localAutoGearConditi29 === void 0 ? void 0 : _localAutoGearConditi29.querySelector('.auto-gear-condition-remove')) || null,
+    ownGear: ((_localAutoGearConditi30 = localAutoGearConditionSections.ownGear) === null || _localAutoGearConditi30 === void 0 ? void 0 : _localAutoGearConditi30.querySelector('.auto-gear-condition-remove')) || null,
+    cameraWeight: ((_localAutoGearConditi31 = localAutoGearConditionSections.cameraWeight) === null || _localAutoGearConditi31 === void 0 ? void 0 : _localAutoGearConditi31.querySelector('.auto-gear-condition-remove')) || null,
+    monitor: ((_localAutoGearConditi32 = localAutoGearConditionSections.monitor) === null || _localAutoGearConditi32 === void 0 ? void 0 : _localAutoGearConditi32.querySelector('.auto-gear-condition-remove')) || null,
+    tripodHeadBrand: ((_localAutoGearConditi33 = localAutoGearConditionSections.tripodHeadBrand) === null || _localAutoGearConditi33 === void 0 ? void 0 : _localAutoGearConditi33.querySelector('.auto-gear-condition-remove')) || null,
+    tripodBowl: ((_localAutoGearConditi34 = localAutoGearConditionSections.tripodBowl) === null || _localAutoGearConditi34 === void 0 ? void 0 : _localAutoGearConditi34.querySelector('.auto-gear-condition-remove')) || null,
+    tripodTypes: ((_localAutoGearConditi35 = localAutoGearConditionSections.tripodTypes) === null || _localAutoGearConditi35 === void 0 ? void 0 : _localAutoGearConditi35.querySelector('.auto-gear-condition-remove')) || null,
+    tripodSpreader: ((_localAutoGearConditi36 = localAutoGearConditionSections.tripodSpreader) === null || _localAutoGearConditi36 === void 0 ? void 0 : _localAutoGearConditi36.querySelector('.auto-gear-condition-remove')) || null,
+    crewPresent: ((_localAutoGearConditi37 = localAutoGearConditionSections.crewPresent) === null || _localAutoGearConditi37 === void 0 ? void 0 : _localAutoGearConditi37.querySelector('.auto-gear-condition-remove')) || null,
+    crewAbsent: ((_localAutoGearConditi38 = localAutoGearConditionSections.crewAbsent) === null || _localAutoGearConditi38 === void 0 ? void 0 : _localAutoGearConditi38.querySelector('.auto-gear-condition-remove')) || null,
+    wireless: ((_localAutoGearConditi39 = localAutoGearConditionSections.wireless) === null || _localAutoGearConditi39 === void 0 ? void 0 : _localAutoGearConditi39.querySelector('.auto-gear-condition-remove')) || null,
+    motors: ((_localAutoGearConditi40 = localAutoGearConditionSections.motors) === null || _localAutoGearConditi40 === void 0 ? void 0 : _localAutoGearConditi40.querySelector('.auto-gear-condition-remove')) || null,
+    controllers: ((_localAutoGearConditi41 = localAutoGearConditionSections.controllers) === null || _localAutoGearConditi41 === void 0 ? void 0 : _localAutoGearConditi41.querySelector('.auto-gear-condition-remove')) || null,
+    distance: ((_localAutoGearConditi42 = localAutoGearConditionSections.distance) === null || _localAutoGearConditi42 === void 0 ? void 0 : _localAutoGearConditi42.querySelector('.auto-gear-condition-remove')) || null
+  };
+  if (autoGearAddRuleBtn) {
+    autoGearAddRuleBtn.setAttribute('aria-controls', 'autoGearEditor');
+    autoGearAddRuleBtn.setAttribute('aria-expanded', autoGearEditor && !autoGearEditor.hidden ? 'true' : 'false');
+  }
+  if (autoGearEditor) {
+    autoGearEditor.setAttribute('aria-hidden', autoGearEditor.hidden ? 'true' : 'false');
+  }
+}
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAppCoreNewDomReferences);
+  } else {
+    initAppCoreNewDomReferences();
+  }
 }

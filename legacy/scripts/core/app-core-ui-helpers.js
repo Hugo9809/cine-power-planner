@@ -294,11 +294,72 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       button.innerHTML = escapeButtonLabelSafely(safeLabel);
     }
   }
+  function whenElementAvailable(idOrSelector, onResolve) {
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    if (!idOrSelector || typeof onResolve !== 'function') {
+      return false;
+    }
+    var doc = resolveDocument();
+    if (!doc) {
+      return false;
+    }
+    var find = function find(query) {
+      var el = doc.getElementById(query);
+      if (!el) {
+        try {
+          el = doc.querySelector(query);
+        } catch (e) {
+          void e;
+        }
+      }
+      return el;
+    };
+    var initial = find(idOrSelector);
+    if (initial) {
+      try {
+        onResolve(initial);
+      } catch (handlerError) {
+        if (typeof console !== 'undefined' && console && typeof console.error === 'function') {
+          console.error("whenElementAvailable: handler for ".concat(idOrSelector, " failed"), handlerError);
+        }
+      }
+      return true;
+    }
+    var attemptsLimit = typeof options.maxAttempts === 'number' ? options.maxAttempts : 150;
+    var interval = typeof options.interval === 'number' && options.interval > 0 ? options.interval : 100;
+    var attempts = 0;
+    var _poll = function poll() {
+      attempts += 1;
+      var el = find(idOrSelector);
+      if (el) {
+        try {
+          onResolve(el);
+        } catch (handlerError) {
+          if (typeof console !== 'undefined' && console && typeof console.error === 'function') {
+            console.error("whenElementAvailable: polled handler for ".concat(idOrSelector, " failed"), handlerError);
+          }
+        }
+        return;
+      }
+      if (attempts < attemptsLimit) {
+        setTimeout(_poll, interval);
+      } else if (typeof options.onTimeout === 'function') {
+        try {
+          options.onTimeout();
+        } catch (timeoutError) {
+          void timeoutError;
+        }
+      }
+    };
+    setTimeout(_poll, interval);
+    return true;
+  }
   var namespace = {
     escapeHtml: escapeHtml,
     escapeButtonLabelSafely: escapeButtonLabelSafely,
     resolveButtonIconMarkup: resolveButtonIconMarkup,
-    setButtonLabelWithIcon: setButtonLabelWithIcon
+    setButtonLabelWithIcon: setButtonLabelWithIcon,
+    whenElementAvailable: whenElementAvailable
   };
   if (GLOBAL_SCOPE) {
     var existing = GLOBAL_SCOPE.cineCoreUiHelpers && _typeof(GLOBAL_SCOPE.cineCoreUiHelpers) === 'object' ? GLOBAL_SCOPE.cineCoreUiHelpers : {};
@@ -306,6 +367,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     existing.escapeButtonLabelSafely = escapeButtonLabelSafely;
     existing.resolveButtonIconMarkup = resolveButtonIconMarkup;
     existing.setButtonLabelWithIcon = setButtonLabelWithIcon;
+    existing.whenElementAvailable = whenElementAvailable;
     try {
       GLOBAL_SCOPE.cineCoreUiHelpers = existing;
     } catch (assignError) {

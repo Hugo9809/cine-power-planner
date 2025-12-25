@@ -28,7 +28,7 @@ function extractFunctionSource(source, name) {
 }
 
 function loadFilterHelpers() {
-  const sourcePath = path.join(__dirname, '../../src/scripts/app-core-new-2.js');
+  const sourcePath = path.join(__dirname, '../../src/scripts/core/app-core-new-2.js');
   const source = fs.readFileSync(sourcePath, 'utf8');
   const pieces = ['filterSelect', 'attachSelectSearch'].map(name => extractFunctionSource(source, name));
   const script = `${pieces.join('\n\n')}\nmodule.exports = { filterSelect, attachSelectSearch };`;

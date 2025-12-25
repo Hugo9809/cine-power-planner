@@ -110,19 +110,44 @@ var RUNTIME_SHARED_BOOTSTRAP_CONTEXT_TOOLS = resolveCoreSupportModule(
   './modules/app-core/runtime.js'
 );
 
+function getDefaultRuntimeScope() {
+  return typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' && CORE_PART1_RUNTIME_SCOPE
+    ? CORE_PART1_RUNTIME_SCOPE
+    : null;
+}
+
+function getDefaultCoreGlobalScope() {
+  return typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE
+    ? CORE_GLOBAL_SCOPE
+    : null;
+}
+
+var createInlineRuntimeSharedFallback =
+  APP_CORE_BOOTSTRAP_TOOLS &&
+    APP_CORE_BOOTSTRAP_TOOLS.resolver &&
+    typeof APP_CORE_BOOTSTRAP_TOOLS.resolver.createInlineRuntimeSharedFallback === 'function'
+    ? APP_CORE_BOOTSTRAP_TOOLS.resolver.createInlineRuntimeSharedFallback
+    : function createInlineRuntimeSharedFallback() { return null; };
+
+
+
 var runtimeSharedBootstrapResult = (function resolveRuntimeSharedBootstrapResult() {
   const runtimeScope = getDefaultRuntimeScope();
   const coreGlobalScope = getDefaultCoreGlobalScope();
   const requireFn = typeof require === 'function' ? require : null;
   const currentRuntimeShared =
     typeof CORE_RUNTIME_SHARED !== 'undefined' && CORE_RUNTIME_SHARED ? CORE_RUNTIME_SHARED : null;
-  const fallbackScopes = collectBootstrapFallbackScopes({
-    fallbackScopes: [],
-    runtimeScope,
-    coreGlobalScope,
-  });
+  const fallbackScopes =
+    RUNTIME_SHARED_BOOTSTRAP_RESOLVER_TOOLS &&
+      typeof RUNTIME_SHARED_BOOTSTRAP_RESOLVER_TOOLS.collectBootstrapFallbackScopes === 'function'
+      ? RUNTIME_SHARED_BOOTSTRAP_RESOLVER_TOOLS.collectBootstrapFallbackScopes({
+        fallbackScopes: [],
+        runtimeScope,
+        coreGlobalScope,
+      })
+      : [];
 
-  const bootstrapTools = RESOLVED_APP_CORE_BOOTSTRAP_TOOLS;
+  const bootstrapTools = APP_CORE_BOOTSTRAP_TOOLS;
 
   const moduleOptions = {
     bootstrapTools,
@@ -141,11 +166,18 @@ var runtimeSharedBootstrapResult = (function resolveRuntimeSharedBootstrapResult
     currentRuntimeShared,
     fallbackScopes,
     collectFallbackScopes(scopes) {
-      return collectBootstrapFallbackScopes({
-        fallbackScopes: Array.isArray(scopes) ? scopes : [],
-        runtimeScope,
-        coreGlobalScope,
-      });
+      if (
+        RUNTIME_SHARED_BOOTSTRAP_RESOLVER_TOOLS &&
+        typeof RUNTIME_SHARED_BOOTSTRAP_RESOLVER_TOOLS.collectBootstrapFallbackScopes ===
+        'function'
+      ) {
+        return RUNTIME_SHARED_BOOTSTRAP_RESOLVER_TOOLS.collectBootstrapFallbackScopes({
+          fallbackScopes: Array.isArray(scopes) ? scopes : [],
+          runtimeScope,
+          coreGlobalScope,
+        });
+      }
+      return [];
     },
     createInlineRuntimeSharedFallback,
     runtimeSharedBootstrapInlineRequirePath: null,
@@ -218,14 +250,14 @@ var CORE_RUNTIME_SHARED_NAMESPACE =
 
 var CORE_RUNTIME_SHARED_RESOLVER =
   runtimeSharedBootstrapResult &&
-  typeof runtimeSharedBootstrapResult.runtimeSharedResolver === 'function'
+    typeof runtimeSharedBootstrapResult.runtimeSharedResolver === 'function'
     ? runtimeSharedBootstrapResult.runtimeSharedResolver
     : null;
 
 var EXISTING_CORE_RUNTIME_SHARED =
   (runtimeSharedBootstrapResult &&
-  runtimeSharedBootstrapResult.existingRuntimeShared &&
-  typeof runtimeSharedBootstrapResult.existingRuntimeShared === 'object'
+    runtimeSharedBootstrapResult.existingRuntimeShared &&
+    typeof runtimeSharedBootstrapResult.existingRuntimeShared === 'object'
     ? runtimeSharedBootstrapResult.existingRuntimeShared
     : null) ||
   (typeof CORE_RUNTIME_SHARED !== 'undefined' && CORE_RUNTIME_SHARED
@@ -234,17 +266,17 @@ var EXISTING_CORE_RUNTIME_SHARED =
 
 var fallbackResolveRuntimeSharedFromGlobal =
   runtimeSharedBootstrapResult &&
-  typeof runtimeSharedBootstrapResult.fallbackResolveRuntimeSharedFromGlobal ===
+    typeof runtimeSharedBootstrapResult.fallbackResolveRuntimeSharedFromGlobal ===
     'function'
     ? runtimeSharedBootstrapResult.fallbackResolveRuntimeSharedFromGlobal
     : function fallbackResolveRuntimeSharedFromGlobal() {
-        return null;
-      };
+      return null;
+    };
 
 var CORE_RUNTIME_SHARED =
   (runtimeSharedBootstrapResult &&
-  runtimeSharedBootstrapResult.runtimeShared &&
-  typeof runtimeSharedBootstrapResult.runtimeShared === 'object'
+    runtimeSharedBootstrapResult.runtimeShared &&
+    typeof runtimeSharedBootstrapResult.runtimeShared === 'object'
     ? runtimeSharedBootstrapResult.runtimeShared
     : null) ||
   (EXISTING_CORE_RUNTIME_SHARED && typeof EXISTING_CORE_RUNTIME_SHARED === 'object'
@@ -252,25 +284,25 @@ var CORE_RUNTIME_SHARED =
     : null) ||
   (CORE_RUNTIME_SHARED_RESOLVER
     ? (function resolveRuntimeSharedWithResolver() {
-        try {
-          const resolved = CORE_RUNTIME_SHARED_RESOLVER({
-            currentShared: EXISTING_CORE_RUNTIME_SHARED,
-            resolveCoreSupportModule,
-            requireFn: typeof require === 'function' ? require : null,
-            runtimeScope:
-              typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
-            coreGlobalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
-          });
+      try {
+        const resolved = CORE_RUNTIME_SHARED_RESOLVER({
+          currentShared: EXISTING_CORE_RUNTIME_SHARED,
+          resolveCoreSupportModule,
+          requireFn: typeof require === 'function' ? require : null,
+          runtimeScope:
+            typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
+          coreGlobalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
+        });
 
-          if (resolved && typeof resolved === 'object') {
-            return resolved;
-          }
-        } catch (runtimeSharedResolverError) {
-          void runtimeSharedResolverError;
+        if (resolved && typeof resolved === 'object') {
+          return resolved;
         }
+      } catch (runtimeSharedResolverError) {
+        void runtimeSharedResolverError;
+      }
 
-        return null;
-      })()
+      return null;
+    })()
     : null) ||
   fallbackResolveRuntimeSharedFromGlobal() ||
   Object.create(null);

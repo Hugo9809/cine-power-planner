@@ -68,7 +68,7 @@
             numeric: true,
             sensitivity: 'base'
           });
-        } catch (e) {
+        } catch (_unused) {
           localeSortCollator = false;
         }
       }
@@ -82,15 +82,29 @@
     var pm = window.cineCorePinkModeSupport;
     if (!window.resolvePinkModeLottieRuntime && pm.resolvePinkModeLottieRuntime) window.resolvePinkModeLottieRuntime = pm.resolvePinkModeLottieRuntime;
     if (!window.ensurePinkModeLottieRuntime && pm.ensurePinkModeLottieRuntime) window.ensurePinkModeLottieRuntime = pm.ensurePinkModeLottieRuntime;
+    if (!window.setPinkModeIconSequence && pm.setPinkModeIconSequence) window.setPinkModeIconSequence = pm.setPinkModeIconSequence;
+    if (!window.loadPinkModeIconsFromFiles && pm.loadPinkModeIconsFromFiles) window.loadPinkModeIconsFromFiles = pm.loadPinkModeIconsFromFiles;
+    if (typeof window.PINK_MODE_ICON_FALLBACK_MARKUP === 'undefined' && pm.PINK_MODE_ICON_FALLBACK_MARKUP) window.PINK_MODE_ICON_FALLBACK_MARKUP = pm.PINK_MODE_ICON_FALLBACK_MARKUP;
   }
-  if (typeof window.resolvePinkModeLottieRuntime !== 'function') {
-    window.resolvePinkModeLottieRuntime = function () {
-      return null;
+  if (typeof window.clearBackupVault !== 'function') {
+    window.clearBackupVault = function () {
+      if (typeof Promise !== 'undefined') {
+        return Promise.resolve(true);
+      }
+      return {
+        then: function then(cb) {
+          cb(true);
+          return this;
+        },
+        catch: function _catch() {
+          return this;
+        }
+      };
     };
   }
-  if (typeof window.ensurePinkModeLottieRuntime !== 'function') {
-    window.ensurePinkModeLottieRuntime = function () {
-      return Promise.resolve(null);
+  if (typeof window.isBackupVaultFallbackActive !== 'function') {
+    window.isBackupVaultFallbackActive = function () {
+      return false;
     };
   }
   console.log("Legacy globals shim executed. Global UI references and localeSort restored.");

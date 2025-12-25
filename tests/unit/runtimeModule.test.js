@@ -51,6 +51,8 @@ const STORAGE_FUNCTIONS = [
   'getLastCriticalStorageGuardResult',
 ];
 
+const originalConsole = global.console;
+
 const AUTOSAVE_FUNCTIONS = [
   'saveCurrentSession',
   'autoSaveCurrentSetup',
@@ -158,7 +160,7 @@ describe('cineRuntime module', () => {
       || (alias && missingBindings.has(alias))
     );
 
-    const noop = () => {};
+    const noop = () => { };
     const storage = {
       loadFeedback: noop,
       saveFeedback: noop,
@@ -292,28 +294,28 @@ describe('cineRuntime module', () => {
     };
 
     controllerApi.register('deviceManagerSection', {
-      show: () => {},
-      hide: () => {},
-      toggle: () => {},
+      show: () => { },
+      hide: () => { },
+      toggle: () => { },
     });
     controllerApi.register('shareDialog', {
-      open: () => {},
-      submit: () => {},
-      cancel: () => {},
-      dismiss: () => {},
+      open: () => { },
+      submit: () => { },
+      cancel: () => { },
+      dismiss: () => { },
     });
     controllerApi.register('sharedImportDialog', {
-      submit: () => {},
-      cancel: () => {},
-      dismiss: () => {},
-      changeMode: () => {},
+      submit: () => { },
+      cancel: () => { },
+      dismiss: () => { },
+      changeMode: () => { },
     });
     controllerApi.register('backupSettings', {
-      execute: () => {},
+      execute: () => { },
     });
     controllerApi.register('restoreSettings', {
-      openPicker: () => {},
-      processFile: () => {},
+      openPicker: () => { },
+      processFile: () => { },
     });
 
     const interactionApi = {
@@ -338,7 +340,7 @@ describe('cineRuntime module', () => {
       'performBackup',
       'openRestorePicker',
       'applyRestoreFile',
-    ].forEach(name => interactionApi.register(name, () => {}));
+    ].forEach(name => interactionApi.register(name, () => { }));
 
     const helpApi = {
       register(name, resolver) {
@@ -522,7 +524,6 @@ describe('cineRuntime module', () => {
     registerModuleForTest('cineUi', uiStub, { category: 'ui', description: 'test' });
 
     global.cinePersistence = persistenceStub;
-    global.cineOffline = offlineStub;
     global.cineUi = uiStub;
 
     runtime = require(path.join('..', '..', 'src', 'scripts', 'modules', 'runtime.js'));
@@ -536,6 +537,9 @@ describe('cineRuntime module', () => {
     }
     if (typeof originalIsFrozen === 'function') {
       Object.isFrozen = originalIsFrozen;
+    }
+    if (global.console && originalConsole) {
+      global.console = originalConsole;
     }
     delete global.cinePersistence;
     delete global.cineOffline;
@@ -698,14 +702,36 @@ describe('cineRuntime module', () => {
     global[PENDING_QUEUE_KEY] = queue;
 
     const runtimeSideRegistry = runtimeRegistry || resolveRuntimeRegistry();
+    console.log('DEBUG: runtimeSideRegistry exists?', !!runtimeSideRegistry);
+    if (runtimeSideRegistry) console.log('DEBUG: runtimeSideRegistry frozen?', Object.isFrozen(runtimeSideRegistry));
+
+    const harnessRegistry = registry;
+    console.log('DEBUG: harnessRegistry exists?', !!harnessRegistry);
+    if (harnessRegistry) console.log('DEBUG: harnessRegistry frozen?', Object.isFrozen(harnessRegistry));
+
     const registerTarget = runtimeSideRegistry || registry;
     const originalRegister = registerTarget.register;
+    try {
+      registerTarget.register = () => { };
+      console.log('DEBUG: registerTarget.register is writable');
+      registerTarget.register = originalRegister; // restore
+    } catch (e) {
+      console.log('DEBUG: registerTarget.register write failed:', e.message);
+    }
+    /*
     const registerSpy = jest.spyOn(registerTarget, 'register').mockImplementation((name, api, options) => {
       if (name === 'cineRuntime') {
         throw new Error('registry-offline');
       }
       return originalRegister.call(registerTarget, name, api, options);
     });
+    */
+    registerTarget.register = (name, api, options) => {
+      if (name === 'cineRuntime') {
+        throw new Error('registry-offline');
+      }
+      return originalRegister.call(registerTarget, name, api, options);
+    };
 
     harness.moduleGlobals.registerOrQueueModule.mockImplementation((name, api, options = {}) => {
       const payload = Object.freeze({
@@ -723,7 +749,7 @@ describe('cineRuntime module', () => {
       expect(Array.isArray(queue)).toBe(true);
       expect(queue).toHaveLength(1);
     } finally {
-      registerSpy.mockRestore();
+      registerTarget.register = originalRegister;
       delete global[PENDING_QUEUE_KEY];
     }
   });

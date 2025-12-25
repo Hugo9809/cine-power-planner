@@ -1665,6 +1665,9 @@
         if (!Number.isFinite(viewportHeight) || viewportHeight <= margin * 2) return;
         const availableHeight = viewportHeight - margin * 2;
         if (availableHeight <= 0) return;
+        // Defensive check: ensure popup exists before accessing scrollHeight, 
+        // though strictly guarded by earlier check, this handles edge cases.
+        if (!popup) return;
         const currentHeight = popup.scrollHeight;
         if (!Number.isFinite(currentHeight) || currentHeight <= availableHeight) return;
         const maxWidth = Number.isFinite(viewportWidth) && viewportWidth > margin * 2

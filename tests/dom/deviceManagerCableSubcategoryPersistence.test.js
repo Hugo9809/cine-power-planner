@@ -122,7 +122,7 @@ describe('device manager cable subcategory persistence', () => {
     };
 
     if (typeof HTMLElement !== 'undefined' && !HTMLElement.prototype.scrollIntoView) {
-      HTMLElement.prototype.scrollIntoView = () => {};
+      HTMLElement.prototype.scrollIntoView = () => { };
     }
 
     document.body.innerHTML = getHtmlBody();
@@ -168,7 +168,7 @@ describe('device manager cable subcategory persistence', () => {
     global.currentLang = 'en';
     global.ICON_GLYPHS = { add: '+', save: '✓', circleX: '×', gears: '⚙' };
 
-    const noop = () => {};
+    const noop = () => { };
     global.updateCageSelectOptions = noop;
     global.updateGlobalDevicesReference = noop;
     global.scheduleProjectAutoSave = noop;
@@ -314,7 +314,7 @@ describe('device manager cable subcategory persistence', () => {
     };
 
     jest.isolateModules(() => {
-      require('../../src/scripts/app-events.js');
+      require('../../src/scripts/core/app-events.js');
     });
 
     deviceManagerSection = document.getElementById('device-manager');

@@ -71,21 +71,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         number: null
       };
     }
-    var cleaned = value.replace(/[^a-z0-9]+/g, '');
+    var cleaned = value.replace(/[^a-z0-9]+/gi, '');
     if (!cleaned) {
       return {
         cleaned: '',
         number: null
       };
     }
+    var normalized = cleaned.toLowerCase();
     var number = null;
     if (/^\d+$/.test(cleaned)) {
       number = parseInt(cleaned, 10);
-    } else if (ROMAN_NUMERAL_PATTERN.test(cleaned)) {
+    } else if (ROMAN_NUMERAL_PATTERN.test(normalized)) {
       var total = 0;
       var prev = 0;
-      for (var index = cleaned.length - 1; index >= 0; index -= 1) {
-        var char = cleaned[index];
+      for (var index = normalized.length - 1; index >= 0; index -= 1) {
+        var char = normalized[index];
         var current = ROMAN_NUMERAL_VALUES[char];
         if (!current) {
           total = 0;
@@ -103,7 +104,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     return {
-      cleaned: cleaned,
+      cleaned: normalized,
       number: number
     };
   }
@@ -319,9 +320,25 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     ensureSynonymGroup(['goldmount', 'antonbauer'], ['goldmount', 'antonbauer'], [['gold'], ['mount']]);
   }
   var FEATURE_SEARCH_FUZZY_MAX_DISTANCE = 2;
+  function getAdaptiveFuzzyMaxDistance(source, target, override) {
+    if (Number.isFinite(override)) {
+      return Math.max(1, Math.floor(override));
+    }
+    var maxLength = Math.max(source && source.length ? source.length : 0, target && target.length ? target.length : 0);
+    if (maxLength <= 4) {
+      return 2;
+    }
+    if (maxLength <= 8) {
+      return 3;
+    }
+    if (maxLength <= 12) {
+      return 4;
+    }
+    return 5;
+  }
   function createEngine(options) {
     var engineOptions = _typeof(options) === 'object' && options ? options : {};
-    var fuzzyMaxDistance = Number.isFinite(engineOptions.fuzzyMaxDistance) ? Math.max(1, Math.floor(engineOptions.fuzzyMaxDistance)) : FEATURE_SEARCH_FUZZY_MAX_DISTANCE;
+    var fuzzyMaxDistanceOverride = Number.isFinite(engineOptions.fuzzyMaxDistance) ? Math.max(1, Math.floor(engineOptions.fuzzyMaxDistance)) : null;
     var fuzzyCache = typeof Map === 'function' ? new Map() : null;
     var getFuzzyDistance = function getFuzzyDistance(source, target) {
       if (!source || !target) {
@@ -335,7 +352,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       var sourceLength = source.length;
       var targetLength = target.length;
-      if (Math.abs(sourceLength - targetLength) > fuzzyMaxDistance) {
+      var maxDistance = getAdaptiveFuzzyMaxDistance(source, target, fuzzyMaxDistanceOverride);
+      if (Math.abs(sourceLength - targetLength) > maxDistance) {
         if (fuzzyCache) {
           fuzzyCache.set(cacheKey, Number.POSITIVE_INFINITY);
         }
@@ -357,7 +375,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             bestInRow = current[j];
           }
         }
-        if (bestInRow > fuzzyMaxDistance) {
+        if (bestInRow > maxDistance) {
           if (fuzzyCache) {
             fuzzyCache.set(cacheKey, Number.POSITIVE_INFINITY);
           }
@@ -381,7 +399,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return 0;
       }
       var distance = getFuzzyDistance(token, entryToken);
-      if (!Number.isFinite(distance) || distance > fuzzyMaxDistance) {
+      var maxDistance = getAdaptiveFuzzyMaxDistance(token, entryToken, fuzzyMaxDistanceOverride);
+      if (!Number.isFinite(distance) || distance > maxDistance) {
         return 0;
       }
       if (distance === 0) {
@@ -855,7 +874,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         if (hasKey && entryKey) {
           var fuzzyDistance = getFuzzyDistance(entryKey, key);
-          if (Number.isFinite(fuzzyDistance) && fuzzyDistance > 0 && fuzzyDistance <= fuzzyMaxDistance) {
+          var maxDistance = getAdaptiveFuzzyMaxDistance(entryKey, key, fuzzyMaxDistanceOverride);
+          if (Number.isFinite(fuzzyDistance) && fuzzyDistance > 0 && fuzzyDistance <= maxDistance) {
             if (!bestFuzzyMatch || fuzzyDistance < bestFuzzyDistance || fuzzyDistance === bestFuzzyDistance && entryKey.length < bestFuzzyLength) {
               bestFuzzyMatch = toResult(entryKey, _entryValue, 'fuzzy', tokenDetails.score, tokenDetails.matched, {
                 fuzzyDistance: fuzzyDistance

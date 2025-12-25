@@ -1,4 +1,8 @@
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
+function _regenerator() { var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
+function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
+function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
+function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -366,6 +370,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return false;
     }
     var normalized = Array.isArray(records) ? records : [];
+    if (normalized.length === 0) {
+      try {
+        storage.removeItem(BACKUP_VAULT_FALLBACK_STORAGE_KEY);
+        fallbackStorageRecordCount = 0;
+        refreshBackupVaultFallbackMode(null);
+        return true;
+      } catch (removeError) {
+        console.warn('Failed to remove fallback backup vault entries', removeError);
+        return false;
+      }
+    }
     var serialized = '[]';
     try {
       serialized = JSON.stringify(normalized);
@@ -505,6 +520,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         request.addEventListener('success', function () {
           var db = request.result;
           resolved = true;
+          db.onversionchange = function () {
+            db.close();
+            if (backupVaultDbPromise) {
+              backupVaultDbPromise = null;
+            }
+          };
           resolve(db);
         });
         request.addEventListener('error', function () {
@@ -706,50 +727,72 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
   }
   function clearBackupVault() {
-    var dbDeletionPromise = new Promise(function (resolve, reject) {
-      if (!isIndexedDBAvailable()) {
-        resolve(true);
-        return;
-      }
-      if (backupVaultDbPromise) {
-        backupVaultDbPromise.then(function (db) {
-          if (db && typeof db.close === 'function') {
-            try {
-              db.close();
-            } catch (closeError) {
-              console.warn('Failed to close backup vault DB before deletion', closeError);
+    var dbDeletionPromise = _asyncToGenerator(_regenerator().m(function _callee() {
+      var db, _t;
+      return _regenerator().w(function (_context) {
+        while (1) switch (_context.p = _context.n) {
+          case 0:
+            _context.p = 0;
+            if (!backupVaultDbPromise) {
+              _context.n = 2;
+              break;
             }
-          }
-        }).catch(function () {});
-        backupVaultDbPromise = null;
-      }
-      try {
-        var request = indexedDB.deleteDatabase(BACKUP_VAULT_DB_NAME);
-        request.addEventListener('success', function () {
-          resolve(true);
-        });
-        request.addEventListener('error', function () {
-          console.warn('Failed to delete backup vault database', request.error);
-          withBackupVaultStore('readwrite', function (store) {
-            if (!store) return false;
-            return new Promise(function (clearResolve, clearReject) {
-              var clearRequest = store.clear();
-              clearRequest.onsuccess = function () {
-                return clearResolve(true);
-              };
-              clearRequest.onerror = function () {
-                return clearReject(clearRequest.error);
-              };
-            });
-          }).then(resolve).catch(reject);
-        });
-        request.addEventListener('blocked', function () {
-          console.warn('Backup vault database deletion blocked');
-        });
-      } catch (deleteError) {
-        reject(deleteError);
-      }
-    });
+            _context.n = 1;
+            return backupVaultDbPromise;
+          case 1:
+            db = _context.v;
+            if (db && typeof db.close === 'function') {
+              try {
+                db.close();
+              } catch (closeError) {
+                console.warn('Failed to close backup vault DB before deletion', closeError);
+              }
+            }
+          case 2:
+            _context.n = 4;
+            break;
+          case 3:
+            _context.p = 3;
+            _t = _context.v;
+            console.warn('Failed to await backup vault DB cleanup', _t);
+          case 4:
+            backupVaultDbPromise = null;
+            return _context.a(2, new Promise(function (resolve, reject) {
+              if (!isIndexedDBAvailable()) {
+                resolve(true);
+                return;
+              }
+              try {
+                var request = indexedDB.deleteDatabase(BACKUP_VAULT_DB_NAME);
+                request.addEventListener('success', function () {
+                  resolve(true);
+                });
+                request.addEventListener('error', function () {
+                  console.warn('Failed to delete backup vault database', request.error);
+                  withBackupVaultStore('readwrite', function (store) {
+                    if (!store) return false;
+                    return new Promise(function (clearResolve, clearReject) {
+                      var clearRequest = store.clear();
+                      clearRequest.onsuccess = function () {
+                        return clearResolve(true);
+                      };
+                      clearRequest.onerror = function () {
+                        return clearReject(clearRequest.error);
+                      };
+                    });
+                  }).then(resolve).catch(reject);
+                });
+                request.addEventListener('blocked', function () {
+                  console.warn('Backup vault database deletion blocked');
+                  resolve(true);
+                });
+              } catch (deleteError) {
+                reject(deleteError);
+              }
+            }));
+        }
+      }, _callee, null, [[0, 3]]);
+    }))();
     return Promise.all([dbDeletionPromise, writeFallbackVaultRecords([]), memoryBackupVault.list().then(function (list) {
       return Promise.all(list.map(function (item) {
         return memoryBackupVault.remove(item.id);
@@ -895,11 +938,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (typeof GLOBAL_SCOPE.showNotification === 'function') {
           try {
             GLOBAL_SCOPE.showNotification('info', message);
+            return false;
           } catch (notifyError) {
             void notifyError;
           }
         }
-        if (typeof alert === 'function') {
+        if (typeof GLOBAL_SCOPE.cineShowAlertDialog === 'function') {
+          GLOBAL_SCOPE.cineShowAlertDialog({
+            title: resolveBackupVaultWindowTitle(),
+            message: message
+          });
+        } else if (typeof alert === 'function') {
           try {
             alert(message);
           } catch (alertError) {
@@ -924,11 +973,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (typeof GLOBAL_SCOPE.showNotification === 'function') {
           try {
             GLOBAL_SCOPE.showNotification('error', _message);
+            return false;
           } catch (notifyError) {
             void notifyError;
           }
         }
-        if (typeof alert === 'function') {
+        if (typeof GLOBAL_SCOPE.cineShowAlertDialog === 'function') {
+          GLOBAL_SCOPE.cineShowAlertDialog({
+            title: resolveBackupVaultWindowTitle(),
+            message: _message
+          });
+        } else if (typeof alert === 'function') {
           try {
             alert(_message);
           } catch (alertError) {
@@ -951,7 +1006,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }));
       var escapedSerializedRecords = serializedRecords.replace(/</g, "\\u003c");
       var emptyMessage = resolveBackupVaultEmptyMessage();
-      var bootstrapScript = "(() => {\n" + "  'use strict';\n" + "  try {\n" + "    var source = document.getElementById('queued-backups');\n" + "    var records = [];\n" + "    if (source) {\n" + "      var text = source.textContent || '';\n" + "      var parsed = JSON.parse(text);\n" + "      if (Array.isArray(parsed)) {\n" + "        records = parsed;\n" + "      }\n" + "    }\n" + "    var container = document.getElementById('vault');\n" + "    if (!container) {\n" + "      return;\n" + "    }\n" + "    if (!records.length) {\n" + "      var empty = document.createElement('p');\n" + "      empty.className = 'empty';\n" + "      empty.textContent = ".concat(JSON.stringify(emptyMessage), ";\n") + "      container.appendChild(empty);\n" + "      return;\n" + "    }\n" + "    records.forEach(function (record) {\n" + "      var entry = document.createElement('section');\n" + "      entry.className = 'backup-entry';\n" + "      var header = document.createElement('header');\n" + "      var heading = document.createElement('h2');\n" + "      heading.textContent = String(record.fileName || 'cine-power-planner-backup.json') + ' \u2014 ' + String(record.createdAt || '');\n" + "      header.appendChild(heading);\n" + "      var downloadButton = document.createElement('button');\n" + "      downloadButton.type = 'button';\n" + "      downloadButton.textContent = 'Download JSON';\n" + "      downloadButton.addEventListener('click', function () {\n" + "        try {\n" + "          var blob = new Blob([record.payload], { type: 'application/json' });\n" + "          var url = URL.createObjectURL(blob);\n" + "          var link = document.createElement('a');\n" + "          link.href = url;\n" + "          link.download = record.fileName || 'cine-power-planner-backup.json';\n" + "          link.click();\n" + "          setTimeout(function () { URL.revokeObjectURL(url); }, 0);\n" + "        } catch (error) {\n" + "          alert('Download blocked \u2014 copy the JSON below instead.');\n" + "        }\n" + "      });\n" + "      header.appendChild(downloadButton);\n" + "      entry.appendChild(header);\n" + "      var textArea = document.createElement('textarea');\n" + "      textArea.readOnly = true;\n" + "      textArea.value = record.payload;\n" + "      entry.appendChild(textArea);\n" + "      container.appendChild(entry);\n" + "    });\n" + "  } catch (error) {\n" + "    console.error('Failed to bootstrap queued backup vault', error);\n" + "  }\n" + "})();";
+      var bootstrapScript = "(() => {\n" + "  'use strict';\n" + "  try {\n" + "    var source = document.getElementById('queued-backups');\n" + "    var records = [];\n" + "    if (source) {\n" + "      var text = source.textContent || '';\n" + "      var parsed = JSON.parse(text);\n" + "      if (Array.isArray(parsed)) {\n" + "        records = parsed;\n" + "      }\n" + "    }\n" + "    var container = document.getElementById('vault');\n" + "    if (!container) {\n" + "      return;\n" + "    }\n" + "    if (!records.length) {\n" + "      var empty = document.createElement('p');\n" + "      empty.className = 'empty';\n" + "      empty.textContent = ".concat(JSON.stringify(emptyMessage), ";\n") + "      container.appendChild(empty);\n" + "      return;\n" + "    }\n" + "    records.forEach(function (record) {\n" + "      var entry = document.createElement('section');\n" + "      entry.className = 'backup-entry';\n" + "      var header = document.createElement('header');\n" + "      var heading = document.createElement('h2');\n" + "      heading.textContent = String(record.fileName || 'cine-power-planner-backup.json') + ' \u2014 ' + String(record.createdAt || '');\n" + "      header.appendChild(heading);\n" + "      var downloadButton = document.createElement('button');\n" + "      downloadButton.type = 'button';\n" + "      downloadButton.textContent = 'Download JSON';\n" + "      downloadButton.addEventListener('click', function () {\n" + "        try {\n" + "          var blob = new Blob([record.payload], { type: 'application/json' });\n" + "          var url = URL.createObjectURL(blob);\n" + "          var link = document.createElement('a');\n" + "          link.href = url;\n" + "          link.download = record.fileName || 'cine-power-planner-backup.json';\n" + "          link.click();\n" + "          setTimeout(function () { URL.revokeObjectURL(url); }, 0);\n" + "        } catch (error) {\n" + "          if (typeof window.opener.cineShowAlertDialog === 'function') {\n" + "            window.opener.cineShowAlertDialog('Download blocked \u2014 copy the JSON below instead.');\n" + "          } else {\n" + "            alert('Download blocked \u2014 copy the JSON below instead.');\n" + "          }\n" + "        }\n" + "      });\n" + "      header.appendChild(downloadButton);\n" + "      entry.appendChild(header);\n" + "      var textArea = document.createElement('textarea');\n" + "      textArea.readOnly = true;\n" + "      textArea.value = record.payload;\n" + "      entry.appendChild(textArea);\n" + "      container.appendChild(entry);\n" + "    });\n" + "  } catch (error) {\n" + "    console.error('Failed to bootstrap queued backup vault', error);\n" + "  }\n" + "})();";
       var bootstrapScriptSrc = "data:text/javascript;charset=utf-8,".concat(encodeURIComponent(bootstrapScript));
       var popupBlockedMessage = resolveBackupTexts().fallbackTexts && resolveBackupTexts().fallbackTexts.queuedBackupVaultPopupBlocked ? resolveBackupTexts().fallbackTexts.queuedBackupVaultPopupBlocked : 'Enable pop-ups to review queued backups stored in the local vault.';
       var doc = vaultWindow.document;
@@ -1329,9 +1384,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return;
     }
     var entries = snapshot && _typeof(snapshot) === 'object' ? Object.entries(snapshot) : [];
-    var retainedKeys = new Set(entries.map(function (_ref) {
-      var _ref2 = _slicedToArray(_ref, 1),
-        key = _ref2[0];
+    var retainedKeys = new Set(entries.map(function (_ref2) {
+      var _ref3 = _slicedToArray(_ref2, 1),
+        key = _ref3[0];
       return key;
     }));
     var keysToRemove = [];
@@ -1355,10 +1410,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         console.warn('Failed to remove sessionStorage key during restore rollback', key, removeError);
       }
     });
-    entries.forEach(function (_ref3) {
-      var _ref4 = _slicedToArray(_ref3, 2),
-        key = _ref4[0],
-        value = _ref4[1];
+    entries.forEach(function (_ref4) {
+      var _ref5 = _slicedToArray(_ref4, 2),
+        key = _ref5[0],
+        value = _ref5[1];
       if (typeof key !== 'string') return;
       try {
         sessionStorage.setItem(key, typeof value === 'string' ? value : String(value));
@@ -1422,13 +1477,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         if (_typeof(entry) === 'object') {
           if (typeof entry.key === 'string') {
-            var _ref5, _ref6, _ref7, _entry$value;
-            assignEntry(entry.key, (_ref5 = (_ref6 = (_ref7 = (_entry$value = entry.value) !== null && _entry$value !== void 0 ? _entry$value : entry.val) !== null && _ref7 !== void 0 ? _ref7 : entry.data) !== null && _ref6 !== void 0 ? _ref6 : entry.content) !== null && _ref5 !== void 0 ? _ref5 : entry.string);
+            var _ref6, _ref7, _ref8, _entry$value;
+            assignEntry(entry.key, (_ref6 = (_ref7 = (_ref8 = (_entry$value = entry.value) !== null && _entry$value !== void 0 ? _entry$value : entry.val) !== null && _ref8 !== void 0 ? _ref8 : entry.data) !== null && _ref7 !== void 0 ? _ref7 : entry.content) !== null && _ref6 !== void 0 ? _ref6 : entry.string);
             return;
           }
           if (typeof entry.name === 'string') {
-            var _ref8, _ref9, _ref0, _entry$value2;
-            assignEntry(entry.name, (_ref8 = (_ref9 = (_ref0 = (_entry$value2 = entry.value) !== null && _entry$value2 !== void 0 ? _entry$value2 : entry.val) !== null && _ref0 !== void 0 ? _ref0 : entry.data) !== null && _ref9 !== void 0 ? _ref9 : entry.content) !== null && _ref8 !== void 0 ? _ref8 : entry.string);
+            var _ref9, _ref0, _ref1, _entry$value2;
+            assignEntry(entry.name, (_ref9 = (_ref0 = (_ref1 = (_entry$value2 = entry.value) !== null && _entry$value2 !== void 0 ? _entry$value2 : entry.val) !== null && _ref1 !== void 0 ? _ref1 : entry.data) !== null && _ref0 !== void 0 ? _ref0 : entry.content) !== null && _ref9 !== void 0 ? _ref9 : entry.string);
             return;
           }
           if (Array.isArray(entry.entry)) {
@@ -1437,10 +1492,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       });
     } else if (isPlainObject(source)) {
-      Object.entries(source).forEach(function (_ref1) {
-        var _ref10 = _slicedToArray(_ref1, 2),
-          key = _ref10[0],
-          value = _ref10[1];
+      Object.entries(source).forEach(function (_ref10) {
+        var _ref11 = _slicedToArray(_ref10, 2),
+          key = _ref11[0],
+          value = _ref11[1];
         assignEntry(key, value);
       });
     } else {
@@ -1497,9 +1552,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return;
     }
     var entries = snapshot && _typeof(snapshot) === 'object' ? Object.entries(snapshot) : [];
-    var targetKeys = new Set(entries.map(function (_ref11) {
-      var _ref12 = _slicedToArray(_ref11, 1),
-        key = _ref12[0];
+    var targetKeys = new Set(entries.map(function (_ref12) {
+      var _ref13 = _slicedToArray(_ref12, 1),
+        key = _ref13[0];
       return key;
     }));
     var keysToRemove = [];
@@ -1522,10 +1577,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         console.warn('Failed to remove storage key during restore rollback', key, removeError);
       }
     });
-    entries.forEach(function (_ref13) {
-      var _ref14 = _slicedToArray(_ref13, 2),
-        key = _ref14[0],
-        value = _ref14[1];
+    entries.forEach(function (_ref14) {
+      var _ref15 = _slicedToArray(_ref14, 2),
+        key = _ref15[0],
+        value = _ref15[1];
       if (typeof key !== 'string') return;
       try {
         if (value === null || value === undefined) {
@@ -1548,10 +1603,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (!isPlainObject(resolvedSource)) return null;
     var snapshot = Object.create(null);
-    Object.entries(resolvedSource).forEach(function (_ref15) {
-      var _ref16 = _slicedToArray(_ref15, 2),
-        key = _ref16[0],
-        value = _ref16[1];
+    Object.entries(resolvedSource).forEach(function (_ref16) {
+      var _ref17 = _slicedToArray(_ref16, 2),
+        key = _ref17[0],
+        value = _ref17[1];
       if (metadataKeys.has(key)) return;
       if (!looksLikeStoredSettingKey(key)) return;
       snapshot[key] = normalizeStoredValue(value);
@@ -1605,8 +1660,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
       if (value === undefined) {
-        var _ref17, _ref18, _ref19, _ref20, _ref21, _ref22, _ref23, _ref24, _entry$value3;
-        value = (_ref17 = (_ref18 = (_ref19 = (_ref20 = (_ref21 = (_ref22 = (_ref23 = (_ref24 = (_entry$value3 = entry.value) !== null && _entry$value3 !== void 0 ? _entry$value3 : entry.data) !== null && _ref24 !== void 0 ? _ref24 : entry.content) !== null && _ref23 !== void 0 ? _ref23 : entry.payload) !== null && _ref22 !== void 0 ? _ref22 : entry.entries) !== null && _ref21 !== void 0 ? _ref21 : entry.items) !== null && _ref20 !== void 0 ? _ref20 : entry.snapshot) !== null && _ref19 !== void 0 ? _ref19 : entry.state) !== null && _ref18 !== void 0 ? _ref18 : entry.values) !== null && _ref17 !== void 0 ? _ref17 : entry.settings;
+        var _ref18, _ref19, _ref20, _ref21, _ref22, _ref23, _ref24, _ref25, _entry$value3;
+        value = (_ref18 = (_ref19 = (_ref20 = (_ref21 = (_ref22 = (_ref23 = (_ref24 = (_ref25 = (_entry$value3 = entry.value) !== null && _entry$value3 !== void 0 ? _entry$value3 : entry.data) !== null && _ref25 !== void 0 ? _ref25 : entry.content) !== null && _ref24 !== void 0 ? _ref24 : entry.payload) !== null && _ref23 !== void 0 ? _ref23 : entry.entries) !== null && _ref22 !== void 0 ? _ref22 : entry.items) !== null && _ref21 !== void 0 ? _ref21 : entry.snapshot) !== null && _ref20 !== void 0 ? _ref20 : entry.state) !== null && _ref19 !== void 0 ? _ref19 : entry.values) !== null && _ref18 !== void 0 ? _ref18 : entry.settings;
       }
       if (value === undefined) {
         return;
@@ -1665,10 +1720,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return base ? _objectSpread({}, base) : null;
     }
     var target = base ? _objectSpread({}, base) : {};
-    Object.entries(additions).forEach(function (_ref25) {
-      var _ref26 = _slicedToArray(_ref25, 2),
-        key = _ref26[0],
-        value = _ref26[1];
+    Object.entries(additions).forEach(function (_ref26) {
+      var _ref27 = _slicedToArray(_ref26, 2),
+        key = _ref27[0],
+        value = _ref27[1];
       if (typeof key !== 'string') return;
       if (Object.prototype.hasOwnProperty.call(target, key)) return;
       target[key] = normalizeBackupDataValue(key, value);
@@ -2326,10 +2381,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
   });
   var globalExports = [['cineFeatureBackup', backupAPI], ['formatFullBackupFilename', formatFullBackupFilename], ['resolveSafeLocalStorage', resolveSafeLocalStorage], ['captureStorageSnapshot', captureStorageSnapshot], ['createSafeStorageReader', createSafeStorageReader], ['restoreSessionStorageSnapshot', restoreSessionStorageSnapshot], ['restoreLocalStorageSnapshot', restoreLocalStorageSnapshot], ['sanitizeBackupPayload', sanitizeBackupPayload], ['parseBackupDataString', parseBackupDataString], ['normalizeBackupDataSection', normalizeBackupDataSection], ['normalizeBackupDataValue', normalizeBackupDataValue], ['mergeBackupDataSections', mergeBackupDataSections], ['extractBackupSections', extractBackupSections], ['triggerBackupDownload', triggerBackupDownload], ['encodeBackupDataUrl', encodeBackupDataUrl], ['openBackupFallbackWindow', openBackupFallbackWindow], ['downloadBackupPayload', downloadBackupPayload], ['queueBackupPayloadForVault', queueBackupPayloadForVault], ['getQueuedBackupPayloads', getQueuedBackupPayloads], ['removeBackupVaultRecord', removeBackupVaultRecord], ['openQueuedBackupVaultWindow', openQueuedBackupVaultWindow], ['resolveQueuedBackupMessage', resolveQueuedBackupMessage], ['isBackupVaultFallbackActive', isBackupVaultFallbackActive], ['getBackupVaultFallbackState', getBackupVaultFallbackState], ['isAutoBackupName', isAutoBackupName], ['parseAutoBackupName', parseAutoBackupName], ['clearBackupVault', clearBackupVault], ['SESSION_AUTO_BACKUP_NAME_PREFIX', SESSION_AUTO_BACKUP_NAME_PREFIX], ['SESSION_AUTO_BACKUP_DELETION_PREFIX', SESSION_AUTO_BACKUP_DELETION_PREFIX]];
-  globalExports.forEach(function (_ref27) {
-    var _ref28 = _slicedToArray(_ref27, 2),
-      name = _ref28[0],
-      value = _ref28[1];
+  globalExports.forEach(function (_ref28) {
+    var _ref29 = _slicedToArray(_ref28, 2),
+      name = _ref29[0],
+      value = _ref29[1];
     exposeGlobal(name, value, {
       configurable: true,
       writable: true

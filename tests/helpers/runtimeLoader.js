@@ -92,6 +92,18 @@ function loadRuntime() {
 
   const resolvedScriptPath = resolveScriptPath();
 
+  const globalsBootstrapPath = path.join(SCRIPTS_DIR, 'globals-bootstrap.js');
+  if (fs.existsSync(globalsBootstrapPath)) {
+    try {
+      if (require.cache[globalsBootstrapPath]) {
+        delete require.cache[globalsBootstrapPath];
+      }
+      require(globalsBootstrapPath);
+    } catch (bootstrapError) {
+      console.warn('Failed to load globals bootstrap in test runtime', bootstrapError);
+    }
+  }
+
   const legacyShimPath = path.join(SCRIPTS_DIR, 'legacy-globals-shim.js');
   if (fs.existsSync(legacyShimPath)) {
     try {

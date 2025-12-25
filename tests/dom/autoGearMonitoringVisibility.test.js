@@ -36,7 +36,7 @@ function selectOptionByValue(select, value) {
 }
 
 function requireScript() {
-  const scriptPath = require.resolve('../../src/scripts/auto-gear-monitoring.js');
+  const scriptPath = require.resolve('../../src/scripts/auto-gear/monitoring.js');
   delete require.cache[scriptPath];
   require(scriptPath);
   delete require.cache[scriptPath];

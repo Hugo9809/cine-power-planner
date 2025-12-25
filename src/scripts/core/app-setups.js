@@ -5962,7 +5962,7 @@ function sanitizeCrewAvatarValue(value) {
 }
 
 function collectProjectFormData() {
-  console.log('collectProjectFormData called. Dirty:', projectFormDataCacheDirty, 'Cache exists:', !!projectFormDataCache);
+  // console.log('collectProjectFormData called. Dirty:', projectFormDataCacheDirty, 'Cache exists:', !!projectFormDataCache);
   if (!projectForm) return {};
 
   if (!projectFormDataCacheDirty && projectFormDataCache) {
@@ -14927,7 +14927,7 @@ function saveCurrentGearList() {
     if (projectRulesSnapshot && projectRulesSnapshot.length) {
       payload.autoGearRules = projectRulesSnapshot;
     }
-    console.log('DEBUG: saveCurrentGearList saving project:', effectiveStorageKey, 'with projectInfo:', !!projectInfoSnapshot);
+
     saveProject(effectiveStorageKey, payload, { skipOverwriteBackup: true });
     sessionCreatedProjects.add(effectiveStorageKey);
   }

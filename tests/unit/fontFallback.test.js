@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 function extractGuessFontFallback() {
-  const sourcePath = path.join(__dirname, '../../src/scripts/app-core-new-2.js');
+  const sourcePath = path.join(__dirname, '../../src/scripts/core/app-core-new-2.js');
   const source = fs.readFileSync(sourcePath, 'utf8');
   const match = source.match(
     /function guessFontFallback\(name\) {([\s\S]*?)\n\s*}\n\s*function buildFontFamilyValue/,

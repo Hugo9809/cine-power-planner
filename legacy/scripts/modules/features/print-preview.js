@@ -98,7 +98,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var _ref2 = _slicedToArray(_ref, 2),
         id = _ref2[0],
         key = _ref2[1];
-      var label = sidebar.querySelector("label[for=\"".concat(id, "\"]"));
+      var input = sidebar.querySelector("#".concat(id));
+      var label = input ? input.closest('label') || sidebar.querySelector("label[for=\"".concat(id, "\"]")) : null;
       if (label) {
         var _textNode = Array.from(label.childNodes).find(function (node) {
           return node.nodeType === 3 && node.textContent.trim().length > 0;
@@ -390,7 +391,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       gearSection.appendChild(clonedGear);
     }
-    paper.appendChild(gearSection);
+    var hasRequirements = false;
+    if (typeof window.getCurrentProjectInfo === 'function' && typeof window.hasProjectInfoData === 'function') {
+      var info = window.getCurrentProjectInfo();
+      hasRequirements = window.hasProjectInfoData(info);
+    }
+    if (hasRequirements) {
+      paper.appendChild(gearSection);
+    }
     updateSectionVisibility();
   }
   function updateSectionVisibility() {

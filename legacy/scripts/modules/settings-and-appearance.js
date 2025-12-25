@@ -1,3 +1,8 @@
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function () {
   function detectGlobalScope() {
@@ -605,6 +610,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var settingsInitialTemperatureUnit = 'celsius';
     var settingsInitialFocusScale = 'metric';
     var settingsInitialShowAutoBackups = false;
+    var PINK_MODE_STORAGE_KEY = 'cameraPowerPlanner_pinkMode';
+    var LEGACY_PINK_MODE_STORAGE_KEY = 'pinkMode';
     function getRoot() {
       return doc && doc.documentElement ? doc.documentElement : null;
     }
@@ -761,7 +768,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (!iconSpan) {
         return;
       }
-      var glyphConfig = glyph && _typeof(glyph) === 'object' && (glyph.markup || glyph.className) ? glyph : {
+      if (iconSpan._lottieAnim) {
+        try {
+          iconSpan._lottieAnim.destroy();
+        } catch (_unused) {}
+        iconSpan._lottieAnim = null;
+      }
+      var glyphConfig = glyph && _typeof(glyph) === 'object' && (glyph.markup || glyph.className || glyph.lottiePath) ? glyph : {
         value: glyph
       };
       var classNames = ['icon-glyph'];
@@ -769,9 +782,129 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         classNames.push(glyphConfig.className);
       }
       iconSpan.className = classNames.join(' ');
-      if (glyphConfig.markup) {
+      if ((glyphConfig.lottiePath || glyphConfig.lottieData) && typeof icons.ensurePinkModeLottieRuntime === 'function') {
+        var handleLottie = function handleLottie() {
+          iconSpan.classList.remove('pink-mode-icon-pop');
+          void iconSpan.offsetWidth;
+          iconSpan.classList.add('pink-mode-icon-pop');
+          var requestId = Date.now() + Math.random();
+          iconSpan._lottieRequestId = requestId;
+          icons.ensurePinkModeLottieRuntime().then(function (lottie) {
+            if (!lottie) return;
+            if (iconSpan._lottieRequestId !== requestId) return;
+            if (!iconSpan || !document.body.contains(button)) return;
+            try {
+              var lottieContainer = iconSpan.querySelector('.lottie-container');
+              if (!lottieContainer) {
+                lottieContainer = doc.createElement('div');
+                lottieContainer.className = 'lottie-container';
+                lottieContainer.style.width = '100%';
+                lottieContainer.style.height = '100%';
+                lottieContainer.style.display = 'flex';
+                lottieContainer.style.justifyContent = 'center';
+                lottieContainer.style.alignItems = 'center';
+                lottieContainer.style.position = 'absolute';
+                lottieContainer.style.top = '0';
+                lottieContainer.style.left = '0';
+                lottieContainer.style.zIndex = '2';
+                iconSpan.appendChild(lottieContainer);
+                iconSpan.style.position = 'relative';
+                if (getComputedStyle(iconSpan).display === 'inline') {
+                  iconSpan.style.display = 'inline-block';
+                }
+              } else {
+                lottieContainer.innerHTML = '';
+              }
+              var animConfig = {
+                container: lottieContainer,
+                renderer: 'svg',
+                loop: true,
+                autoplay: true
+              };
+              if (glyphConfig.lottieData) {
+                animConfig.animationData = glyphConfig.lottieData;
+              } else if (glyphConfig.lottiePath) {
+                animConfig.path = glyphConfig.lottiePath;
+              }
+              var anim = lottie.loadAnimation(animConfig);
+              iconSpan._lottieAnim = anim;
+              var hideFallback = function hideFallback() {
+                var oldFallback = iconSpan.querySelector('.icon-fallback');
+                if (oldFallback) {
+                  oldFallback.style.opacity = '0';
+                  setTimeout(function () {
+                    if (oldFallback.style.opacity === '0') {
+                      oldFallback.style.display = 'none';
+                      if (lottieContainer) {
+                        lottieContainer.style.position = 'relative';
+                        lottieContainer.style.top = '';
+                        lottieContainer.style.left = '';
+                      }
+                    }
+                  }, 200);
+                } else if (lottieContainer) {
+                  lottieContainer.style.position = 'relative';
+                  lottieContainer.style.top = '';
+                  lottieContainer.style.left = '';
+                }
+              };
+              anim.addEventListener('DOMLoaded', hideFallback);
+              var handleFailure = function handleFailure() {
+                if (lottieContainer && lottieContainer.parentNode) {
+                  lottieContainer.parentNode.removeChild(lottieContainer);
+                }
+                var oldFallback = iconSpan.querySelector('.icon-fallback');
+                if (oldFallback) {
+                  oldFallback.style.display = '';
+                  oldFallback.style.opacity = '1';
+                }
+              };
+              anim.addEventListener('data_failed', handleFailure);
+              anim.addEventListener('error', handleFailure);
+            } catch (_unused2) {}
+          }).catch(function () {});
+        };
+        if (glyphConfig.markup) {
+          var markup = ensureSvgHasAriaHidden(glyphConfig.markup);
+          var fallback = iconSpan.querySelector('.icon-fallback');
+          if (!fallback) {
+            var existing = iconSpan.querySelector('svg:not(.lottie-container svg)');
+            if (existing) {
+              existing.classList.add('icon-fallback');
+              fallback = existing;
+            }
+          }
+          if (fallback) {
+            var temp = doc.createElement('div');
+            temp.innerHTML = markup;
+            var newSvg = temp.firstElementChild;
+            if (newSvg) {
+              newSvg.classList.add('icon-fallback');
+              newSvg.style.transition = 'opacity 0.2s ease';
+              if (fallback.parentNode === iconSpan) {
+                iconSpan.replaceChild(newSvg, fallback);
+              }
+            }
+          } else {
+            var _temp = doc.createElement('div');
+            _temp.innerHTML = markup;
+            var _newSvg = _temp.firstElementChild;
+            if (_newSvg) {
+              _newSvg.classList.add('icon-fallback');
+              _newSvg.style.transition = 'opacity 0.2s ease';
+              _newSvg.style.position = 'relative';
+              _newSvg.style.zIndex = '1';
+              iconSpan.prepend(_newSvg);
+            }
+          }
+        }
+        handleLottie();
+      } else if (glyphConfig.markup) {
         iconSpan.innerHTML = ensureSvgHasAriaHidden(glyphConfig.markup);
         iconSpan.removeAttribute('data-icon-font');
+        iconSpan.classList.remove('pink-mode-icon-pop');
+        void iconSpan.offsetWidth;
+        iconSpan.classList.add('pink-mode-icon-pop');
       } else {
         applyIconGlyph(iconSpan, glyphConfig.value);
       }
@@ -1132,24 +1265,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         pinkModeIconRotationTimer = null;
       }
     }
-    function startPinkModeAnimatedIcons() {
-      if (typeof icons.startPinkModeAnimatedIcons === 'function') {
-        try {
-          icons.startPinkModeAnimatedIcons();
-        } catch (error) {
-          safeWarn('cineSettingsAppearance: startPinkModeAnimatedIcons failed.', error);
-        }
-      }
-    }
-    function stopPinkModeAnimatedIcons() {
-      if (typeof icons.stopPinkModeAnimatedIcons === 'function') {
-        try {
-          icons.stopPinkModeAnimatedIcons();
-        } catch (error) {
-          safeWarn('cineSettingsAppearance: stopPinkModeAnimatedIcons failed.', error);
-        }
-      }
-    }
     function applyPinkModeIcon(iconConfig, options) {
       if (!iconConfig) {
         return;
@@ -1209,7 +1324,27 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     function startPinkModeIconRotation() {
-      var sequence = Array.isArray(icons.pinkModeIcons && icons.pinkModeIcons.onSequence) ? icons.pinkModeIcons.onSequence : [];
+      var HORSE_SVG_MARKUP = '<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="m1 40c0-8 3-17 3-17a4.84 4.84 0 0 0-1.829-3.064 1 1 0 0 1 .45-1.716 19.438 19.438 0 0 1 4.379-.22c.579-2.317-1.19-3.963-2.782-4.938a1 1 0 0 1 .393-1.85 14.128 14.128 0 0 1 6.389.788c0-.958-1.147-2.145-2.342-3.122a1 1 0 0 1 .708-1.773 40.655 40.655 0 0 1 6.634.895 3.723 3.723 0 0 0-1.049-2.264 1 1 0 0 1 .823-1.652c6.151.378 9.226 1.916 9.226 1.916l10-1s8.472-2.311 15.954.5a1 1 0 0 1-.084 1.9c-1.455.394-2.87 1.143-2.87 2.6 0 0 4.426.738 5.675 4.114a1 1 0 0 1-1.228 1.317c-1.64-.48-4.273-.88-6.447.569Z" fill="#805333" /><path d="m30.18 42.82c1.073 2.7 2.6 9.993 3.357 13.8a2 2 0 0 1-1.964 2.38h-28.573a2 2 0 0 1-2-2v-18c0-2.55 10.03-22.11 23.99-23.87Z" fill="#a56a43" /><path d="m55.67 48.46-6.34 2.97a6 6 0 0 1-7.98-2.88l-.25-.54-.76-1.6a4.956 4.956 0 0 0-4.68-2.87c-.22.01-.44.02-.66.02a16.019 16.019 0 0 1-8.28-29.66c-1.81-2.97-3.45-8.03 2.03-12.49a2.1 2.1 0 0 1 2.5 0c4.23 3.45 4.21 7.25 3.16 10.17a16 16 0 0 1 15.91 11.36l5.31 11.31 2.92 6.22a6.008 6.008 0 0 1-2.88 7.99Z" fill="#cb8252" /><circle cx="42" cy="26" r="3" fill="#2c2f38" /><circle cx="54" cy="43" r="1" fill="#805333" /><path d="m58.55 40.47-2.92-6.22-14.53 13.76.25.54a6 6 0 0 0 7.98 2.88l6.34-2.97a6.008 6.008 0 0 0 2.88-7.99Zm-4.55 3.53a1 1 0 1 1 1-1 1 1 0 0 1-1 1Z" fill="#cf976a" /><circle cx="41" cy="25" r="1.25" fill="#ecf0f1" /></svg>';
+      var HORN_PATH = '<path d="m40 18 12-14-4 15.5z" filter="drop-shadow(0 0 2px #fff)" fill="#ffd700" />';
+      var UNICORN_BASE_MARKUP = HORSE_SVG_MARKUP.replace('</svg>', HORN_PATH + '</svg>');
+      var UNICORN_1_MARKUP = UNICORN_BASE_MARKUP.replace(/#805333/g, '#d63384').replace(/#a56a43/g, '#e83e8c').replace(/#cb8252/g, '#fd7e14').replace(/#cf976a/g, '#ffc0cb');
+      var UNICORN_2_MARKUP = UNICORN_BASE_MARKUP.replace(/#805333/g, '#6f42c1').replace(/#a56a43/g, '#d63384').replace(/#cb8252/g, '#e83e8c').replace(/#cf976a/g, '#e0cffc');
+      var UNICORN_3_MARKUP = UNICORN_BASE_MARKUP.replace(/#805333/g, '#0dcaf0').replace(/#a56a43/g, '#6f42c1').replace(/#cb8252/g, '#d63384').replace(/#cf976a/g, '#9ec5fe');
+      var FALLBACK_SEQUENCE = [{
+        className: 'icon-svg pink-mode-icon',
+        markup: UNICORN_1_MARKUP,
+        lottiePath: 'src/animations/unicorn.json'
+      }, {
+        className: 'icon-svg pink-mode-icon',
+        markup: UNICORN_2_MARKUP,
+        lottiePath: 'src/animations/horn.json'
+      }, {
+        className: 'icon-svg pink-mode-icon',
+        markup: UNICORN_3_MARKUP,
+        lottiePath: 'src/animations/rainbow.json'
+      }];
+      var sequence = FALLBACK_SEQUENCE;
+      console.log('Pink Mode Rotation Start. Sequence Length:', sequence ? sequence.length : 'undefined');
       if (!sequence.length) {
         applyPinkModeIcon(icons.pinkModeIcons ? icons.pinkModeIcons.off : null, {
           animate: false
@@ -1234,9 +1369,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           });
         }, PINK_MODE_ICON_INTERVAL_MS);
         if (pinkModeIconRotationTimer && typeof pinkModeIconRotationTimer.unref === 'function') {
-          pinkModeIconRotationTimer.unref();
+          try {
+            pinkModeIconRotationTimer.unref();
+          } catch (unrefError) {
+            void unrefError;
+          }
         }
       } catch (error) {
+        if (pinkModeIconRotationTimer) {
+          clearInterval(pinkModeIconRotationTimer);
+        }
         pinkModeIconRotationTimer = null;
         safeWarn('cineSettingsAppearance: unable to schedule pink mode rotation.', error);
       }
@@ -1287,15 +1429,30 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       return pinkModeIconPressTimestamps.length;
     }
-    function triggerPinkModeIconRain() {
-      if (typeof icons.triggerPinkModeIconRain === 'function') {
-        try {
-          icons.triggerPinkModeIconRain();
-        } catch (error) {
-          safeWarn('cineSettingsAppearance: triggerPinkModeIconRain failed.', error);
-        }
+    var LocalPinkModeManager = function () {
+      function LocalPinkModeManager() {
+        _classCallCheck(this, LocalPinkModeManager);
+        this.active = false;
       }
-    }
+      return _createClass(LocalPinkModeManager, [{
+        key: "activate",
+        value: function activate() {
+          this.active = true;
+          document.body.classList.add('pink-mode-active');
+        }
+      }, {
+        key: "deactivate",
+        value: function deactivate() {
+          this.active = false;
+          document.body.classList.remove('pink-mode-active');
+        }
+      }, {
+        key: "triggerRain",
+        value: function triggerRain() {}
+      }]);
+    }();
+    var localPinkModeManager = new LocalPinkModeManager();
+    function triggerPinkModeIconRain() {}
     function handlePinkModeIconPress() {
       pinkModeIconPressCount = recordPinkModeIconPressTimestamp();
       if (PINK_MODE_ICON_PRESS_RESET_MS > 0) {
@@ -1308,6 +1465,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         pinkModeIconPressCount = 3;
       }
       triggerPinkModeIconRain();
+    }
+    function startPinkModeAnimatedIcons() {
+      localPinkModeManager.activate();
+      if (typeof icons.startPinkModeAnimatedIcons === 'function') {
+        icons.startPinkModeAnimatedIcons();
+      }
+    }
+    function stopPinkModeAnimatedIcons() {
+      localPinkModeManager.deactivate();
+      if (typeof icons.stopPinkModeAnimatedIcons === 'function') {
+        icons.stopPinkModeAnimatedIcons();
+      }
     }
     function startPinkModeAnimatedIconRotation() {
       startPinkModeIconRotation();
@@ -1369,7 +1538,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return;
       }
       try {
-        storage.setItem('pinkMode', pinkModeEnabled);
+        storage.setItem(PINK_MODE_STORAGE_KEY, pinkModeEnabled);
+      } catch (error) {
+        safeWarn('cineSettingsAppearance: Could not save pink mode preference.', error);
+      }
+      try {
+        storage.setItem(LEGACY_PINK_MODE_STORAGE_KEY, pinkModeEnabled);
       } catch (error) {
         safeWarn('cineSettingsAppearance: Could not save pink mode preference.', error);
       }

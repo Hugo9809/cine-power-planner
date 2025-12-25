@@ -20,17 +20,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return {};
   }
-  function tryRequire(modulePath) {
-    if (typeof require !== 'function') {
-      return null;
-    }
-    try {
-      return require(modulePath);
-    } catch (error) {
-      void error;
-      return null;
-    }
-  }
   function createUniqueScopeList() {
     var scopes = [];
     return {
@@ -155,9 +144,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (isNodeProcessReference(value)) {
       return true;
     }
-    if (typeof process !== 'undefined' && process && process.release && process.release.name === 'node') {
-      return true;
-    }
     try {
       if (typeof module !== 'undefined' && module && typeof module.constructor === 'function' && value instanceof module.constructor) {
         return true;
@@ -194,23 +180,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function freezeDeep(value) {
     var seen = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new WeakSet();
-    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
       return value;
     }
     if (shouldBypassDeepFreeze(value)) {
-      return value;
-    }
-    if (typeof process !== 'undefined' && process && process.env && process.env.JEST_WORKER_ID) {
-      try {
-        if (typeof Object.freeze === 'function') {
-          Object.freeze(value);
-          if (!Object.isFrozen(value)) {
-            console.warn('immutability.js (Jest block): Object.freeze called but object is NOT frozen', value);
-          } else {}
-        }
-      } catch (freezeError) {
-        void freezeError;
-      }
       return value;
     }
     if (typeof value === 'function') {
@@ -338,10 +311,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function resolveModuleRegistry(scope) {
     var targetScope = scope || detectGlobalScope();
-    var required = tryRequire('./registry.js');
-    if (required && _typeof(required) === 'object') {
-      return required;
-    }
     var scopes = collectCandidateScopes(targetScope);
     for (var index = 0; index < scopes.length; index += 1) {
       var candidate = scopes[index];

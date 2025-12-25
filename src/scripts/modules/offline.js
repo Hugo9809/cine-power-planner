@@ -1799,6 +1799,10 @@
 
         resolve({ timedOut: true, result: undefined });
       }, ms);
+
+      if (timerId && typeof timerId.unref === 'function') {
+        timerId.unref();
+      }
     });
   }
 

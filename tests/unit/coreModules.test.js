@@ -6,7 +6,7 @@ describe('core module registrations', () => {
   let harness;
 
   function requireModule(relativePath) {
-    const modulePath = path.join(__dirname, '..', '..', 'src', 'scripts', 'modules', relativePath);
+    const modulePath = path.join(__dirname, '..', '..', 'src', 'scripts', 'core', 'modules', relativePath);
     return require(modulePath);
   }
 

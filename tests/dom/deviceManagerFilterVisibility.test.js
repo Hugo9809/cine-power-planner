@@ -223,7 +223,7 @@ describe('device manager filter visibility', () => {
     global.currentLang = 'en';
     global.ICON_GLYPHS = { add: '+', save: '✓', circleX: '×', gears: '⚙', minus: '-' };
 
-    const noop = () => {};
+    const noop = () => { };
     global.updateCageSelectOptions = noop;
     global.updateGlobalDevicesReference = noop;
     global.scheduleProjectAutoSave = noop;
@@ -302,7 +302,7 @@ describe('device manager filter visibility', () => {
     global.alert = jest.fn();
 
     jest.isolateModules(() => {
-      require('../../src/scripts/app-events.js');
+      require('../../src/scripts/core/app-events.js');
     });
   });
 

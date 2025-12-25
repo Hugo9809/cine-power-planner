@@ -4,7 +4,7 @@ const {
   normalizeAutoGearCameraWeightCondition,
   formatAutoGearCameraWeight,
   evaluateAutoGearCameraWeightCondition,
-} = require('../../src/scripts/auto-gear-weight.js');
+} = require('../../src/scripts/auto-gear/weight.js');
 
 describe('auto gear camera weight helpers', () => {
   test('normalizes operators and values from objects', () => {

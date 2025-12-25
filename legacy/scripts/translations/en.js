@@ -14,10 +14,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "layoutRentalLabel": "Rental Friendly",
         "layoutRentalDescription": "Optimizes layout for rental by grouping items by category.",
         "sectionsTitle": "Sections",
-        "sectionProject": "Project Requirements",
-        "sectionDevices": "Device List",
+        "sectionProject": "Production Requirements",
+        "sectionDevices": "Camera Package Devices",
         "sectionDiagram": "Power Diagram",
-        "sectionGearList": "Gear List",
+        "sectionGearList": "Kit List",
         "sectionBattery": "Battery Comparison",
         "exportPdfButton": "Export PDF",
         "printButton": "Print",
@@ -25,12 +25,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "generatedProjectNameLabel": "Project Name:",
         "generatedProductionLabel": "Production:",
         "generatedDateLabel": "Date:",
-        "generatedNoProjectRequirements": "No project requirements data.",
-        "generatedDeviceSelectionTitle": "Device Selection",
+        "generatedNoProjectRequirements": "No production requirements data.",
+        "generatedDeviceSelectionTitle": "Camera Package Devices",
         "generatedNoDevicesSelected": "No devices selected.",
         "generatedPowerDiagramTitle": "Power Diagram",
         "generatedPowerSummaryTitle": "Power Summary",
-        "generatedGearListTitle": "Gear List",
+        "generatedGearListTitle": "Kit List",
         "generatedTotalLoad": "Total Load",
         "generatedPeak": "Peak:",
         "generatedEstRuntime": "Est. Runtime",
@@ -78,29 +78,29 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "impressum": "Imprint",
       "privacy": "Privacy Policy",
       "setupManageHeading": "Project Overview",
-      "deviceSelectionHeading": "Configure Devices",
-      "overviewDeviceSelectionHeading": "Camera Setup Devices",
+      "deviceSelectionHeading": "Camera Package",
+      "overviewDeviceSelectionHeading": "Camera Package Devices",
       "resultsHeading": "Power Summary",
       "deviceManagerHeading": "Device Library",
       "batteryComparisonHeading": "Battery Comparison",
       "batteryComparisonDescription": "Review every compatible battery to see runtime estimates for your current setup.",
       "batteryComparisonDescriptionHelp": "This table lists every compatible battery and updates as you change your setup. Hover any heading to learn what the numbers represent.",
       "batteryComparisonTableHelp": "Rows show compatible batteries. Runtime includes current draw calculations, and the colored bar compares runtime length at a glance.",
-      "setupDiagramHeading": "Connection Diagram",
-      "diagramPdfNote": "The visual connection diagram is not included in the PDF export. Open the print view to review the layout.",
-      "projectRequirementsNav": "Project Requirements",
-      "projectRequirementsNavHelp": "Jump to the Project Requirements output once generated.",
-      "gearListNav": "Gear List",
-      "gearListNavHelp": "View the generated gear list with all items and categories.",
+      "setupDiagramHeading": "Power Diagram",
+      "diagramPdfNote": "The Power Diagram is not included in the PDF export. Open the print view to review the layout.",
+      "projectRequirementsNav": "Production Requirements",
+      "projectRequirementsNavHelp": "Jump to the Production Requirements output once generated.",
+      "gearListNav": "Kit List",
+      "gearListNavHelp": "View the generated kit list with all items and categories.",
       "ownGearNav": "Own Gear",
       "ownGearNavHelp": "Track personal gear you already have on hand and reuse it across projects.",
-      "overviewExportTitleSuffix": "Gear List and Project Requirements",
+      "overviewExportTitleSuffix": "Kit List and Production Requirements",
       "openSettingsNav": "Settings",
       "openSettingsNavHelp": "Open Settings to adjust language, themes, accessibility options and backups.",
       "openHelpNav": "Help Center",
       "openHelpNavHelp": "Open the in-app help guide with tutorials, troubleshooting tips and shortcuts.",
       "setupManageHeadingHelp": "Manage saved projects: save, load, or clear configurations.",
-      "deviceSelectionHeadingHelp": "Choose cameras, monitors, and accessories for your rig.",
+      "deviceSelectionHeadingHelp": "Choose cameras, monitors, and accessories for your camera package.",
       "resultsHeadingHelp": "See power consumption, estimated runtime, and battery counts.",
       "resultsPlainSummaryTitle": "Quick summary",
       "resultsPlainSummaryHelp": "Explains the power summary in plain language so you can confirm runtime and battery needs without reading every table.",
@@ -128,12 +128,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "batteryTableRuntimeHelp": "Estimated runtime in hours plus which outputs supply enough current.",
       "batteryTableGraphLabel": "Runtime comparison bar",
       "batteryTableGraphHelp": "Bar length compares runtime across batteries. Green covers pins and D-Tap, orange means only main pins, and blue marks infinite runtime estimates.",
-      "setupDiagramHeadingHelp": "View a visual diagram of how selected devices connect.",
+      "setupDiagramHeadingHelp": "View the Power Diagram showing how power, video, and control connect across the rig.",
       "setupDiagramPlaceholder": "Select devices to visualize the project.",
       "diagramLegendPower": "Power",
       "diagramLegendVideo": "Video",
       "diagramLegendFIZ": "FIZ",
-      "downloadDiagramBtn": "Download Diagram",
+      "downloadDiagramBtn": "Download Power Diagram",
       "gridSnapToggle": "Snap to Grid",
       "existingDevicesHeading": "Existing Devices",
       "deviceLibrarySearchLabel": "Search entire library",
@@ -218,7 +218,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       },
       "featureSearchPlaceholder": "Search features or devices...",
       "featureSearchLabel": "Search features, devices and help",
-      "featureSearchHelp": "Type to jump to features, devices, quick actions like Save or Backup, or help topics. Suggestions prioritize direct feature and device matches before help topics so navigation lands on controls first. Each entry shows whether it opens a Feature, Action, Device or Help topic so you know what happens before pressing Enter. Exact matches and items you've used recently jump to the top automatically, so your go-to controls stay first. Every suggestion also includes a short description so you can confirm what it will do at a glance. Search also reads the same tooltip and help text shown around controls, so words like \"JSON\" or \"autosave\" still land on the right button even if the label differs. Small typos are forgiven too, so \"bakcup\" still finds Backup or Save. Connector and media abbreviations like \"USB-C\", \"Micro-HDMI\", \"SDXC\", \"CFexpress\", \"V-Mount\" or \"D-Tap\" automatically match their full names, so type whichever version you remember. Exposure and color vocabulary is linked the same way—ISO, EI, ASA, exposure index, ND or neutral density, and WB, white balance or color temperature terms all resolve together so any phrasing points to the right controls. Press Enter to navigate, / or Ctrl+K (Cmd+K on Mac) to focus the search from anywhere, use Escape or × to clear the query, and notice how clearing the field floats your most recently used matches to the top for faster repeats. Prefix your query with \"feature\", \"action\", \"device\" or \"help\" (for example, \"help: battery\") to filter suggestions to that type. Start with \"recent\" or \"history\" (for example, \"recent iso\") to search only items you've used lately before scanning the full catalog. Wrap any phrase in double quotes to force an exact match, so typing \"battery health\" with quotes jumps ahead of broader matches. Common filler words are ignored automatically, so conversational questions like \"how do I back up\" still surface the important keywords.",
+      "featureSearchHelp": "Type to jump to features, devices, quick actions like Save or Backup, or help topics. Suggestions prioritize direct feature and device matches before help topics so navigation lands on controls first. Each entry shows whether it opens a Feature, Action, Device or Help topic so you know what happens before pressing Enter. Exact matches and items you've used recently jump to the top automatically, so your go-to controls stay first. Every suggestion also includes a short description so you can confirm what it will do at a glance. Search also reads the same tooltip and help text shown around controls, so words like \"JSON\" or \"autosave\" still land on the right button even if the label differs. Small typos are forgiven too, so \"bakcup\" still finds Backup or Save. Connector and media abbreviations like \"USB-C\", \"Micro-HDMI\", \"SDXC\", \"CFexpress\", \"V-Mount\" or \"D-Tap\" automatically match their full names, so type whichever version you remember. Exposure and color vocabulary is linked the same way—ISO, EI, ASA, exposure index, ND or neutral density, and WB, white balance or color temperature terms all resolve together so any phrasing points to the right controls. Press Enter to navigate, / or Ctrl+K (Cmd+K on Mac) to focus the search from anywhere, use Escape or × to clear the query, and notice how clearing the field floats your most recently used matches to the top for faster repeats. Prefix your query with \"feature\", \"action\", \"device\" or \"help\" (or your localized equivalents) (for example, \"help: battery\") to filter suggestions to that type. Start with \"recent\" or \"history\" (or your localized equivalents) (for example, \"recent iso\") to search only items you've used lately before scanning the full catalog. Wrap any phrase in double quotes to force an exact match, so typing \"battery health\" with quotes jumps ahead of broader matches. Common filler words are ignored automatically, so conversational questions like \"how do I back up\" still surface the important keywords.",
+      "featureSearchFilterAliases": {
+        "feature": ["feature", "features", "setting", "settings"],
+        "action": ["action", "actions", "command", "commands"],
+        "device": ["device", "devices", "gear", "equipment"],
+        "help": ["help", "doc", "docs", "guide", "guides", "support"],
+        "recent": ["recent", "recents", "recently", "history", "histories", "frequent", "frequently"]
+      },
+      "featureSearchStopWords": ["how", "do", "does", "did", "done", "doing", "can", "cant", "cannot", "should", "could", "would", "please", "need", "needs", "needing", "want", "wants", "wanting", "i", "im", "ive", "ill", "id", "we", "were", "weve", "well", "you", "youre", "youve", "youll", "they", "theyre", "theyve", "them", "us", "me", "my", "mine", "our", "ours", "your", "yours", "their", "theirs", "the", "and", "for", "with", "about", "what", "where", "when", "why", "which", "who", "whom", "whose", "this", "that", "these", "those", "also", "still", "really", "very", "just", "maybe", "perhaps", "again"],
       "featureSearchClear": "Clear search",
       "featureSearchClearHelp": "Clear the search box and show all results again. Press Escape to clear quickly.",
       "featureSearchTypeFeature": "Feature",
@@ -226,7 +234,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "featureSearchTypeDevice": "Device",
       "featureSearchTypeHelp": "Help topic",
       "darkModeHelp": "Switch between light and dark themes for comfortable viewing. Press D to toggle. The preference is saved.",
-      "pinkModeHelp": "Add a playful pink accent theme. The unicorn icon cycles every 30 seconds with a gentle pop animation while pink mode is on, and the setting works with light or dark mode and is remembered for next time. Floating icons drift across the screen, and pressing any of them three times triggers a burst of pink icon rain.",
+      "pinkModeHelp": "Add a playful pink accent theme. The unicorn icon cycles every 30 seconds with a gentle pop animation while pink mode is on, and the setting works with light or dark mode and is remembered for next time.",
       "settingsButton": "Settings",
       "settingsButtonHelp": "Open Settings to personalize language, colors, fonts, accessibility options and backups.",
       "settingsHeading": "Settings",
@@ -254,27 +262,27 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "helpTopics": {
         "projectManagement": {
           "title": "Project Management",
-          "content": "Name projects and press **Save** to capture snapshots in Saved Projects. Autosave and auto-backups protect drafts, and Delete removes entries only after a safety snapshot is created."
+          "content": "Name projects and press **Save** to capture snapshots in Saved Projects. Saving won’t overwrite other projects until you confirm the name. Autosave and auto-backups protect drafts, and Delete removes entries only after a safety snapshot is created."
         },
         "saveShareBackup": {
           "title": "Save, Share & Backup",
-          "content": "Use **Export Project** to download a JSON bundle (optionally include automatic gear rules and owned-gear markers). **Import Project** loads a file without overwriting your current setup until you confirm Save. Use **Backup & Restore** for full-app backups, restore rehearsals, version comparisons, and the local backup vault when automatic downloads are blocked."
+          "content": "Use **Export Project** to download a JSON bundle (optionally include automatic gear rules and owned-gear markers). Use **Share Project** to create a share bundle for offline import; recipients open it with **Import Project** and nothing overwrites their current setup until they confirm Save. Use **Backup & Restore** for full-app backups, restore rehearsals, version comparisons, and the local backup vault when automatic downloads are blocked."
         },
         "deviceConfiguration": {
-          "title": "Device Configuration",
-          "content": "Build your rig by selecting devices. Start with a **Camera**, then add **Monitors**, **Wireless Transmitters**, and **FIZ** systems. Use the Device Library to import or export custom gear so offline edits stay with your projects."
+          "title": "Camera Package",
+          "content": "Build your camera package by selecting devices. Start with a **Camera**, then add **Monitors**, **Wireless Transmitters**, and **FIZ** systems. Use the Device Library to import or export custom gear so offline edits stay with your projects."
         },
         "powerCalculation": {
           "title": "Power Calculation",
           "content": "The **Power Summary** shows the total power consumption of your rig and estimated runtime based on the selected battery and mount voltages. Watch for **Pin** and **D-Tap** warnings, and use the quick summary to explain results offline."
         },
         "connectionDiagram": {
-          "title": "Connection Diagram",
-          "content": "The **Connection Diagram** visualizes how devices are connected. Drag to arrange nodes, zoom and pan to inspect details, and download SVG or JPG snapshots for sharing."
+          "title": "Power Diagram",
+          "content": "The **Power Diagram** shows how power, video, and control gear connect. Drag to arrange nodes, zoom and pan to inspect details, and download SVG or JPG snapshots for sharing."
         },
         "gearList": {
-          "title": "Gear List",
-          "content": "Generate a detailed **Gear List** from devices and project requirements. Edit quantities, providers, temporary extras and owned-gear badges, then print or export it for rental or crew."
+          "title": "Kit List",
+          "content": "Generate a detailed **Kit List** from camera package devices and production requirements. Edit quantities, providers, temporary extras and owned-gear badges, then print or export it for rental or crew."
         },
         "contacts": {
           "title": "Contacts",
@@ -282,7 +290,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         },
         "ownGear": {
           "title": "Own Gear",
-          "content": "Track your personal inventory in **Own Gear**. Mark items you own so gear list rows can be flagged and exported with those annotations."
+          "content": "Track your personal inventory in **Own Gear**. Mark items you own so kit list rows can be flagged and exported with those annotations."
         },
         "settings": {
           "title": "Settings",
@@ -290,7 +298,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         },
         "offlineUse": {
           "title": "Offline Use",
-          "content": "Cine Power Planner works fully **Offline** with locally stored icons, fonts and help content. Confirm the offline indicator and keep exports, full backups and the local backup vault current before disconnecting."
+          "content": "Cine Power Planner works fully **Offline** with locally stored icons, fonts and help content. Verify the offline indicator. Export at least one project and create a full backup before disconnecting. Run a restore rehearsal (or at minimum confirm the latest autosave timestamp in Settings → Data & Storage)."
+        },
+        "troubleshooting": {
+          "title": "Troubleshooting",
+          "content": "If things aren't working as expected:\n\n- **Force reload**: Open the toolbar help/status menu and choose **Force reload** to refresh the app without touching your data.\n- **Export + Backup**: Before clearing browser cache or site data, **Export Project** and run **Backup & Restore** to capture your project and a full local backup.\n- **Browser cache/site data**: Only if issues persist, clear your browser cache or site data. **Warning:** clearing site data can delete locally stored projects."
+        },
+        "shortcuts": {
+          "title": "Keyboard Shortcuts",
+          "content": "Navigate faster with these keys:\n\n- **?**, **H**, **F1**: Open Help\n- **/**: Focus Search\n- **Esc**: Close dialogs or menus\n- **D**: Toggle Dark Mode"
+        },
+        "pinkMode": {
+          "title": "Pink Mode",
+          "content": "Activate **Pink Mode** in Settings or the top bar to add playful accents and animated icons. The unicorn icon cycles every 30 seconds, and floating stickers drift across the screen. Click any floating sticker **3 times** to trigger a celebratory rain effect."
         }
       },
       "documentationTrackerHelpStart": "Start Here & navigation",
@@ -298,6 +318,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "documentationTrackerHelpBackup": "Backup & restore drills",
       "documentationTrackerHelpOwnGear": "Own gear & imports",
       "documentationTrackerHelpOffline": "Offline readiness & service worker",
+      "documentationTrackerHelpPinkMode": "Pink mode & animations",
       "documentationTrackerPrintHeading": "Printable guides",
       "documentationTrackerPrintChecklist": "Documentation update checklist",
       "documentationTrackerPrintMaintenance": "Documentation maintenance guide",
@@ -385,8 +406,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "logoSettingHelp": "Upload an SVG logo to brand printable overviews and include it in backups.",
       "logoFormatError": "Unsupported logo format. Please choose an SVG file.",
       "autoGearHeading": "Automatic Gear Rules",
-      "autoGearHeadingHelp": "Adjust which Project Requirements scenarios automatically add or remove gear items.",
-      "autoGearDescription": "Create scenario-based rules that tweak the generated gear list. Rules apply after the default planner suggestions.",
+      "autoGearHeadingHelp": "Adjust which Production Requirements scenarios automatically add or remove kit items.",
+      "autoGearDescription": "Create scenario-based rules that tweak the generated kit list. Rules apply after the default planner suggestions.",
       "autoGearPresetDescription": "Save and reuse complete sets of automatic gear rules.",
       "autoGearPresetLabel": "Preset",
       "autoGearPresetPlaceholder": "Custom rules",
@@ -468,7 +489,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "autoGearConditionLogicMultiplier": "Multiply by matched values",
       "autoGearConditionRepeatHint": "Condition already added. Existing inputs for {condition} are highlighted so you can add more selections.",
       "autoGearAlwaysLabel": "Always include",
-      "autoGearAlwaysHelp": "Apply this rule to every gear list.",
+      "autoGearAlwaysHelp": "Apply this rule to every kit list.",
       "autoGearAlwaysMeta": "Always active",
       "autoGearScenariosLabel": "Required scenarios",
       "autoGearScenariosHelp": "Pick every scenario that must be selected for this rule to apply. Hold Ctrl (Cmd on Mac) to choose multiple.",
@@ -529,7 +550,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "autoGearCameraWeightValueRequired": "Enter a camera weight threshold before saving.",
       "autoGearMonitorLabel": "Onboard monitors",
       "autoGearMonitorDefaultsHeading": "Monitor defaults",
-      "autoGearMonitorDefaultsDescription": "Choose which monitors should be preselected for new gear lists.",
+      "autoGearMonitorDefaultsDescription": "Choose which monitors should be preselected for new kit lists.",
       "autoGearDefaultFocusMonitorLabel": "Focus monitor",
       "autoGearDefaultHandheldMonitorLabel": "7\" handheld monitor",
       "autoGearDefaultComboMonitorLabel": "Combo monitor 15-21\"",
@@ -666,7 +687,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "autoGearDraftImpactConflictOne": "Removals also active in %s rule.",
       "autoGearDraftImpactConflictOther": "Removals also active in %s rules.",
       "autoGearDraftWarningHeading": "Warnings",
-      "autoGearDraftWarningCritical": "%s would drop out of the gear list.",
+      "autoGearDraftWarningCritical": "%s would drop out of the kit list.",
       "autoGearDraftWarningConflict": "%s has conflicting add and remove instructions.",
       "autoGearDraftWarningRedundant": "%s is added by multiple rules without increasing totals.",
       "autoGearDraftWarningConfirm": "Save anyway? Review the impact warnings below before confirming.",
@@ -707,7 +728,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "relaxedSpacingSetting": "Relaxed spacing",
       "relaxedSpacingSettingHelp": "Increase line spacing and control padding to make text easier to scan and tap.",
       "backupHeading": "Backup & Restore",
-      "backupHeadingHelp": "Manage full backups of settings, saved projects, custom devices and runtime feedback.",
+      "backupHeadingHelp": "Manage full backups of settings, saved projects, custom devices, queued vault entries, and runtime feedback.",
       "projectBackupsHeading": "Project Backups",
       "projectBackupsDescription": "Manage automatic snapshots and compare saved versions before restoring changes.",
       "showAutoBackupsSetting": "Show auto backups in project list",
@@ -746,9 +767,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "versionCompareSummaryRemoved": "Removed: %s",
       "versionCompareSummaryChanged": "Updated: %s",
       "backupSettings": "Backup",
-      "backupSettingsHelp": "Download a full JSON backup containing every project, device edit, preference, auto-gear rule and runtime log stored on this device. Keep multiple copies in your offline archive.",
+      "backupSettingsHelp": "Download a full JSON backup containing every project, device edit, preference, auto-gear rule, queued backup vault entry, and runtime log stored on this device. Keep multiple copies in your offline archive.",
       "restoreSettings": "Restore",
-      "restoreSettingsHelp": "Restore a full JSON backup. The planner captures a fresh safety copy first, then applies the selected file so you can roll back immediately if anything looks wrong.",
+      "restoreSettingsHelp": "Restore a full JSON backup. The planner captures a fresh safety copy first, then replaces stored preferences and session data with the selected file so you can roll back immediately if anything looks wrong.",
       "restoreRehearsalButton": "Restore rehearsal",
       "restoreRehearsalButtonHelp": "Test a backup or project bundle in a disposable sandbox before you restore your live data.",
       "restoreRehearsalHeading": "Restore rehearsal",
@@ -823,6 +844,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "preDeleteBackupSuccess": "Automatic safety copy stored before deletion. Find the matching auto-backup entry under Saved Projects and rename it if you plan to keep it permanently.",
       "preDeleteBackupFailed": "Automatic backup failed. The action was cancelled.",
       "restoreBackupFailed": "Backup failed. Restore cancelled.",
+      "restoreBackupQueuedConfirm": "The safety backup is waiting in the local vault. Continue with the restore now?",
       "manualDownloadFallback": "The download didn't start automatically. A new tab opened with the file contents so you can copy or save them manually.",
       "manualDownloadCopyHint": "Select all the text below and copy it to keep the file safe.",
       "dataHeading": "Data & Storage",
@@ -929,8 +951,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "storageKeyAutoBackupsDesc": "Timestamped safety copies saved every 10 minutes or after 50 tracked changes. Switching projects, importing, exporting or preparing to reload triggers an immediate snapshot even if that cadence hasn't elapsed.",
       "storageAutoBackupsCountOne": "%s auto backup",
       "storageAutoBackupsCountOther": "%s auto backups",
-      "storageKeyGearLists": "Gear list snapshots",
-      "storageKeyGearListsDesc": "Printable overviews and project requirements.",
+      "storageKeyGearLists": "Kit list snapshots",
+      "storageKeyGearListsDesc": "Printable overviews and production requirements.",
       "storageGearListsCountOne": "%s entry",
       "storageGearListsCountOther": "%s entries",
       "storageKeyDevices": "Custom or modified devices",
@@ -949,7 +971,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "storageKeySession": "Unsaved session",
       "storageKeySessionDesc": "Restores the working project after a reload.",
       "storageKeyFullBackups": "Full app backups",
-      "storageKeyFullBackupsDesc": "Downloads created from Backup & Restore or hourly safety copies.",
+      "storageKeyFullBackupsDesc": "Downloads created from Backup & Restore or hourly safety copies, including queued vault entries.",
       "storageFullBackupsCountOne": "%s backup",
       "storageFullBackupsCountOther": "%s backups",
       "queuedBackupDownloadDeferred": "Automatic downloads were blocked. We saved {fileName} in the local vault so the next tap can export it safely.",
@@ -1335,6 +1357,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "alertSetupNeedsDevice": "You can save a project even if no devices are selected yet.",
       "alertSetupSaved": "Project \"{name}\" saved in this browser. It stays available after closing or reopening tabs unless you clear the browser cache.",
       "alertSetupSavedNoDevices": "Project \"{name}\" saved in this browser with no devices yet. Add gear and requirements whenever you're ready—we'll keep everything protected.",
+      "alertSetupRenameSaveFailed": "We couldn’t finish saving the renamed project. Your original project is still available—please try saving again to keep everything in sync.",
       "alertNoSetupSelected": "Please select a saved project to delete.",
       "alertSetupDeleted": "Project \"{name}\" deleted.",
       "confirmDeleteSetup": "Really delete project \"{name}\"?",
@@ -1348,11 +1371,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "alertDeviceName": "Device name cannot be empty.",
       "alertInvalidCameraJSON": "Invalid JSON for camera details",
       "generateOverviewBtn": "Generate Overview",
-      "generateGearListBtn": "Generate Gear List and Project Requirements",
+      "generateGearListBtn": "Generate Kit List and Production Requirements",
       "addExtraGearBtn": "Add temporary extra gear",
       "editProjectBtn": "Edit Project requirements",
       "projectForm": {
-        "heading": "Project Requirements",
+        "heading": "Production Requirements",
         "projectName": "Project Name:",
         "productionCompany": "Production Company:",
         "productionCompanyAddress": "Production Company Address (optional):",
@@ -1492,6 +1515,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "productionCompanyCountry": "Country",
         "productionCompanyCountryPlaceholder": "United States",
         "rentalHouse": "Rental",
+        "rentalHouseContact": "Rental contact",
+        "rentalHouseAddress": "Rental address",
         "crew": "Crew",
         "prepDays": "Prep Days",
         "shootingDays": "Shooting Days",
@@ -1622,6 +1647,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "gearListEditDialogTitle": "Edit gear item",
       "gearListEditQuantityLabel": "Quantity",
       "gearListEditNameLabel": "Item name",
+      "gearListEditAttributesLabel": "Attributes",
       "gearListEditNoteLabel": "Note",
       "gearListEditExtraLabel": "Temporary extra gear",
       "gearListEditExtraHelp": "Flag this item as a short-term addition. Set the period so everyone schedules it correctly.",
@@ -1648,10 +1674,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "autoGearHighlightToggleHelp": "Toggle a temporary color overlay for gear added by automatic rules. Useful while debugging gear rule behavior.",
       "autoGearHighlightToggleStateOn": "On",
       "autoGearHighlightToggleStateOff": "Off",
-      "deleteGearListBtn": "Delete Gear List",
-      "deleteGearListBtnHelp": "Remove the saved gear list from this project and hide the table.",
-      "confirmDeleteGearList": "Delete gear list?",
-      "confirmDeleteGearListAgain": "This will permanently delete the gear list. Are you sure?",
+      "deleteGearListBtn": "Delete Kit List",
+      "deleteGearListBtnHelp": "Remove the saved kit list from this project and hide the table.",
+      "confirmDeleteGearList": "Delete kit list?",
+      "confirmDeleteGearListAgain": "This will permanently delete the kit list. Are you sure?",
       "ownGearDialogTitle": "Own gear",
       "ownGearDialogDescription": "Capture the equipment you personally own so you can plan around what's already in your kit.",
       "ownGearAddHeading": "Add gear",
@@ -1676,7 +1702,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "ownGearEditButton": "Edit",
       "ownGearEditButtonAria": "Edit “%s”",
       "ownGearDeleteButton": "Remove",
-      "ownGearDeleteButtonAria": "Remove “%s” from your gear list",
+      "ownGearDeleteButtonAria": "Remove “%s” from your own gear list",
       "ownGearDeleteConfirm": "Remove “%s” from your own gear list? This only removes it from your inventory.",
       "ownGearQuantityInvalid": "Enter a non-negative quantity or leave the field blank.",
       "ownGearNameRequired": "Enter the item name to save it.",
@@ -1695,11 +1721,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "printOptionsLayoutLabel": "Layout",
       "printOptionsLayoutStandard": "Standard layout",
       "printOptionsLayoutRental": "Rental-friendly layout",
-      "rentalPrintSectionProject": "Project Requirements",
-      "rentalPrintSectionDevices": "Camera Setup Devices",
+      "rentalPrintSectionProject": "Production Requirements",
+      "rentalPrintSectionDevices": "Camera Package Devices",
       "rentalPrintSectionPower": "Power Summary",
-      "rentalPrintSectionDiagram": "Camera Diagram",
-      "rentalPrintSectionGearList": "Gear List",
+      "rentalPrintSectionDiagram": "Power Diagram",
+      "rentalPrintSectionGearList": "Kit List",
       "rentalPrintSectionBattery": "Battery Comparison",
       "pdfWarningsHeading": "Warnings",
       "exportAndRevertBtn": "Export and revert to default database",
@@ -1747,7 +1773,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "userProfileInteractionSkipHint": "Press Next when you are ready—Contacts in the sidebar always shows these saved details without resetting tutorial progress.",
         "userProfileAvatarAction": "Add profile photo",
         "userProfileAvatarEditAction": "Edit photo",
-        "projectRequirementsMiniIntro": "Fill these proxy fields while the Project Requirements dialog stays open.",
+        "projectRequirementsMiniIntro": "Fill these proxy fields while the Production Requirements dialog stays open.",
         "projectRequirementsMiniOfflineHint": "Every edit saves offline instantly—use Back/Next here without risking data loss.",
         "unitsPreferencesLanguageLabel": "Language",
         "unitsPreferencesThemeLabel": "Theme",
@@ -1785,7 +1811,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             "hero": {
               "heading": "Welcome to Cine Power Planner!",
               "subheading": "Safeguard every camera setup with power checks, AutoGear kits, and rental-ready handoffs—kept fully offline.",
-              "summary": "Plan safe camera setups, verify power limits, auto-build gear lists from project requirements, and export rental-ready PDFs—every save stays local before call time.",
+              "summary": "Plan safe camera setups, verify power limits, auto-build kit lists from production requirements, and export rental-ready PDFs—every save stays local before call time.",
               "badgeIcon": "",
               "badgeLabel": "Crew-first · Offline forever",
               "badgeDescription": "No servers, no accounts, no subscriptions. Every save, autosave, backup, restore, share, and import lives on this device.",
@@ -1796,7 +1822,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               }, {
                 "icon": "",
                 "title": "AutoGear builds reusable kits",
-                "body": "Generate full gear lists from shooting scenarios with AutoGear rules, adjust those rules for the day, and reuse the presets."
+                "body": "Generate full kit lists from shooting scenarios with AutoGear rules, adjust those rules for the day, and reuse the presets."
               }, {
                 "icon": "",
                 "title": "Project requirements ready to hand off",
@@ -1857,7 +1883,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           },
           "resultsWarnings": {
             "title": "Power Summary: Warnings and backups",
-            "body": "Check the connector warning boxes: green shows the pin or D-Tap battery feed is safe, yellow means the feed is near its limit, and red means the rig is pulling more than that line can supply. Change out batteries and devices to get both boxes to appear green again. Be assured to not break batteries with higher loads a battery can handle."
+            "body": "Check the connector warning boxes: green shows the pin or D-Tap battery feed is safe, yellow means the feed is near its limit, and red means the rig is pulling more than that line can supply. Change out batteries and devices to get both boxes to appear green again. Rest assured the warnings keep you from pushing higher loads than a battery can safely handle."
           },
           "batteryComparison": {
             "title": "Battery Comparison",
@@ -1868,8 +1894,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             "body": "Use the runtime feedback button to log real-world results. Entries sync with the current project, strengthen future estimates and remain available offline for audits."
           },
           "connectionDiagram": {
-            "title": "Inspect the connection diagram",
-            "body": "The interactive diagram shows how power, video and control gear connect. Drag nodes to plan rig layout, double-click devices to open hover details, then save so the arrangement and annotations persist across exports and restores."
+            "title": "Inspect the power diagram",
+            "body": "The interactive Power Diagram shows how power, video and control gear connect. Drag nodes to plan rig layout, double-click devices to open hover details, then save so the arrangement and annotations persist across exports and restores."
           },
           "connectionDiagramDetails": {
             "title": "Open device hover details",
@@ -1889,7 +1915,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           },
           "ownGearAccess": {
             "title": "Open the Own Gear dialog",
-            "body": "Press the Own Gear button in the sidebar to launch your inventory dialog, then review the summary banner and the Your gear list so you know where saved items, edit buttons and counts live. Finish by exploring the Add gear form—item search, quantity, notes, plus the Save and Reset controls—so you can add equipment instantly once the tour ends."
+            "body": "Press the Own Gear button in the sidebar to launch your inventory dialog, then review the summary banner and your own gear list so you know where saved items, edit buttons and counts live. Finish by exploring the Add gear form—item search, quantity, notes, plus the Save and Reset controls—so you can add equipment instantly once the tour ends."
           },
           "ownGearAddDevice": {
             "title": "Add your first owned device",
@@ -1897,7 +1923,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           },
           "projectRequirementsBrief": {
             "title": "Capture the project brief",
-            "body": "Open the Project Requirements dialog from Generate Gear List and Project Requirements, then document production company, address, rental preferences, deliverables and schedule notes. These entries auto-fill rental-ready PDFs, stay cached offline and prepare the next sections."
+            "body": "Open the Production Requirements dialog from Generate Kit List and Production Requirements, then document production company, address, rental preferences, deliverables and schedule notes. These entries auto-fill rental-ready PDFs, stay cached offline and prepare the next sections."
           },
           "projectRequirementsCrew": {
             "title": "Map crew coverage and contacts",
@@ -1909,7 +1935,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           },
           "generateGearAndRequirements": {
             "title": "Save and rebuild the outputs",
-            "body": "Press OK inside the Project Requirements dialog to store every entry, regenerate the requirements summary and rebuild the categorized gear list. The planner snapshots the result with the active project so exports, backups and shares stay current."
+            "body": "Press OK inside the Production Requirements dialog to store every entry, regenerate the requirements summary and rebuild the categorized kit list. The planner snapshots the result with the active project so exports, backups and shares stay current."
           },
           "autoGearRulesAccess": {
             "title": "Open Automatic Gear Rules",
@@ -1924,16 +1950,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             "body": "Press Add rule to create a custom automation. Name it, add conditions and required gear, then save. The planner runs new rules offline each time you regenerate the kit and includes them in exports, shares and backups."
           },
           "projectRequirements": {
-            "title": "Refine project requirements boxes",
-            "body": "Review the regenerated Project Requirements summary beside the gear list. Confirm the brief, crew coverage and logistics boxes mirror the data you just saved, then rerun exports or backups so downstream teams get the updated context with every share."
+            "title": "Refine production requirements boxes",
+            "body": "Review the regenerated Production Requirements summary beside the kit list. Confirm the brief, crew coverage and logistics boxes mirror the data you just saved, then rerun exports or backups so downstream teams get the updated context with every share."
           },
           "gearList": {
-            "title": "Audit the generated gear list",
-            "body": "Check the categorized gear list for duplicates, counts and auto-added accessories. Edits save instantly, are included in share bundles and appear in printouts and PDFs."
+            "title": "Audit the generated kit list",
+            "body": "Check the categorized kit list for duplicates, counts and auto-added accessories. Edits save instantly, are included in share bundles and appear in printouts and PDFs."
           },
           "exportImport": {
             "title": "Export and import projects",
-            "body": "Use Export Project to download a JSON safety copy and Import Project to rehearse restores. Store exports on redundant media so no workstation loses data if a browser profile resets."
+            "body": "Use Export Project to download a JSON safety copy and Import Project to rehearse restores. Store exports on redundant media so no workstation loses data if a browser profile resets. Always keep the original export untouched so you can re-import even if a working copy gets edited."
           },
           "overviewAndPrint": {
             "title": "Generate overview, PDF and printouts",
@@ -1972,7 +1998,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "helpDataAuditNote": "Log the results, capture a screenshot of Settings → Data & Storage with the latest autosave timestamp, and archive the console guard output with your backup rotation checklist so you always know which copies were verified offline.",
       "helpRestoreDrillNote": "Log filenames, timestamps and verification results in your backup rotation checklist so every rehearsal documents a restorable copy.",
       "helpSearchClear": "Clear search",
-      "helpSearchHelp": "Type keywords or alternate spellings to instantly filter help topics. Quick links update as you type and highlight the matching article when you press Enter. Press '/' or Ctrl+F (Cmd+F on Mac) to focus the search box, then press Tab to step through filtered quick links without leaving your project.",
+      "helpSearchHelp": "Type keywords or alternate spellings to instantly filter help topics. Quick links update as you type and highlight the matching article when you press Enter. Press '/' or Ctrl+F (Cmd+F on Mac) to focus the search box when the help dialog is open (instead of the browser find), then press Tab to step through filtered quick links without leaving your project.",
       "helpSearchClearHelp": "Clear the search box and show all help topics again.",
       "helpQuickLinksHeading": "Jump to a topic",
       "helpQuickLinksAriaLabel": "Help topics quick navigation",
@@ -2008,12 +2034,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "setupSelectHelp": "Pick a previously saved configuration or select '-- New Project --' to start from scratch.",
       "setupNameHelp": "Enter a descriptive name for the current project so you can recognize it later.",
       "deleteSetupHelp": "Remove the highlighted saved project permanently from your browser.",
-      "saveSetupHelp": "Capture a full snapshot of the current project—devices, requirements, notes, runtime logs and diagram layout—and store it in your local library. The autosave status dot beside Project Name pulses while the write finishes, and the background auto-backup queue schedules the matching timestamped snapshot right after the save so redundancy stays current. Press Enter or Ctrl+S (⌘S on Mac) for the same result; the Save button stays disabled until you enter a project name.",
+      "saveSetupHelp": "Capture a full snapshot of the current project—devices, requirements, notes, runtime logs and diagram layout—and store it in your local library. The autosave status dot beside Project Name pulses while the write finishes, and the background auto-backup queue schedules the matching timestamped snapshot right after the save so redundancy stays current. Press Enter or Ctrl+S (⌘S on Mac) for the same result; the Save button stays disabled until you enter a project name. Saving never overwrites other projects until you confirm the name, so your prior data remains protected.",
       "generateOverviewHelp": "Rebuilds the print-ready summary for the selected saved project and opens the overview dialog so you can review power and connection details before printing when ready. Lens selections render with brand, mount, diameter, focus, weight, rod support and notes so exports cover spec-sensitive checkouts.",
-      "generateGearListHelp": "Build a categorized table that combines selected gear with project requirements. The list refreshes on every change, merges duplicate items with counts and auto-adds required cables, rigging, lens supports, matte box parts, battery counts with hotswap hardware, default monitors for each role and scenario-specific accessories. Entries are sorted alphabetically and include hover descriptions.",
-      "shareSetupHelp": "Download a JSON safety bundle of the current project—covering custom gear, favorites, runtime feedback and devices—ready to archive or share offline. Store the file with your redundant crew backups before closing the planner so every workstation can restore it without network access.",
-      "applySharedLinkHelp": "Load the configuration from a JSON backup exported via Save & Share or Backup & Restore. Review the preview diff before applying—nothing overwrites your current project until you confirm Save, and the planner schedules a fresh auto-backup beforehand so you can roll back instantly. Unnamed imports are saved automatically under an “-imported” title so the data lands even when the bundle omitted a project name.",
-      "sharedLinkHelp": "Choose a project JSON exported from Save & Share or Backup & Restore. Keep the original file in your backups after import—the planner only reads a copy and logs the attempt in diagnostics for your records.",
+      "generateGearListHelp": "Build a categorized kit list that combines selected gear with production requirements. The list refreshes on every change, merges duplicate items with counts and auto-adds required cables, rigging, lens supports, matte box parts, battery counts with hotswap hardware, default monitors for each role and scenario-specific accessories. Entries are sorted alphabetically and include hover descriptions.",
+      "shareSetupHelp": "Download a JSON safety bundle of the current project—covering custom gear, favorites, runtime feedback and devices—ready to archive or share offline. Store the file with your redundant crew backups before closing the planner so every workstation can restore it without network access. The export leaves your current project unchanged, so nothing is lost while you create the share bundle.",
+      "applySharedLinkHelp": "Load the configuration from a JSON backup exported via Save & Share or Backup & Restore. Review the preview diff before applying—nothing overwrites your current project until you confirm Save, and the planner schedules a fresh auto-backup beforehand so you can roll back instantly. Unnamed imports are saved automatically under an “-imported” title so the data lands even when the bundle omitted a project name. The imported project remains local and offline-ready immediately after you save.",
+      "sharedLinkHelp": "Choose a project JSON exported from Save & Share or Backup & Restore. Keep the original file in your backups after import—the planner only reads a copy and logs the attempt in diagnostics for your records so you can audit every restore.",
       "cameraSelectHelp": "Choose the camera body that anchors your rig.",
       "monitorSelectHelp": "Choose an on-board or wireless monitor to include.",
       "videoSelectHelp": "Choose a transmitter/receiver pair or other wireless video link.",
@@ -2025,7 +2051,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "runtimeFeedbackBtnHelp": "Open a form where you can submit real-world runtime data for this configuration.",
       "zoomOutHelp": "Zoom out of the project diagram to view more of the layout.",
       "zoomInHelp": "Zoom in on the project diagram for a closer look at connections.",
-      "downloadDiagramHelp": "Download the current project diagram as an SVG or JPG image.",
+      "downloadDiagramHelp": "Download the Power Diagram as an SVG or JPG image.",
       "gridSnapToggleHelp": "Turn grid snapping on or off to help align items in the diagram.",
       "resetViewBtn": "Reset View",
       "resetViewHelp": "Reset zoom and pan to their defaults.",

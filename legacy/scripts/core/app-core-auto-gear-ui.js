@@ -673,9 +673,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return value;
   }
   function getVideoDistributionFallbackLabel(value) {
+    var _texts$currentLang0;
     if (value === '__none__') {
       var _texts$currentLang9, _texts$en9;
       return ((_texts$currentLang9 = texts[currentLang]) === null || _texts$currentLang9 === void 0 ? void 0 : _texts$currentLang9.autoGearVideoDistributionNone) || ((_texts$en9 = texts.en) === null || _texts$en9 === void 0 ? void 0 : _texts$en9.autoGearVideoDistributionNone) || 'No video distribution selected';
+    }
+    var translated = (_texts$currentLang0 = texts[currentLang]) === null || _texts$currentLang0 === void 0 || (_texts$currentLang0 = _texts$currentLang0.videoDistributionOptions) === null || _texts$currentLang0 === void 0 ? void 0 : _texts$currentLang0[value];
+    if (translated) {
+      return translated;
     }
     return value;
   }
@@ -714,10 +719,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       });
     }
     if (!hasOptions) {
-      var _texts$currentLang0, _texts$en0;
+      var _texts$currentLang1, _texts$en0;
       var placeholder = autoGearDocument.createElement('option');
       placeholder.value = '';
-      placeholder.textContent = ((_texts$currentLang0 = texts[currentLang]) === null || _texts$currentLang0 === void 0 ? void 0 : _texts$currentLang0.autoGearViewfinderExtensionPlaceholder) || ((_texts$en0 = texts.en) === null || _texts$en0 === void 0 ? void 0 : _texts$en0.autoGearViewfinderExtensionPlaceholder) || 'Select viewfinder extension options';
+      placeholder.textContent = ((_texts$currentLang1 = texts[currentLang]) === null || _texts$currentLang1 === void 0 ? void 0 : _texts$currentLang1.autoGearViewfinderExtensionPlaceholder) || ((_texts$en0 = texts.en) === null || _texts$en0 === void 0 ? void 0 : _texts$en0.autoGearViewfinderExtensionPlaceholder) || 'Select viewfinder extension options';
       placeholder.disabled = true;
       placeholder.selected = true;
       autoGearViewfinderExtensionSelect.appendChild(placeholder);
@@ -773,10 +778,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (!seen.has(value)) addOption(value, value);
     });
     if (!autoGearDeliveryResolutionSelect.options.length) {
-      var _texts$currentLang1, _texts$en1;
+      var _texts$currentLang10, _texts$en1;
       var placeholder = autoGearDocument.createElement('option');
       placeholder.value = '';
-      placeholder.textContent = ((_texts$currentLang1 = texts[currentLang]) === null || _texts$currentLang1 === void 0 ? void 0 : _texts$currentLang1.autoGearDeliveryResolutionPlaceholder) || ((_texts$en1 = texts.en) === null || _texts$en1 === void 0 ? void 0 : _texts$en1.autoGearDeliveryResolutionPlaceholder) || 'Select delivery resolutions';
+      placeholder.textContent = ((_texts$currentLang10 = texts[currentLang]) === null || _texts$currentLang10 === void 0 ? void 0 : _texts$currentLang10.autoGearDeliveryResolutionPlaceholder) || ((_texts$en1 = texts.en) === null || _texts$en1 === void 0 ? void 0 : _texts$en1.autoGearDeliveryResolutionPlaceholder) || 'Select delivery resolutions';
       placeholder.disabled = true;
       placeholder.selected = true;
       autoGearDeliveryResolutionSelect.appendChild(placeholder);
@@ -829,10 +834,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       });
     }
     if (!hasOptions) {
-      var _texts$currentLang10, _texts$en10;
+      var _texts$currentLang11, _texts$en10;
       var placeholder = autoGearDocument.createElement('option');
       placeholder.value = '';
-      placeholder.textContent = ((_texts$currentLang10 = texts[currentLang]) === null || _texts$currentLang10 === void 0 ? void 0 : _texts$currentLang10.autoGearVideoDistributionPlaceholder) || ((_texts$en10 = texts.en) === null || _texts$en10 === void 0 ? void 0 : _texts$en10.autoGearVideoDistributionPlaceholder) || 'Select video distribution options';
+      placeholder.textContent = ((_texts$currentLang11 = texts[currentLang]) === null || _texts$currentLang11 === void 0 ? void 0 : _texts$currentLang11.autoGearVideoDistributionPlaceholder) || ((_texts$en10 = texts.en) === null || _texts$en10 === void 0 ? void 0 : _texts$en10.autoGearVideoDistributionPlaceholder) || 'Select video distribution options';
       placeholder.disabled = true;
       placeholder.selected = true;
       autoGearVideoDistributionSelect.appendChild(placeholder);

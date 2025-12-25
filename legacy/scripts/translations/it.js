@@ -7,6 +7,38 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     "texts": {
       "appTitle": "Cine Power Planner",
       "tagline": "Pianifica il tuo rig camera e calcola l'assorbimento energetico e l'autonomia delle batterie.",
+      "printPreview": {
+        "title": "Stampa ed Esporta",
+        "closeLabel": "Chiudi Anteprima",
+        "layoutModeTitle": "Modalità Layout",
+        "layoutRentalLabel": "Ottimizzato per Noleggio",
+        "layoutRentalDescription": "Ottimizza il layout raggruppando gli elementi per categoria.",
+        "sectionsTitle": "Sezioni",
+        "sectionProject": "Requisiti di produzione",
+        "sectionDevices": "Dispositivi del pacchetto camera",
+        "sectionDiagram": "Diagramma di alimentazione",
+        "sectionGearList": "Lista kit",
+        "sectionBattery": "Confronto Batterie",
+        "exportPdfButton": "Esporta PDF",
+        "printButton": "Stampa",
+        "generatedTitle": "Panoramica",
+        "generatedProjectNameLabel": "Nome Progetto:",
+        "generatedProductionLabel": "Produzione:",
+        "generatedDateLabel": "Data:",
+        "generatedNoProjectRequirements": "Nessun dato sui requisiti di produzione.",
+        "generatedDeviceSelectionTitle": "Dispositivi del pacchetto camera",
+        "generatedNoDevicesSelected": "Nessun dispositivo selezionato.",
+        "generatedPowerDiagramTitle": "Diagramma di alimentazione",
+        "generatedPowerSummaryTitle": "Riepilogo Potenza",
+        "generatedGearListTitle": "Lista kit",
+        "generatedTotalLoad": "Carico Totale",
+        "generatedPeak": "Picco:",
+        "generatedEstRuntime": "Autonomia Stimata",
+        "generatedWith": "con",
+        "generatedDailyNeeds": "Fabbisogno Giornaliero",
+        "generatedBatts": "Batt.",
+        "generatedFor12hDay": "per giornata di 12 ore"
+      },
       "skipToContent": "Vai al contenuto",
       "offlineIndicator": "Non in linea",
       "offlineIndicatorHelp": "Compare quando l’app è offline o quando il service worker rileva una connessione degradata. Tutti i progetti, i backup e i dati dei dispositivi restano salvati su questo dispositivo così puoi continuare a lavorare. Il ricaricamento forzato e le altre azioni di rete restano disattivate finché la connettività non torna stabile.",
@@ -46,8 +78,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "impressum": "Note legali",
       "privacy": "Informativa sulla privacy",
       "setupManageHeading": "Panoramica del progetto",
-      "deviceSelectionHeading": "Configura dispositivi",
-      "overviewDeviceSelectionHeading": "Dispositivi della configurazione della camera",
+      "deviceSelectionHeading": "Pacchetto camera",
+      "overviewDeviceSelectionHeading": "Dispositivi del pacchetto camera",
       "resultsHeading": "Riepilogo potenza",
       "pdfWarningsHeading": "Avvisi",
       "deviceManagerHeading": "Libreria dispositivi",
@@ -55,28 +87,28 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "batteryComparisonDescription": "Esamina tutte le batterie compatibili per vedere le stime di autonomia con la configurazione attuale.",
       "batteryComparisonDescriptionHelp": "Questa tabella elenca tutte le batterie compatibili e si aggiorna quando modifichi la configurazione. Passa il puntatore sulle intestazioni per capire i valori.",
       "batteryComparisonTableHelp": "Ogni riga mostra una batteria compatibile. L'autonomia include il consumo stimato e la barra colorata confronta la durata a colpo d'occhio.",
-      "setupDiagramHeading": "Diagramma delle connessioni",
-      "diagramPdfNote": "Il diagramma delle connessioni non è incluso nell'esportazione PDF. Apri la vista di stampa per consultare il layout.",
-      "projectRequirementsNav": "Requisiti di progetto",
-      "projectRequirementsNavHelp": "Vai all'output Requisiti di progetto quando è stato generato.",
-      "gearListNav": "Lista attrezzatura",
-      "gearListNavHelp": "Visualizza la lista attrezzatura generata con tutti gli elementi e le categorie.",
+      "setupDiagramHeading": "Diagramma di alimentazione",
+      "diagramPdfNote": "Il diagramma di alimentazione non è incluso nell'esportazione PDF. Apri la vista di stampa per consultare il layout.",
+      "projectRequirementsNav": "Requisiti di produzione",
+      "projectRequirementsNavHelp": "Vai all'output Requisiti di produzione quando è stato generato.",
+      "gearListNav": "Lista kit",
+      "gearListNavHelp": "Visualizza la lista kit generata con tutti gli elementi e le categorie.",
       "ownGearNav": "Attrezzatura personale",
       "ownGearNavHelp": "Registra l'attrezzatura che possiedi già e riutilizzala nei progetti.",
-      "overviewExportTitleSuffix": "Lista attrezzatura e requisiti di progetto",
+      "overviewExportTitleSuffix": "Lista kit e requisiti di produzione",
       "openSettingsNav": "Impostazioni",
       "openSettingsNavHelp": "Apri le Impostazioni per modificare lingua, temi, opzioni di accessibilità e backup.",
       "openHelpNav": "Centro assistenza",
       "openHelpNavHelp": "Apri la guida in-app con tutorial, suggerimenti per la risoluzione dei problemi e scorciatoie.",
       "setupManageHeadingHelp": "Gestisci le configurazioni salvate: salva, carica o cancella configurazioni.",
-      "deviceSelectionHeadingHelp": "Scegli fotocamere, monitor e accessori per la tua configurazione.",
+      "deviceSelectionHeadingHelp": "Scegli fotocamere, monitor e accessori per il tuo pacchetto camera.",
       "resultsHeadingHelp": "Vedi il consumo di energia, la durata stimata e il numero di batterie.",
       "resultsPlainSummaryTitle": "Riepilogo rapido",
       "resultsPlainSummaryHelp": "Spiega il riepilogo di potenza con termini semplici e supporta la pianificazione dell'autonomia.",
       "resultsPlainSummaryPrompt": "Aggiungi dispositivi e scegli una batteria per vedere un riepilogo in linguaggio semplice.",
       "resultsPlainSummaryNeedBattery": "Scegli una batteria per scoprire quanta autonomia avrai e quanti pacchi portare.",
-      "resultsPlainSummaryRuntime": "Con {batteryName} puoi aspettarti circa {hours} ore di autonomia. Per una giornata da 10 ore porta {batteryCount} batterie. Il tuo setup assorbe attualmente {totalPower} W.",
-      "resultsPlainSummaryUnlimited": "Con {batteryName} il tuo setup assorbe {totalPower} W, quindi l'autonomia rimane virtualmente illimitata. Tieni comunque collegata una batteria carica prima di girare.",
+      "resultsPlainSummaryRuntime": "Con {batteryName} puoi aspettarti circa {hours} ore di autonomia. Per una giornata da 10 ore porta {batteryCount} batterie. Il tuo assetto assorbe attualmente {totalPower} W.",
+      "resultsPlainSummaryUnlimited": "Con {batteryName} il tuo assetto assorbe {totalPower} W, quindi l'autonomia rimane virtualmente illimitata. Tieni comunque collegata una batteria carica prima di girare.",
       "resultsPlainSummaryNote": "Lo stato di pin e D-Tap si aggiorna mentre aggiungi attrezzatura.",
       "resultsPlainSummaryPinsZero": "Pin: nessun assorbimento 12V al momento.",
       "resultsPlainSummaryPinsOk": "Pin: {current}A entro il limite di {max}A.",
@@ -97,12 +129,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "batteryTableRuntimeHelp": "Autonomia stimata in ore e quali uscite forniscono abbastanza corrente.",
       "batteryTableGraphLabel": "Barra di confronto autonomia",
       "batteryTableGraphHelp": "La lunghezza della barra confronta l'autonomia tra le batterie. Il verde copre pin e D-Tap, l'arancione indica solo i pin principali e il blu segnala autonomie teoricamente infinite.",
-      "setupDiagramHeadingHelp": "Mostra un diagramma visivo di come i dispositivi selezionati si collegano.",
+      "setupDiagramHeadingHelp": "Mostra il diagramma di alimentazione con i collegamenti di energia, video e controllo del rig.",
       "setupDiagramPlaceholder": "Seleziona i dispositivi per visualizzare la configurazione.",
       "diagramLegendPower": "Energia",
       "diagramLegendVideo": "Video",
       "diagramLegendFIZ": "FIZ",
-      "downloadDiagramBtn": "Scarica il diagramma",
+      "downloadDiagramBtn": "Scarica il diagramma di alimentazione",
       "gridSnapToggle": "Aggancia alla griglia",
       "existingDevicesHeading": "Dispositivi esistenti",
       "deviceLibrarySearchLabel": "Cerca in tutta la libreria",
@@ -187,7 +219,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       },
       "featureSearchPlaceholder": "Cerca funzionalità o dispositivi...",
       "featureSearchLabel": "Cerca funzionalità, dispositivi e aiuto",
-      "featureSearchHelp": "Digita per andare alle funzionalità, ai dispositivi, alle azioni rapide come Salva o Backup o aprire gli argomenti di aiuto correlati. I suggerimenti danno priorità alle corrispondenze dirette di funzionalità e dispositivi prima degli argomenti di aiuto, così raggiungi subito i controlli. Ogni voce indica se aprirà una Funzione, un'Azione, un Dispositivo o un argomento di Supporto, così sai cosa succede prima di premere Invio. Le corrispondenze esatte e gli elementi usati di recente salgono automaticamente in cima, così i controlli che usi più spesso restano davanti. Ogni suggerimento mostra anche una breve descrizione così sai subito cosa succederà prima di selezionarlo. La ricerca analizza anche gli stessi testi di aiuto mostrati nelle descrizioni, quindi termini come \"JSON\" o \"salvataggio automatico\" portano comunque al pulsante giusto anche se l'etichetta è diversa. Gli errori di battitura minimi vengono ignorati, quindi \"bakcup\" trova comunque Backup o Salva. Le abbreviazioni di connettori e supporti come \"USB-C\", \"Micro-HDMI\", \"SDXC\", \"CFexpress\", \"V-Mount\" o \"D-Tap\" vengono collegate automaticamente al nome completo, così puoi digitare la versione che ricordi. Anche il vocabolario di esposizione e colore è collegato: ISO, EI, ASA, indice di esposizione, ND o neutral density e WB, bilanciamento del bianco o temperatura colore portano sempre allo stesso controllo indipendentemente da come li scrivi. Premi Invio per navigare, / o Ctrl+K (Cmd+K su Mac) per mettere a fuoco la ricerca ovunque, usa Esc o × per cancellare la ricerca e, quando svuoti il campo, i risultati usati più di recente salgono in cima così ripeti le azioni frequenti più velocemente. Anteponi \"feature\", \"action\", \"device\" o \"help\" alla ricerca (ad esempio \"help: battery\") per filtrare i risultati su quel tipo. Inizia con \"recent\" o \"history\" (ad esempio \"recent iso\") per limitarti agli elementi usati di recente prima di scorrere tutto il catalogo. Le frasi esatte salgono ora in cima, quindi digitando l'intera etichetta di un controllo come \"battery health\" trovi quella funzione prima delle corrispondenze più generiche. La ricerca ignora automaticamente le parole riempitive più comuni, così domande conversazionali come \"come faccio il backup\" continuano a mettere in evidenza le parole davvero importanti.",
+      "featureSearchHelp": "Digita per andare alle funzionalità, ai dispositivi, alle azioni rapide come Salva o Backup o aprire gli argomenti di aiuto correlati. I suggerimenti danno priorità alle corrispondenze dirette di funzionalità e dispositivi prima degli argomenti di aiuto, così raggiungi subito i controlli. Ogni voce indica se aprirà una Funzione, un'Azione, un Dispositivo o un argomento di Supporto, così sai cosa succede prima di premere Invio. Le corrispondenze esatte e gli elementi usati di recente salgono automaticamente in cima, così i controlli che usi più spesso restano davanti. Ogni suggerimento mostra anche una breve descrizione così sai subito cosa succederà prima di selezionarlo. La ricerca analizza anche gli stessi testi di aiuto mostrati nelle descrizioni, quindi termini come \"JSON\" o \"salvataggio automatico\" portano comunque al pulsante giusto anche se l'etichetta è diversa. Gli errori di battitura minimi vengono ignorati, quindi \"bakcup\" trova comunque Backup o Salva. Le abbreviazioni di connettori e supporti come \"USB-C\", \"Micro-HDMI\", \"SDXC\", \"CFexpress\", \"V-Mount\" o \"D-Tap\" vengono collegate automaticamente al nome completo, così puoi digitare la versione che ricordi. Anche il vocabolario di esposizione e colore è collegato: ISO, EI, ASA, indice di esposizione, ND o neutral density e WB, bilanciamento del bianco o temperatura colore portano sempre allo stesso controllo indipendentemente da come li scrivi. Premi Invio per navigare, / o Ctrl+K (Cmd+K su Mac) per mettere a fuoco la ricerca ovunque, usa Esc o × per cancellare la ricerca e, quando svuoti il campo, i risultati usati più di recente salgono in cima così ripeti le azioni frequenti più velocemente. Anteponi \"feature\", \"action\", \"device\" o \"help\" (o le equivalenti localizzate) alla ricerca (ad esempio \"help: battery\") per filtrare i risultati su quel tipo. Inizia con \"recent\" o \"history\" (o le equivalenti localizzate) (ad esempio \"recent iso\") per limitarti agli elementi usati di recente prima di scorrere tutto il catalogo. Le frasi esatte salgono ora in cima, quindi digitando l'intera etichetta di un controllo come \"battery health\" trovi quella funzione prima delle corrispondenze più generiche. La ricerca ignora automaticamente le parole riempitive più comuni, così domande conversazionali come \"come faccio il backup\" continuano a mettere in evidenza le parole davvero importanti.",
+      "featureSearchFilterAliases": {
+        "feature": ["funzione", "funzioni", "impostazione", "impostazioni", "configurazione", "configurazioni"],
+        "action": ["azione", "azioni", "comando", "comandi"],
+        "device": ["dispositivo", "dispositivi", "attrezzatura", "attrezzature", "equipaggiamento", "equipaggiamenti"],
+        "help": ["aiuto", "guida", "guide", "documento", "documenti", "supporto"],
+        "recent": ["recente", "recenti", "cronologia", "ultimi", "ultimo", "frequente", "frequenti"]
+      },
+      "featureSearchStopWords": ["come", "cosa", "dove", "quando", "perché", "perche", "quale", "quali", "chi", "che", "io", "tu", "lui", "lei", "noi", "voi", "loro", "mi", "mio", "mia", "miei", "mie", "tuo", "tua", "tuoi", "tue", "suo", "sua", "suoi", "sue", "nostro", "nostra", "nostri", "nostre", "vostro", "vostra", "vostri", "vostre", "il", "lo", "la", "i", "gli", "le", "un", "una", "uno", "e", "o", "ma", "con", "senza", "per", "di", "del", "della", "dei", "delle", "a", "da", "in", "su", "tra", "fra", "anche", "ancora", "solo", "molto", "poco", "gia", "già", "forse", "puo", "può", "posso", "puoi", "dovrei", "devo", "vorrei", "bisogno", "grazie"],
       "featureSearchClear": "Cancella ricerca",
       "featureSearchClearHelp": "Cancella il campo di ricerca e mostra di nuovo tutti i risultati. Premi Esc per cancellare rapidamente.",
       "featureSearchTypeFeature": "Funzione",
@@ -195,7 +235,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "featureSearchTypeDevice": "Dispositivo",
       "featureSearchTypeHelp": "Argomento di supporto",
       "darkModeHelp": "Passa tra tema chiaro e scuro; premi D per attivarlo. La scelta viene ricordata.",
-      "pinkModeHelp": "Aggiungi un tema rosa giocoso. Quando la modalità rosa è attiva, l’icona dell’unicorno cambia ogni 30 secondi con una delicata animazione pop e l’impostazione funziona in modalità chiara o scura ed è ricordata per la volta successiva. Icone fluttuanti compaiono in modo casuale sullo schermo e, toccandone una tre volte, si attiva una pioggia di icone rosa.",
+      "pinkModeHelp": "Aggiungi un tema rosa giocoso. Quando la modalità rosa è attiva, l’icona dell’unicorno cambia ogni 30 secondi con una delicata animazione pop e l’impostazione funziona in modalità chiara o scura ed è ricordata per la volta successiva.",
       "reloadAppLabel": "Ricarica forzata",
       "reloadAppHelp": "Svuota la cache, annulla la registrazione dei service worker obsoleti ed esegue una ricarica forzata dell'app senza eliminare i dati salvati. L'app ora controlla la connessione prima della pulizia, segnala gli stati di fallback nella barra offline e precarica il nuovo pacchetto così la nuova versione arriva più velocemente.",
       "reloadAppOfflineNotice": "Offline o degradato: il ricaricamento forzato verifica prima la connessione. Ricollegati e riprova.",
@@ -505,6 +545,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "alertSetupNeedsDevice": "Puoi salvare un progetto anche se non hai ancora selezionato dispositivi.",
       "alertSetupSaved": "Setup \"{name}\" salvato nel browser. Rimane disponibile dopo aver chiuso o riaperto le schede finché non svuoti la cache del browser.",
       "alertSetupSavedNoDevices": "Setup \"{name}\" salvato nel browser senza dispositivi per ora. Potrai aggiungere l'attrezzatura e i requisiti in seguito: manterremo tutto al sicuro.",
+      "alertSetupRenameSaveFailed": "Non siamo riusciti a completare il salvataggio del progetto rinominato. Il progetto originale è ancora disponibile: salva di nuovo per mantenere tutto sincronizzato.",
       "alertNoSetupSelected": "Selezionare una configurazione salvata da eliminare.",
       "alertSetupDeleted": "Setup \"{name}\" eliminato.",
       "confirmDeleteSetup": "Elimina davvero setup \"{name}\"?",
@@ -518,9 +559,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "alertDeviceName": "Il nome del dispositivo non può essere vuoto.",
       "alertInvalidCameraJSON": "JSON non valido per i dettagli della fotocamera",
       "generateOverviewBtn": "Genera panoramica",
-      "generateGearListBtn": "Genera elenco attrezzatura e requisiti del progetto",
+      "generateGearListBtn": "Genera lista kit e requisiti di produzione",
       "addExtraGearBtn": "Aggiungi extra temporaneo",
-      "editProjectBtn": "Modifica requisiti del progetto",
+      "editProjectBtn": "Modifica requisiti di produzione",
       "projectForm": {
         "heading": "Requisiti del progetto",
         "projectName": "Nome progetto:",
@@ -662,6 +703,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "productionCompanyCountry": "Paese",
         "productionCompanyCountryPlaceholder": "Italia",
         "rentalHouse": "Noleggio",
+        "rentalHouseContact": "Contatto noleggio",
+        "rentalHouseAddress": "Indirizzo noleggio",
         "crew": "Troupe",
         "prepDays": "Giorni di preparazione",
         "shootingDays": "Giorni di riprese",
@@ -719,7 +762,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "Gaffer": "Elettricista",
         "Best Boy Electric": "Aiuto capo elettricista",
         "Electrician": "Elettricista",
-        "Rigging Gaffer": "Rigging Gaffer",
+        "Rigging Gaffer": "Capo elettricista rigging",
         "Key Grip": "Capo macchinista",
         "Best Boy Grip": "Assistente capo macchinista",
         "Grip": "Macchinista",
@@ -754,7 +797,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "Battery Belt": "Cintura batterie"
       },
       "gearListNoteLabel": "Nota:",
-      "gearListAutosaveNote": "Salvato automaticamente a ogni modifica del setup così l'inventario offline riflette l'ultimo assetto camera.",
+      "gearListAutosaveNote": "Salvato automaticamente a ogni modifica dell'assetto così l'inventario offline riflette l'ultimo assetto camera.",
       "gearListAddCustomItem": "Aggiungi elemento personalizzato",
       "gearListAddCustomItemToCategory": "Aggiungi elemento personalizzato a {category}",
       "gearListRemoveCustomItem": "Rimuovi",
@@ -792,6 +835,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "gearListEditDialogTitle": "Modifica elemento della lista",
       "gearListEditQuantityLabel": "Quantità",
       "gearListEditNameLabel": "Nome elemento",
+      "gearListEditAttributesLabel": "Attributi",
       "gearListEditNoteLabel": "Nota",
       "gearListEditExtraLabel": "Attrezzatura extra temporanea",
       "gearListEditExtraHelp": "Contrassegna questa voce come aggiunta per pochi giorni. Imposta il periodo così la squadra sa quando servirà.",
@@ -865,11 +909,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "printOptionsLayoutLabel": "Layout",
       "printOptionsLayoutStandard": "Layout standard",
       "printOptionsLayoutRental": "Layout per rental",
-      "rentalPrintSectionProject": "Requisiti del progetto",
-      "rentalPrintSectionDevices": "Dispositivi configurati",
+      "rentalPrintSectionProject": "Requisiti di produzione",
+      "rentalPrintSectionDevices": "Dispositivi del pacchetto camera",
       "rentalPrintSectionPower": "Riepilogo alimentazione",
-      "rentalPrintSectionDiagram": "Schema camera",
-      "rentalPrintSectionGearList": "Lista attrezzatura",
+      "rentalPrintSectionDiagram": "Diagramma di alimentazione",
+      "rentalPrintSectionGearList": "Lista kit",
       "rentalPrintSectionBattery": "Confronto batterie",
       "exportAndRevertBtn": "Esporta e ripristina il database predefinito",
       "exportAndRevertBtnHelp": "Esporta il database e ripristina i dati predefiniti.",
@@ -900,27 +944,27 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "helpTopics": {
         "projectManagement": {
           "title": "Gestione progetti",
-          "content": "Assegna un nome ai progetti e premi **Salva** per creare istantanee in Progetti salvati. Autosalvataggio e auto-backup proteggono le bozze e **Elimina** crea prima una copia di sicurezza."
+          "content": "Assegna un nome ai progetti e premi **Salva** per creare istantanee in Progetti salvati. Il salvataggio non sovrascrive altri progetti finché non confermi il nome. Autosalvataggio e auto-backup proteggono le bozze e **Elimina** crea prima una copia di sicurezza."
         },
         "saveShareBackup": {
           "title": "Salva, condividi e backup",
-          "content": "Usa **Esporta progetto** per scaricare un JSON (opzionalmente includi regole automatiche e marcature di attrezzatura propria). **Importa progetto** carica un file senza sovrascrivere finché non confermi il salvataggio. **Backup e ripristino** offre backup completi, prova di ripristino, confronto versioni e il caveau locale quando i download automatici sono bloccati."
+          "content": "Usa **Export Project** per scaricare un JSON (opzionalmente includi regole automatiche e marcature di attrezzatura propria). Usa **Share Project** per creare un pacchetto di condivisione per l'importazione offline; i destinatari lo aprono con **Import Project** e nulla sovrascrive la configurazione attuale finché non confermano il salvataggio. **Backup & Restore** offre backup completi, prova di ripristino, confronto versioni e il caveau locale quando i download automatici sono bloccati."
         },
         "deviceConfiguration": {
-          "title": "Configurazione dispositivi",
-          "content": "Inizia con una **Camera**, poi aggiungi **Monitor**, **Trasmettitori wireless** e sistemi **FIZ**. Usa la libreria dispositivi per importare o esportare attrezzatura personalizzata così le modifiche offline restano disponibili."
+          "title": "Pacchetto camera",
+          "content": "Costruisci il tuo pacchetto camera iniziando con una **Camera**, poi aggiungi **Monitor**, **Trasmettitori wireless** e sistemi **FIZ**. Usa la libreria dispositivi per importare o esportare attrezzatura personalizzata così le modifiche offline restano disponibili."
         },
         "powerCalculation": {
           "title": "Calcolo potenza",
           "content": "Il **Riepilogo potenza** mostra consumo totale e autonomia stimata in base alla batteria e ai voltaggi di montaggio. Controlla gli avvisi **Pin** e **D‑Tap** e usa il riepilogo rapido per spiegare i risultati offline."
         },
         "connectionDiagram": {
-          "title": "Diagramma di connessione",
-          "content": "Il **Diagramma di connessione** mostra come sono collegati i dispositivi. Trascina per disporre i nodi, usa zoom e panoramica e scarica snapshot SVG o JPG."
+          "title": "Diagramma di alimentazione",
+          "content": "Il **Diagramma di alimentazione** mostra i collegamenti di energia, video e controllo. Trascina per disporre i nodi, usa zoom e panoramica e scarica snapshot SVG o JPG."
         },
         "gearList": {
-          "title": "Gear list",
-          "content": "Genera una **Gear list** dettagliata da dispositivi e requisiti. Modifica quantità, fornitori, extra temporanei e marcature di proprietà, poi stampa o esporta."
+          "title": "Lista kit",
+          "content": "Genera una **lista kit** dettagliata da dispositivi del pacchetto camera e requisiti di produzione. Modifica quantità, fornitori, extra temporanei e marcature di proprietà, poi stampa o esporta."
         },
         "contacts": {
           "title": "Contatti",
@@ -928,7 +972,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         },
         "ownGear": {
           "title": "Attrezzatura propria",
-          "content": "Traccia il tuo inventario in **Attrezzatura propria**. Segna gli articoli per far comparire le annotazioni nelle liste e nelle esportazioni."
+          "content": "Traccia il tuo inventario in **Attrezzatura propria**. Segna gli articoli per far comparire le annotazioni nelle liste kit e nelle esportazioni."
         },
         "settings": {
           "title": "Impostazioni",
@@ -936,7 +980,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         },
         "offlineUse": {
           "title": "Uso offline",
-          "content": "Cine Power Planner funziona completamente **offline** con icone, font e aiuti locali. Controlla l'indicatore offline e mantieni esportazioni, backup completi e caveau locale aggiornati prima di disconnetterti."
+          "content": "Cine Power Planner funziona completamente **offline** con icone, font e aiuti locali. Verifica l'indicatore offline. Esporta almeno un progetto e crea un backup completo prima di disconnetterti. Esegui una prova di ripristino (o almeno conferma il timestamp dell'ultimo salvataggio automatico in Impostazioni → Dati e archiviazione)."
+        },
+        "troubleshooting": {
+          "title": "Risoluzione dei problemi",
+          "content": "Se qualcosa non funziona come previsto:\n\n- **Ricarica forzata**: Apri il menu aiuto/stato nella barra superiore e scegli **Ricarica forzata** per aggiornare l'app senza toccare i tuoi dati.\n- **Esporta + backup**: Prima di cancellare cache o dati del sito, **Esporta progetto** ed esegui **Backup & ripristino** per salvare il progetto e un backup locale completo.\n- **Cache/dati del sito**: Solo se i problemi persistono, cancella cache o dati del sito. **Avviso:** cancellare i dati del sito può eliminare progetti salvati localmente."
+        },
+        "shortcuts": {
+          "title": "Scorciatoie da tastiera",
+          "content": "Naviga più velocemente con questi tasti:\n\n- **?**, **H**, **F1**: Apri l'aiuto\n- **/**: Attiva la ricerca\n- **Esc**: Chiudi finestre o menu\n- **D**: Cambia modalità scura"
+        },
+        "pinkMode": {
+          "title": "Modalità Rosa",
+          "content": "Attiva la **Modalità Rosa** nelle impostazioni o nella barra superiore per un tocco giocoso e icone animate. L'icona dell'unicorno cambia ogni 30 secondi e vedrai adesivi fluttuanti sullo schermo. Clicca su un adesivo **3 volte** per scatenare un effetto pioggia festoso."
         }
       },
       "documentationTrackerHelpStart": "Avvio e navigazione",
@@ -944,6 +1000,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "documentationTrackerHelpBackup": "Backup e prove di ripristino",
       "documentationTrackerHelpOwnGear": "Gear personale e importazioni",
       "documentationTrackerHelpOffline": "Prontezza offline e service worker",
+      "documentationTrackerHelpPinkMode": "Modalità rosa e animazioni",
       "documentationTrackerPrintHeading": "Guide stampabili",
       "documentationTrackerPrintChecklist": "Checklist aggiornamento documentazione",
       "documentationTrackerPrintMaintenance": "Guida alla manutenzione della documentazione",
@@ -1031,8 +1088,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "logoSettingHelp": "Carica un logo SVG per personalizzare panoramiche stampabili e includerlo nei backup.",
       "logoFormatError": "Formato logo non supportato. Scegli un file SVG.",
       "autoGearHeading": "Regole automatiche per l'attrezzatura",
-      "autoGearHeadingHelp": "Decidi quali scenari del modulo aggiungono o rimuovono automaticamente elementi dalla lista.",
-      "autoGearDescription": "Crea regole basate sugli scenari per rifinire la lista generata dopo i suggerimenti predefiniti.",
+      "autoGearHeadingHelp": "Decidi quali scenari del modulo aggiungono o rimuovono automaticamente elementi dalla lista kit.",
+      "autoGearDescription": "Crea regole basate sugli scenari per rifinire la lista kit generata dopo i suggerimenti predefiniti.",
       "autoGearPresetDescription": "Salva e riutilizza insiemi completi di regole automatiche.",
       "autoGearPresetLabel": "Preimpostazione",
       "autoGearPresetPlaceholder": "Regole personalizzate",
@@ -1114,7 +1171,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "autoGearConditionLogicMultiplier": "Moltiplica in base ai valori corrispondenti",
       "autoGearConditionRepeatHint": "Condizione già aggiunta. I campi esistenti per {condition} vengono evidenziati per permetterti di aggiungere altre selezioni.",
       "autoGearAlwaysLabel": "Includi sempre",
-      "autoGearAlwaysHelp": "Applica questa regola a ogni lista attrezzatura.",
+      "autoGearAlwaysHelp": "Applica questa regola a ogni lista kit.",
       "autoGearAlwaysMeta": "Sempre attiva",
       "autoGearScenarioModeLabel": "Corrispondenza scenari",
       "autoGearScenarioModeHelp": "Scegli come interagiscono gli scenari selezionati prima che la regola si attivi.",
@@ -1353,7 +1410,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "relaxedSpacingSetting": "Spaziatura ampia",
       "relaxedSpacingSettingHelp": "Aumenta l'interlinea e l'imbottitura dei controlli per facilitare la lettura e l'uso con il tocco.",
       "backupHeading": "Backup e ripristino",
-      "backupHeadingHelp": "Gestisci backup completi di impostazioni, progetti salvati, dispositivi personalizzati e feedback.",
+      "backupHeadingHelp": "Gestisci backup completi di impostazioni, progetti salvati, dispositivi personalizzati, voci del vault locale e feedback.",
       "projectBackupsHeading": "Backup dei progetti",
       "projectBackupsDescription": "Gestisci le istantanee automatiche e confronta le versioni salvate prima di ripristinare le modifiche.",
       "showAutoBackupsSetting": "Mostra i salvataggi automatici nell'elenco progetti",
@@ -1392,9 +1449,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "versionCompareSummaryRemoved": "Rimossi: %s",
       "versionCompareSummaryChanged": "Aggiornati: %s",
       "backupSettings": "Backup",
-      "backupSettingsHelp": "Scarica un backup JSON completo con tutti i progetti, le modifiche ai dispositivi, le preferenze, le regole automatiche e i log runtime presenti su questo dispositivo. Conservane copie multiple nel tuo archivio offline.",
+      "backupSettingsHelp": "Scarica un backup JSON completo con tutti i progetti, le modifiche ai dispositivi, le preferenze, le regole automatiche, le voci del vault locale e i log runtime presenti su questo dispositivo. Conservane copie multiple nel tuo archivio offline.",
       "restoreSettings": "Ripristina",
-      "restoreSettingsHelp": "Ripristina un backup JSON completo. Il planner cattura prima una nuova copia di sicurezza, quindi applica il file selezionato così puoi tornare indietro subito se qualcosa non va.",
+      "restoreSettingsHelp": "Ripristina un backup JSON completo. Il planner cattura prima una nuova copia di sicurezza, quindi sostituisce le preferenze salvate e i dati di sessione con il file selezionato così puoi tornare indietro subito se qualcosa non va.",
       "restoreRehearsalButton": "Prova di ripristino",
       "restoreRehearsalButtonHelp": "Metti alla prova un backup o un pacchetto progetto in una sandbox temporanea prima di ripristinare i dati attivi.",
       "restoreRehearsalHeading": "Prova di ripristino",
@@ -1469,6 +1526,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "preDeleteBackupSuccess": "Copia di sicurezza automatica salvata prima dell'eliminazione. Cerca la voce auto-backup corrispondente in Progetti salvati e rinominala se desideri conservarla in modo permanente.",
       "preDeleteBackupFailed": "Backup automatico non riuscito. L'operazione è stata annullata.",
       "restoreBackupFailed": "Backup non riuscito. Ripristino annullato.",
+      "restoreBackupQueuedConfirm": "La copia di sicurezza è in attesa nel vault locale. Continuare con il ripristino ora?",
       "manualDownloadFallback": "Il download non è partito automaticamente. Si è aperta una nuova scheda con il contenuto del file così puoi copiarlo o salvarlo manualmente.",
       "manualDownloadCopyHint": "Seleziona tutto il testo qui sotto e copialo per conservare il file in modo sicuro.",
       "dataHeading": "Dati e archiviazione",
@@ -1576,7 +1634,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "storageAutoBackupsCountOne": "%s backup automatico",
       "storageAutoBackupsCountOther": "%s backup automatici",
       "storageKeyGearLists": "Snapshot delle liste materiali",
-      "storageKeyGearListsDesc": "Panoramiche stampabili e requisiti del progetto.",
+      "storageKeyGearListsDesc": "Panoramiche stampabili e requisiti di produzione.",
       "storageGearListsCountOne": "%s voce",
       "storageGearListsCountOther": "%s voci",
       "storageKeyDevices": "Dispositivi personalizzati o modificati",
@@ -1595,7 +1653,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "storageKeySession": "Sessione non salvata",
       "storageKeySessionDesc": "Ripristina il progetto in corso dopo il ricaricamento.",
       "storageKeyFullBackups": "Backup completi dell’app",
-      "storageKeyFullBackupsDesc": "Download creati da Backup e ripristino o dalle copie orarie di sicurezza.",
+      "storageKeyFullBackupsDesc": "Download creati da Backup e ripristino o dalle copie orarie di sicurezza, incluse le voci del vault locale.",
       "storageFullBackupsCountOne": "%s backup completo",
       "storageFullBackupsCountOther": "%s backup completi",
       "queuedBackupDownloadDeferred": "I download automatici sono stati bloccati. Abbiamo salvato {fileName} nel vault locale così il prossimo tocco può esportarlo in sicurezza.",
@@ -1711,11 +1769,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "stepStatusUpcoming": "In arrivo",
         "resumeHint": "Riprendi esattamente da dove avevi interrotto. Usa il navigatore dei passaggi per rivedere i flussi precedenti senza cancellare i progressi salvati offline.",
         "resumeHintDetailed": "Riprendi al passaggio {current} di {total}. {completed} passaggi sono già completati e fissati nei tuoi salvataggi offline.",
-        "userProfileInteractionIntro": "Inserisci una volta i dettagli della troupe. Ogni aggiornamento si sincronizza subito con Contatti, resta salvato offline e confluisce nelle esportazioni così la troupe sa sempre chi possiede il setup.",
+        "userProfileInteractionIntro": "Inserisci una volta i dettagli della troupe. Ogni aggiornamento si sincronizza subito con Contatti, resta salvato offline e confluisce nelle esportazioni così la troupe sa sempre chi possiede la configurazione camera.",
         "userProfileInteractionSkipHint": "Premi Avanti quando sei pronto: la sezione Contatti nella barra laterale mostra sempre questi dettagli salvati senza azzerare i progressi del tutorial.",
         "userProfileAvatarAction": "Aggiungi foto profilo",
         "userProfileAvatarEditAction": "Modifica foto",
-        "projectRequirementsMiniIntro": "Compila questi campi proxy mentre la finestra Requisiti di progetto resta aperta.",
+        "projectRequirementsMiniIntro": "Compila questi campi proxy mentre la finestra Requisiti di produzione resta aperta.",
         "projectRequirementsMiniOfflineHint": "Ogni modifica viene salvata subito in locale: usa Indietro/Avanti qui senza rischiare di perdere dati.",
         "unitsPreferencesLanguageLabel": "Lingua",
         "unitsPreferencesThemeLabel": "Tema",
@@ -1754,8 +1812,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             "body": "Questo tour guidato presenta le salvaguardie offline, l’automazione orientata alla troupe e le prove di ripristino che mantengono ogni progetto pronto per la produzione.",
             "hero": {
               "heading": "Benvenuto in Cine Power Planner!",
-              "subheading": "Proteggi ogni setup camera con verifiche di potenza, kit AutoGear e handoff pronti al noleggio—tutto rimane offline.",
-              "summary": "Pianifica setup camera sicuri, verifica i limiti di potenza, genera automaticamente liste gear dai requisiti di progetto ed esporta PDF pronti per il noleggio—ogni salvataggio resta locale prima del ciak.",
+              "subheading": "Proteggi ogni configurazione camera con verifiche di potenza, kit AutoGear e handoff pronti al noleggio—tutto rimane offline.",
+              "summary": "Pianifica configurazioni camera sicure, verifica i limiti di potenza, genera automaticamente liste kit dai requisiti di produzione ed esporta PDF pronti per il noleggio—ogni salvataggio resta locale prima del ciak.",
               "badgeIcon": "",
               "badgeLabel": "Crew-first · Offline per sempre",
               "badgeDescription": "Nessun server, nessun account, nessun abbonamento. Ogni salvataggio, autosalvataggio, backup, ripristino, condivisione e importazione resta su questo dispositivo.",
@@ -1769,7 +1827,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 "body": "Genera liste complete partendo dagli scenari di ripresa con le regole AutoGear, ritoccale per la giornata e riusa i preset."
               }, {
                 "icon": "",
-                "title": "Requisiti di progetto pronti alla consegna",
+                "title": "Requisiti di produzione pronti alla consegna",
                 "body": "Traccia requisiti, copertura crew e note per il noleggio, quindi esporta pacchetti PDF pronti per troupe, rental e produzione."
               }, {
                 "icon": "",
@@ -1807,7 +1865,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           },
           "addMonitoring": {
             "title": "Aggiungi monitor, video wireless e FIZ",
-            "body": "Aggiungi monitor onboard, trasmettitori wireless e motori o controller FIZ. Ogni scelta alimenta i calcoli di autonomia, i diagrammi e le regole automatiche così il kit generato rispecchia l'intero setup."
+            "body": "Aggiungi monitor onboard, trasmettitori wireless e motori o controller FIZ. Ogni scelta alimenta i calcoli di autonomia, i diagrammi e le regole automatiche così il kit generato rispecchia l'intero assetto."
           },
           "selectBattery": {
             "title": "Scegli batterie",
@@ -1819,7 +1877,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           },
           "resultsBatteryPacks": {
             "title": "Power Summary: Autonomie delle batterie",
-            "body": "Esamina la proiezione di autonomia di ogni pacco sapendo che riflette uno scenario di consumo massimo, così la maggior parte dei setup durerà di più—ti aiuta a capire quante batterie portare, a sentirti tranquillo che il rig non richiederà cambi continui e ad aggiungere automaticamente i pacchi giusti insieme a ogni camera."
+            "body": "Esamina la proiezione di autonomia di ogni pacco sapendo che riflette uno scenario di consumo massimo, così la maggior parte degli assetti durerà di più—ti aiuta a capire quante batterie portare, a sentirti tranquillo che il rig non richiederà cambi continui e ad aggiungere automaticamente i pacchi giusti insieme a ogni camera."
           },
           "resultsChangeover": {
             "title": "Power Summary: Cambi turno",
@@ -1838,8 +1896,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             "body": "Usa il pulsante feedback runtime per registrare risultati reali. Le voci si sincronizzano con il progetto corrente, migliorano le stime future e restano disponibili offline per gli audit."
           },
           "connectionDiagram": {
-            "title": "Esamina il diagramma delle connessioni",
-            "body": "Il diagramma interattivo mostra come si collegano alimentazione, video e controllo. Trascina i nodi per pianificare il layout, fai doppio clic sui dispositivi per aprire i popup informativi e poi salva così disposizione e annotazioni restano in esportazioni e ripristini."
+            "title": "Esamina il diagramma di alimentazione",
+            "body": "Il diagramma di alimentazione interattivo mostra come si collegano alimentazione, video e controllo. Trascina i nodi per pianificare il layout, fai doppio clic sui dispositivi per aprire i popup informativi e poi salva così disposizione e annotazioni restano in esportazioni e ripristini."
           },
           "connectionDiagramDetails": {
             "title": "Apri i dettagli hover del dispositivo",
@@ -1879,7 +1937,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           },
           "generateGearAndRequirements": {
             "title": "Genera requisiti e elenco attrezzatura",
-            "body": "Usa Genera elenco attrezzatura e requisiti del progetto per ricostruire la checklist dopo ogni modifica. Il planner salva l'output con il progetto così PDF, export e backup riflettono sempre le ultime scelte."
+            "body": "Usa Genera lista kit e requisiti di produzione per ricostruire la checklist dopo ogni modifica. Il planner salva l'output con il progetto così PDF, export e backup riflettono sempre le ultime scelte."
           },
           "autoGearRulesAccess": {
             "title": "Apri Regole gear automatiche",
@@ -1899,7 +1957,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           },
           "exportImport": {
             "title": "Esporta e importa progetti",
-            "body": "Usa Esporta progetto per scaricare una copia di sicurezza JSON e Importa progetto per provare i ripristini. Archivia le esportazioni su supporti ridondanti così nessuna postazione perde dati se il profilo del browser si reimposta."
+            "body": "Usa Esporta progetto per scaricare una copia di sicurezza JSON e Importa progetto per provare i ripristini. Archivia le esportazioni su supporti ridondanti così nessuna postazione perde dati se il profilo del browser si reimposta. Conserva l'esportazione originale intatta per poterla reimportare in qualsiasi momento, anche se una copia di lavoro viene modificata."
           },
           "overviewAndPrint": {
             "title": "Genera panoramica e stampe",
@@ -1938,7 +1996,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "helpDataAuditNote": "Registra i risultati, acquisisci uno screenshot di Impostazioni → Dati e archiviazione con l'ultimo salvataggio automatico e archivia anche l'output della sentinella runtime nel registro di rotazione dei backup così saprai sempre quali copie sono state verificate offline.",
       "helpRestoreDrillNote": "Annota nomi file, timestamp e risultati della verifica nel registro di rotazione dei backup in modo che ogni esercitazione documenti una copia ripristinabile.",
       "helpSearchClear": "Cancella ricerca",
-      "helpSearchHelp": "Digita parole chiave o grafie alternative per filtrare all'istante gli argomenti della guida. I collegamenti rapidi si aggiornano durante la digitazione ed evidenziano l'articolo corrispondente quando premi Invio. Premi '/' o Ctrl+F (⌘+F su Mac) per spostare subito il focus sulla casella di ricerca, quindi usa Tab per scorrere i collegamenti filtrati senza chiudere il progetto.",
+      "helpSearchHelp": "Digita parole chiave o grafie alternative per filtrare all'istante gli argomenti della guida. I collegamenti rapidi si aggiornano durante la digitazione ed evidenziano l'articolo corrispondente quando premi Invio. Quando la finestra della guida è aperta, premi '/' o Ctrl+F (⌘+F su Mac) per spostare subito il focus sulla casella di ricerca (non sulla ricerca del browser), quindi usa Tab per scorrere i collegamenti filtrati senza chiudere il progetto.",
       "helpSearchClearHelp": "Svuota il campo di ricerca e mostra di nuovo tutti gli argomenti.",
       "helpQuickLinksHeading": "Vai a un argomento",
       "helpQuickLinksAriaLabel": "Navigazione rapida degli argomenti di aiuto",
@@ -1974,12 +2032,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "setupSelectHelp": "Scegli una configurazione salvata da caricare o inizia una nuova.",
       "setupNameHelp": "Inserisci un nome per la configurazione corrente.",
       "deleteSetupHelp": "Elimina la configurazione salvata selezionata.",
-      "saveSetupHelp": "Acquisisci un'istantanea completa del progetto corrente—dispositivi, requisiti, note, registri di autonomia e layout del diagramma—e archiviala nella libreria locale. Il punto di stato del salvataggio automatico accanto a Nome progetto pulsa mentre la scrittura termina e la coda di backup automatico pianifica subito dopo la stessa istantanea con timestamp per mantenere aggiornata la ridondanza. Premi Invio o Ctrl+S (Cmd+S su Mac) per ottenere lo stesso risultato; il pulsante Salva resta disattivato finché non inserisci un nome progetto.",
+      "saveSetupHelp": "Acquisisci un'istantanea completa del progetto corrente—dispositivi, requisiti, note, registri di autonomia e layout del diagramma—e archiviala nella libreria locale. Il punto di stato del salvataggio automatico accanto a Nome progetto pulsa mentre la scrittura termina e la coda di backup automatico pianifica subito dopo la stessa istantanea con timestamp per mantenere aggiornata la ridondanza. Premi Invio o Ctrl+S (Cmd+S su Mac) per ottenere lo stesso risultato; il pulsante Salva resta disattivato finché non inserisci un nome progetto. Il salvataggio non sovrascrive altri progetti finché non confermi il nome, così i dati precedenti restano protetti.",
       "generateOverviewHelp": "Ricostruisce il riepilogo pronto per la stampa del progetto salvato selezionato e apre la finestra panoramica così puoi rivedere i dettagli di alimentazione e connessione prima di stampare quando preferisci. La sezione obiettivi mostra marca, attacco, diametro, fuoco, peso, supporto aste e note così gli export coprono le verifiche sensibili alle specifiche.",
-      "generateGearListHelp": "Genera una tabella categorizzata che combina l'attrezzatura selezionata con i requisiti del progetto. L'elenco si aggiorna a ogni modifica, unisce i duplicati con un conteggio e aggiunge automaticamente cavi, rigging, supporti lente, componenti matte box, conteggi batteria con hotswap, monitor predefiniti per ogni ruolo e accessori specifici per gli scenari. Gli elementi sono ordinati alfabeticamente e includono descrizioni al passaggio del mouse.",
-      "shareSetupHelp": "Scarica un pacchetto JSON di sicurezza del progetto corrente—comprende accessori personalizzati, preferiti, feedback di autonomia e dispositivi—pronto da archiviare o condividere offline. Conserva il file insieme ai backup ridondanti della troupe prima di chiudere il planner così ogni postazione può ripristinarlo senza connessione.",
-      "applySharedLinkHelp": "Carica la configurazione da un backup JSON esportato tramite Salva e condividi o Backup e ripristino. Controlla il diff in anteprima prima di applicarla: nulla sovrascrive il progetto corrente finché non confermi Salva e il planner programma prima un nuovo backup automatico così puoi tornare indietro all’istante. Le importazioni senza nome vengono salvate automaticamente con un titolo “-imported” così i dati arrivano anche quando il bundle non includeva un nome progetto.",
-      "sharedLinkHelp": "Scegli un JSON di progetto esportato da Salva e condividi o da Backup e ripristino. Conserva il file originale nei backup dopo l’importazione: il planner legge solo una copia e registra il tentativo nei log di diagnostica.",
+      "generateGearListHelp": "Genera una lista kit categorizzata che combina l'attrezzatura selezionata con i requisiti di produzione. L'elenco si aggiorna a ogni modifica, unisce i duplicati con un conteggio e aggiunge automaticamente cavi, rigging, supporti lente, componenti matte box, conteggi batteria con hotswap, monitor predefiniti per ogni ruolo e accessori specifici per gli scenari. Gli elementi sono ordinati alfabeticamente e includono descrizioni al passaggio del mouse.",
+      "shareSetupHelp": "Scarica un pacchetto JSON di sicurezza del progetto corrente—comprende accessori personalizzati, preferiti, feedback di autonomia e dispositivi—pronto da archiviare o condividere offline. Conserva il file insieme ai backup ridondanti della troupe prima di chiudere il planner così ogni postazione può ripristinarlo senza connessione. L'esportazione non modifica il progetto corrente, quindi nulla va perso mentre crei il pacchetto.",
+      "applySharedLinkHelp": "Carica la configurazione da un backup JSON esportato tramite Salva e condividi o Backup e ripristino. Controlla il diff in anteprima prima di applicarla: nulla sovrascrive il progetto corrente finché non confermi Salva e il planner programma prima un nuovo backup automatico così puoi tornare indietro all’istante. Le importazioni senza nome vengono salvate automaticamente con un titolo “-imported” così i dati arrivano anche quando il bundle non includeva un nome progetto. Il progetto importato resta locale ed è subito disponibile offline dopo il salvataggio.",
+      "sharedLinkHelp": "Scegli un JSON di progetto esportato da Salva e condividi o da Backup e ripristino. Conserva il file originale nei backup dopo l’importazione: il planner legge solo una copia e registra il tentativo nei log di diagnostica, così puoi verificare ogni ripristino.",
       "cameraSelectHelp": "Seleziona la fotocamera per la tua configurazione.",
       "monitorSelectHelp": "Seleziona un monitor da includere.",
       "videoSelectHelp": "Seleziona un sistema video wireless da includere.",
@@ -1991,7 +2049,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "runtimeFeedbackBtnHelp": "Invia la durata di funzionamento misurata per questa configurazione.",
       "zoomOutHelp": "Allontana il diagramma di configurazione.",
       "zoomInHelp": "Avvicina il diagramma di configurazione.",
-      "downloadDiagramHelp": "Scarica il diagramma di configurazione come immagine.",
+      "downloadDiagramHelp": "Scarica il diagramma di alimentazione come immagine.",
       "gridSnapToggleHelp": "Attiva/disattiva l'allineamento alla griglia dei nodi del diagramma.",
       "resetViewBtn": "Reimposta vista",
       "resetViewHelp": "Ripristina lo zoom e il movimento del diagramma.",

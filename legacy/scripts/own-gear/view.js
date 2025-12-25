@@ -64,7 +64,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return value;
     };
     var requestAnimationFrameRef = options.requestAnimationFrame || scope.requestAnimationFrame || null;
-    var confirmRef = options.confirm || scope.window && scope.window.confirm && scope.window.confirm.bind(scope.window) || (typeof scope.confirm === 'function' ? scope.confirm.bind(scope) : null);
     var scheduleTimeout = ensureSetTimeout(scope);
     var dataSources = {
       devices: resolveScopeOption(scope, options.devices, function (innerScope) {
@@ -534,30 +533,43 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (confirmTemplate.includes('%s')) {
         confirmMessage = formatWithPlaceholders(confirmTemplate, item.name);
       }
-      var confirmed = true;
-      if (confirmRef) {
-        try {
-          confirmed = confirmRef(confirmMessage);
-        } catch (error) {
-          void error;
-          confirmed = true;
+      var performDelete = function performDelete() {
+        var currentIdx = state.items.findIndex(function (entry) {
+          return entry && entry.id === id;
+        });
+        if (currentIdx === -1) return;
+        state.items.splice(currentIdx, 1);
+        if (state.editingId === id) {
+          resetOwnGearForm();
         }
-      }
-      if (!confirmed) {
+        persistItems();
+        state.suggestionCache = {
+          lang: null,
+          list: [],
+          lookup: new Set()
+        };
+        renderOwnGearList();
+        refreshOwnGearSuggestions();
+      };
+      var showDialog = scope.cineShowConfirmDialog || (typeof window !== 'undefined' ? window.cineShowConfirmDialog : null);
+      if (typeof showDialog === 'function') {
+        showDialog({
+          title: langTexts.ownGearDeleteTitle || 'Remove Item',
+          message: confirmMessage,
+          confirmLabel: langTexts.ownGearDeleteConfirmLabel || 'Remove',
+          cancelLabel: langTexts.cancel || 'Cancel',
+          danger: true,
+          onConfirm: performDelete
+        });
         return;
       }
-      state.items.splice(index, 1);
-      if (state.editingId === id) {
-        resetOwnGearForm();
+      if (typeof scope.confirm === 'function' && scope.confirm(confirmMessage)) {
+        performDelete();
+        return;
       }
-      persistItems();
-      state.suggestionCache = {
-        lang: null,
-        list: [],
-        lookup: new Set()
-      };
-      renderOwnGearList();
-      refreshOwnGearSuggestions();
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('cine.ownGear.view missing confirm dialog implementation.');
+      }
     }
     function applyOwnGearLocalization(lang) {
       if (!documentRef) {

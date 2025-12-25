@@ -22,13 +22,13 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/localization.js',
     'modules/offline.js',
     'modules/core-shared.js',
-    'modules/core/runtime.js',
-    'modules/core/localization.js',
-    'modules/core/pink-mode.js',
-    'modules/core/project-intelligence.js',
-    'modules/core/persistence-guard.js',
-    'modules/core/mount-voltage.js',
-    'modules/core/experience.js',
+    'core/modules/core/runtime.js',
+    'core/modules/core/localization.js',
+    'core/modules/core/pink-mode.js',
+    'core/modules/core/project-intelligence.js',
+    'core/modules/core/persistence-guard.js',
+    'core/modules/core/mount-voltage.js',
+    'core/modules/core/experience.js',
     'modules/logging.js',
     'modules/device-normalization.js',
     'modules/features/help.js',
@@ -49,31 +49,32 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/gear-list.js',
     'modules/runtime-guard.js',
     'modules/results.js',
-    'modules/app-core/bootstrap.js',
-    'modules/app-core/pink-mode.js',
-    'modules/app-core/localization.js',
-    'app-core-runtime-scopes.js',
-    'app-core-runtime-support.js',
-    'app-core-runtime-helpers.js',
-    'app-core-text.js',
-    'app-core-environment.js',
-    'app-core-bootstrap.js',
-    'app-core-runtime-shared.js',
-    'app-core-pink-mode.js',
-    'app-core-runtime-candidate-scopes.js',
-    'app-core-runtime-global-tools.js',
-    'app-core-runtime-ui.js',
+    'core/modules/app-core/bootstrap.js',
+    'core/modules/app-core/pink-mode.js',
+    'core/modules/app-core/localization.js',
+    'core/app-core-runtime-scopes.js',
+    'core/app-core-runtime-support.js',
+    'core/app-core-runtime-helpers.js',
+    'core/app-core-text.js',
+    'core/app-core-environment.js',
+    'core/app-core-bootstrap.js',
+    'core/app-core-runtime-shared.js',
+    'core/app-core-pink-mode.js',
+    'core/app-core-runtime-candidate-scopes.js',
+    'core/app-core-runtime-global-tools.js',
+    'core/app-core-runtime-ui.js',
+    'core/app-core-ui-helpers.js',
     'auto-gear/normalizers.js',
     'auto-gear/storage.js',
     'auto-gear/ui.js',
-    'app-core-auto-gear-ui.js',
-    'app-core-new-1.js',
-    'app-core-localization-accessors.js',
-    'app-core-new-2.js',
+    'core/app-core-auto-gear-ui.js',
+    'core/app-core-new-1.js',
+    'core/app-core-localization-accessors.js',
+    'core/app-core-new-2.js',
     'modules/settings-and-appearance.js',
-    'app-events.js',
-    'app-setups.js',
-    'app-session.js'
+    'core/app-events.js',
+    'core/app-setups.js',
+    'core/app-session.js'
   ];
   let appVersion = '0.0.0';
   try {
@@ -156,9 +157,9 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   ensureModule('modules/context.js');
   ensureModule('modules/environment-bridge.js');
   ensureModule('modules/globals.js');
-  ensureModule('modules/core/runtime.js');
-  ensureModule('modules/core/localization.js');
-  ensureModule('modules/core/pink-mode.js');
+  ensureModule('core/modules/core/runtime.js');
+  ensureModule('core/modules/core/localization.js');
+  ensureModule('core/modules/core/pink-mode.js');
   ensureModule('modules/runtime-guard.js');
   ensureModule('modules/results.js');
   ensureModule('modules/persistence.js');

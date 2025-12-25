@@ -9814,84 +9814,157 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
     }
 
-    const settingsLogoInput = resolveGlobalElement('settingsLogo', 'settingsLogo');
-    if (settingsLogoInput) {
-      settingsLogoInput.addEventListener('change', () => {
-        const file = settingsLogoInput.files && settingsLogoInput.files[0];
-        if (!file) {
-          loadStoredLogoPreview();
-          return;
-        }
-        if (file.type !== 'image/svg+xml' && !file.name.toLowerCase().endsWith('.svg')) {
-          showNotification('error', texts[currentLang].logoFormatError || 'Unsupported logo format');
-          settingsLogoInput.value = '';
-          loadStoredLogoPreview();
-          return;
-        }
-        const reader = new FileReader();
-        reader.onload = () => {
-          renderSettingsLogoPreview(reader.result);
-        };
-        reader.readAsDataURL(file);
-      });
+
+    // --- Lazy DOM Initialization ---
+    // Initialize variables to null/empty to prevent reference errors before DOM is ready
+    var settingsLogoInput = null;
+    var settingsHighContrast = null;
+    var settingsReduceMotion = null;
+    var settingsRelaxedSpacing = null;
+    var backupSettings = null;
+    var restoreSettings = null;
+    var factoryResetButton = null;
+    var restoreSettingsInput = null;
+    var restoreRehearsalButton = null;
+    var restoreRehearsalSection = null;
+    var restoreRehearsalHeading = null;
+    var restoreRehearsalIntro = null;
+    var restoreRehearsalModeLabel = null;
+    var restoreRehearsalModeBackupText = null;
+    var restoreRehearsalModeProjectText = null;
+    var restoreRehearsalFileLabel = null;
+    var restoreRehearsalBrowse = null;
+    var restoreRehearsalFileName = null;
+    var restoreRehearsalStatus = null;
+    var restoreRehearsalRuleHeading = null;
+    var restoreRehearsalRuleIntro = null;
+    var restoreRehearsalRuleEmpty = null;
+    var restoreRehearsalProceedButton = null;
+    var restoreRehearsalAbortButton = null;
+    var restoreRehearsalTable = null;
+    var restoreRehearsalTableCaption = null;
+    var restoreRehearsalMetricHeader = null;
+    var restoreRehearsalLiveHeader = null;
+    var restoreRehearsalSandboxHeader = null;
+    var restoreRehearsalDifferenceHeader = null;
+    var restoreRehearsalCloseButton = null;
+    var projectBackupsHeading = null;
+    var projectBackupsDescription = null;
+    var settingsShowAutoBackups = null;
+    var backupDiffToggleButton = null;
+    var backupDiffSection = null;
+    var backupDiffHeading = null;
+    var backupDiffIntro = null;
+    var backupDiffPrimaryLabel = null;
+    var backupDiffSecondaryLabel = null;
+    var backupDiffPrimarySelect = null;
+    var backupDiffSecondarySelect = null;
+    var backupDiffEmptyState = null;
+    var backupDiffSummary = null;
+    var backupDiffList = null;
+    var backupDiffListContainer = null;
+    var backupDiffNotesLabel = null;
+    var backupDiffNotes = null;
+    var backupDiffExportButton = null;
+    var backupDiffCloseButton = null;
+    var aboutVersionElem = null;
+    var supportLink = null;
+    var settingsSave = null;
+    var settingsCancel = null;
+    var featureSearch = null;
+    var featureSearchDropdown = null;
+
+    function initAppCorePart2DomReferences() {
+      if (typeof document === 'undefined') return;
+
+      settingsLogoInput = resolveGlobalElement('settingsLogo', 'settingsLogo');
+      if (settingsLogoInput) {
+        settingsLogoInput.addEventListener('change', () => {
+          const file = settingsLogoInput.files && settingsLogoInput.files[0];
+          if (!file) {
+            loadStoredLogoPreview();
+            return;
+          }
+          if (file.type !== 'image/svg+xml' && !file.name.toLowerCase().endsWith('.svg')) {
+            showNotification('error', texts[currentLang].logoFormatError || 'Unsupported logo format');
+            settingsLogoInput.value = '';
+            loadStoredLogoPreview();
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = () => {
+            renderSettingsLogoPreview(reader.result);
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      settingsHighContrast = document.getElementById("settingsHighContrast");
+      settingsReduceMotion = document.getElementById("settingsReduceMotion");
+      settingsRelaxedSpacing = document.getElementById("settingsRelaxedSpacing");
+      backupSettings = document.getElementById("backupSettings");
+      restoreSettings = document.getElementById("restoreSettings");
+      factoryResetButton = document.getElementById("factoryResetButton");
+      restoreSettingsInput = document.getElementById("restoreSettingsInput");
+      restoreRehearsalButton = document.getElementById("restoreRehearsalButton");
+      restoreRehearsalSection = document.getElementById("restoreRehearsalSection");
+      restoreRehearsalHeading = document.getElementById("restoreRehearsalHeading");
+      restoreRehearsalIntro = document.getElementById("restoreRehearsalIntro");
+      restoreRehearsalModeLabel = document.getElementById("restoreRehearsalModeLabel");
+      restoreRehearsalModeBackupText = document.getElementById("restoreRehearsalModeBackupText");
+      restoreRehearsalModeProjectText = document.getElementById("restoreRehearsalModeProjectText");
+      restoreRehearsalFileLabel = document.getElementById("restoreRehearsalFileLabel");
+      restoreRehearsalBrowse = document.getElementById("restoreRehearsalBrowse");
+      restoreRehearsalFileName = document.getElementById("restoreRehearsalFileName");
+      restoreRehearsalStatus = document.getElementById("restoreRehearsalStatus");
+      restoreRehearsalRuleHeading = document.getElementById("restoreRehearsalRuleHeading");
+      restoreRehearsalRuleIntro = document.getElementById("restoreRehearsalRuleIntro");
+      restoreRehearsalRuleEmpty = document.getElementById("restoreRehearsalRuleEmpty");
+      restoreRehearsalProceedButton = document.getElementById("restoreRehearsalProceed");
+      restoreRehearsalAbortButton = document.getElementById("restoreRehearsalAbort");
+      restoreRehearsalTable = document.getElementById("restoreRehearsalTable");
+      restoreRehearsalTableCaption = document.getElementById("restoreRehearsalTableCaption");
+      restoreRehearsalMetricHeader = document.getElementById("restoreRehearsalMetricHeader");
+      restoreRehearsalLiveHeader = document.getElementById("restoreRehearsalLiveHeader");
+      restoreRehearsalSandboxHeader = document.getElementById("restoreRehearsalSandboxHeader");
+      restoreRehearsalDifferenceHeader = document.getElementById("restoreRehearsalDifferenceHeader");
+      restoreRehearsalCloseButton = document.getElementById("restoreRehearsalClose");
+      projectBackupsHeading = document.getElementById("projectBackupsHeading");
+      projectBackupsDescription = document.getElementById("projectBackupsDescription");
+      settingsShowAutoBackups = document.getElementById("settingsShowAutoBackups");
+      backupDiffToggleButton = document.getElementById("backupDiffToggleButton");
+      backupDiffSection = document.getElementById("backupDiffSection");
+      backupDiffHeading = document.getElementById("backupDiffHeading");
+      backupDiffIntro = document.getElementById("backupDiffIntro");
+      backupDiffPrimaryLabel = document.getElementById("backupDiffPrimaryLabel");
+      backupDiffSecondaryLabel = document.getElementById("backupDiffSecondaryLabel");
+      backupDiffPrimarySelect = document.getElementById("backupDiffPrimary");
+      backupDiffSecondarySelect = document.getElementById("backupDiffSecondary");
+      backupDiffEmptyState = document.getElementById("backupDiffEmptyState");
+      backupDiffSummary = document.getElementById("backupDiffSummary");
+      backupDiffList = document.getElementById("backupDiffList");
+      backupDiffListContainer = document.getElementById("backupDiffListContainer");
+      backupDiffNotesLabel = document.getElementById("backupDiffNotesLabel");
+      backupDiffNotes = document.getElementById("backupDiffNotes");
+      backupDiffExportButton = document.getElementById("backupDiffExport");
+      backupDiffCloseButton = document.getElementById("backupDiffClose");
+      aboutVersionElem = document.getElementById("aboutVersion");
+      supportLink = document.getElementById("supportLink");
+      settingsSave = document.getElementById("settingsSave");
+      settingsCancel = document.getElementById("settingsCancel");
+
+      featureSearch = document.getElementById("featureSearch");
+      featureSearchDropdown = document.getElementById("featureSearchDropdown");
     }
-    var settingsHighContrast = document.getElementById("settingsHighContrast");
-    const settingsReduceMotion = document.getElementById("settingsReduceMotion");
-    const settingsRelaxedSpacing = document.getElementById("settingsRelaxedSpacing");
-    var backupSettings = document.getElementById("backupSettings");
-    var restoreSettings = document.getElementById("restoreSettings");
-    var factoryResetButton = document.getElementById("factoryResetButton");
-    var restoreSettingsInput = document.getElementById("restoreSettingsInput");
-    const restoreRehearsalButton = document.getElementById("restoreRehearsalButton");
-    const restoreRehearsalSection = document.getElementById("restoreRehearsalSection");
-    const restoreRehearsalHeading = document.getElementById("restoreRehearsalHeading");
-    const restoreRehearsalIntro = document.getElementById("restoreRehearsalIntro");
-    const restoreRehearsalModeLabel = document.getElementById("restoreRehearsalModeLabel");
-    const restoreRehearsalModeBackupText = document.getElementById("restoreRehearsalModeBackupText");
-    const restoreRehearsalModeProjectText = document.getElementById("restoreRehearsalModeProjectText");
-    const restoreRehearsalFileLabel = document.getElementById("restoreRehearsalFileLabel");
-    const restoreRehearsalBrowse = document.getElementById("restoreRehearsalBrowse");
-    const restoreRehearsalFileName = document.getElementById("restoreRehearsalFileName");
-    const restoreRehearsalStatus = document.getElementById("restoreRehearsalStatus");
-    const restoreRehearsalRuleHeading = document.getElementById("restoreRehearsalRuleHeading");
-    const restoreRehearsalRuleIntro = document.getElementById("restoreRehearsalRuleIntro");
-    const restoreRehearsalRuleEmpty = document.getElementById("restoreRehearsalRuleEmpty");
-    const restoreRehearsalProceedButton = document.getElementById("restoreRehearsalProceed");
-    const restoreRehearsalAbortButton = document.getElementById("restoreRehearsalAbort");
-    const restoreRehearsalTable = document.getElementById("restoreRehearsalTable");
-    const restoreRehearsalTableCaption = document.getElementById("restoreRehearsalTableCaption");
-    const restoreRehearsalMetricHeader = document.getElementById("restoreRehearsalMetricHeader");
-    const restoreRehearsalLiveHeader = document.getElementById("restoreRehearsalLiveHeader");
-    const restoreRehearsalSandboxHeader = document.getElementById("restoreRehearsalSandboxHeader");
-    const restoreRehearsalDifferenceHeader = document.getElementById("restoreRehearsalDifferenceHeader");
-    const restoreRehearsalCloseButton = document.getElementById("restoreRehearsalClose");
-    const projectBackupsHeading = document.getElementById("projectBackupsHeading");
-    const projectBackupsDescription = document.getElementById("projectBackupsDescription");
-    var settingsShowAutoBackups = document.getElementById("settingsShowAutoBackups");
-    var backupDiffToggleButton = document.getElementById("backupDiffToggleButton");
-    var backupDiffSection = document.getElementById("backupDiffSection");
-    var backupDiffHeading = document.getElementById("backupDiffHeading");
-    var backupDiffIntro = document.getElementById("backupDiffIntro");
-    var backupDiffPrimaryLabel = document.getElementById("backupDiffPrimaryLabel");
-    var backupDiffSecondaryLabel = document.getElementById("backupDiffSecondaryLabel");
-    var backupDiffPrimarySelect = document.getElementById("backupDiffPrimary");
-    var backupDiffSecondarySelect = document.getElementById("backupDiffSecondary");
-    var backupDiffEmptyState = document.getElementById("backupDiffEmptyState");
-    var backupDiffSummary = document.getElementById("backupDiffSummary");
-    var backupDiffList = document.getElementById("backupDiffList");
-    var backupDiffListContainer = document.getElementById("backupDiffListContainer");
-    var backupDiffNotesLabel = document.getElementById("backupDiffNotesLabel");
-    var backupDiffNotes = document.getElementById("backupDiffNotes");
-    var backupDiffExportButton = document.getElementById("backupDiffExport");
-    var backupDiffCloseButton = document.getElementById("backupDiffClose");
-    const aboutVersionElem = document.getElementById("aboutVersion");
-    const supportLink = document.getElementById("supportLink");
-    var settingsSave = document.getElementById("settingsSave");
-    var settingsCancel = document.getElementById("settingsCancel");
-    var featureSearch =
-      typeof document !== 'undefined' ? document.getElementById("featureSearch") : null;
-    var featureSearchDropdown =
-      typeof document !== 'undefined' ? document.getElementById("featureSearchDropdown") : null;
+
+    if (typeof document !== 'undefined') {
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initAppCorePart2DomReferences);
+      } else {
+        initAppCorePart2DomReferences();
+      }
+    }
+
     var featureMap = new Map();
     var actionMap = new Map();
     const featureSearchEntryIndex = new Map();
@@ -16574,6 +16647,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     };
 
     writeCoreScopeValue('setBatteryPlates', setBatteryPlatesLocal);
+    ensureGlobalFunctionBinding('setBatteryPlates', setBatteryPlatesLocal);
 
     function getBatteryPlates() {
       return Array.from(batteryPlatesContainer.querySelectorAll('.form-row'))
@@ -16585,6 +16659,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     writeCoreScopeValue('getBatteryPlates', getBatteryPlates);
+    ensureGlobalFunctionBinding('getBatteryPlates', getBatteryPlates);
 
     function clearBatteryPlates() {
       setBatteryPlatesLocal([]);

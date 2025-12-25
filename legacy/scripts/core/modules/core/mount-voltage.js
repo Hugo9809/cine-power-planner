@@ -680,4 +680,5 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === 'object' && module && module.exports) {
     module.exports = namespace;
   }
+  console.log('mount-voltage.js: Execution complete');
 })();

@@ -1433,7 +1433,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         if (scope.CORE_GLOBAL_SCOPE) {
           candidates.push(scope.CORE_GLOBAL_SCOPE);
         }
-        if (scope.DEVICE_GLOBAL_SCOPE) {
+        if (typeof scope.DEVICE_GLOBAL_SCOPE !== 'undefined' && scope.DEVICE_GLOBAL_SCOPE) {
           candidates.push(scope.DEVICE_GLOBAL_SCOPE);
         }
       }
@@ -1748,6 +1748,635 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     return typeof value === 'undefined' || value === null || _typeof(value) === 'object';
   },
   fallback: null
+});
+function loaderCreateUnifyDevicesUtility() {
+  function loaderNormalizeVideoTypeLocal(str, key) {
+    if (!str) return '';
+    var k = key || str.toLowerCase();
+    if (k.indexOf('12g') !== -1) return '12G-SDI';
+    if (k.indexOf('6g') !== -1) return '6G-SDI';
+    if (k.indexOf('3g') !== -1) return '3G-SDI';
+    if (k.indexOf('hd') !== -1 && k.indexOf('sdi') !== -1) return '3G-SDI';
+    if (k.indexOf('mini') !== -1 && k.indexOf('bnc') !== -1) return 'Mini BNC';
+    if (k.indexOf('micro') !== -1 && k.indexOf('hdmi') !== -1) return 'Micro HDMI';
+    if (k.indexOf('mini') !== -1 && k.indexOf('hdmi') !== -1) return 'Mini HDMI';
+    if (k.indexOf('hdmi') !== -1) return 'HDMI';
+    if (k.indexOf('displayport') !== -1) return 'DisplayPort';
+    if (k.indexOf('display') !== -1 && k.indexOf('port') !== -1) return 'DisplayPort';
+    if (k.indexOf('dp') === 0 && k.length === 2) return 'DisplayPort';
+    return '';
+  }
+  var FIZ_CONNECTOR_MAP = {
+    'lemo 4-pin (lbus)': 'LBUS (LEMO 4-pin)',
+    'lbus (lemo 4-pin)': 'LBUS (LEMO 4-pin)',
+    'lbus (4-pin lemo)': 'LBUS (LEMO 4-pin)',
+    'lbus (4-pin lemo for motors)': 'LBUS (LEMO 4-pin)',
+    '4-pin lemo (lbus)': 'LBUS (LEMO 4-pin)',
+    'lemo 4-pin': 'LEMO 4-pin',
+    '4-pin lemo': 'LEMO 4-pin',
+    'lemo 7-pin': 'LEMO 7-pin',
+    'lemo 7-pin 1b': 'LEMO 7-pin',
+    '7-pin lemo': 'LEMO 7-pin',
+    '7-pin lemo (lcs)': 'LEMO 7-pin (LCS)',
+    '7-pin lemo (cam)': 'LEMO 7-pin (CAM)',
+    'ext (lemo 7-pin)': 'EXT LEMO 7-pin',
+    'hirose 12pin': 'Hirose 12-pin',
+    '12-pin hirose': 'Hirose 12-pin',
+    '12pin broadcast connector': 'Hirose 12-pin',
+    'lens 12 pin': 'Hirose 12-pin',
+    'lens terminal 12-pin': 'Hirose 12-pin',
+    'lens terminal 12-pin jack': 'Hirose 12-pin',
+    'lens terminal': 'Hirose 12-pin',
+    'usb type-c': 'USB-C',
+    'usb-c': 'USB-C',
+    'usb-c (usb 3.2 / 3.1 gen 1)': 'USB-C',
+    'usb-c / gigabit ethernet (via adapter)': 'USB-C',
+    'active ef mount': 'Active EF mount',
+    'lanc (2.5mm stereo mini jack)': 'LANC',
+    '2.5 mm sub-mini (lanc)': 'LANC',
+    'remote a (2.5mm)': 'REMOTE A connector',
+    'remote control terminal': 'REMOTE A connector',
+    'remote 8 pin': 'REMOTE B connector'
+  };
+  var VIEWFINDER_TYPE_MAP = {
+    'dsmc3 red touch 7" lcd (optional)': 'RED Touch 7" LCD (Optional)',
+    'red touch 7.0" lcd (optional)': 'RED Touch 7" LCD (Optional)',
+    'lcd touch panel': 'LCD touchscreen',
+    'lcd touchscreen': 'LCD touchscreen',
+    'native lcd capacitive touchscreen': 'LCD touchscreen',
+    'integrated touchscreen lcd': 'LCD touchscreen',
+    'free-angle lcd': 'Vari-angle LCD',
+    'lcd monitor (native)': 'Integrated LCD monitor',
+    'native lcd viewfinder': 'Integrated LCD monitor',
+    'lcd monitor lm-v2 (supplied)': 'LCD Monitor LM-V2',
+    'integrated main monitor': 'Integrated LCD monitor',
+    'optional evf-v70 viewfinder': 'EVF-V70 (Optional)',
+    'optional evf-v50': 'EVF-V50 (Optional)',
+    'optional oled viewfinder': 'OLED EVF (Optional)',
+    'blackmagic pocket cinema camera pro evf (optional)': 'Blackmagic Pro EVF (Optional)',
+    'external backlit lcd status display': 'LCD status display',
+    'built-in fold-out lcd': 'Fold-out LCD',
+    'oled lvf (live view finder)': 'OLED EVF',
+    'lcd capacitive touchscreen': 'LCD touchscreen',
+    'lemo 26 pin': 'LEMO 26-pin port'
+  };
+  var POWER_PORT_TYPE_MAP = {
+    'lemo 8-pin (dc in / bat)': 'Bat LEMO 8-pin',
+    'lemo 8-pin (bat)': 'Bat LEMO 8-pin',
+    'bat (lemo 8-pin)': 'Bat LEMO 8-pin',
+    'lemo 8-pin': 'Bat LEMO 8-pin',
+    '2-pin dc-input': '2-pin DC-IN',
+    'dc-': 'DC IN',
+    'dc': 'DC IN',
+    '2-pin xlr': 'XLR 2-pin',
+    '2-pin locking connector': 'LEMO 2-pin',
+    '2-pin locking connector / 2-pin lemo': 'LEMO 2-pin',
+    '4-pin xlr / dc in 12v': 'XLR 4-pin',
+    '4-pin xlr / v-lock': 'XLR 4-pin',
+    'xlr 4-pin jack': 'XLR 4-pin',
+    'xlr 4-pin (main input)': 'XLR 4-pin',
+    'xlr-type 4 pin (male) / square-shaped 5 pin connector (battery)': 'XLR 4-pin / Square 5-pin',
+    '12-pin molex connector (at battery plate rear) / 4-pin xlr (external power)': 'Molex 12-pin / XLR 4-pin',
+    'battery slot': 'Battery Slot',
+    'usb-c': 'USB-C',
+    'usb type-c': 'USB-C',
+    'usb-c pd': 'USB-C PD',
+    'usb-c (power delivery)': 'USB-C PD',
+    'usb-c pd,dc coupler': 'USB-C PD / DC Coupler',
+    'dc coupler': 'DC Coupler',
+    'dc coupler (dr-e6c)': 'DC Coupler',
+    'dc input': 'DC IN',
+    'dc barrel': 'DC Barrel',
+    'dc (barrel)': 'DC Barrel',
+    'locking dc barrel': 'DC Barrel',
+    'dc 24v terminal': 'DC Barrel',
+    'weipu sf610/s2 (12vdc) input': 'Weipu SF610/S2',
+    '6-pin 1b dc-in / tb50 battery mount': '6-pin 1B DC-IN',
+    '6-pin 1b dc-,tb50': '6-pin 1B DC-IN'
+  };
+  function normalizeFromMap(map, str) {
+    if (!str) return '';
+    var s = String(str).replace(/[™®]/g, '').trim();
+    var k = s.toLowerCase();
+    if (Object.prototype.hasOwnProperty.call(map, k)) {
+      return map[k];
+    }
+    return s || '';
+  }
+  function loaderNormalizeFizConnectorType(type) {
+    return normalizeFromMap(FIZ_CONNECTOR_MAP, type);
+  }
+  function loaderNormalizeViewfinderType(type) {
+    return normalizeFromMap(VIEWFINDER_TYPE_MAP, type);
+  }
+  function loaderNormalizePowerPortType(type) {
+    return normalizeFromMap(POWER_PORT_TYPE_MAP, type);
+  }
+  function normalizePowerPortType(type) {
+    if (!type) return [];
+    function toArray(val) {
+      var normalized = loaderNormalizePowerPortType(val);
+      if (!normalized) return [];
+      var parts = normalized.split(/[/,]/);
+      var results = [];
+      for (var i = 0; i < parts.length; i++) {
+        var p = parts[i].trim();
+        var n = loaderNormalizePowerPortType(p);
+        var final = n && n.trim() || '';
+        if (final) results.push(final);
+      }
+      return results;
+    }
+    if (Array.isArray(type)) {
+      var flat = [];
+      for (var j = 0; j < type.length; j++) {
+        var sub = toArray(type[j]);
+        flat = flat.concat(sub);
+      }
+      return flat;
+    }
+    return toArray(type);
+  }
+  function ensureList(list, defaults) {
+    if (!Array.isArray(list)) return [];
+    var results = [];
+    for (var i = 0; i < list.length; i++) {
+      var item = list[i];
+      var obj = {};
+      if (defaults) {
+        for (var k in defaults) {
+          obj[k] = defaults[k];
+        }
+      }
+      if (typeof item === 'string') {
+        obj.type = item;
+      } else if (item && _typeof(item) === 'object') {
+        for (var key in item) {
+          obj[key] = item[key];
+        }
+      }
+      results.push(obj);
+    }
+    return results;
+  }
+  function fixPowerInput(dev) {
+    if (!dev) return;
+    if (dev.powerInput && (!dev.power || !dev.power.input)) {
+      dev.power = dev.power || {};
+      dev.power.input = {
+        type: normalizePowerPortType(dev.powerInput)
+      };
+      try {
+        delete dev.powerInput;
+      } catch (inputError) {
+        void inputError;
+        dev.powerInput = undefined;
+      }
+    }
+    var input = dev.power && dev.power.input;
+    if (!input) return;
+    function normalizeEntry(it) {
+      if (typeof it === 'string') {
+        return {
+          type: normalizePowerPortType(it)
+        };
+      }
+      if (it) {
+        var pType = it.portType;
+        var tType = it.type;
+        var rest = {};
+        for (var k in it) {
+          if (k !== 'portType' && k !== 'type') rest[k] = it[k];
+        }
+        var typeField = !tType && pType ? pType : tType;
+        rest.type = typeField ? normalizePowerPortType(typeField) : [];
+        return rest;
+      }
+      return {
+        type: []
+      };
+    }
+    if (Array.isArray(input)) {
+      var newInput = [];
+      for (var i = 0; i < input.length; i++) {
+        newInput.push(normalizeEntry(input[i]));
+      }
+      dev.power.input = newInput;
+    } else {
+      dev.power.input = normalizeEntry(input);
+    }
+  }
+  var VIDEO_OUTPUT_TYPES = {
+    '3G-SDI': true,
+    '6G-SDI': true,
+    '12G-SDI': true,
+    'Mini BNC': true,
+    'HDMI': true,
+    'Mini HDMI': true,
+    'Micro HDMI': true,
+    'DisplayPort': true
+  };
+  function unifyDevices(devicesData, options) {
+    if (!devicesData || _typeof(devicesData) !== 'object') return devicesData;
+    var force = !!(options && options.force);
+    var NORMALIZED_FLAG_KEY = '__normalized';
+    if (!force && devicesData[NORMALIZED_FLAG_KEY]) {
+      return devicesData;
+    }
+    var cameras = devicesData.cameras || {};
+    var camKeys = Object.keys(cameras);
+    for (var ckIndex = 0; ckIndex < camKeys.length; ckIndex++) {
+      var camKey = camKeys[ckIndex];
+      var cam = cameras[camKey];
+      if (!cam) continue;
+      if (cam.power && cam.power.input && typeof cam.power.input.powerDrawWatts !== 'undefined') {
+        try {
+          delete cam.power.input.powerDrawWatts;
+        } catch (wattsError) {
+          void wattsError;
+        }
+      }
+      fixPowerInput(cam);
+      if (cam.power && Array.isArray(cam.power.batteryPlateSupport)) {
+        var bps = [];
+        for (var b = 0; b < cam.power.batteryPlateSupport.length; b++) {
+          var it = cam.power.batteryPlateSupport[b];
+          if (typeof it === 'string') {
+            var m = it.match(/([^()]+)(?:\(([^)]+)\))?(?:\s*-\s*(.*))?/);
+            var type = m ? m[1].trim() : it;
+            var mount = m && m[2] ? m[2].trim().toLowerCase() : '';
+            if (!mount) {
+              mount = /adapted|via adapter/i.test(it) ? 'adapted' : 'native';
+            } else if (/via adapter/i.test(mount)) {
+              mount = 'adapted';
+            }
+            var notes = m && m[3] ? m[3].trim() : /via adapter/i.test(it) ? 'via adapter' : '';
+            bps.push({
+              type: type,
+              mount: mount,
+              notes: notes
+            });
+          } else {
+            var mnt = (it.mount ? it.mount : it.native ? 'native' : it.adapted ? 'adapted' : 'native').toLowerCase();
+            bps.push({
+              type: it.type || '',
+              mount: mnt,
+              notes: it.notes || ''
+            });
+          }
+        }
+        cam.power.batteryPlateSupport = bps;
+      }
+      if (cam.power) {
+        cam.power.powerDistributionOutputs = ensureList(cam.power.powerDistributionOutputs, {
+          type: '',
+          voltage: '',
+          current: '',
+          wattage: null,
+          notes: ''
+        });
+      }
+      var videoOutputs = ensureList(cam.videoOutputs, {
+        type: '',
+        notes: ''
+      });
+      var newVideoOutputs = [];
+      for (var v = 0; v < videoOutputs.length; v++) {
+        var vo = videoOutputs[v];
+        var norm = loaderNormalizeVideoTypeLocal(vo.type);
+        if (Object.prototype.hasOwnProperty.call(VIDEO_OUTPUT_TYPES, norm) && VIDEO_OUTPUT_TYPES[norm]) {
+          var countVal = parseInt(vo.count, 10);
+          var num = !isNaN(countVal) && isFinite(countVal) && countVal > 0 ? countVal : 1;
+          var base = {};
+          for (var vok in vo) {
+            if (vok !== 'count') base[vok] = vo[vok];
+          }
+          base.type = norm;
+          base.notes = vo.notes || '';
+          for (var k = 0; k < num; k++) {
+            var copy = {};
+            for (var bk in base) copy[bk] = base[bk];
+            newVideoOutputs.push(copy);
+          }
+        }
+      }
+      cam.videoOutputs = newVideoOutputs;
+      var fizConnectors = ensureList(cam.fizConnectors, {
+        type: '',
+        notes: ''
+      });
+      var newFizConnectors = [];
+      for (var f = 0; f < fizConnectors.length; f++) {
+        var fc = fizConnectors[f];
+        var fcObj = {};
+        for (var fk in fc) fcObj[fk] = fc[fk];
+        fcObj.type = loaderNormalizeFizConnectorType(fc.type);
+        newFizConnectors.push(fcObj);
+      }
+      cam.fizConnectors = newFizConnectors;
+      var viewfinders = ensureList(cam.viewfinder, {
+        type: '',
+        resolution: '',
+        connector: '',
+        notes: ''
+      });
+      var newViewfinders = [];
+      for (var vf = 0; vf < viewfinders.length; vf++) {
+        var vfi = viewfinders[vf];
+        var vfObj = {};
+        for (var vfk in vfi) vfObj[vfk] = vfi[vfk];
+        vfObj.type = loaderNormalizeViewfinderType(vfi.type);
+        newViewfinders.push(vfObj);
+      }
+      cam.viewfinder = newViewfinders;
+      var recordingMedia = ensureList(cam.recordingMedia, {
+        type: '',
+        notes: ''
+      });
+      var newRecordingMedia = [];
+      for (var rm = 0; rm < recordingMedia.length; rm++) {
+        var r = recordingMedia[rm];
+        var rType = r.type || '';
+        var rNotes = r.notes || '';
+        var match = rType.match(/^(.*?)(?:\((.*)\))?$/);
+        if (match) {
+          rType = match[1].trim();
+          rNotes = rNotes || (match[2] ? match[2].trim() : '');
+        }
+        if (/^SD UHS-II$/i.test(rType)) {
+          rType = 'SD Card';
+          rNotes = rNotes ? rNotes + '; UHS-II' : 'UHS-II';
+        } else if (/^SD \(UHS-II\/UHS-I\)$/i.test(rType)) {
+          rType = 'SD Card';
+          rNotes = 'UHS-II/UHS-I';
+        } else if (rType === 'CFast 2.0 card slots') {
+          rType = 'CFast 2.0';
+          rNotes = rNotes || 'Dual Slots';
+        } else if (rType === 'CFexpress Type B (Dual Slots)') {
+          rType = 'CFexpress Type B';
+          rNotes = rNotes || 'Dual Slots';
+        } else if (rType === 'CFexpress Type B (via adapter)') {
+          rType = 'CFexpress Type B';
+          rNotes = rNotes || 'via adapter';
+        } else if (/^SD UHS-II \(Dual Slots\)$/i.test(rType)) {
+          rType = 'SD Card';
+          rNotes = rNotes ? rNotes + '; UHS-II (Dual Slots)' : 'UHS-II (Dual Slots)';
+        } else if (rType === 'SD Card (Dual Slots)') {
+          rType = 'SD Card';
+          rNotes = rNotes || 'Dual Slots';
+        } else if (rType === 'SD card slot (for proxy/backup)') {
+          rType = 'SD Card';
+          rNotes = rNotes || 'for proxy/backup';
+        }
+        newRecordingMedia.push({
+          type: rType,
+          notes: rNotes
+        });
+      }
+      cam.recordingMedia = newRecordingMedia;
+      cam.timecode = ensureList(cam.timecode, {
+        type: '',
+        notes: ''
+      });
+      var lensMount = ensureList(cam.lensMount, {
+        type: '',
+        mount: 'native',
+        notes: ''
+      });
+      var newLensMount = [];
+      for (var lm = 0; lm < lensMount.length; lm++) {
+        var lmi = lensMount[lm];
+        newLensMount.push({
+          type: lmi.type,
+          mount: lmi.mount ? lmi.mount.toLowerCase() : 'native',
+          notes: lmi.notes || ''
+        });
+      }
+      var uniqueLensMount = [];
+      for (var ul = 0; ul < newLensMount.length; ul++) {
+        var item = newLensMount[ul];
+        var exists = false;
+        for (var u = 0; u < uniqueLensMount.length; u++) {
+          var ex = uniqueLensMount[u];
+          if (ex.type === item.type && ex.mount === item.mount && ex.notes === item.notes) {
+            exists = true;
+            break;
+          }
+        }
+        if (!exists) uniqueLensMount.push(item);
+      }
+      cam.lensMount = uniqueLensMount;
+    }
+    var lenses = devicesData.lenses || {};
+    var lensKeys = Object.keys(lenses);
+    for (var lKeyIndex = 0; lKeyIndex < lensKeys.length; lKeyIndex++) {
+      var lKey = lensKeys[lKeyIndex];
+      var lens = lenses[lKey];
+      if (!lens || _typeof(lens) !== 'object') continue;
+      var normalizeMountEntry = function normalizeMountEntry(entry) {
+        if (!entry) return null;
+        if (typeof entry === 'string') {
+          var trimmed = entry.trim();
+          if (!trimmed) return null;
+          return {
+            type: trimmed,
+            mount: 'native'
+          };
+        }
+        var type = typeof entry.type === 'string' ? entry.type.trim() : '';
+        if (!type) return null;
+        var status = typeof entry.mount === 'string' ? entry.mount.trim().toLowerCase() : '';
+        return {
+          type: type,
+          mount: status === 'adapted' ? 'adapted' : 'native'
+        };
+      };
+      var existingMountOptions = lens.mountOptions;
+      var normalizedOptions = [];
+      if (Array.isArray(existingMountOptions)) {
+        for (var eo = 0; eo < existingMountOptions.length; eo++) {
+          var ne = normalizeMountEntry(existingMountOptions[eo]);
+          if (ne) normalizedOptions.push(ne);
+        }
+      } else if (existingMountOptions && _typeof(existingMountOptions) === 'object') {
+        var ne0 = normalizeMountEntry(existingMountOptions);
+        if (ne0) normalizedOptions.push(ne0);
+      }
+      if (!normalizedOptions.length && Array.isArray(lens.lensMount)) {
+        for (var lm0 = 0; lm0 < lens.lensMount.length; lm0++) {
+          var ne1 = normalizeMountEntry(lens.lensMount[lm0]);
+          if (ne1) normalizedOptions.push(ne1);
+        }
+        try {
+          delete lens.lensMount;
+        } catch (lensMountError) {
+          void lensMountError;
+        }
+      }
+      if (!normalizedOptions.length && typeof lens.mount === 'string') {
+        var mt = lens.mount.trim();
+        if (mt) {
+          normalizedOptions.push({
+            type: mt,
+            mount: 'native'
+          });
+        }
+      }
+      var dedupedOptions = [];
+      for (var no = 0; no < normalizedOptions.length; no++) {
+        var opt = normalizedOptions[no];
+        if (!opt || !opt.type) continue;
+        var ms = opt.mount === 'adapted' ? 'adapted' : 'native';
+        var found = false;
+        for (var doKey = 0; doKey < dedupedOptions.length; doKey++) {
+          var dOpt = dedupedOptions[doKey];
+          if (dOpt.type === opt.type && dOpt.mount === ms) {
+            found = true;
+            break;
+          }
+        }
+        if (!found) dedupedOptions.push({
+          type: opt.type,
+          mount: ms
+        });
+      }
+      lens.mountOptions = dedupedOptions;
+      if (lens.mountOptions.length) {
+        var primary = null;
+        for (var pm = 0; pm < lens.mountOptions.length; pm++) {
+          var p = lens.mountOptions[pm];
+          if (p && p.mount === 'native' && p.type) {
+            primary = p;
+            break;
+          }
+        }
+        if (!primary) primary = lens.mountOptions[0];
+        var primaryType = primary && primary.type ? primary.type : '';
+        if (primaryType) {
+          lens.mount = primaryType;
+        } else if (typeof lens.mount === 'string') {
+          lens.mount = lens.mount.trim();
+        }
+      } else if (typeof lens.mount === 'string') {
+        lens.mount = lens.mount.trim();
+        if (!lens.mount) {
+          try {
+            delete lens.mount;
+          } catch (mountDelError) {
+            void mountDelError;
+          }
+        }
+      }
+    }
+    ['monitors', 'video', 'viewfinders'].forEach(function (key) {
+      if (devicesData[key]) {
+        var vals = devicesData[key];
+        for (var vk in vals) fixPowerInput(vals[vk]);
+      }
+    });
+    var fiz = devicesData.fiz || {};
+    ['motors', 'controllers', 'distance'].forEach(function (key) {
+      if (fiz[key]) {
+        var vals = fiz[key];
+        for (var fk in vals) fixPowerInput(vals[fk]);
+      }
+    });
+    var fizMotors = fiz.motors || {};
+    var fmkKeys = Object.keys(fizMotors);
+    for (var fmkI = 0; fmkI < fmkKeys.length; fmkI++) {
+      var fmk = fmkKeys[fmkI];
+      var fm = fizMotors[fmk];
+      if (!fm) continue;
+      if (fm.connector && !fm.fizConnector) {
+        fm.fizConnector = fm.connector;
+        try {
+          delete fm.connector;
+        } catch (e) {
+          void e;
+        }
+      }
+      if (fm.fizConnector) {
+        fm.fizConnector = loaderNormalizeFizConnectorType(fm.fizConnector);
+      }
+    }
+    var fizControllers = fiz.controllers || {};
+    var fckKeys = Object.keys(fizControllers);
+    for (var fckI = 0; fckI < fckKeys.length; fckI++) {
+      var fck = fckKeys[fckI];
+      var c = fizControllers[fck];
+      if (!c) continue;
+      if (c.FIZ_connector && !c.fizConnector && !c.fizConnectors) {
+        c.fizConnector = c.FIZ_connector;
+        try {
+          delete c.FIZ_connector;
+        } catch (e) {
+          void e;
+        }
+      }
+      if (Array.isArray(c.fizConnectors)) {
+        var newCtrlFc = [];
+        for (var ci = 0; ci < c.fizConnectors.length; ci++) {
+          var fcItem = c.fizConnectors[ci];
+          if (!fcItem) {
+            newCtrlFc.push({
+              type: ''
+            });
+            continue;
+          }
+          var cType = loaderNormalizeFizConnectorType(fcItem.type || fcItem);
+          var cNotes = fcItem.notes || undefined;
+          if (cNotes) newCtrlFc.push({
+            type: cType,
+            notes: cNotes
+          });else newCtrlFc.push({
+            type: cType
+          });
+        }
+        c.fizConnectors = newCtrlFc;
+      } else if (c.fizConnector) {
+        var parts = String(c.fizConnector).split(',');
+        var newCtrlFc2 = [];
+        for (var pi = 0; pi < parts.length; pi++) {
+          var s = parts[pi].trim();
+          if (s) newCtrlFc2.push({
+            type: loaderNormalizeFizConnectorType(s)
+          });
+        }
+        c.fizConnectors = newCtrlFc2;
+        try {
+          delete c.fizConnector;
+        } catch (e) {
+          void e;
+        }
+      } else {
+        c.fizConnectors = [];
+      }
+    }
+    try {
+      if (typeof Object.defineProperty === 'function') {
+        Object.defineProperty(devicesData, NORMALIZED_FLAG_KEY, {
+          configurable: true,
+          enumerable: false,
+          value: true,
+          writable: true
+        });
+      } else {
+        devicesData[NORMALIZED_FLAG_KEY] = true;
+      }
+    } catch (defineNormalizedError) {
+      void defineNormalizedError;
+      devicesData[NORMALIZED_FLAG_KEY] = true;
+    }
+    return devicesData;
+  }
+  return unifyDevices;
+}
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'unifyDevices',
+  validator: function validator(value) {
+    return typeof value === 'function';
+  },
+  fallback: loaderCreateUnifyDevicesUtility
 });
 (function initialiseCriticalGlobals() {
   var scope = resolveCriticalGlobalScope();
@@ -3252,10 +3881,10 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     });
   }
   var modernScriptBundle = {
-    core: ['src/scripts/globalthis-polyfill.js', 'src/scripts/modules/base.js', 'src/scripts/modules/registry.js', 'src/data/devices/index.js', {
-      parallel: ['src/data/rental-houses.js', 'src/data/devices/cameras.js', 'src/data/devices/monitors.js', 'src/data/devices/video.js', 'src/data/devices/fiz.js', 'src/data/devices/batteries.js', 'src/data/devices/batteryHotswaps.js', 'src/data/devices/chargers.js', 'src/data/devices/cages.js', 'src/data/devices/gearList.js', 'src/data/devices/recordingMedia.js', 'src/data/devices/wirelessReceivers.js', 'src/scripts/translations/en.js', 'src/vendor/lz-string.min.js', 'src/scripts/auto-gear-weight.js', 'src/scripts/modules/environment-bridge.js', 'src/scripts/modules/runtime-environment-helpers.js', 'src/scripts/modules/globals.js', 'src/scripts/modules/localization.js', 'src/scripts/modules/offline.js']
-    }, 'src/scripts/storage.js', 'src/scripts/translations.js', 'src/scripts/modules/core-shared.js', 'src/scripts/modules/core/runtime.js', 'src/scripts/modules/core/localization.js', 'src/scripts/modules/core/pink-mode.js', 'src/scripts/modules/core/device-schema.js', 'src/scripts/modules/core/project-intelligence.js', 'src/scripts/modules/core/persistence-guard.js', 'src/scripts/modules/core/mount-voltage.js', 'src/scripts/modules/core/experience.js', 'src/scripts/legacy-shims.js', 'src/scripts/modules/logging.js', 'src/scripts/modules/settings-and-appearance.js', 'src/scripts/modules/features/auto-gear-rules.js', 'src/scripts/modules/features/connection-diagram.js', 'src/scripts/modules/features/backup.js', 'src/scripts/modules/features/onboarding-loader-hook.js', 'src/scripts/modules/features/print-workflow.js', 'src/scripts/modules/ui.js', 'src/scripts/modules/runtime-guard.js', 'src/scripts/modules/results.js', 'src/scripts/modules/app-core/bootstrap.js', 'src/scripts/modules/app-core/localization.js', 'src/scripts/app-core-text.js', 'src/scripts/app-core-runtime-scopes.js', 'src/scripts/app-core-runtime-support.js', 'src/scripts/app-core-runtime-helpers.js', 'src/scripts/runtime/bootstrap.js', 'src/scripts/app-core-environment.js', 'src/scripts/modules/icons.js', 'src/scripts/modules/device-normalization.js', 'src/scripts/app-core-bootstrap.js', 'src/scripts/app-core-runtime-shared.js', 'src/scripts/app-core-runtime-candidate-scopes.js', 'src/scripts/app-core-runtime-global-tools.js', 'src/scripts/app-core-ui-helpers.js', 'src/scripts/app-core-runtime-ui.js', 'src/scripts/auto-gear/normalizers.js', 'src/scripts/auto-gear/storage.js', 'src/scripts/auto-gear/ui.js', 'src/scripts/own-gear/store.js', 'src/scripts/own-gear/view.js', 'src/scripts/contacts/profile.js', 'src/scripts/contacts/list.js', 'src/scripts/legacy-globals-shim.js?v=6', 'src/scripts/app-core-new-1.js?v=6', 'src/scripts/app-core-new-2.js?v=6', 'src/scripts/app-events.js?v=6', 'src/scripts/app-setups.js?v=6', 'src/scripts/app-session.js?v=6', 'src/scripts/modules/persistence.js', 'src/scripts/modules/runtime.js', 'src/scripts/script.js'],
-    deferred: ['src/scripts/auto-gear-monitoring.js', 'src/scripts/overview.js', 'src/scripts/autosave-overlay.js', 'src/scripts/modules/features/onboarding-tour.js']
+    core: ['src/scripts/shims/globalthis-polyfill.js', 'src/scripts/modules/base.js', 'src/scripts/modules/registry.js', 'src/data/devices/index.js', {
+      parallel: ['src/data/rental-houses.js', 'src/data/devices/cameras.js', 'src/data/devices/monitors.js', 'src/data/devices/video.js', 'src/data/devices/fiz.js', 'src/data/devices/batteries.js', 'src/data/devices/batteryHotswaps.js', 'src/data/devices/chargers.js', 'src/data/devices/cages.js', 'src/data/devices/gearList.js', 'src/data/devices/recordingMedia.js', 'src/data/devices/wirelessReceivers.js', 'src/scripts/translations/en.js', 'src/vendor/lz-string.min.js', 'src/scripts/auto-gear/weight.js', 'src/scripts/modules/environment-bridge.js', 'src/scripts/modules/runtime-environment-helpers.js', 'src/scripts/modules/globals.js', 'src/scripts/modules/localization.js', 'src/scripts/modules/offline.js']
+    }, 'src/scripts/storage.js', 'src/scripts/translations.js', 'src/scripts/modules/core-shared.js', 'src/scripts/core/modules/core/runtime.js', 'src/scripts/core/modules/core/localization.js', 'src/scripts/core/modules/core/pink-mode.js?v=10', 'src/scripts/core/modules/core/device-schema.js', 'src/scripts/core/modules/core/project-intelligence.js', 'src/scripts/core/modules/core/persistence-guard.js', 'src/scripts/core/modules/core/mount-voltage.js', 'src/scripts/core/modules/core/experience.js', 'src/scripts/shims/legacy-shims.js', 'src/scripts/modules/logging.js', 'src/scripts/modules/settings-and-appearance.js?v=10', 'src/scripts/modules/features/feature-search-normalization.js', 'src/scripts/modules/features/auto-gear-rules.js', 'src/scripts/modules/features/connection-diagram.js', 'src/scripts/modules/features/backup.js', 'src/scripts/modules/features/onboarding-loader-hook.js', 'src/scripts/modules/features/print-workflow.js', 'src/scripts/modules/ui.js', 'src/scripts/modules/runtime-guard.js', 'src/scripts/modules/results.js', 'src/scripts/core/modules/app-core/bootstrap.js', 'src/scripts/core/modules/app-core/localization.js', 'src/scripts/core/app-core-text.js', 'src/scripts/core/app-core-runtime-scopes.js', 'src/scripts/core/app-core-runtime-support.js', 'src/scripts/core/app-core-runtime-helpers.js', 'src/scripts/runtime/bootstrap.js', 'src/scripts/core/app-core-environment.js', 'src/scripts/modules/icons.js', 'src/scripts/modules/device-normalization.js', 'src/scripts/core/app-core-bootstrap.js', 'src/scripts/core/app-core-runtime-shared.js', 'src/scripts/core/app-core-runtime-candidate-scopes.js', 'src/scripts/core/app-core-runtime-global-tools.js', 'src/scripts/core/app-core-ui-helpers.js', 'src/scripts/core/app-core-runtime-ui.js', 'src/scripts/auto-gear/normalizers.js', 'src/scripts/auto-gear/storage.js', 'src/scripts/auto-gear/ui.js', 'src/scripts/own-gear/store.js', 'src/scripts/own-gear/view.js', 'src/scripts/contacts/profile.js', 'src/scripts/contacts/list.js', 'src/scripts/shims/legacy-globals-shim.js?v=10', 'src/scripts/core/app-core-new-1.js?v=10', 'src/scripts/core/app-core-new-2.js?v=10', 'src/scripts/core/app-events.js?v=10', 'src/scripts/core/app-setups.js?v=10', 'src/scripts/core/app-session.js?v=10', 'src/scripts/modules/persistence.js', 'src/scripts/modules/runtime.js', 'src/scripts/script.js'],
+    deferred: ['src/scripts/auto-gear/monitoring.js', 'src/scripts/overview.js', 'src/scripts/autosave-overlay.js', 'src/scripts/modules/features/onboarding-tour.js']
   };
   var legacyScriptBundle = {
     core: ['legacy/polyfills/core-js-bundle.min.js', 'legacy/polyfills/regenerator-runtime.js', 'src/vendor/regenerator-runtime-fallback.js', 'legacy/scripts/globalthis-polyfill.js', 'legacy/data/devices/index.js', 'legacy/data/rental-houses.js', {

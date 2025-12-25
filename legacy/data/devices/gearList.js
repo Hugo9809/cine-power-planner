@@ -590,7 +590,542 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
       }
     },
     "videoAssist": {},
-    "media": {},
+    "media": {
+      "codex": {
+        "ARRI Codex Compact Drive 1TB (Orange)": {
+          "brand": "ARRI",
+          "model": "Compact Drive 1TB",
+          "capacityGB": 960,
+          "type": "Codex Compact Drive",
+          "notes": "Orange Ring. Supports all formats.",
+          "weight_g": 85
+        },
+        "ARRI Codex Compact Drive 2TB (Yellow)": {
+          "brand": "ARRI",
+          "model": "Compact Drive 2TB",
+          "capacityGB": 1920,
+          "type": "Codex Compact Drive",
+          "notes": "Yellow Ring. High capacity.",
+          "weight_g": 85
+        },
+        "ARRI Codex Compact Drive 1TB Express (White)": {
+          "brand": "ARRI",
+          "model": "Compact Drive 1TB Express",
+          "capacityGB": 960,
+          "type": "Codex Compact Drive",
+          "notes": "White Ring. ProRes only on Alexa 35.",
+          "weight_g": 85
+        }
+      },
+      "cfexpressTypeB": {
+        "SanDisk Extreme PRO CFexpress Type B 512GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO Type B 512GB",
+          "capacityGB": 512,
+          "type": "CFexpress Type B",
+          "notes": "Read 1700MB/s, Write 1400MB/s"
+        },
+        "SanDisk Extreme PRO CFexpress Type B 2TB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO Type B 2TB",
+          "capacityGB": 2000,
+          "type": "CFexpress Type B",
+          "notes": "Read 1700MB/s, Write 1200MB/s"
+        },
+        "Lexar Professional Gold CFexpress Type B 1TB": {
+          "brand": "Lexar",
+          "model": "Professional Gold Type B 1TB",
+          "capacityGB": 1000,
+          "type": "CFexpress Type B",
+          "notes": "Read 1750MB/s, Write 1500MB/s"
+        },
+        "Lexar Professional Diamond CFexpress Type B 512GB": {
+          "brand": "Lexar",
+          "model": "Professional Diamond Type B 512GB",
+          "capacityGB": 512,
+          "type": "CFexpress Type B",
+          "notes": "Read 1900MB/s, Write 1700MB/s (VPG400)"
+        },
+        "Sony TOUGH CFexpress Type B 512GB": {
+          "brand": "Sony",
+          "model": "CEB-G512",
+          "capacityGB": 512,
+          "type": "CFexpress Type B",
+          "notes": "Read 1700MB/s, Write 1480MB/s"
+        },
+        "Sony TOUGH CFexpress Type B 960GB": {
+          "brand": "Sony",
+          "model": "CEB-G960T",
+          "capacityGB": 960,
+          "type": "CFexpress Type B",
+          "notes": "Read 1850MB/s, Write 1750MB/s"
+        },
+        "Sony TOUGH CFexpress Type B 1920GB": {
+          "brand": "Sony",
+          "model": "CEB-G1920T",
+          "capacityGB": 1920,
+          "type": "CFexpress Type B",
+          "notes": "Read 1850MB/s, Write 1750MB/s"
+        },
+        "Angelbird AV PRO CFexpress MK2 2TB": {
+          "brand": "Angelbird",
+          "model": "AV PRO MK2 2TB",
+          "capacityGB": 2000,
+          "type": "CFexpress Type B",
+          "notes": "Sustained write 1300MB/s"
+        },
+        "Angelbird AV PRO CFexpress MK2 4TB": {
+          "brand": "Angelbird",
+          "model": "AV PRO MK2 4TB",
+          "capacityGB": 4000,
+          "type": "CFexpress Type B",
+          "notes": "Sustained write 1300MB/s"
+        },
+        "Angelbird AV PRO CFexpress XT MK2 660GB": {
+          "brand": "Angelbird",
+          "model": "AV PRO XT MK2 660GB",
+          "capacityGB": 660,
+          "type": "CFexpress Type B",
+          "notes": "High endurance, sustained write 1480MB/s"
+        }
+      },
+      "cfexpressTypeA": {
+        "Sony TOUGH CFexpress Type A 80GB": {
+          "brand": "Sony",
+          "model": "CEA-G80T",
+          "capacityGB": 80,
+          "type": "CFexpress Type A",
+          "notes": "Read 800MB/s, Write 700MB/s"
+        },
+        "Sony TOUGH CFexpress Type A 160GB": {
+          "brand": "Sony",
+          "model": "CEA-G160T",
+          "capacityGB": 160,
+          "type": "CFexpress Type A",
+          "notes": "Read 800MB/s, Write 700MB/s"
+        },
+        "Sony TOUGH CFexpress Type A 320GB": {
+          "brand": "Sony",
+          "model": "CEA-G320T",
+          "capacityGB": 320,
+          "type": "CFexpress Type A",
+          "notes": "Read 800MB/s, Write 700MB/s"
+        },
+        "Sony TOUGH CFexpress Type A 640GB": {
+          "brand": "Sony",
+          "model": "CEA-G640T",
+          "capacityGB": 640,
+          "type": "CFexpress Type A",
+          "notes": "Read 800MB/s, Write 700MB/s"
+        },
+        "Sony TOUGH CFexpress Type A 960GB": {
+          "brand": "Sony",
+          "model": "CEA-M960T",
+          "capacityGB": 960,
+          "type": "CFexpress Type A",
+          "notes": "Read 800MB/s, Write 700MB/s (VPG200)"
+        },
+        "Sony TOUGH CFexpress Type A 1920GB": {
+          "brand": "Sony",
+          "model": "CEA-M1920T",
+          "capacityGB": 1920,
+          "type": "CFexpress Type A",
+          "notes": "Read 800MB/s, Write 700MB/s (VPG200)"
+        },
+        "ProGrade Digital CFexpress Type A Cobalt 160GB": {
+          "brand": "ProGrade Digital",
+          "model": "Cobalt 160GB",
+          "capacityGB": 160,
+          "type": "CFexpress Type A",
+          "notes": "Read 800MB/s, Write 700MB/s"
+        },
+        "Lexar Professional CFexpress Type A Gold 320GB": {
+          "brand": "Lexar",
+          "model": "Professional Gold Type A 320GB",
+          "capacityGB": 320,
+          "type": "CFexpress Type A",
+          "notes": "Read 900MB/s, Write 800MB/s"
+        }
+      },
+      "cfast2": {
+        "SanDisk Extreme PRO CFast 2.0 128GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO CFast 2.0 128GB",
+          "capacityGB": 128,
+          "type": "CFast 2.0",
+          "notes": "Read 525MB/s, Write 450MB/s"
+        },
+        "SanDisk Extreme PRO CFast 2.0 256GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO CFast 2.0 256GB",
+          "capacityGB": 256,
+          "type": "CFast 2.0",
+          "notes": "Read 525MB/s, Write 450MB/s"
+        },
+        "SanDisk Extreme PRO CFast 2.0 512GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO CFast 2.0 512GB",
+          "capacityGB": 512,
+          "type": "CFast 2.0",
+          "notes": "Read 525MB/s, Write 450MB/s"
+        },
+        "Angelbird AV PRO CF 256GB": {
+          "brand": "Angelbird",
+          "model": "AV PRO CF 256GB",
+          "capacityGB": 256,
+          "type": "CFast 2.0",
+          "notes": "Sustained write 450MB/s"
+        },
+        "Angelbird AV PRO CF 512GB": {
+          "brand": "Angelbird",
+          "model": "AV PRO CF 512GB",
+          "capacityGB": 512,
+          "type": "CFast 2.0",
+          "notes": "Sustained write 450MB/s"
+        },
+        "Angelbird AV PRO CF 1TB": {
+          "brand": "Angelbird",
+          "model": "AV PRO CF 1TB",
+          "capacityGB": 1000,
+          "type": "CFast 2.0",
+          "notes": "Sustained write 450MB/s"
+        }
+      },
+      "axs": {
+        "Sony AXS-A1TS66 1TB": {
+          "brand": "Sony",
+          "model": "AXS-A1TS66",
+          "capacityGB": 1024,
+          "type": "AXS Memory",
+          "notes": "High speed AXS-A card for Venice (6.6 Gbps)"
+        },
+        "Sony AXS-A512S48 512GB": {
+          "brand": "Sony",
+          "model": "AXS-A512S48",
+          "capacityGB": 512,
+          "type": "AXS Memory",
+          "notes": "AXS-A card (4.8 Gbps)"
+        },
+        "Sony AXS-A1TS48 1TB": {
+          "brand": "Sony",
+          "model": "AXS-A1TS48",
+          "capacityGB": 1024,
+          "type": "AXS Memory",
+          "notes": "AXS-A card (4.8 Gbps)"
+        }
+      },
+      "sd": {
+        "Sony SF-G TOUGH 64GB (V90)": {
+          "brand": "Sony",
+          "model": "SF-G64T",
+          "capacityGB": 64,
+          "type": "SD Card",
+          "notes": "UHS-II V90, Read 300MB/s, Write 299MB/s"
+        },
+        "Sony SF-G TOUGH 128GB (V90)": {
+          "brand": "Sony",
+          "model": "SF-G128T",
+          "capacityGB": 128,
+          "type": "SD Card",
+          "notes": "UHS-II V90, Read 300MB/s, Write 299MB/s"
+        },
+        "SanDisk Extreme PRO SDXC 128GB (V90)": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO SDXC 128GB",
+          "capacityGB": 128,
+          "type": "SD Card",
+          "notes": "UHS-II V90, Read 300MB/s, Write 260MB/s"
+        },
+        "SanDisk Extreme PRO SDXC 256GB (V90)": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO SDXC 256GB",
+          "capacityGB": 256,
+          "type": "SD Card",
+          "notes": "UHS-II V90, Read 300MB/s, Write 260MB/s"
+        }
+      },
+      "redMiniMag": {
+        "RED MINI-MAG 480GB": {
+          "brand": "RED",
+          "model": "MINI-MAG 480GB",
+          "capacityGB": 480,
+          "type": "RED MINI-MAG",
+          "notes": "Standard speed (Grey)"
+        },
+        "RED MINI-MAG 960GB": {
+          "brand": "RED",
+          "model": "MINI-MAG 960GB",
+          "capacityGB": 960,
+          "type": "RED MINI-MAG",
+          "notes": "Standard speed (Grey)"
+        },
+        "RED MINI-MAG 480GB (Red)": {
+          "brand": "RED",
+          "model": "MINI-MAG 480GB (Red)",
+          "capacityGB": 480,
+          "type": "RED MINI-MAG",
+          "notes": "High speed (Red), up to 300 MB/s"
+        },
+        "RED MINI-MAG 960GB (Red)": {
+          "brand": "RED",
+          "model": "MINI-MAG 960GB (Red)",
+          "capacityGB": 960,
+          "type": "RED MINI-MAG",
+          "notes": "High speed (Red), up to 300 MB/s"
+        }
+      },
+      "redMag18": {
+        "REDMAG 1.8\" SSD 128GB": {
+          "brand": "RED",
+          "model": "REDMAG 1.8\" 128GB",
+          "capacityGB": 128,
+          "type": "REDMAG 1.8\" SSD"
+        },
+        "REDMAG 1.8\" SSD 240GB": {
+          "brand": "RED",
+          "model": "REDMAG 1.8\" 240GB",
+          "capacityGB": 240,
+          "type": "REDMAG 1.8\" SSD"
+        },
+        "REDMAG 1.8\" SSD 256GB": {
+          "brand": "RED",
+          "model": "REDMAG 1.8\" 256GB",
+          "capacityGB": 256,
+          "type": "REDMAG 1.8\" SSD"
+        },
+        "REDMAG 1.8\" SSD 512GB": {
+          "brand": "RED",
+          "model": "REDMAG 1.8\" 512GB",
+          "capacityGB": 512,
+          "type": "REDMAG 1.8\" SSD"
+        }
+      },
+      "xqd": {
+        "Sony G Series XQD 64GB": {
+          "brand": "Sony",
+          "model": "QD-G64F",
+          "capacityGB": 64,
+          "type": "XQD",
+          "notes": "Read 440MB/s, Write 400MB/s"
+        },
+        "Sony G Series XQD 120GB": {
+          "brand": "Sony",
+          "model": "QD-G120F",
+          "capacityGB": 120,
+          "type": "XQD",
+          "notes": "Read 440MB/s, Write 400MB/s"
+        },
+        "Sony G Series XQD 240GB": {
+          "brand": "Sony",
+          "model": "QD-G240F",
+          "capacityGB": 240,
+          "type": "XQD",
+          "notes": "Read 440MB/s, Write 400MB/s"
+        }
+      },
+      "expressP2": {
+        "Panasonic expressP2 Card 256GB": {
+          "brand": "Panasonic",
+          "model": "AU-XP0256AG",
+          "capacityGB": 256,
+          "type": "expressP2",
+          "notes": "A-Series"
+        },
+        "Panasonic expressP2 Card 512GB": {
+          "brand": "Panasonic",
+          "model": "AU-XP0512BG",
+          "capacityGB": 512,
+          "type": "expressP2",
+          "notes": "B-Series"
+        }
+      },
+      "sdUhsI": {
+        "SanDisk Extreme PRO SDXC 64GB (V30)": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO UHS-I 64GB",
+          "capacityGB": 64,
+          "type": "SD Card",
+          "notes": "UHS-I V30, 200MB/s"
+        },
+        "SanDisk Extreme PRO SDXC 128GB (V30)": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO UHS-I 128GB",
+          "capacityGB": 128,
+          "type": "SD Card",
+          "notes": "UHS-I V30, 200MB/s"
+        }
+      },
+      "kinemag": {
+        "Kinefinity KineMAG Nano 1TB": {
+          "brand": "Kinefinity",
+          "model": "KineMAG Nano 1TB",
+          "capacityGB": 1000,
+          "type": "KineMAG Nano SSD",
+          "notes": "NVMe-based, RAID 5 safety"
+        },
+        "Kinefinity KineMAG Nano 2TB": {
+          "brand": "Kinefinity",
+          "model": "KineMAG Nano 2TB",
+          "capacityGB": 2000,
+          "type": "KineMAG Nano SSD",
+          "notes": "NVMe-based, RAID 5 safety"
+        }
+      },
+      "djiProSsd": {
+        "DJI PROSSD 1TB": {
+          "brand": "DJI",
+          "model": "PROSSD 1TB",
+          "capacityGB": 1000,
+          "type": "DJI PROSSD",
+          "notes": "Up to 900MB/s read, supports 8K RAW"
+        }
+      },
+      "compactFlash": {
+        "RED CF 8GB": {
+          "brand": "RED",
+          "model": "CF 8GB",
+          "capacityGB": 8,
+          "type": "Compact Flash",
+          "notes": "RED Branded"
+        },
+        "RED CF 16GB": {
+          "brand": "RED",
+          "model": "CF 16GB",
+          "capacityGB": 16,
+          "type": "Compact Flash",
+          "notes": "RED Branded"
+        },
+        "SanDisk Extreme PRO CF 64GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO CF 64GB",
+          "capacityGB": 64,
+          "type": "Compact Flash",
+          "notes": "UDMA 7, 160MB/s"
+        },
+        "SanDisk Extreme PRO CF 128GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO CF 128GB",
+          "capacityGB": 128,
+          "type": "Compact Flash",
+          "notes": "UDMA 7, 160MB/s"
+        },
+        "SanDisk Extreme PRO CF 256GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO CF 256GB",
+          "capacityGB": 256,
+          "type": "Compact Flash",
+          "notes": "UDMA 7, 160MB/s"
+        }
+      },
+      "redDrive": {
+        "RED DRIVE 320GB": {
+          "brand": "RED",
+          "model": "RED DRIVE 320GB",
+          "capacityGB": 320,
+          "type": "RED DRIVE",
+          "notes": "External HDD"
+        },
+        "RED DRIVE 640GB": {
+          "brand": "RED",
+          "model": "RED DRIVE 640GB",
+          "capacityGB": 640,
+          "type": "RED DRIVE",
+          "notes": "External HDD"
+        }
+      },
+      "microSd": {
+        "SanDisk Extreme PRO MicroSDXC 64GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO MicroSD 64GB",
+          "capacityGB": 64,
+          "type": "MicroSD",
+          "notes": "UHS-I V30 A2"
+        },
+        "SanDisk Extreme PRO MicroSDXC 128GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO MicroSD 128GB",
+          "capacityGB": 128,
+          "type": "MicroSD",
+          "notes": "UHS-I V30 A2"
+        },
+        "SanDisk Extreme PRO MicroSDXC 256GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO MicroSD 256GB",
+          "capacityGB": 256,
+          "type": "MicroSD",
+          "notes": "UHS-I V30 A2"
+        },
+        "Samsung PRO Plus MicroSDXC 512GB": {
+          "brand": "Samsung",
+          "model": "PRO Plus MicroSD 512GB",
+          "capacityGB": 512,
+          "type": "MicroSD",
+          "notes": "UHS-I V30 A2"
+        }
+      },
+      "m2Nvme": {
+        "Samsung 990 PRO NVMe M.2 SSD 1TB": {
+          "brand": "Samsung",
+          "model": "990 PRO 1TB",
+          "capacityGB": 1000,
+          "type": "M.2 NVMe SSD",
+          "notes": "PCIe 4.0 NVMe"
+        },
+        "Samsung 990 PRO NVMe M.2 SSD 2TB": {
+          "brand": "Samsung",
+          "model": "990 PRO 2TB",
+          "capacityGB": 2000,
+          "type": "M.2 NVMe SSD",
+          "notes": "PCIe 4.0 NVMe"
+        },
+        "Samsung 990 PRO NVMe M.2 SSD 4TB": {
+          "brand": "Samsung",
+          "model": "990 PRO 4TB",
+          "capacityGB": 4000,
+          "type": "M.2 NVMe SSD",
+          "notes": "PCIe 4.0 NVMe"
+        },
+        "Generic NVMe M.2 SSD 8TB": {
+          "brand": "Generic",
+          "model": "NVMe 8TB",
+          "capacityGB": 8000,
+          "type": "M.2 NVMe SSD",
+          "notes": "High capacity storage"
+        }
+      },
+      "blackmagicMediaModule": {
+        "Blackmagic Media Module 8TB": {
+          "brand": "Blackmagic Design",
+          "model": "Media Module 8TB",
+          "capacityGB": 8000,
+          "type": "Blackmagic Media Module",
+          "notes": "For URSA Cine 12K"
+        },
+        "Blackmagic Media Module 16TB": {
+          "brand": "Blackmagic Design",
+          "model": "Media Module 16TB",
+          "capacityGB": 16000,
+          "type": "Blackmagic Media Module",
+          "notes": "For URSA Cine 12K"
+        }
+      },
+      "cinemag": {
+        "Phantom CineMag IV 1TB": {
+          "brand": "Phantom",
+          "model": "CineMag IV 1TB",
+          "capacityGB": 1000,
+          "type": "CineMag IV",
+          "notes": "Non-volatile storage for Flex4K/UHS-12"
+        },
+        "Phantom CineMag IV 2TB": {
+          "brand": "Phantom",
+          "model": "CineMag IV 2TB",
+          "capacityGB": 2000,
+          "type": "CineMag IV",
+          "notes": "Non-volatile storage for Flex4K/UHS-12"
+        }
+      }
+    },
     "accessories": {
       "powerPlates": {
         "ARRI B-Mount Battery Adapter": {
@@ -15381,6 +15916,1194 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "weight_g": 530,
         "mountOptions": [{
           "type": "PL / EF",
+          "mount": "native"
+        }]
+      },
+      "Genesis G35 14.5mm T3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis G35 16mm T2.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 2.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis G35 20mm T1.8": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.8,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis G35 25mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis G35 35mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis G35 50mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis G35 85mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis G35 135mm T2": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis G35 Vintage 14.5mm T3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Vintage '66 coating",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis G35 Vintage 16mm T2.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 2.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Vintage '66 coating",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis G35 Vintage 20mm T1.8": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.8,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Vintage '66 coating",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis G35 Vintage 25mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Vintage '66 coating",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis G35 Vintage 35mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Vintage '66 coating",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis G35 Vintage 50mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Vintage '66 coating",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis G35 Vintage 85mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Vintage '66 coating",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis G35 Vintage 135mm T2": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Vintage '66 coating",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis G35 Macro 100mm T2.9": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 2.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Macro 1:1",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "AYANA 65 35mm T1.7": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.7,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1500,
+        "notes": "65mm Format. Verify exact focal lengths.",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "AYANA 65 50mm T1.7": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.7,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1500,
+        "notes": "65mm Format. Verify exact focal lengths.",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "AYANA 65 80mm T1.7": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.7,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1500,
+        "notes": "65mm Format. Verify exact focal lengths.",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "AYANA 65 100mm T1.7": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.7,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1500,
+        "notes": "65mm Format. Verify exact focal lengths.",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis Opia 25mm T2": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1100,
+        "notes": "",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis Opia 35mm T2": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1100,
+        "notes": "",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis Opia 40mm T2": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1100,
+        "notes": "",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis Opia 50mm T2": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1100,
+        "notes": "",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis Opia 58mm T2": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1100,
+        "notes": "",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis Opia 65mm T2": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1100,
+        "notes": "",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis Opia 85mm T2": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1100,
+        "notes": "",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis Opia 100mm T2": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1100,
+        "notes": "",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Genesis Opia 125mm T2": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1100,
+        "notes": "",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "VINTAGE ULTRA PRIME 16mm T1.9": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Rehoused Ultra Prime, Vintage Look",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "VINTAGE ULTRA PRIME 20mm T1.9": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Rehoused Ultra Prime, Vintage Look",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "VINTAGE ULTRA PRIME 24mm T1.9": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Rehoused Ultra Prime, Vintage Look",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "VINTAGE ULTRA PRIME 32mm T1.9": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Rehoused Ultra Prime, Vintage Look",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "VINTAGE ULTRA PRIME 40mm T1.9": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Rehoused Ultra Prime, Vintage Look",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "VINTAGE ULTRA PRIME 50mm T1.9": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Rehoused Ultra Prime, Vintage Look",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "VINTAGE ULTRA PRIME 85mm T1.9": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Rehoused Ultra Prime, Vintage Look",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "VINTAGE ULTRA PRIME 100mm T1.9": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Rehoused Ultra Prime, Vintage Look",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "VINTAGE ULTRA PRIME 135mm T1.9": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Rehoused Ultra Prime, Vintage Look",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss HS 18mm T1.3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss HS 25mm T1.3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss HS 35mm T1.3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss HS 50mm T1.3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss HS 65mm T1.3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss HS 85mm T1.3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss HS Vintage 18mm T1.3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing, Vintage Coating",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss HS Vintage 25mm T1.3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing, Vintage Coating",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss HS Vintage 35mm T1.3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing, Vintage Coating",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss HS Vintage 50mm T1.3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing, Vintage Coating",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss HS Vintage 65mm T1.3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing, Vintage Coating",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss HS Vintage 85mm T1.3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing, Vintage Coating",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss SS 16mm T2.1": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2.1,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 800,
+        "notes": "Stealth Rehousing",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss SS 24mm T2.1": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2.1,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 800,
+        "notes": "Stealth Rehousing",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss SS 32mm T2.1": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2.1,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 800,
+        "notes": "Stealth Rehousing",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss SS 50mm T2.1": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2.1,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 800,
+        "notes": "Stealth Rehousing",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss SS 85mm T2.1": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2.1,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 800,
+        "notes": "Stealth Rehousing",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss SS Vintage 16mm T2.1": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2.1,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 800,
+        "notes": "Stealth Rehousing, Vintage Coating",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss SS Vintage 24mm T2.1": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2.1,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 800,
+        "notes": "Stealth Rehousing, Vintage Coating",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss SS Vintage 32mm T2.1": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2.1,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 800,
+        "notes": "Stealth Rehousing, Vintage Coating",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss SS Vintage 50mm T2.1": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2.1,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 800,
+        "notes": "Stealth Rehousing, Vintage Coating",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss SS Vintage 85mm T2.1": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2.1,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 800,
+        "notes": "Stealth Rehousing, Vintage Coating",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss B-Speed 18mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing, Triangle Bokeh",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss B-Speed 25mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing, Triangle Bokeh",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss B-Speed 35mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing, Triangle Bokeh",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss B-Speed 50mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing, Triangle Bokeh",
+        "mountOptions": [{
+          "type": "PL",
+          "mount": "native"
+        }]
+      },
+      "Gecko-Cam Stealth Zeiss B-Speed 85mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing, Triangle Bokeh",
+        "mountOptions": [{
+          "type": "PL",
           "mount": "native"
         }]
       }

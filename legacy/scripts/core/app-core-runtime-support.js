@@ -1,5 +1,8 @@
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function resolveCoreDeviceSchemaNamespace() {
+  if (typeof collectRuntimeScopeCandidates !== 'function') {
+    return null;
+  }
   var candidates = collectRuntimeScopeCandidates();
   for (var index = 0; index < candidates.length; index += 1) {
     var scope = candidates[index];
@@ -49,6 +52,9 @@ function resolveRuntimeModuleLoader() {
   }
   if (typeof cineCoreRuntimeModuleLoader !== 'undefined' && cineCoreRuntimeModuleLoader && (typeof cineCoreRuntimeModuleLoader === "undefined" ? "undefined" : _typeof(cineCoreRuntimeModuleLoader)) === 'object') {
     return cineCoreRuntimeModuleLoader;
+  }
+  if (typeof collectRuntimeScopeCandidates !== 'function') {
+    return null;
   }
   var candidates = collectRuntimeScopeCandidates();
   for (var index = 0; index < candidates.length; index += 1) {
@@ -104,6 +110,9 @@ var CORE_RUNTIME_SUPPORT_BOOTSTRAP = function resolveRuntimeSupportBootstrap() {
     }
     return null;
   }
+  if (typeof collectRuntimeScopeCandidates !== 'function') {
+    return [];
+  }
   var candidates = collectRuntimeScopeCandidates();
   for (var index = 0; index < candidates.length; index += 1) {
     var bootstrap = readFromScope(candidates[index]);
@@ -139,7 +148,7 @@ var CORE_RUNTIME_SUPPORT_RESOLUTION = function resolveRuntimeSupportResolution()
     }
     return null;
   }
-  var candidates = collectRuntimeScopeCandidates();
+  var candidates = typeof collectRuntimeScopeCandidates === 'function' ? collectRuntimeScopeCandidates() : [];
   for (var index = 0; index < candidates.length; index += 1) {
     var resolution = readFromScope(candidates[index]);
     if (resolution) {
@@ -165,7 +174,7 @@ var CORE_TEXT_ENTRY_TOOLS = function resolveCoreTextEntryTools() {
   if (typeof cineCoreTextEntries !== 'undefined' && cineCoreTextEntries && (typeof cineCoreTextEntries === "undefined" ? "undefined" : _typeof(cineCoreTextEntries)) === 'object') {
     return cineCoreTextEntries;
   }
-  var candidates = collectRuntimeScopeCandidates();
+  var candidates = typeof collectRuntimeScopeCandidates === 'function' ? collectRuntimeScopeCandidates() : [];
   for (var index = 0; index < candidates.length; index += 1) {
     var scope = candidates[index];
     if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
@@ -312,7 +321,7 @@ var resolveTextEntryInternal = function ensureResolveTextEntryAvailability(resol
 }(resolveTextEntryRuntime);
 var CORE_TEMPERATURE_STORAGE_KEY_FALLBACK = 'cameraPowerPlanner_temperatureUnit';
 function resolvePreferredTemperatureStorageKey() {
-  var candidates = collectRuntimeScopeCandidates();
+  var candidates = typeof collectRuntimeScopeCandidates === 'function' ? collectRuntimeScopeCandidates() : [];
   for (var index = 0; index < candidates.length; index += 1) {
     var scope = candidates[index];
     if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
@@ -416,7 +425,7 @@ var CORE_RUNTIME_SUPPORT_DEFAULTS_NAMESPACE = function resolveRuntimeSupportDefa
     }
     return null;
   }
-  var candidates = collectRuntimeScopeCandidates();
+  var candidates = typeof collectRuntimeScopeCandidates === 'function' ? collectRuntimeScopeCandidates() : [];
   for (var index = 0; index < candidates.length; index += 1) {
     var defaults = readFromScope(candidates[index]);
     if (defaults) {
@@ -442,7 +451,7 @@ function createInlineRuntimeSupportDefaults() {
     if (primaryScope && (_typeof(primaryScope) === 'object' || typeof primaryScope === 'function')) {
       return primaryScope;
     }
-    var candidates = collectRuntimeScopeCandidates();
+    var candidates = typeof collectRuntimeScopeCandidates === 'function' ? collectRuntimeScopeCandidates() : [];
     for (var index = 0; index < candidates.length; index += 1) {
       var scope = candidates[index];
       if (scope && (_typeof(scope) === 'object' || typeof scope === 'function')) {
@@ -523,7 +532,7 @@ var CORE_RUNTIME_SUPPORT_EXPORTS = function ensureRuntimeSupportExportsNamespace
     }
     return null;
   }
-  var candidateScopes = collectRuntimeScopeCandidates([(typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null]);
+  var candidateScopes = typeof collectRuntimeScopeCandidates === 'function' ? collectRuntimeScopeCandidates([(typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null]) : [(typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null];
   var namespace = null;
   for (var index = 0; index < candidateScopes.length; index += 1) {
     var existing = readNamespace(candidateScopes[index]);

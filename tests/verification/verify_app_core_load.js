@@ -33,7 +33,7 @@ global.isSafeImageUrl = function () { };
 
 try {
     console.log('Loading app-core-new-1.js...');
-    const core1Path = path.join(__dirname, '../../src/scripts/app-core-new-1.js');
+    const core1Path = path.join(__dirname, '../../src/scripts/core/app-core-new-1.js');
     const core1Content = fs.readFileSync(core1Path, 'utf8');
     dom.window.eval(core1Content);
     console.log('app-core-new-1.js loaded successfully.');
@@ -44,7 +44,7 @@ try {
 
 try {
     console.log('Loading app-core-new-2.js...');
-    const core2Path = path.join(__dirname, '../../src/scripts/app-core-new-2.js');
+    const core2Path = path.join(__dirname, '../../src/scripts/core/app-core-new-2.js');
     const core2Content = fs.readFileSync(core2Path, 'utf8');
     dom.window.eval(core2Content);
     console.log('app-core-new-2.js loaded successfully.');

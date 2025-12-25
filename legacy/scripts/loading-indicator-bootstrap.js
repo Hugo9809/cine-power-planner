@@ -233,7 +233,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           if (indicator && indicator.dataset && indicator.dataset.bootstrap === 'true') {
             cleanupIndicatorIfIdle();
           }
-        }, 2400);
+        }, 800);
       } catch (fallbackHideError) {
         void fallbackHideError;
       }

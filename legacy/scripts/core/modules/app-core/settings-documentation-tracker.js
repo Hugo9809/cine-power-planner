@@ -39,6 +39,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }, {
         id: 'help-offline',
         labelKey: 'documentationTrackerHelpOffline'
+      }, {
+        id: 'help-pink-mode',
+        labelKey: 'documentationTrackerHelpPinkMode'
       }]
     },
     printGuides: {
@@ -879,16 +882,33 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (!release) {
         return;
       }
-      var _ref3 = options || {},
-        _ref3$confirmArchive = _ref3.confirmArchive,
-        confirmArchive = _ref3$confirmArchive === void 0 ? true : _ref3$confirmArchive;
-      if (!release.archived && confirmArchive && typeof scope.confirm === 'function') {
+      var confirmArchive = options.confirmArchive !== false;
+      if (!release.archived && confirmArchive) {
         var template = resolveLocaleString('documentationTrackerArchiveConfirm') || 'Archive "{name}"? Completed items stay logged for future audits.';
         var name = release.name || resolveLocaleString('documentationTrackerFallbackReleaseName') || 'Release';
         var message = template.replace('{name}', name);
-        if (!scope.confirm(message)) {
+        var title = resolveLocaleString('documentationTrackerArchiveRelease') || 'Archive Release';
+        var performArchive = function performArchive() {
+          release.archived = !release.archived;
+          release.updatedAt = documentationTrackerIsoNow();
+          persistDocumentationTrackerState();
+          renderDocumentationTracker();
+        };
+        var showConfirm = scope.cineShowConfirmDialog || (typeof window !== 'undefined' ? window.cineShowConfirmDialog : null);
+        if (typeof showConfirm === 'function') {
+          showConfirm({
+            title: title,
+            message: message,
+            confirmLabel: 'Archive',
+            danger: true,
+            onConfirm: performArchive
+          });
           return;
         }
+        if (typeof scope.confirm === 'function' && scope.confirm(message)) {
+          performArchive();
+        }
+        return;
       }
       release.archived = !release.archived;
       release.updatedAt = documentationTrackerIsoNow();

@@ -5555,10 +5555,47 @@
           existingData = decoded;
         }
 
-        const list = Array.isArray(existingData) ? existingData : [existingData];
+        let list = Array.isArray(existingData) ? existingData : [existingData];
         const newEntry = { createdAt: new Date().toISOString(), data: originalValue };
         list.push(newEntry);
-        storage.setItem(backupKey, JSON.stringify(list));
+
+        // Limit history size to prevent indefinite growth
+        const MAX_BACKUP_HISTORY = 5;
+        if (list.length > MAX_BACKUP_HISTORY) {
+          list = list.slice(list.length - MAX_BACKUP_HISTORY);
+        }
+
+        const tryStoreList = (candidateList) => {
+          try {
+            storage.setItem(backupKey, JSON.stringify(candidateList));
+            return { success: true };
+          } catch (itemError) {
+            return { success: false, quota: isQuotaExceededError(itemError), error: itemError };
+          }
+        };
+
+        let result = tryStoreList(list);
+
+        // If quota exceeded, try to shrink the list further
+        while (!result.success && result.quota && list.length > 1) {
+          list.shift(); // Remove oldest
+          console.warn(`Pruning oldest migration backup for ${key} due to quota limit.`);
+          result = tryStoreList(list);
+        }
+
+        if (result.success) {
+          return;
+        }
+
+        // If still failing, try to prune OTHER backups
+        if (!result.success && result.quota) {
+          const recovery = attemptMigrationBackupQuotaRecovery(storage, key, backupKey, () => tryStoreList(list));
+          if (recovery && recovery.success) {
+            return;
+          }
+        }
+
+        console.warn('Unable to append to migration backup', result.error);
         return;
       } catch (appendError) {
         console.warn('Unable to append to migration backup', appendError);

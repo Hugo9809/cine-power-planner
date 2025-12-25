@@ -810,12 +810,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var ERROR_EVENT_FLAG = typeof Symbol === 'function' ? Symbol.for('cineLoggingHandled') : '__cineLoggingHandled__';
   var DEFAULT_CONFIG_VALUES = {
     level: 'warn',
-    historyLevel: 'debug',
+    historyLevel: 'info',
     historyLimit: 1200,
     consoleOutput: true,
     persistSession: true,
     captureGlobalErrors: true,
-    captureConsole: true,
+    captureConsole: false,
     stackTraces: true
   };
   var DEFAULT_CONFIG = freezeDeep(DEFAULT_CONFIG_VALUES);
@@ -1492,12 +1492,24 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       newestEntryIsoTimestamp: newestEntry && typeof newestEntry.isoTimestamp === 'string' ? newestEntry.isoTimestamp : null,
       levels: freezeLevelSummary(removedSummary)
     });
-    safeWarn('cineLogging: history trimmed to enforce retention limit', {
-      limit: limit,
-      removed: removedEntries.length,
-      source: source,
-      levels: cloneLevelSummary(removedSummary)
-    });
+    if (ORIGINAL_CONSOLE_FUNCTIONS && typeof ORIGINAL_CONSOLE_FUNCTIONS.warn === 'function') {
+      try {
+        ORIGINAL_CONSOLE_FUNCTIONS.warn('cineLogging: history trimmed to enforce retention limit', {
+          limit: limit,
+          removed: removedEntries.length,
+          source: source,
+          levels: cloneLevelSummary(removedSummary)
+        });
+      } catch (warnError) {
+        void warnError;
+      }
+    } else {
+      try {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {}
+      } catch (e) {
+        void e;
+      }
+    }
     return removedSummary;
   }
   function enforceHistoryLimit(options) {
