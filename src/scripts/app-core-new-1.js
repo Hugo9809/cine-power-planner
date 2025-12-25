@@ -785,30 +785,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
 }
 
-var localAutoGearConditionSections = {
-  always: document.getElementById('autoGearCondition-always'),
-  scenarios: document.getElementById('autoGearCondition-scenarios'),
-  shootingDays: document.getElementById('autoGearCondition-shootingDays'),
-  mattebox: document.getElementById('autoGearCondition-mattebox'),
-  cameraHandle: document.getElementById('autoGearCondition-cameraHandle'),
-  viewfinderExtension: document.getElementById('autoGearCondition-viewfinderExtension'),
-  deliveryResolution: document.getElementById('autoGearCondition-deliveryResolution'),
-  videoDistribution: document.getElementById('autoGearCondition-videoDistribution'),
-  camera: document.getElementById('autoGearCondition-camera'),
-  ownGear: document.getElementById('autoGearCondition-ownGear'),
-  cameraWeight: document.getElementById('autoGearCondition-cameraWeight'),
-  monitor: document.getElementById('autoGearCondition-monitor'),
-  tripodHeadBrand: document.getElementById('autoGearCondition-tripodHeadBrand'),
-  tripodBowl: document.getElementById('autoGearCondition-tripodBowl'),
-  tripodTypes: document.getElementById('autoGearCondition-tripodTypes'),
-  tripodSpreader: document.getElementById('autoGearCondition-tripodSpreader'),
-  crewPresent: document.getElementById('autoGearCondition-crewPresent'),
-  crewAbsent: document.getElementById('autoGearCondition-crewAbsent'),
-  wireless: document.getElementById('autoGearCondition-wireless'),
-  motors: document.getElementById('autoGearCondition-motors'),
-  controllers: document.getElementById('autoGearCondition-controllers'),
-  distance: document.getElementById('autoGearCondition-distance'),
-};
+var localAutoGearConditionSections = {};
 
 var CORE_RUNTIME_TOOL_FALLBACK_FACTORY =
   CORE_RUNTIME_TOOL_FALLBACK_NAMESPACE &&
@@ -6521,140 +6498,51 @@ if (typeof texts === 'undefined') {
   gearItemTranslations = typeof gearItems !== 'undefined' ? gearItems : {};
 }
 
-var autoGearHeadingElem = document.getElementById('autoGearHeading');
-var autoGearDescriptionElem = document.getElementById('autoGearDescription');
-var autoGearMonitorDefaultsSection = document.getElementById('autoGearMonitorDefaultsSection');
-var autoGearMonitorDefaultsHeading = document.getElementById('autoGearMonitorDefaultsHeading');
-var autoGearMonitorDefaultsDescription = document.getElementById('autoGearMonitorDefaultsDescription');
-var autoGearDefaultFocusMonitorSelect = document.getElementById('autoGearDefaultFocusMonitor');
-var autoGearDefaultHandheldMonitorSelect = document.getElementById('autoGearDefaultHandheldMonitor');
-var autoGearDefaultComboMonitorSelect = document.getElementById('autoGearDefaultComboMonitor');
-var autoGearDefaultDirectorMonitorSelect = document.getElementById('autoGearDefaultDirectorMonitor');
-var autoGearDefaultFocusMonitorLabel = document.getElementById('autoGearDefaultFocusMonitorLabel');
-var autoGearDefaultHandheldMonitorLabel = document.getElementById('autoGearDefaultHandheldMonitorLabel');
-var autoGearDefaultComboMonitorLabel = document.getElementById('autoGearDefaultComboMonitorLabel');
-var autoGearDefaultDirectorMonitorLabel = document.getElementById('autoGearDefaultDirectorMonitorLabel');
-var autoGearMonitorDefaultControls = [
-  {
-    key: 'focus',
-    select: autoGearDefaultFocusMonitorSelect,
-    label: autoGearDefaultFocusMonitorLabel,
-  },
-  {
-    key: 'handheld7',
-    select: autoGearDefaultHandheldMonitorSelect,
-    label: autoGearDefaultHandheldMonitorLabel,
-  },
-  {
-    key: 'combo15',
-    select: autoGearDefaultComboMonitorSelect,
-    label: autoGearDefaultComboMonitorLabel,
-  },
-  {
-    key: 'director15',
-    select: autoGearDefaultDirectorMonitorSelect,
-    label: autoGearDefaultDirectorMonitorLabel,
-  },
-];
-autoGearMonitorDefaultControls.forEach(control => {
-  if (!control || !control.select) return;
-  control.select.addEventListener('change', event => {
-    setAutoGearMonitorDefault(control.key, event.target.value);
-  });
-});
+var autoGearHeadingElem = null;
+var autoGearDescriptionElem = null;
+var autoGearMonitorDefaultsSection = null;
+var autoGearMonitorDefaultsHeading = null;
+var autoGearMonitorDefaultsDescription = null;
+var autoGearDefaultFocusMonitorSelect = null;
+var autoGearDefaultHandheldMonitorSelect = null;
+var autoGearDefaultComboMonitorSelect = null;
+var autoGearDefaultDirectorMonitorSelect = null;
+var autoGearDefaultFocusMonitorLabel = null;
+var autoGearDefaultHandheldMonitorLabel = null;
+var autoGearDefaultComboMonitorLabel = null;
+var autoGearDefaultDirectorMonitorLabel = null;
+var autoGearMonitorDefaultControls = [];
 
-var autoGearSearchInput = document.getElementById('autoGearSearch');
-var autoGearSearchLabel = document.getElementById('autoGearSearchLabel');
-var autoGearFilterScenarioLabel = document.getElementById('autoGearFilterScenarioLabel');
-var autoGearFilterScenarioSelect = document.getElementById('autoGearFilterScenario');
-var autoGearFilterClearButton = document.getElementById('autoGearFilterClear');
-var autoGearSummarySection = document.getElementById('autoGearSummary');
-var autoGearSummaryHeadingElem = document.getElementById('autoGearSummaryHeading');
-var autoGearSummaryDescriptionElem = document.getElementById('autoGearSummaryDescription');
-var autoGearSummaryCards = document.getElementById('autoGearSummaryCards');
-var autoGearSummaryDetails = document.getElementById('autoGearSummaryDetails');
-var autoGearRulesList = document.getElementById('autoGearRulesList');
-var autoGearPresetDescription = document.getElementById('autoGearPresetDescription');
-var autoGearPresetLabel = document.getElementById('autoGearPresetLabel');
-var autoGearPresetSelect = document.getElementById('autoGearPresetSelect');
-var autoGearSavePresetButton = document.getElementById('autoGearSavePreset');
-var autoGearDeletePresetButton = document.getElementById('autoGearDeletePreset');
-var autoGearAddRuleBtn = document.getElementById('autoGearAddRule');
-var autoGearResetFactoryButton = document.getElementById('autoGearResetFactory');
-var autoGearEditor = document.getElementById('autoGearEditor');
-var autoGearConditionControls = document.getElementById('autoGearConditionControls');
-var autoGearConditionSelectLabel = document.getElementById('autoGearConditionSelectLabel');
-var autoGearConditionSelect = document.getElementById('autoGearConditionSelect');
-var autoGearConditionAddButton = document.getElementById('autoGearConditionAdd');
-var autoGearConditionList = document.getElementById('autoGearConditionList');
-var autoGearAlwaysLabel = document.getElementById('autoGearAlwaysLabel');
-var autoGearAlwaysHelp = document.getElementById('autoGearAlwaysHelp');
-var autoGearCameraWeightSection = document.getElementById('autoGearCondition-cameraWeight');
+var autoGearSearchInput = null;
+var autoGearSearchLabel = null;
+var autoGearFilterScenarioLabel = null;
+var autoGearFilterScenarioSelect = null;
+var autoGearFilterClearButton = null;
+var autoGearSummarySection = null;
+var autoGearSummaryHeadingElem = null;
+var autoGearSummaryDescriptionElem = null;
+var autoGearSummaryCards = null;
+var autoGearSummaryDetails = null;
+var autoGearRulesList = null;
+var autoGearPresetDescription = null;
+var autoGearPresetLabel = null;
+var autoGearPresetSelect = null;
+var autoGearSavePresetButton = null;
+var autoGearDeletePresetButton = null;
+var autoGearAddRuleBtn = null;
+var autoGearResetFactoryButton = null;
+var autoGearEditor = null;
+var autoGearConditionControls = null;
+var autoGearConditionSelectLabel = null;
+var autoGearConditionSelect = null;
+var autoGearConditionAddButton = null;
+var autoGearConditionList = null;
+var autoGearAlwaysLabel = null;
+var autoGearAlwaysHelp = null;
+var autoGearCameraWeightSection = null;
 
-
-
-
-
-var autoGearConditionAddShortcuts = {
-  always: localAutoGearConditionSections.always?.querySelector('.auto-gear-condition-add') || null,
-  scenarios: localAutoGearConditionSections.scenarios?.querySelector('.auto-gear-condition-add') || null,
-  shootingDays: localAutoGearConditionSections.shootingDays?.querySelector('.auto-gear-condition-add') || null,
-  mattebox: localAutoGearConditionSections.mattebox?.querySelector('.auto-gear-condition-add') || null,
-  cameraHandle: localAutoGearConditionSections.cameraHandle?.querySelector('.auto-gear-condition-add') || null,
-  viewfinderExtension: localAutoGearConditionSections.viewfinderExtension?.querySelector('.auto-gear-condition-add') || null,
-  deliveryResolution: localAutoGearConditionSections.deliveryResolution?.querySelector('.auto-gear-condition-add') || null,
-  videoDistribution: localAutoGearConditionSections.videoDistribution?.querySelector('.auto-gear-condition-add') || null,
-  camera: localAutoGearConditionSections.camera?.querySelector('.auto-gear-condition-add') || null,
-  ownGear: localAutoGearConditionSections.ownGear?.querySelector('.auto-gear-condition-add') || null,
-  cameraWeight: localAutoGearConditionSections.cameraWeight?.querySelector('.auto-gear-condition-add') || null,
-  monitor: localAutoGearConditionSections.monitor?.querySelector('.auto-gear-condition-add') || null,
-  tripodHeadBrand: localAutoGearConditionSections.tripodHeadBrand?.querySelector('.auto-gear-condition-add') || null,
-  tripodBowl: localAutoGearConditionSections.tripodBowl?.querySelector('.auto-gear-condition-add') || null,
-  tripodTypes: localAutoGearConditionSections.tripodTypes?.querySelector('.auto-gear-condition-add') || null,
-  tripodSpreader: localAutoGearConditionSections.tripodSpreader?.querySelector('.auto-gear-condition-add') || null,
-  crewPresent: localAutoGearConditionSections.crewPresent?.querySelector('.auto-gear-condition-add') || null,
-  crewAbsent: localAutoGearConditionSections.crewAbsent?.querySelector('.auto-gear-condition-add') || null,
-  wireless: localAutoGearConditionSections.wireless?.querySelector('.auto-gear-condition-add') || null,
-  motors: localAutoGearConditionSections.motors?.querySelector('.auto-gear-condition-add') || null,
-  controllers: localAutoGearConditionSections.controllers?.querySelector('.auto-gear-condition-add') || null,
-  distance: localAutoGearConditionSections.distance?.querySelector('.auto-gear-condition-add') || null,
-};
-
-var autoGearConditionRemoveButtons = {
-  always: localAutoGearConditionSections.always?.querySelector('.auto-gear-condition-remove') || null,
-  scenarios: localAutoGearConditionSections.scenarios?.querySelector('.auto-gear-condition-remove') || null,
-  shootingDays: localAutoGearConditionSections.shootingDays?.querySelector('.auto-gear-condition-remove') || null,
-  mattebox: localAutoGearConditionSections.mattebox?.querySelector('.auto-gear-condition-remove') || null,
-  cameraHandle: localAutoGearConditionSections.cameraHandle?.querySelector('.auto-gear-condition-remove') || null,
-  viewfinderExtension: localAutoGearConditionSections.viewfinderExtension?.querySelector('.auto-gear-condition-remove') || null,
-  deliveryResolution: localAutoGearConditionSections.deliveryResolution?.querySelector('.auto-gear-condition-remove') || null,
-  videoDistribution: localAutoGearConditionSections.videoDistribution?.querySelector('.auto-gear-condition-remove') || null,
-  camera: localAutoGearConditionSections.camera?.querySelector('.auto-gear-condition-remove') || null,
-  ownGear: localAutoGearConditionSections.ownGear?.querySelector('.auto-gear-condition-remove') || null,
-  cameraWeight: localAutoGearConditionSections.cameraWeight?.querySelector('.auto-gear-condition-remove') || null,
-  monitor: localAutoGearConditionSections.monitor?.querySelector('.auto-gear-condition-remove') || null,
-  tripodHeadBrand: localAutoGearConditionSections.tripodHeadBrand?.querySelector('.auto-gear-condition-remove') || null,
-  tripodBowl: localAutoGearConditionSections.tripodBowl?.querySelector('.auto-gear-condition-remove') || null,
-  tripodTypes: localAutoGearConditionSections.tripodTypes?.querySelector('.auto-gear-condition-remove') || null,
-  tripodSpreader: localAutoGearConditionSections.tripodSpreader?.querySelector('.auto-gear-condition-remove') || null,
-  crewPresent: localAutoGearConditionSections.crewPresent?.querySelector('.auto-gear-condition-remove') || null,
-  crewAbsent: localAutoGearConditionSections.crewAbsent?.querySelector('.auto-gear-condition-remove') || null,
-  wireless: localAutoGearConditionSections.wireless?.querySelector('.auto-gear-condition-remove') || null,
-  motors: localAutoGearConditionSections.motors?.querySelector('.auto-gear-condition-remove') || null,
-  controllers: localAutoGearConditionSections.controllers?.querySelector('.auto-gear-condition-remove') || null,
-  distance: localAutoGearConditionSections.distance?.querySelector('.auto-gear-condition-remove') || null,
-};
-
-if (autoGearAddRuleBtn) {
-  autoGearAddRuleBtn.setAttribute('aria-controls', 'autoGearEditor');
-  autoGearAddRuleBtn.setAttribute(
-    'aria-expanded',
-    autoGearEditor && !autoGearEditor.hidden ? 'true' : 'false'
-  );
-}
-if (autoGearEditor) {
-  autoGearEditor.setAttribute('aria-hidden', autoGearEditor.hidden ? 'true' : 'false');
-}
+var autoGearConditionAddShortcuts = {};
+var autoGearConditionRemoveButtons = {};
 const AUTO_GEAR_UI_EXPORTS = (function resolveAutoGearUiExports() {
   if (typeof resolveCoreSupportModule === 'function') {
     try {
@@ -20895,6 +20783,179 @@ scheduleLayoutInitialization();
 if (typeof globalThis !== 'undefined') {
   globalThis.encodeSharedSetup = encodeSharedSetup;
   globalThis.decodeSharedSetup = decodeSharedSetup;
+}
+
+function initAppCoreNewDomReferences() {
+  if (initAppCoreNewDomReferences.done) return;
+  initAppCoreNewDomReferences.done = true;
+
+  if (typeof document === 'undefined') return;
+
+  localAutoGearConditionSections = {
+    always: document.getElementById('autoGearCondition-always'),
+    scenarios: document.getElementById('autoGearCondition-scenarios'),
+    shootingDays: document.getElementById('autoGearCondition-shootingDays'),
+    mattebox: document.getElementById('autoGearCondition-mattebox'),
+    cameraHandle: document.getElementById('autoGearCondition-cameraHandle'),
+    viewfinderExtension: document.getElementById('autoGearCondition-viewfinderExtension'),
+    deliveryResolution: document.getElementById('autoGearCondition-deliveryResolution'),
+    videoDistribution: document.getElementById('autoGearCondition-videoDistribution'),
+    camera: document.getElementById('autoGearCondition-camera'),
+    ownGear: document.getElementById('autoGearCondition-ownGear'),
+    cameraWeight: document.getElementById('autoGearCondition-cameraWeight'),
+    monitor: document.getElementById('autoGearCondition-monitor'),
+    tripodHeadBrand: document.getElementById('autoGearCondition-tripodHeadBrand'),
+    tripodBowl: document.getElementById('autoGearCondition-tripodBowl'),
+    tripodTypes: document.getElementById('autoGearCondition-tripodTypes'),
+    tripodSpreader: document.getElementById('autoGearCondition-tripodSpreader'),
+    crewPresent: document.getElementById('autoGearCondition-crewPresent'),
+    crewAbsent: document.getElementById('autoGearCondition-crewAbsent'),
+    wireless: document.getElementById('autoGearCondition-wireless'),
+    motors: document.getElementById('autoGearCondition-motors'),
+    controllers: document.getElementById('autoGearCondition-controllers'),
+    distance: document.getElementById('autoGearCondition-distance'),
+  };
+
+  autoGearHeadingElem = document.getElementById('autoGearHeading');
+  autoGearDescriptionElem = document.getElementById('autoGearDescription');
+  autoGearMonitorDefaultsSection = document.getElementById('autoGearMonitorDefaultsSection');
+  autoGearMonitorDefaultsHeading = document.getElementById('autoGearMonitorDefaultsHeading');
+  autoGearMonitorDefaultsDescription = document.getElementById('autoGearMonitorDefaultsDescription');
+  autoGearDefaultFocusMonitorSelect = document.getElementById('autoGearDefaultFocusMonitor');
+  autoGearDefaultHandheldMonitorSelect = document.getElementById('autoGearDefaultHandheldMonitor');
+  autoGearDefaultComboMonitorSelect = document.getElementById('autoGearDefaultComboMonitor');
+  autoGearDefaultDirectorMonitorSelect = document.getElementById('autoGearDefaultDirectorMonitor');
+  autoGearDefaultFocusMonitorLabel = document.getElementById('autoGearDefaultFocusMonitorLabel');
+  autoGearDefaultHandheldMonitorLabel = document.getElementById('autoGearDefaultHandheldMonitorLabel');
+  autoGearDefaultComboMonitorLabel = document.getElementById('autoGearDefaultComboMonitorLabel');
+  autoGearDefaultDirectorMonitorLabel = document.getElementById('autoGearDefaultDirectorMonitorLabel');
+
+  autoGearSearchInput = document.getElementById('autoGearSearch');
+  autoGearSearchLabel = document.getElementById('autoGearSearchLabel');
+  autoGearFilterScenarioLabel = document.getElementById('autoGearFilterScenarioLabel');
+  autoGearFilterScenarioSelect = document.getElementById('autoGearFilterScenario');
+  autoGearFilterClearButton = document.getElementById('autoGearFilterClear');
+  autoGearSummarySection = document.getElementById('autoGearSummary');
+  autoGearSummaryHeadingElem = document.getElementById('autoGearSummaryHeading');
+  autoGearSummaryDescriptionElem = document.getElementById('autoGearSummaryDescription');
+  autoGearSummaryCards = document.getElementById('autoGearSummaryCards');
+  autoGearSummaryDetails = document.getElementById('autoGearSummaryDetails');
+  autoGearRulesList = document.getElementById('autoGearRulesList');
+  autoGearPresetDescription = document.getElementById('autoGearPresetDescription');
+  autoGearPresetLabel = document.getElementById('autoGearPresetLabel');
+  autoGearPresetSelect = document.getElementById('autoGearPresetSelect');
+  autoGearSavePresetButton = document.getElementById('autoGearSavePreset');
+  autoGearDeletePresetButton = document.getElementById('autoGearDeletePreset');
+  autoGearAddRuleBtn = document.getElementById('autoGearAddRule');
+  autoGearResetFactoryButton = document.getElementById('autoGearResetFactory');
+  autoGearEditor = document.getElementById('autoGearEditor');
+  autoGearConditionControls = document.getElementById('autoGearConditionControls');
+  autoGearConditionSelectLabel = document.getElementById('autoGearConditionSelectLabel');
+  autoGearConditionSelect = document.getElementById('autoGearConditionSelect');
+  autoGearConditionAddButton = document.getElementById('autoGearConditionAdd');
+  autoGearConditionList = document.getElementById('autoGearConditionList');
+  autoGearAlwaysLabel = document.getElementById('autoGearAlwaysLabel');
+  autoGearAlwaysHelp = document.getElementById('autoGearAlwaysHelp');
+  autoGearCameraWeightSection = document.getElementById('autoGearCondition-cameraWeight');
+
+  autoGearMonitorDefaultControls = [
+    {
+      key: 'focus',
+      select: autoGearDefaultFocusMonitorSelect, // These will be null initially
+      label: autoGearDefaultFocusMonitorLabel,   // These will be null initially
+    },
+    {
+      key: 'handheld7',
+      select: autoGearDefaultHandheldMonitorSelect,
+      label: autoGearDefaultHandheldMonitorLabel,
+    },
+    {
+      key: 'combo15',
+      select: autoGearDefaultComboMonitorSelect,
+      label: autoGearDefaultComboMonitorLabel,
+    },
+    {
+      key: 'director15',
+      select: autoGearDefaultDirectorMonitorSelect,
+      label: autoGearDefaultDirectorMonitorLabel,
+    },
+  ];
+
+  autoGearMonitorDefaultControls.forEach(control => {
+    if (!control || !control.select) return;
+    control.select.addEventListener('change', event => {
+      setAutoGearMonitorDefault(control.key, event.target.value);
+    });
+  });
+
+  autoGearConditionAddShortcuts = {
+    always: localAutoGearConditionSections.always?.querySelector('.auto-gear-condition-add') || null,
+    scenarios: localAutoGearConditionSections.scenarios?.querySelector('.auto-gear-condition-add') || null,
+    shootingDays: localAutoGearConditionSections.shootingDays?.querySelector('.auto-gear-condition-add') || null,
+    mattebox: localAutoGearConditionSections.mattebox?.querySelector('.auto-gear-condition-add') || null,
+    cameraHandle: localAutoGearConditionSections.cameraHandle?.querySelector('.auto-gear-condition-add') || null,
+    viewfinderExtension: localAutoGearConditionSections.viewfinderExtension?.querySelector('.auto-gear-condition-add') || null,
+    deliveryResolution: localAutoGearConditionSections.deliveryResolution?.querySelector('.auto-gear-condition-add') || null,
+    videoDistribution: localAutoGearConditionSections.videoDistribution?.querySelector('.auto-gear-condition-add') || null,
+    camera: localAutoGearConditionSections.camera?.querySelector('.auto-gear-condition-add') || null,
+    ownGear: localAutoGearConditionSections.ownGear?.querySelector('.auto-gear-condition-add') || null,
+    cameraWeight: localAutoGearConditionSections.cameraWeight?.querySelector('.auto-gear-condition-add') || null,
+    monitor: localAutoGearConditionSections.monitor?.querySelector('.auto-gear-condition-add') || null,
+    tripodHeadBrand: localAutoGearConditionSections.tripodHeadBrand?.querySelector('.auto-gear-condition-add') || null,
+    tripodBowl: localAutoGearConditionSections.tripodBowl?.querySelector('.auto-gear-condition-add') || null,
+    tripodTypes: localAutoGearConditionSections.tripodTypes?.querySelector('.auto-gear-condition-add') || null,
+    tripodSpreader: localAutoGearConditionSections.tripodSpreader?.querySelector('.auto-gear-condition-add') || null,
+    crewPresent: localAutoGearConditionSections.crewPresent?.querySelector('.auto-gear-condition-add') || null,
+    crewAbsent: localAutoGearConditionSections.crewAbsent?.querySelector('.auto-gear-condition-add') || null,
+    wireless: localAutoGearConditionSections.wireless?.querySelector('.auto-gear-condition-add') || null,
+    motors: localAutoGearConditionSections.motors?.querySelector('.auto-gear-condition-add') || null,
+    controllers: localAutoGearConditionSections.controllers?.querySelector('.auto-gear-condition-add') || null,
+    distance: localAutoGearConditionSections.distance?.querySelector('.auto-gear-condition-add') || null,
+  };
+
+  autoGearConditionRemoveButtons = {
+    always: localAutoGearConditionSections.always?.querySelector('.auto-gear-condition-remove') || null,
+    scenarios: localAutoGearConditionSections.scenarios?.querySelector('.auto-gear-condition-remove') || null,
+    shootingDays: localAutoGearConditionSections.shootingDays?.querySelector('.auto-gear-condition-remove') || null,
+    mattebox: localAutoGearConditionSections.mattebox?.querySelector('.auto-gear-condition-remove') || null,
+    cameraHandle: localAutoGearConditionSections.cameraHandle?.querySelector('.auto-gear-condition-remove') || null,
+    viewfinderExtension: localAutoGearConditionSections.viewfinderExtension?.querySelector('.auto-gear-condition-remove') || null,
+    deliveryResolution: localAutoGearConditionSections.deliveryResolution?.querySelector('.auto-gear-condition-remove') || null,
+    videoDistribution: localAutoGearConditionSections.videoDistribution?.querySelector('.auto-gear-condition-remove') || null,
+    camera: localAutoGearConditionSections.camera?.querySelector('.auto-gear-condition-remove') || null,
+    ownGear: localAutoGearConditionSections.ownGear?.querySelector('.auto-gear-condition-remove') || null,
+    cameraWeight: localAutoGearConditionSections.cameraWeight?.querySelector('.auto-gear-condition-remove') || null,
+    monitor: localAutoGearConditionSections.monitor?.querySelector('.auto-gear-condition-remove') || null,
+    tripodHeadBrand: localAutoGearConditionSections.tripodHeadBrand?.querySelector('.auto-gear-condition-remove') || null,
+    tripodBowl: localAutoGearConditionSections.tripodBowl?.querySelector('.auto-gear-condition-remove') || null,
+    tripodTypes: localAutoGearConditionSections.tripodTypes?.querySelector('.auto-gear-condition-remove') || null,
+    tripodSpreader: localAutoGearConditionSections.tripodSpreader?.querySelector('.auto-gear-condition-remove') || null,
+    crewPresent: localAutoGearConditionSections.crewPresent?.querySelector('.auto-gear-condition-remove') || null,
+    crewAbsent: localAutoGearConditionSections.crewAbsent?.querySelector('.auto-gear-condition-remove') || null,
+    wireless: localAutoGearConditionSections.wireless?.querySelector('.auto-gear-condition-remove') || null,
+    motors: localAutoGearConditionSections.motors?.querySelector('.auto-gear-condition-remove') || null,
+    controllers: localAutoGearConditionSections.controllers?.querySelector('.auto-gear-condition-remove') || null,
+    distance: localAutoGearConditionSections.distance?.querySelector('.auto-gear-condition-remove') || null,
+  };
+
+  if (autoGearAddRuleBtn) {
+    autoGearAddRuleBtn.setAttribute('aria-controls', 'autoGearEditor');
+    autoGearAddRuleBtn.setAttribute(
+      'aria-expanded',
+      autoGearEditor && !autoGearEditor.hidden ? 'true' : 'false'
+    );
+  }
+  if (autoGearEditor) {
+    autoGearEditor.setAttribute('aria-hidden', autoGearEditor.hidden ? 'true' : 'false');
+  }
+}
+
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAppCoreNewDomReferences);
+  } else {
+    initAppCoreNewDomReferences();
+  }
 }
 
 

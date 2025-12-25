@@ -228,7 +228,7 @@
   }
 
   function freezeDeep(value, seen = new WeakSet()) {
-    if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
+    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
       return value;
     }
 

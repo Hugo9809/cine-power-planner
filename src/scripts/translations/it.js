@@ -358,7 +358,7 @@
       "featureSearchTypeDevice": "Dispositivo",
       "featureSearchTypeHelp": "Argomento di supporto",
       "darkModeHelp": "Passa tra tema chiaro e scuro; premi D per attivarlo. La scelta viene ricordata.",
-      "pinkModeHelp": "Aggiungi un tema rosa giocoso. Quando la modalità rosa è attiva, l’icona dell’unicorno cambia ogni 30 secondi con una delicata animazione pop e l’impostazione funziona in modalità chiara o scura ed è ricordata per la volta successiva. Icone fluttuanti compaiono in modo casuale sullo schermo e, toccandone una tre volte, si attiva una pioggia di icone rosa.",
+      "pinkModeHelp": "Aggiungi un tema rosa giocoso. Quando la modalità rosa è attiva, l’icona dell’unicorno cambia ogni 30 secondi con una delicata animazione pop e l’impostazione funziona in modalità chiara o scura ed è ricordata per la volta successiva.",
       "reloadAppLabel": "Ricarica forzata",
       "reloadAppHelp": "Svuota la cache, annulla la registrazione dei service worker obsoleti ed esegue una ricarica forzata dell'app senza eliminare i dati salvati. L'app ora controlla la connessione prima della pulizia, segnala gli stati di fallback nella barra offline e precarica il nuovo pacchetto così la nuova versione arriva più velocemente.",
       "reloadAppOfflineNotice": "Offline o degradato: il ricaricamento forzato verifica prima la connessione. Ricollegati e riprova.",
@@ -1936,7 +1936,7 @@
             "hero": {
               "heading": "Benvenuto in Cine Power Planner!",
               "subheading": "Proteggi ogni configurazione camera con verifiche di potenza, kit AutoGear e handoff pronti al noleggio—tutto rimane offline.",
-            "summary": "Pianifica configurazioni camera sicure, verifica i limiti di potenza, genera automaticamente liste kit dai requisiti di produzione ed esporta PDF pronti per il noleggio—ogni salvataggio resta locale prima del ciak.",
+              "summary": "Pianifica configurazioni camera sicure, verifica i limiti di potenza, genera automaticamente liste kit dai requisiti di produzione ed esporta PDF pronti per il noleggio—ogni salvataggio resta locale prima del ciak.",
               "badgeIcon": "",
               "badgeLabel": "Crew-first · Offline per sempre",
               "badgeDescription": "Nessun server, nessun account, nessun abbonamento. Ogni salvataggio, autosalvataggio, backup, ripristino, condivisione e importazione resta su questo dispositivo.",

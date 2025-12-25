@@ -294,31 +294,7 @@
     return normalized;
   }
 
-  function mergeMetadata(normalizedName, freeze, options) {
-    const existingMeta = metadataMap[normalizedName];
-    if (!existingMeta) {
-      return;
-    }
 
-    const mergedConnections = normalizeConnections([
-      ...(Array.isArray(existingMeta.connections) ? existingMeta.connections : []),
-      ...(options.connections || options.links || options.dependencies || []),
-    ]);
-
-    metadataMap[normalizedName] = {
-      description:
-        typeof options.description === 'string' && options.description.trim()
-          ? options.description.trim()
-          : existingMeta.description,
-      category:
-        typeof options.category === 'string' && options.category.trim()
-          ? options.category.trim()
-          : existingMeta.category,
-      registeredAt: existingMeta.registeredAt,
-      frozen: existingMeta.frozen,
-      connections: freezeDeep(mergedConnections),
-    };
-  }
 
   function register(name, moduleApi, options = {}) {
     const normalizedName = normalizeName(name);
@@ -339,8 +315,7 @@
       }
 
       if (!options.replace) {
-        mergeMetadata(normalizedName, freeze, options || {});
-        return existing;
+        throw new Error(`cineModules: Module "${normalizedName}" is already registered. Use { replace: true } to overwrite.`);
       }
     }
 
@@ -539,6 +514,23 @@
 
     moduleMap = Object.create(null);
     metadataMap = Object.create(null);
+
+    // Cancel any pending flushes and plain the queue
+    const scopes = [GLOBAL_SCOPE];
+    if (typeof globalThis !== 'undefined' && globalThis !== GLOBAL_SCOPE) scopes.push(globalThis);
+    if (typeof window !== 'undefined' && scopes.indexOf(window) === -1) scopes.push(window);
+    if (typeof self !== 'undefined' && scopes.indexOf(self) === -1) scopes.push(self);
+    if (typeof global !== 'undefined' && scopes.indexOf(global) === -1) scopes.push(global);
+
+    for (const scope of scopes) {
+      if (scope) {
+        cancelPendingFlush(scope);
+        if (Array.isArray(scope[PENDING_QUEUE_KEY])) {
+          scope[PENDING_QUEUE_KEY].length = 0;
+        }
+      }
+    }
+
     return true;
   }
 
@@ -665,9 +657,12 @@
       try {
         registry.register(name, api, options);
       } catch (error) {
-        void error;
-        requiresReschedule = true;
-        queue.push(entry);
+        // If the module fails to register, we log a warning and discard the pending entry.
+        // Retrying blindly causes infinite loops if the error is permanent (e.g. invalid name, conflict, etc).
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn(`cineModules: discard pending registration for "${name}" due to error:`, error);
+        }
+        continue;
       }
     }
 

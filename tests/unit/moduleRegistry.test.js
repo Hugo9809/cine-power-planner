@@ -49,13 +49,74 @@ describe('cineModules registry', () => {
     delete global[pendingKey];
   });
 
-  test('retries pending registrations when initial attempts fail', () => {
+  test('discards duplicate pending registrations without infinite retry', () => {
     const pendingKey = '__cinePendingModuleRegistrations__';
     const timerKey = '__cinePendingModuleRegistrationsTimer__';
 
     registry.__internalResetForTests({ force: true });
     jest.resetModules();
 
+    // Mock console.warn to verify we log the discard
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
+
+    // Setup the queue with duplicate items
+    // The first one will register successfully.
+    // The second one will collide and should be discarded.
+    Object.defineProperty(global, pendingKey, {
+      configurable: true,
+      enumerable: false,
+      writable: true,
+      value: [
+        Object.freeze({
+          name: 'cineDuplicate',
+          api: { version: 1 },
+          options: Object.freeze({ replace: false, freeze: false }),
+        }),
+        Object.freeze({
+          name: 'cineDuplicate',
+          api: { version: 2 },
+          options: Object.freeze({ replace: false, freeze: false }),
+        }),
+      ],
+    });
+
+    jest.resetModules();
+    const reloadedRegistry = require(path.join('..', '..', 'src', 'scripts', 'modules', 'registry.js'));
+
+    const queue = global[pendingKey];
+
+    // The queue passed to the flush loop was a slice. The original queue array (on global)
+    // is cleared (length=0) at the start of flush.
+    // If reschedule happens, items are pushed back.
+    // So we expect length to be 0.
+    if (queue) {
+      expect(queue.length).toBe(0);
+    }
+
+    expect(global[timerKey]).toBeUndefined(); // Should NOT be rescheduled
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('discard pending registration'),
+      expect.any(Error)
+    );
+
+    warnSpy.mockRestore();
+    reloadedRegistry.__internalResetForTests({ force: true });
+    registry = reloadedRegistry;
+    delete global[pendingKey];
+  });
+
+  test('discards pending registrations when initial attempts fail', () => {
+    const pendingKey = '__cinePendingModuleRegistrations__';
+    const timerKey = '__cinePendingModuleRegistrationsTimer__';
+
+    registry.__internalResetForTests({ force: true });
+    jest.resetModules();
+
+    // Mock console.warn
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
+
+    // "   " is an invalid name (empty after trim), which causes createBlueprint to throw TypeError.
     const failingEntry = {
       name: '   ',
       api: { value: 'delayed' },
@@ -69,51 +130,24 @@ describe('cineModules registry', () => {
       value: [failingEntry],
     });
 
-    const originalSetTimeout = global.setTimeout;
-    const originalClearTimeout = global.clearTimeout;
-    const scheduledCallbacks = [];
-
-    global.setTimeout = jest.fn((callback) => {
-      if (typeof callback === 'function') {
-        scheduledCallbacks.push(callback);
-      }
-      return scheduledCallbacks.length;
-    });
-
-    global.clearTimeout = jest.fn();
-
-    let freshRegistry;
-
     try {
-      freshRegistry = require(path.join('..', '..', 'src', 'scripts', 'modules', 'registry.js'));
+      require(path.join('..', '..', 'src', 'scripts', 'modules', 'registry.js'));
 
       const queue = global[pendingKey];
-      expect(Array.isArray(queue)).toBe(true);
-      expect(queue.length).toBe(1);
-      expect(global[timerKey]).not.toBeUndefined();
-
-      queue.splice(0, queue.length, {
-        name: 'cineRecovered',
-        api: { ready: true },
-        options: Object.freeze({ replace: true, freeze: false }),
-      });
-
-      while (scheduledCallbacks.length > 0) {
-        const callback = scheduledCallbacks.shift();
-        if (typeof callback === 'function') {
-          callback();
-        }
+      // Expect queue to be drained/cleared
+      if (queue) {
+        expect(queue.length).toBe(0);
       }
+      expect(global[timerKey]).toBeUndefined();
 
-      expect(queue.length).toBe(0);
-      expect(freshRegistry.get('cineRecovered')).toEqual({ ready: true });
-      expect(global[timerKey] == null).toBe(true);
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('discard pending registration'),
+        expect.any(Error)
+      );
     } finally {
-      global.setTimeout = originalSetTimeout;
-      global.clearTimeout = originalClearTimeout;
-      if (freshRegistry) {
-        freshRegistry.__internalResetForTests({ force: true });
-        registry = freshRegistry;
+      warnSpy.mockRestore();
+      if (registry) {
+        registry.__internalResetForTests({ force: true });
       }
       delete global[pendingKey];
       delete global[timerKey];

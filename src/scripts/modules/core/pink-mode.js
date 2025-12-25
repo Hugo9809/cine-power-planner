@@ -33,10 +33,7 @@
         const GLOBAL_SCOPE = (typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : global)));
 
         const PINK_MODE_ANIMATED_ICON_FILES = Object.freeze([
-          'src/animations/flamingo.json',
           'src/animations/unicorn.json',
-          'src/animations/pink-mode/camera.json',
-          'src/animations/pink-mode/director-chair.json',
           'src/animations/pink-mode/dog.json',
           'src/animations/pink-mode/fox-2.json',
           'src/animations/pink-mode/fox-3.json',
@@ -76,64 +73,7 @@
           });
         }
 
-        /**
-         * Represents a single floating Lottie icon in the Pink Mode overlay.
-         * Handles DOM element creation, animation loading, and physics (drift).
-         */
-        class FloatingIcon {
-          constructor(manager, x, y, iconData) {
-            this.manager = manager;
-            this.element = document.createElement('div');
-            this.element.className = 'pink-mode-floating-icon';
-            this.element.style.left = x + 'px';
-            this.element.style.top = y + 'px';
-            this.element.style.position = 'fixed';
-            this.element.style.width = '100px';
-            this.element.style.height = '100px';
-            this.element.style.pointerEvents = 'none';
-            this.element.style.zIndex = '10000';
 
-            document.body.appendChild(this.element);
-
-            ensurePinkModeLottieRuntime().then(lottie => {
-              if (this.destroyed) return; // check if destroyed while loading
-              this.anim = lottie.loadAnimation({
-                container: this.element,
-                renderer: 'svg',
-                loop: true,
-                autoplay: true,
-                animationData: iconData
-              });
-            });
-
-            // Simple fall animation
-            this.posY = y;
-            this.speed = 1 + Math.random() * 2;
-            this.tick = this.tick.bind(this);
-            requestAnimationFrame(this.tick);
-          }
-
-          tick() {
-            if (!this.element.parentNode) return;
-            this.posY += this.speed;
-            this.element.style.top = this.posY + 'px';
-            if (this.posY > window.innerHeight) {
-              this.destroy();
-            } else {
-              requestAnimationFrame(this.tick);
-            }
-          }
-
-          destroy() {
-            this.destroyed = true;
-            if (this.element.parentNode) {
-              this.element.parentNode.removeChild(this.element);
-            }
-            if (this.anim) {
-              this.anim.destroy();
-            }
-          }
-        }
 
         /**
          * Manages the lifecycle of Pink Mode animations, including the "rain" effect
@@ -142,9 +82,6 @@
         class PinkModeManager {
           constructor() {
             this.active = false;
-            this.icons = [];
-            this.combo = 0;
-            this.rainTimeouts = [];
           }
 
           activate() {
@@ -155,75 +92,10 @@
           deactivate() {
             this.active = false;
             document.body.classList.remove('pink-mode-active');
-            this.icons.forEach(i => i.destroy());
-            this.icons = [];
-            if (this.rainTimeouts) {
-              this.rainTimeouts.forEach(id => clearTimeout(id));
-              this.rainTimeouts = [];
-            }
           }
 
-          /**
-           * Triggers a "rain" effect where multiple icons spawn in sequence.
-           * Used for special events or manual triggers.
-           */
           triggerRain() {
-            // TODO: Implement proper rain
-            console.log('Rain triggered!');
-            for (let i = 0; i < 20; i++) {
-              const tm = setTimeout(() => {
-                if (this.rainTimeouts) {
-                  const idx = this.rainTimeouts.indexOf(tm);
-                  if (idx > -1) this.rainTimeouts.splice(idx, 1);
-                }
-                this.spawnRandomIcon();
-              }, i * 200);
-              this.rainTimeouts.push(tm);
-            }
-          }
-
-          spawnRandomIcon() {
-            if (!this.active) return;
-
-            const iconFile = PINK_MODE_ANIMATED_ICON_FILES[Math.floor(Math.random() * PINK_MODE_ANIMATED_ICON_FILES.length)];
-
-            // Try to get from global cache first
-            if (GLOBAL_SCOPE.cinePinkModeAnimatedIconData && GLOBAL_SCOPE.cinePinkModeAnimatedIconData[iconFile]) {
-              try {
-                const iconData = JSON.parse(GLOBAL_SCOPE.cinePinkModeAnimatedIconData[iconFile]);
-                this.spawnIconWithData(iconData);
-              } catch (e) { console.error('Error parsing cached icon data', e); }
-              return;
-            }
-
-            // Fallback to fetch
-            if (typeof fetch === 'function') {
-              fetch(iconFile)
-                .then(response => {
-                  if (!response.ok) throw new Error('Network response was not ok');
-                  return response.json();
-                })
-                .then(data => {
-                  // Optionally cache it back effectively
-                  if (!GLOBAL_SCOPE.cinePinkModeAnimatedIconData) GLOBAL_SCOPE.cinePinkModeAnimatedIconData = {};
-                  GLOBAL_SCOPE.cinePinkModeAnimatedIconData[iconFile] = JSON.stringify(data);
-
-                  this.spawnIconWithData(data);
-                })
-                .catch(error => {
-                  // Silent fail or minimal log
-                  // console.warn('Failed to fetch pink mode icon', iconFile);
-                });
-            }
-          }
-
-          spawnIconWithData(iconData) {
-            if (!iconData || !this.active) return;
-
-            const x = Math.random() * window.innerWidth;
-            const y = -150;
-            const icon = new FloatingIcon(this, x, y, iconData);
-            this.icons.push(icon);
+            // No-op (removed feature)
           }
         }
 
@@ -271,7 +143,7 @@
         exports.resolvePinkModeLottieRuntime = () => GLOBAL_SCOPE.lottie;
         exports.startPinkModeAnimatedIcons = () => manager.activate();
         exports.stopPinkModeAnimatedIcons = () => manager.deactivate();
-        exports.triggerPinkModeIconRain = () => manager.triggerRain();
+        exports.triggerPinkModeIconRain = () => { };
         exports.startPinkModeIconPreload = () => { };
         exports.PINK_MODE_ICON_INTERVAL_MS = 30000;
         exports.PINK_MODE_ICON_ANIMATION_CLASS = 'pink-mode-icon-pop';
@@ -342,10 +214,7 @@
           const GLOBAL_SCOPE = (typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : global)));
 
           const PINK_MODE_ANIMATED_ICON_FILES = Object.freeze([
-            'src/animations/flamingo.json',
             'src/animations/unicorn.json',
-            'src/animations/pink-mode/camera.json',
-            'src/animations/pink-mode/director-chair.json',
             'src/animations/pink-mode/dog.json',
             'src/animations/pink-mode/fox-2.json',
             'src/animations/pink-mode/fox-3.json',
@@ -398,66 +267,11 @@
             });
           }
 
-          class FloatingIcon {
-            constructor(manager, x, y, iconData) {
-              this.manager = manager;
-              this.element = document.createElement('div');
-              this.element.className = 'pink-mode-floating-icon';
-              this.element.style.left = x + 'px';
-              this.element.style.top = y + 'px';
-              this.element.style.position = 'fixed';
-              this.element.style.width = '100px';
-              this.element.style.height = '100px';
-              this.element.style.pointerEvents = 'none';
-              this.element.style.zIndex = '10000';
 
-              document.body.appendChild(this.element);
-
-              ensurePinkModeLottieRuntime().then(lottie => {
-                if (this.destroyed) return;
-                this.anim = lottie.loadAnimation({
-                  container: this.element,
-                  renderer: 'svg',
-                  loop: true,
-                  autoplay: true,
-                  animationData: iconData
-                });
-              });
-
-              this.posY = y;
-              this.speed = 1 + Math.random() * 2;
-              this.tick = this.tick.bind(this);
-              requestAnimationFrame(this.tick);
-            }
-
-            tick() {
-              if (!this.element.parentNode) return;
-              this.posY += this.speed;
-              this.element.style.top = this.posY + 'px';
-              if (this.posY > window.innerHeight) {
-                this.destroy();
-              } else {
-                requestAnimationFrame(this.tick);
-              }
-            }
-
-            destroy() {
-              this.destroyed = true;
-              if (this.element.parentNode) {
-                this.element.parentNode.removeChild(this.element);
-              }
-              if (this.anim) {
-                this.anim.destroy();
-              }
-            }
-          }
 
           class PinkModeManager {
             constructor() {
               this.active = false;
-              this.icons = [];
-              this.combo = 0;
-              this.rainTimeouts = [];
             }
 
             activate() {
@@ -468,60 +282,10 @@
             deactivate() {
               this.active = false;
               document.body.classList.remove('pink-mode-active');
-              this.icons.forEach(i => i.destroy());
-              this.icons = [];
-              if (this.rainTimeouts) {
-                this.rainTimeouts.forEach(id => clearTimeout(id));
-                this.rainTimeouts = [];
-              }
             }
 
             triggerRain() {
-              console.log('Rain triggered!');
-              for (let i = 0; i < 20; i++) {
-                const tm = setTimeout(() => {
-                  this.spawnRandomIcon();
-                }, i * 200);
-                this.rainTimeouts.push(tm);
-              }
-            }
-
-            spawnRandomIcon() {
-              if (!this.active) return;
-
-              const iconFile = PINK_MODE_ANIMATED_ICON_FILES[Math.floor(Math.random() * PINK_MODE_ANIMATED_ICON_FILES.length)];
-
-              if (GLOBAL_SCOPE.cinePinkModeAnimatedIconData && GLOBAL_SCOPE.cinePinkModeAnimatedIconData[iconFile]) {
-                try {
-                  const iconData = JSON.parse(GLOBAL_SCOPE.cinePinkModeAnimatedIconData[iconFile]);
-                  this.spawnIconWithData(iconData);
-                } catch (e) {
-                  // ignore
-                }
-                return;
-              }
-
-              if (typeof fetch === 'function') {
-                fetch(iconFile)
-                  .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    return response.json();
-                  })
-                  .then(data => {
-                    if (!GLOBAL_SCOPE.cinePinkModeAnimatedIconData) GLOBAL_SCOPE.cinePinkModeAnimatedIconData = {};
-                    GLOBAL_SCOPE.cinePinkModeAnimatedIconData[iconFile] = JSON.stringify(data);
-                    this.spawnIconWithData(data);
-                  })
-                  .catch(() => { });
-              }
-            }
-
-            spawnIconWithData(iconData) {
-              if (!iconData || !this.active) return;
-              const x = Math.random() * window.innerWidth;
-              const y = -150;
-              const icon = new FloatingIcon(this, x, y, iconData);
-              this.icons.push(icon);
+              // No-op
             }
           }
 
@@ -569,7 +333,7 @@
             resolvePinkModeLottieRuntime() { return ensurePinkModeLottieRuntime(); },
             startPinkModeAnimatedIcons: () => manager.activate(),
             stopPinkModeAnimatedIcons: () => manager.deactivate(),
-            triggerPinkModeIconRain: () => manager.triggerRain(),
+            triggerPinkModeIconRain: () => { },
             startPinkModeIconPreload: () => { },
             getPinkModeIconRotationTimer: () => null,
             setPinkModeIconRotationTimer: () => { },

@@ -335,7 +335,7 @@
       "featureSearchTypeDevice": "Dispositivo",
       "featureSearchTypeHelp": "Tema de ayuda",
       "darkModeHelp": "Alterna entre temas claro y oscuro; pulsa D para cambiar. La preferencia se guarda.",
-      "pinkModeHelp": "Añade un tema rosa divertido. Cuando el modo rosa está activo, el icono del unicornio cambia cada 30 segundos con una suave animación emergente, y el ajuste funciona en modo claro u oscuro y se recuerda para la próxima vez. Iconos flotantes aparecen al azar en la pantalla y, si tocas cualquiera de ellos tres veces, se activa una lluvia de iconos rosas.",
+      "pinkModeHelp": "Añade un tema rosa divertido. Cuando el modo rosa está activo, el icono del unicornio cambia cada 30 segundos con una suave animación emergente, y el ajuste funciona en modo claro u oscuro y se recuerda para la próxima vez.",
       "reloadAppLabel": "Forzar recarga",
       "reloadAppHelp": "Borra la caché, cancela el registro de service workers obsoletos y recarga la aplicación sin eliminar los datos guardados. La app ahora comprueba la conexión antes de limpiar, informa del estado de fallback en el indicador sin conexión y precarga el paquete actualizado para que la nueva versión aparezca más rápido.",
       "reloadAppOfflineNotice": "Sin conexión o degradado: la recarga forzada comprueba primero la conexión. Vuelve a conectarte e inténtalo de nuevo.",
@@ -1913,7 +1913,7 @@
             "hero": {
               "heading": "Bienvenida a Cine Power Planner!",
               "subheading": "Protege cada set de cámara con comprobaciones de potencia, kits AutoGear y entregas listas para alquiler—todo se mantiene sin conexión.",
-            "summary": "Planifica configuraciones de cámara seguras, verifica límites de potencia, genera automáticamente listas de kit desde los requisitos de producción y exporta PDF listos para renta—cada guardado permanece local antes del llamado.",
+              "summary": "Planifica configuraciones de cámara seguras, verifica límites de potencia, genera automáticamente listas de kit desde los requisitos de producción y exporta PDF listos para renta—cada guardado permanece local antes del llamado.",
               "badgeIcon": "",
               "badgeLabel": "Crew-first · Siempre sin conexión",
               "badgeDescription": "Sin servidores, sin cuentas, sin suscripciones. Cada guardado, autosave, copia de seguridad, restauración, compartición e importación permanece en este dispositivo.",

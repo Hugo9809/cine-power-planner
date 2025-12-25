@@ -6769,67 +6769,7 @@ body.pink-mode .pink-mode-icon {
   pointer-events: none;
 }
 
-.pink-mode-animation-instance.pink-mode-icon-rain {
-  animation-name: pink-mode-rain-icon;
-  animation-duration: var(--pink-mode-rain-duration, 5s);
-  animation-timing-function: linear;
-  pointer-events: none;
-  cursor: default;
-  z-index: 10001;
-}
 
-.pink-mode-animation-instance.pink-mode-icon-rain svg {
-  transform: scale(var(--pink-mode-rain-scale, 1)) rotate(var(--pink-mode-rain-rotation, 0deg));
-}
-
-@keyframes pink-mode-floating-icon {
-  0% {
-    opacity: 0;
-    transform: translate3d(0, 0, 0) scale(0.5) rotate(var(--pink-mode-animation-rotation-start, -10deg));
-  }
-
-  5% {
-    opacity: 1;
-    transform: translate3d(var(--pink-mode-animation-sway-1, 20px), -5vh, 0) scale(1) rotate(var(--pink-mode-animation-rotation-mid, 0deg));
-  }
-
-  25% {
-    transform: translate3d(var(--pink-mode-animation-sway-2, -20px), -25vh, 0) scale(1) rotate(var(--pink-mode-animation-rotation-mid, 5deg));
-  }
-
-  50% {
-    transform: translate3d(var(--pink-mode-animation-sway-3, 20px), -50vh, 0) scale(1) rotate(var(--pink-mode-animation-rotation-mid, -5deg));
-  }
-
-  75% {
-    transform: translate3d(var(--pink-mode-animation-sway-4, -20px), -75vh, 0) scale(1) rotate(var(--pink-mode-animation-rotation-mid, 5deg));
-  }
-
-  100% {
-    opacity: 0;
-    transform: translate3d(var(--pink-mode-animation-sway-5, 10px), -120vh, 0) scale(0.8) rotate(var(--pink-mode-animation-rotation-end, 10deg));
-  }
-}
-
-@keyframes pink-mode-rain-icon {
-  0% {
-    opacity: 0;
-    transform: translate3d(0, -120vh, 0) scale(var(--pink-mode-rain-scale, 1)) rotate(var(--pink-mode-rain-rotation, 0deg));
-  }
-
-  5% {
-    opacity: 1;
-  }
-
-  90% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 0;
-    transform: translate3d(var(--pink-mode-rain-drift, 0px), 120vh, 0) scale(var(--pink-mode-rain-scale, 1)) rotate(var(--pink-mode-rain-rotation, 0deg));
-  }
-}
 
 html.reduce-motion .pink-mode-icon-pop,
 body.reduce-motion .pink-mode-icon-pop {
@@ -13850,15 +13790,7 @@ body.menu-open #menuOverlay {
 }
 
 /* Pink Mode Redesign Animations */
-.pink-mode-floating-icon {
-  position: fixed;
-  z-index: 100000;
-  pointer-events: none;
-  width: 120px;
-  height: 120px;
-  contain: layout paint style;
-  will-change: transform, top;
-}
+
 
 body.pink-mode-active {
   --accent-color: #ff69b4;

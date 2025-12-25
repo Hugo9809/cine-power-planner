@@ -343,7 +343,7 @@
       "featureSearchTypeDevice": "Device",
       "featureSearchTypeHelp": "Help topic",
       "darkModeHelp": "Switch between light and dark themes for comfortable viewing. Press D to toggle. The preference is saved.",
-      "pinkModeHelp": "Add a playful pink accent theme. The unicorn icon cycles every 30 seconds with a gentle pop animation while pink mode is on, and the setting works with light or dark mode and is remembered for next time. Floating icons drift across the screen, and pressing any of them three times triggers a burst of pink icon rain.",
+      "pinkModeHelp": "Add a playful pink accent theme. The unicorn icon cycles every 30 seconds with a gentle pop animation while pink mode is on, and the setting works with light or dark mode and is remembered for next time.",
       "settingsButton": "Settings",
       "settingsButtonHelp": "Open Settings to personalize language, colors, fonts, accessibility options and backups.",
       "settingsHeading": "Settings",
@@ -1921,7 +1921,7 @@
             "hero": {
               "heading": "Welcome to Cine Power Planner!",
               "subheading": "Safeguard every camera setup with power checks, AutoGear kits, and rental-ready handoffs—kept fully offline.",
-            "summary": "Plan safe camera setups, verify power limits, auto-build kit lists from production requirements, and export rental-ready PDFs—every save stays local before call time.",
+              "summary": "Plan safe camera setups, verify power limits, auto-build kit lists from production requirements, and export rental-ready PDFs—every save stays local before call time.",
               "badgeIcon": "",
               "badgeLabel": "Crew-first · Offline forever",
               "badgeDescription": "No servers, no accounts, no subscriptions. Every save, autosave, backup, restore, share, and import lives on this device.",
