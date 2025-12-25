@@ -15,18 +15,7 @@
     return {};
   }
 
-  function tryRequire(modulePath) {
-    if (typeof require !== 'function') {
-      return null;
-    }
 
-    try {
-      return require(modulePath);
-    } catch (error) {
-      void error;
-      return null;
-    }
-  }
 
   function createUniqueScopeList() {
     const scopes = [];
@@ -417,11 +406,6 @@
 
   function resolveModuleRegistry(scope) {
     const targetScope = scope || detectGlobalScope();
-
-    const required = tryRequire('./registry.js');
-    if (required && typeof required === 'object') {
-      return required;
-    }
 
     const scopes = collectCandidateScopes(targetScope);
     for (let index = 0; index < scopes.length; index += 1) {
