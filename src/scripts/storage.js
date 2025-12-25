@@ -14092,8 +14092,12 @@
     return trimmed;
   };
 
-  function normalizeImportedFullBackupHistory(value, visited) {
+  function normalizeImportedFullBackupHistory(value, visited, depth = 0) {
     if (value === null || value === undefined) {
+      return [];
+    }
+
+    if (depth > 50) {
       return [];
     }
 
@@ -14107,8 +14111,12 @@
       seen.add(value);
       for (let i = 0; i < count; i += 1) {
         const item = value[i];
+        if (typeof item === 'object' && item !== null && seen.has(item)) {
+          continue;
+        }
+
         if (Array.isArray(item)) {
-          const nested = normalizeImportedFullBackupHistory(item, seen);
+          const nested = normalizeImportedFullBackupHistory(item, seen, depth + 1);
           if (nested && nested.length) {
             for (let j = 0; j < nested.length; j += 1) {
               results.push(nested[j]);
@@ -14135,7 +14143,7 @@
     if (isMapLike(value)) {
       const converted = convertMapLikeToObject(value);
       if (converted) {
-        return normalizeImportedFullBackupHistory(Object.values(converted), seen);
+        return normalizeImportedFullBackupHistory(Object.values(converted), seen, depth + 1);
       }
       return [];
     }
@@ -14143,7 +14151,7 @@
     if (typeof value === 'string') {
       const parsed = tryParseJSONLike(value);
       if (parsed.success) {
-        return normalizeImportedFullBackupHistory(parsed.parsed, seen);
+        return normalizeImportedFullBackupHistory(parsed.parsed, seen, depth + 1);
       }
       const entry = normalizeFullBackupHistoryEntry(value);
       return entry ? [entry] : [];
@@ -14156,13 +14164,13 @@
 
     if (isPlainObject(value)) {
       if (Array.isArray(value.history)) {
-        return normalizeImportedFullBackupHistory(value.history, seen);
+        return normalizeImportedFullBackupHistory(value.history, seen, depth + 1);
       }
       if (Array.isArray(value.entries)) {
-        return normalizeImportedFullBackupHistory(value.entries, seen);
+        return normalizeImportedFullBackupHistory(value.entries, seen, depth + 1);
       }
       if (Array.isArray(value.list)) {
-        return normalizeImportedFullBackupHistory(value.list, seen);
+        return normalizeImportedFullBackupHistory(value.list, seen, depth + 1);
       }
       const entry = normalizeFullBackupHistoryEntry(value);
       if (entry) {
@@ -14170,7 +14178,7 @@
       }
       const nestedValues = Object.values(value);
       if (nestedValues.length) {
-        return normalizeImportedFullBackupHistory(nestedValues, seen);
+        return normalizeImportedFullBackupHistory(nestedValues, seen, depth + 1);
       }
     }
 
