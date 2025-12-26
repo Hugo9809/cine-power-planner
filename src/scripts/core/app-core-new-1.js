@@ -17890,11 +17890,15 @@ function getSchemaAttributesForCategory(category) {
 }
 
 function getCombinedCategoryAttributes(category, data = {}, exclude = []) {
+  console.log('[getCombinedCategoryAttributes] Called with:', { category, exclude, deviceSchemaExists: !!deviceSchema });
   const seen = new Set();
   const attrs = [];
   const skip = (attr) => !attr || exclude.includes(attr) || seen.has(attr);
 
-  for (const attr of getSchemaAttributesForCategory(category)) {
+  const schemaAttrs = getSchemaAttributesForCategory(category);
+  console.log('[getCombinedCategoryAttributes] Schema attributes for', category, ':', schemaAttrs);
+
+  for (const attr of schemaAttrs) {
     if (skip(attr)) continue;
     seen.add(attr);
     attrs.push(attr);
@@ -17908,6 +17912,7 @@ function getCombinedCategoryAttributes(category, data = {}, exclude = []) {
     }
   }
 
+  console.log('[getCombinedCategoryAttributes] Final attributes:', attrs);
   return attrs;
 }
 
@@ -17921,19 +17926,25 @@ function clearDynamicFields() {
 }
 
 function buildDynamicFields(category, data = {}, exclude = []) {
+  console.log('[buildDynamicFields] Called with:', { category, data, exclude, deviceSchemaExists: !!deviceSchema });
   if (typeof dynamicFieldsDiv === 'undefined' || !dynamicFieldsDiv) {
     if (typeof document !== 'undefined') {
       window.dynamicFieldsDiv = document.getElementById('dynamicFields');
     }
-    if (!dynamicFieldsDiv) return;
+    if (!dynamicFieldsDiv) {
+      console.warn('[buildDynamicFields] dynamicFieldsDiv not found');
+      return;
+    }
   }
   const attrs = getCombinedCategoryAttributes(category, data, exclude);
+  console.log('[buildDynamicFields] Got attributes:', attrs);
   dynamicFieldsDiv.innerHTML = '';
   if (!attrs.length) {
     dynamicFieldsDiv.hidden = true;
     if (dynamicFieldsDiv.dataset) {
       delete dynamicFieldsDiv.dataset.attrs;
     }
+    console.log('[buildDynamicFields] No attributes to display');
     return;
   }
   dynamicFieldsDiv.hidden = false;
@@ -17947,6 +17958,7 @@ function buildDynamicFields(category, data = {}, exclude = []) {
     list.appendChild(createSchemaField(category, attr, value));
   }
   dynamicFieldsDiv.appendChild(list);
+  console.log('[buildDynamicFields] Successfully added', attrs.length, 'fields');
 }
 
 const COLLECTED_DYNAMIC_ATTRS_SYMBOL =
