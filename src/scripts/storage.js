@@ -13349,7 +13349,7 @@
       const uniqueName = normalizedBase && normalizedNames.has(normalizedBase)
         ? generateImportedProjectName(baseName, usedNames, normalizedNames)
         : generateUniqueName(baseName, usedNames, normalizedNames);
-      saveProject(uniqueName, normalizedProject, { skipCompression: true });
+      saveProject(uniqueName, normalizedProject, { skipCompression: false });
     };
   }
 
