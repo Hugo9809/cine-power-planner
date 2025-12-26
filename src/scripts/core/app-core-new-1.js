@@ -16178,6 +16178,7 @@ function getCategoryLabel(categoryKey, lang = currentLang) {
   if (categoryKey === 'batteries' || categoryKey === 'accessories.batteries') {
     return lang === 'en' ? 'Battery' : (lang === 'de' ? 'Akku' : 'Battery');
   }
+  const parts = categoryKey.split('.');
   return parts.map(part => humanizeKey(part)).join(' ');
 }
 
@@ -16687,7 +16688,7 @@ function removeOriginalDeviceEntry(originalCategory, originalSubcategory, origin
     }
   }
 }
-const monitorVideoOutputsContainer = document.getElementById("monitorVideoOutputsContainer");
+var monitorVideoOutputsContainer = document.getElementById("monitorVideoOutputsContainer");
 var monitorWirelessTxInput = document.getElementById("monitorWirelessTx");
 var monitorLatencyInput = document.getElementById("monitorLatency");
 var monitorAudioOutputInput = document.getElementById("monitorAudioOutput");
@@ -16698,13 +16699,13 @@ var viewfinderWattInput = document.getElementById("viewfinderWatt");
 var viewfinderVoltageInput = document.getElementById("viewfinderVoltage");
 var viewfinderPortTypeInput = document.getElementById("viewfinderPortType");
 var viewfinderVideoInputsContainer = document.getElementById("viewfinderVideoInputsContainer");
-const viewfinderVideoOutputsContainer = document.getElementById("viewfinderVideoOutputsContainer");
+var viewfinderVideoOutputsContainer = document.getElementById("viewfinderVideoOutputsContainer");
 var viewfinderWirelessTxInput = document.getElementById("viewfinderWirelessTx");
 var viewfinderLatencyInput = document.getElementById("viewfinderLatency");
 var videoFieldsDiv = document.getElementById("videoFields");
 var videoPowerInputsContainer = document.getElementById("videoPowerInputsContainer");
-const videoVideoInputsContainer = document.getElementById("videoVideoInputsContainer");
-const videoVideoOutputsContainer = document.getElementById("videoVideoOutputsContainer");
+var videoVideoInputsContainer = document.getElementById("videoVideoInputsContainer");
+var videoVideoOutputsContainer = document.getElementById("videoVideoOutputsContainer");
 var videoFrequencyInput = document.getElementById("videoFrequency");
 var videoLatencyInput = document.getElementById("videoLatency");
 

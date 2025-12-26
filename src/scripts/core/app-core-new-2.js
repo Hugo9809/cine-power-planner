@@ -9814,6 +9814,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
     }
 
+    if (typeof exposeCoreRuntimeConstant === 'function') {
+      exposeCoreRuntimeConstant('updateStorageSummary', updateStorageSummary);
+    } else if (typeof window !== 'undefined') {
+      window.updateStorageSummary = updateStorageSummary;
+    }
+
 
     // --- Lazy DOM Initialization ---
     // Initialize variables to null/empty to prevent reference errors before DOM is ready

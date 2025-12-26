@@ -15616,7 +15616,7 @@ const setupHelpSystem = () => {
   // mode that exposes descriptions for interface controls. The following
   // functions manage searching, opening/closing the dialog and tooltip-based
   // hover help.
-  const helpContent = helpDialog.querySelector('.help-content');
+  const helpContent = dialog.querySelector('.help-content');
   const helpQuickLinkItems = new Map();
   const helpSectionHighlightTimers = new Map();
   const appTargetHighlightTimers = new Map();
