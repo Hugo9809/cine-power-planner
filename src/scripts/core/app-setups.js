@@ -14745,6 +14745,7 @@ const sessionCreatedProjects = new Set();
 function saveCurrentGearList() {
   if (factoryResetInProgress) return;
   if (isProjectPersistenceSuspended()) return;
+  if (typeof restoringSession !== 'undefined' && restoringSession) return;
 
   const html = gearListGetCurrentHtmlImpl({ forPersistence: true });
   const normalizedHtml = typeof html === 'string' ? html.trim() : '';
@@ -15929,6 +15930,7 @@ function bindGearListCageListener() {
   const sel = gearListOutput.querySelector('#gearListCage');
   if (sel) {
     sel.addEventListener('change', e => {
+      if (typeof restoringSession !== 'undefined' && restoringSession) return;
       if (cageSelect) {
         cageSelect.value = e.target.value;
         cageSelect.dispatchEvent(new Event('change'));
@@ -15946,6 +15948,7 @@ function bindGearListEasyrigListener() {
   const sel = gearListOutput.querySelector('#gearListEasyrig');
   if (sel) {
     sel.addEventListener('change', () => {
+      if (typeof restoringSession !== 'undefined' && restoringSession) return;
       markProjectFormDataDirty();
       saveCurrentGearList();
       saveCurrentSession();
@@ -15959,6 +15962,7 @@ function bindGearListSliderBowlListener() {
   const sel = gearListOutput.querySelector('#gearListSliderBowl');
   if (sel) {
     sel.addEventListener('change', () => {
+      if (typeof restoringSession !== 'undefined' && restoringSession) return;
       markProjectFormDataDirty();
       saveCurrentGearList();
       saveCurrentSession();
@@ -15972,6 +15976,7 @@ function bindGearListEyeLeatherListener() {
   const sel = gearListOutput.querySelector('#gearListEyeLeatherColor');
   if (sel) {
     sel.addEventListener('change', () => {
+      if (typeof restoringSession !== 'undefined' && restoringSession) return;
       markProjectFormDataDirty();
       saveCurrentGearList();
     });
@@ -15986,6 +15991,7 @@ function bindGearListProGaffTapeListener() {
     [colorSel, widthSel].forEach(sel => {
       if (sel) {
         sel.addEventListener('change', () => {
+          if (typeof restoringSession !== 'undefined' && restoringSession) return;
           markProjectFormDataDirty();
           saveCurrentGearList();
         });
@@ -16039,6 +16045,7 @@ function bindGearListDirectorMonitorListener() {
     const sel = gearListOutput.querySelector(`#gearList${role}Monitor`);
     if (sel) {
       sel.addEventListener('change', () => {
+        if (typeof restoringSession !== 'undefined' && restoringSession) return;
         const monitorInfo = devices && devices.monitors && devices.monitors[sel.value];
         const span = gearListOutput.querySelector(`#monitorSize${role}`);
         const sizeValue = formatMonitorSizeValue(monitorInfo?.screenSizeInches);
@@ -16065,6 +16072,7 @@ function bindGearListDirectorMonitorListener() {
     const sel = gearListOutput.querySelector(`#gearList${role}Monitor15`);
     if (sel) {
       sel.addEventListener('change', () => {
+        if (typeof restoringSession !== 'undefined' && restoringSession) return;
         const monitorInfo = devices && devices.directorMonitors && devices.directorMonitors[sel.value];
         const span = gearListOutput.querySelector(`#monitorSize${role}15`);
         const sizeValue = formatMonitorSizeValue(monitorInfo?.screenSizeInches);

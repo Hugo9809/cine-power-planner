@@ -15549,7 +15549,9 @@ function handleDownloadDiagramClick(e) {
     a.href = url;
     a.download = `${baseName}.svg`;
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 60000);
   };
 
   if (e.shiftKey) {
@@ -15566,7 +15568,9 @@ function handleDownloadDiagramClick(e) {
         a.href = url;
         a.download = `${baseName}.jpg`;
         a.click();
-        URL.revokeObjectURL(url);
+        setTimeout(() => {
+          URL.revokeObjectURL(url);
+        }, 60000);
       }, 'image/jpeg', 0.95);
     };
     img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(source);

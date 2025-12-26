@@ -6193,9 +6193,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         anchor.download = fileName;
         document.body.appendChild(anchor);
         anchor.click();
-        document.body.removeChild(anchor);
+        setTimeout(() => {
+          document.body.removeChild(anchor);
+        }, 1500);
         if (typeof URL.revokeObjectURL === 'function') {
-          URL.revokeObjectURL(url);
+          setTimeout(() => {
+            URL.revokeObjectURL(url);
+          }, 60000);
         }
         const message = texts[currentLang]?.autoGearExportSuccess
           || texts.en?.autoGearExportSuccess
@@ -6301,9 +6305,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         anchor.download = fileName;
         document.body.appendChild(anchor);
         anchor.click();
-        document.body.removeChild(anchor);
+        setTimeout(() => {
+          document.body.removeChild(anchor);
+        }, 1500);
         if (typeof URL.revokeObjectURL === 'function') {
-          URL.revokeObjectURL(url);
+          setTimeout(() => {
+            URL.revokeObjectURL(url);
+          }, 60000);
         }
 
         if (notifySuccess) {

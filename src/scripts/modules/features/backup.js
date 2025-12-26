@@ -1092,7 +1092,7 @@
         `          link.href = url;\n` +
         `          link.download = record.fileName || 'cine-power-planner-backup.json';\n` +
         `          link.click();\n` +
-        `          setTimeout(function () { URL.revokeObjectURL(url); }, 1000);\n` +
+        `          setTimeout(function () { URL.revokeObjectURL(url); }, 60000);\n` +
         `        } catch (error) {\n` +
         `          if (typeof window.opener.cineShowAlertDialog === 'function') {\n` +
         `            window.opener.cineShowAlertDialog('Download blocked — copy the JSON below instead.');\n` +
@@ -2367,8 +2367,6 @@
     const anchor = document.createElement('a');
     anchor.href = url;
     anchor.download = fileName;
-    anchor.rel = 'noopener';
-    anchor.target = '_blank';
     anchor.style.display = 'none';
     document.body.appendChild(anchor);
     let success = false;
@@ -2385,7 +2383,7 @@
       } catch (error) {
         void error;
       }
-    }, 0);
+    }, 1500);
     return success;
   }
 

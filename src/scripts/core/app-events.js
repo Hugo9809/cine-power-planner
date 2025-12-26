@@ -5975,7 +5975,9 @@ addSafeEventListener('exportDataBtn', "click", () => {
   a.download = "device_data_export.json";
   document.body.appendChild(a);
   a.click();
-  document.body.removeChild(a);
+  setTimeout(() => {
+    document.body.removeChild(a);
+  }, 1500);
   setTimeout(() => {
     URL.revokeObjectURL(url);
   }, 60000);
@@ -6007,7 +6009,9 @@ if (exportAndRevertBtn) {
       a.download = "device_data_backup_before_revert.json"; // Suggests it's a backup
       document.body.appendChild(a);
       a.click();
-      document.body.removeChild(a);
+      setTimeout(() => {
+        document.body.removeChild(a);
+      }, 1500);
       setTimeout(() => {
         URL.revokeObjectURL(url);
       }, 60000);
