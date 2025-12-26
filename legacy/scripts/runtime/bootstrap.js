@@ -177,7 +177,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function enqueueCoreBootTask(task) {
     if (typeof task === 'function') {
-      CORE_BOOT_QUEUE.push(task);
+      try {
+        CORE_BOOT_QUEUE.push(task);
+      } catch (err) {
+        void err;
+        try {
+          task();
+        } catch (taskError) {
+          console.error('Failed to run fallback core boot task', taskError);
+        }
+      }
     }
   }
   var GRID_SNAP_STATE_STORAGE_KEY = '__cineGridSnapState';

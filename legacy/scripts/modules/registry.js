@@ -732,17 +732,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
     return Object.freeze(blueprint);
   }
-  var registry = Object.freeze({
-    register: register,
-    get: get,
-    has: has,
-    list: list,
-    describe: describe,
-    describeAll: describeAll,
-    assertRegistered: assertRegistered,
-    createBlueprint: createBlueprint,
-    __internalResetForTests: resetForTests
-  });
+  var registry = {};
+  registry.register = register;
+  registry.get = get;
+  registry.has = has;
+  registry.list = list;
+  registry.describe = describe;
+  registry.describeAll = describeAll;
+  registry.assertRegistered = assertRegistered;
+  registry.createBlueprint = createBlueprint;
+  registry.__internalResetForTests = resetForTests;
   registryReference = registry;
   var scopes = [GLOBAL_SCOPE];
   if (typeof globalThis !== 'undefined' && globalThis !== GLOBAL_SCOPE) scopes.push(globalThis);

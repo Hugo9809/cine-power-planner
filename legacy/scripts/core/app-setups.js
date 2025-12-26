@@ -11724,6 +11724,9 @@ function gearListGenerateHtmlImpl() {
   };
   var categoryGroups = [];
   var addRow = function addRow(cat, items) {
+    if (!items || !String(items).trim()) {
+      return;
+    }
     var rawLabel = typeof cat === 'string' ? cat : String(cat !== null && cat !== void 0 ? cat : '');
     var categoryLabel = rawLabel.trim() || String(cat !== null && cat !== void 0 ? cat : '');
     var categoryKey = createCustomCategoryKey(categoryLabel);
@@ -11738,7 +11741,7 @@ function gearListGenerateHtmlImpl() {
     }) : '';
     var buttonContent = addIcon || escapeHtml('+');
     var addButtonHtml = "<button type=\"button\" class=\"gear-custom-add-btn\" data-gear-custom-add=\"".concat(escapeHtml(categoryKey), "\" data-gear-custom-category=\"").concat(safeLabel, "\" aria-label=\"").concat(escapeHtml(addAria), "\" title=\"").concat(escapeHtml(addLabel), "\">").concat(buttonContent, "</button>");
-    var standardItemsHtml = items ? "<div class=\"gear-standard-items\">".concat(items, "</div>") : '';
+    var standardItemsHtml = "<div class=\"gear-standard-items\">".concat(items, "</div>");
     var customSectionHtml = "<div class=\"gear-custom-section\" data-gear-custom-key=\"".concat(escapeHtml(categoryKey), "\" data-gear-custom-category=\"").concat(safeLabel, "\"><div class=\"gear-custom-items\" data-gear-custom-list=\"").concat(escapeHtml(categoryKey), "\" data-gear-custom-category=\"").concat(safeLabel, "\" aria-live=\"polite\"></div></div>");
     var rowContent = "".concat(standardItemsHtml).concat(customSectionHtml);
     categoryGroups.push("<tbody class=\"category-group\" data-gear-table-category=\"".concat(safeLabel, "\" data-gear-custom-key=\"").concat(escapeHtml(categoryKey), "\"><tr class=\"category-row\"><td data-gear-category-label=\"").concat(safeLabel, "\"><div class=\"gear-category-header\"><span class=\"gear-category-label\">").concat(safeLabel, "</span>").concat(addButtonHtml, "</div></td></tr><tr><td>").concat(rowContent, "</td></tr></tbody>"));
@@ -11762,7 +11765,7 @@ function gearListGenerateHtmlImpl() {
     var cageLabelText = cageLabelTextRaw && cageLabelTextRaw.trim() ? cageLabelTextRaw.trim() : 'Camera Cage';
     var ariaLabelAttr = cageLabelText ? " aria-label=\"".concat(escapeHtml(cageLabelText), "\"") : '';
     var hiddenLabelHtml = cageLabelText ? "<span class=\"visually-hidden\">".concat(escapeHtml(cageLabelText), "</span>") : '';
-    var wrapperHtml = "<span class=\"cage-select-wrapper\"><span>1x</span>".concat(hiddenLabelHtml, "<select id=\"gearListCage\"").concat(ariaLabelAttr, ">").concat(options, "</select></span>");
+    var wrapperHtml = "<span class=\"cage-select-wrapper\"><span>1x</span><select id=\"gearListCage\"".concat(ariaLabelAttr, ">").concat(options, "</select></span>");
     var attributesText = selectedNames.cage ? selectedNames.cage.trim() : '';
     var dataName = cageLabelText;
     var cageExtraAttributes = selectedNames.cage && hasCameraForLinking ? buildCameraLinkAttributes(selectedNames.cage) : '';
@@ -11770,7 +11773,7 @@ function gearListGenerateHtmlImpl() {
       name: dataName,
       quantity: 1,
       label: cageLabelText,
-      attributes: attributesText,
+      attributes: '',
       extraAttributes: cageExtraAttributes
     });
   }
@@ -12700,7 +12703,12 @@ function gearListGenerateHtmlImpl() {
   addRow('Chargers', formatItems(chargersAcc));
   addRow('Monitoring', monitoringItems);
   ensureItems(monitoringSupportAcc, 'accessories.monitoringSupport');
-  var monitoringSupportHardware = formatItems(monitoringSupportAcc);
+  var monitoringSupportHardware = formatItems(monitoringSupportAcc.filter(function (item) {
+    if (typeof item !== 'string') return true;
+    if (item.startsWith('Monitoring Battery ')) return false;
+    if (item.endsWith('Monitor')) return false;
+    return true;
+  }));
   var monitoringSupportItems = monitoringSupportHardware;
   addRow('Monitoring support', monitoringSupportItems);
   var cartDatabase = devices && (typeof devices === "undefined" ? "undefined" : _typeof(devices)) === 'object' && devices.carts && _typeof(devices.carts) === 'object' ? devices.carts : {};
@@ -14151,7 +14159,6 @@ function saveCurrentGearList() {
     if (projectRulesSnapshot && projectRulesSnapshot.length) {
       payload.autoGearRules = projectRulesSnapshot;
     }
-    console.log('DEBUG: saveCurrentGearList saving project:', effectiveStorageKey, 'with projectInfo:', !!projectInfoSnapshot);
     saveProject(effectiveStorageKey, payload, {
       skipOverwriteBackup: true
     });

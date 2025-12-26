@@ -11580,8 +11580,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function _addCustomFontFromData() {
       _addCustomFontFromData = _asyncToGenerator(_regenerator().m(function _callee7(name, dataUrl) {
-        var _ref49,
-          _ref49$persist,
+        var _ref51,
+          _ref51$persist,
           persist,
           uniqueName,
           value,
@@ -11594,7 +11594,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return _regenerator().w(function (_context7) {
           while (1) switch (_context7.n) {
             case 0:
-              _ref49 = _args7.length > 2 && _args7[2] !== undefined ? _args7[2] : {}, _ref49$persist = _ref49.persist, persist = _ref49$persist === void 0 ? true : _ref49$persist;
+              _ref51 = _args7.length > 2 && _args7[2] !== undefined ? _args7[2] : {}, _ref51$persist = _ref51.persist, persist = _ref51$persist === void 0 ? true : _ref51$persist;
               uniqueName = ensureUniqueCustomFontName(name);
               value = buildFontFamilyValue(uniqueName);
               _ensureFontFamilyOpti2 = ensureFontFamilyOption(value, uniqueName, localFontsGroup, 'uploaded'), option = _ensureFontFamilyOpti2.option;
@@ -14531,6 +14531,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return row;
     }
     function setVideoOutputs(list) {
+      if (!videoOutputsContainer) return;
       videoOutputsContainer.innerHTML = '';
       var filtered = filterNoneEntries(list);
       if (filtered.length) {
@@ -14595,6 +14596,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return row;
     }
     function setMonitorVideoInputs(list) {
+      if (!monitorVideoInputsContainer) return;
       monitorVideoInputsContainer.innerHTML = '';
       var filtered = filterNoneEntries(list, 'type');
       if (filtered.length) {
@@ -14659,6 +14661,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return row;
     }
     function setMonitorVideoOutputs(list) {
+      if (!monitorVideoOutputsContainer) return;
       monitorVideoOutputsContainer.innerHTML = '';
       var filtered = filterNoneEntries(list, 'type');
       if (filtered.length) {
@@ -15642,6 +15645,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
     };
     writeCoreScopeValue('setBatteryPlates', setBatteryPlatesLocal);
+    ensureGlobalFunctionBinding('setBatteryPlates', setBatteryPlatesLocal);
     function getBatteryPlates() {
       return Array.from(batteryPlatesContainer.querySelectorAll('.form-row')).map(function (row) {
         var _row$querySelectorAll = row.querySelectorAll('select, input'),
@@ -15659,6 +15663,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
     }
     writeCoreScopeValue('getBatteryPlates', getBatteryPlates);
+    ensureGlobalFunctionBinding('getBatteryPlates', getBatteryPlates);
     function clearBatteryPlates() {
       setBatteryPlatesLocal([]);
     }
@@ -16757,6 +16762,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       cageSelect.value = '';
     }
     function updateCageSelectOptions(preferredValue) {
+      var _Object$entries$find;
       if (!cageSelect) return;
       var cameraName = cameraSelect ? cameraSelect.value : '';
       var compatibleCages = getCompatibleCagesForCamera(cameraName);
@@ -16768,6 +16774,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return;
       }
       var options = Array.from(cageSelect.options || []);
+      var arriCageName = (_Object$entries$find = Object.entries(compatibleCages).find(function (_ref39) {
+        var _ref40 = _slicedToArray(_ref39, 2),
+          name = _ref40[0],
+          data = _ref40[1];
+        return data && (data.brand && typeof data.brand === 'string' && data.brand.toUpperCase() === 'ARRI' || typeof name === 'string' && name.toLowerCase().includes('arri'));
+      })) === null || _Object$entries$find === void 0 ? void 0 : _Object$entries$find[0];
+      if (arriCageName) {
+        applyCageSelectValue(arriCageName);
+        return;
+      }
       var noneOption = options.find(function (opt) {
         return opt.value === 'None';
       });
@@ -16916,9 +16932,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       deviceLibrarySearchEntries.length = 0;
       deviceLibrarySearchMap.clear();
       if (!(activeDeviceManagerLists instanceof Map)) return;
-      activeDeviceManagerLists.forEach(function (_ref39, categoryKey) {
-        var list = _ref39.list,
-          heading = _ref39.heading;
+      activeDeviceManagerLists.forEach(function (_ref41, categoryKey) {
+        var list = _ref41.list,
+          heading = _ref41.heading;
         if (!list) return;
         var categoryLabel = heading && heading.textContent ? heading.textContent.trim() : categoryKey;
         Array.from(list.querySelectorAll('li')).forEach(function (item) {
@@ -17026,8 +17042,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       });
       if (activeDeviceManagerLists instanceof Map) {
-        activeDeviceManagerLists.forEach(function (_ref40) {
-          var section = _ref40.section;
+        activeDeviceManagerLists.forEach(function (_ref42) {
+          var section = _ref42.section;
           if (!section) return;
           if (!normalized) {
             section.classList.remove('device-category--global-empty');
@@ -17104,9 +17120,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function applyFilters() {
       if (!(activeDeviceManagerLists instanceof Map)) return;
-      activeDeviceManagerLists.forEach(function (_ref41) {
-        var list = _ref41.list,
-          filterInput = _ref41.filterInput;
+      activeDeviceManagerLists.forEach(function (_ref43) {
+        var list = _ref43.list,
+          filterInput = _ref43.filterInput;
         if (!list) return;
         var value = filterInput ? filterInput.value : '';
         filterDeviceList(list, value);
@@ -17863,9 +17879,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function refreshDeviceLists() {
       syncDeviceManagerCategories();
       if (!(activeDeviceManagerLists instanceof Map)) return;
-      activeDeviceManagerLists.forEach(function (_ref42, categoryKey) {
-        var list = _ref42.list,
-          filterInput = _ref42.filterInput;
+      activeDeviceManagerLists.forEach(function (_ref44, categoryKey) {
+        var list = _ref44.list,
+          filterInput = _ref44.filterInput;
         if (!list) return;
         renderDeviceList(categoryKey, list);
         var filterValue = filterInput ? filterInput.value : '';
@@ -18299,10 +18315,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }], ['storeLoadedSetupState', function () {
       return storeLoadedSetupState;
     }]];
-    var resolvedAdditionalExports = ADDITIONAL_GLOBAL_EXPORT_ENTRIES.reduce(function (acc, _ref43) {
-      var _ref44 = _slicedToArray(_ref43, 2),
-        exportName = _ref44[0],
-        getter = _ref44[1];
+    var resolvedAdditionalExports = ADDITIONAL_GLOBAL_EXPORT_ENTRIES.reduce(function (acc, _ref45) {
+      var _ref46 = _slicedToArray(_ref45, 2),
+        exportName = _ref46[0],
+        getter = _ref46[1];
       try {
         var _value5 = getter();
         if (typeof _value5 !== 'undefined') {
@@ -18400,10 +18416,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         cineCoreGuard: ['ensureDefaultProjectInfoSnapshot', 'skipNextGearListRefresh', 'alignActiveAutoGearPreset', 'reconcileAutoGearAutoPresetState', 'openAutoGearEditor', 'closeAutoGearEditor', 'saveAutoGearRuleFromEditor', 'handleAutoGearImportSelection', 'handleAutoGearPresetSelection', 'handleAutoGearSavePreset', 'handleAutoGearDeletePreset', 'applyAutoGearBackupVisibility', 'renderAutoGearBackupControls', 'renderAutoGearBackupRetentionControls', 'renderAutoGearDraftImpact', 'renderAutoGearDraftLists', 'renderAutoGearMonitorDefaultsControls', 'renderAutoGearPresetsControls', 'renderAutoGearRulesList', 'updateAutoGearCameraWeightDraft', 'updateAutoGearShootingDaysDraft', 'setAutoGearAutoPresetId', 'syncAutoGearAutoPreset', 'updateAutoGearCatalogOptions', 'updateAutoGearItemButtonState', 'updateAutoGearMonitorDefaultOptions', 'applyFavoritesToSelect', 'updateFavoriteButton', 'toggleFavorite', 'loadStoredLogoPreview', 'renderSettingsLogoPreview', 'loadFeedbackSafe', 'saveFeedbackSafe', 'saveCurrentGearList'],
         cineCoreExperience: ['populateSelect', 'refreshDeviceLists', 'hasAnyDeviceSelection', 'refreshAutoGearCameraOptions', 'refreshAutoGearCameraWeightCondition', 'refreshAutoGearMonitorOptions', 'refreshAutoGearTripodHeadOptions', 'refreshAutoGearTripodBowlOptions', 'refreshAutoGearTripodTypesOptions', 'refreshAutoGearTripodSpreaderOptions', 'refreshAutoGearWirelessOptions', 'refreshAutoGearMotorsOptions', 'refreshAutoGearControllersOptions', 'refreshAutoGearCrewOptions', 'refreshAutoGearDistanceOptions', 'exportAutoGearRules', 'exportAutoGearPresets', 'generatePrintableOverview', 'generateGearListHtml', 'displayGearAndRequirements', 'updateGearListButtonVisibility', 'overviewSectionIcons', 'scenarioIcons', 'populateFeatureSearch', 'restoreFeatureSearchDefaults', 'updateFeatureSearchValue', 'updateFeatureSearchSuggestions', 'featureSearchEntries', 'featureSearchDefaultOptions', 'applyAccentColor', 'clearAccentColorOverrides', 'updateAccentColorResetButtonState', 'refreshDarkModeAccentBoost', 'isHighContrastActive', 'accentColor', 'prevAccentColor', 'revertAccentColor', 'DEFAULT_ACCENT_COLOR', 'HIGH_CONTRAST_ACCENT_COLOR', 'fontSize', 'fontFamily', 'applyDarkMode', 'applyPinkMode', 'applyHighContrast', 'setupInstallBanner', 'ensureZoomRemoteSetup', 'generateConnectorSummary', 'diagramConnectorIcons', 'DIAGRAM_MONITOR_ICON']
       };
-      Object.entries(MODULE_EXPORTS).forEach(function (_ref45) {
-        var _ref46 = _slicedToArray(_ref45, 2),
-          moduleName = _ref46[0],
-          exportNames = _ref46[1];
+      Object.entries(MODULE_EXPORTS).forEach(function (_ref47) {
+        var _ref48 = _slicedToArray(_ref47, 2),
+          moduleName = _ref48[0],
+          exportNames = _ref48[1];
         var moduleRef = scope[moduleName];
         if (!moduleRef || typeof moduleRef.install !== 'function') {
           return;
@@ -18445,10 +18461,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return null;
     }(CORE_PART2_GLOBAL_SCOPE);
-    Object.entries(CORE_PART2_GLOBAL_EXPORTS).forEach(function (_ref47) {
-      var _ref48 = _slicedToArray(_ref47, 2),
-        name = _ref48[0],
-        value = _ref48[1];
+    Object.entries(CORE_PART2_GLOBAL_EXPORTS).forEach(function (_ref49) {
+      var _ref50 = _slicedToArray(_ref49, 2),
+        name = _ref50[0],
+        value = _ref50[1];
       if (CORE_PART2_GLOBAL_SCOPE && Object.isExtensible(CORE_PART2_GLOBAL_SCOPE)) {
         CORE_PART2_GLOBAL_SCOPE[name] = value;
       }

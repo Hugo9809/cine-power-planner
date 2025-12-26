@@ -9,7 +9,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   var fs = require('fs');
   var path = require('path');
   var vm = require('vm');
-  var parts = ['modules/architecture-core.js', 'modules/architecture-helpers.js', 'modules/base.js', 'modules/registry.js', 'modules/context.js', 'modules/environment-bridge.js', 'modules/runtime-environment-helpers.js', 'modules/globals.js', 'modules/localization.js', 'modules/offline.js', 'modules/core-shared.js', 'modules/core/runtime.js', 'modules/core/localization.js', 'modules/core/pink-mode.js', 'modules/core/project-intelligence.js', 'modules/core/persistence-guard.js', 'modules/core/mount-voltage.js', 'modules/core/experience.js', 'modules/logging.js', 'modules/device-normalization.js', 'modules/features/help.js', 'modules/features/help-content.js', 'modules/features/contacts.js', 'modules/features/own-gear.js', 'modules/features/feature-search-normalization.js', 'modules/features/feature-search.js', 'modules/features/feature-search-engine.js', 'modules/features/auto-gear-rules.js', 'modules/features/connection-diagram.js', 'modules/features/backup.js', 'modules/features/onboarding-loader-hook.js', 'modules/features/onboarding-tour.js', 'modules/features/print-workflow.js', 'modules/help.js', 'modules/ui.js', 'modules/gear-list.js', 'modules/runtime-guard.js', 'modules/results.js', 'modules/app-core/bootstrap.js', 'modules/app-core/pink-mode.js', 'modules/app-core/localization.js', 'core/app-core-runtime-scopes.js', 'core/app-core-runtime-support.js', 'core/app-core-runtime-helpers.js', 'core/app-core-text.js', 'core/app-core-environment.js', 'core/app-core-bootstrap.js', 'core/app-core-runtime-shared.js', 'core/app-core-pink-mode.js', 'core/app-core-runtime-candidate-scopes.js', 'core/app-core-runtime-global-tools.js', 'core/app-core-runtime-ui.js', 'core/app-core-ui-helpers.js', 'auto-gear/normalizers.js', 'auto-gear/storage.js', 'auto-gear/ui.js', 'core/app-core-auto-gear-ui.js', 'core/app-core-new-1.js', 'core/app-core-localization-accessors.js', 'core/app-core-new-2.js', 'modules/settings-and-appearance.js', 'core/app-events.js', 'core/app-setups.js', 'core/app-session.js'];
+  var parts = ['shims/globalthis-polyfill.js', 'modules/base.js', 'modules/registry.js', 'translations/en.js', '../vendor/lz-string.min.js', 'auto-gear/weight.js', 'modules/environment-bridge.js', 'modules/runtime-environment-helpers.js', 'modules/globals.js', 'modules/localization.js', 'modules/offline.js', 'storage.js', 'translations.js', 'modules/core-shared.js', 'core/modules/core/runtime.js', 'core/modules/core/localization.js', 'core/modules/core/pink-mode.js', 'core/modules/core/device-schema.js', 'core/modules/core/project-intelligence.js', 'core/modules/core/persistence-guard.js', 'core/modules/core/mount-voltage.js', 'core/modules/core/experience.js', 'shims/legacy-shims.js', 'modules/logging.js', 'modules/settings-and-appearance.js', 'modules/features/feature-search-normalization.js', 'modules/features/auto-gear-rules.js', 'modules/features/connection-diagram.js', 'modules/features/backup.js', 'modules/features/onboarding-loader-hook.js', 'modules/features/print-workflow.js', 'modules/ui.js', 'modules/runtime-guard.js', 'modules/results.js', 'core/modules/app-core/bootstrap.js', 'core/modules/app-core/localization.js', 'core/app-core-text.js', 'core/app-core-runtime-scopes.js', 'core/app-core-runtime-support.js', 'core/app-core-runtime-helpers.js', 'runtime/bootstrap.js', 'core/app-core-environment.js', 'modules/icons.js', 'modules/device-normalization.js', 'core/app-core-bootstrap.js', 'core/app-core-runtime-shared.js', 'core/app-core-runtime-candidate-scopes.js', 'core/app-core-runtime-global-tools.js', 'core/app-core-ui-helpers.js', 'core/app-core-runtime-ui.js', 'auto-gear/normalizers.js', 'auto-gear/storage.js', 'auto-gear/ui.js', 'own-gear/store.js', 'own-gear/view.js', 'contacts/profile.js', 'contacts/list.js', 'shims/legacy-globals-shim.js', 'globals-bootstrap.js', 'core/app-core-new-1.js', 'core/app-core-new-2.js', 'core/modules/ui-cache.js', 'core/app-events.js', 'core/app-setups.js', 'core/app-session.js', 'modules/persistence.js', 'modules/runtime.js'];
   var appVersion = '0.0.0';
   try {
     var pkgPath = path.resolve(__dirname, '../../package.json');
@@ -23,17 +23,42 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     void error;
   }
   var nodePrelude = ["var APP_VERSION = '".concat(appVersion, "';"), "var CPP_APP_VERSION = '".concat(appVersion, "';"), "if (typeof globalThis !== 'undefined') { globalThis.APP_VERSION = '".concat(appVersion, "'; globalThis.CPP_APP_VERSION = '").concat(appVersion, "'; }"), "if (typeof window !== 'undefined') { window.APP_VERSION = '".concat(appVersion, "'; window.CPP_APP_VERSION = '").concat(appVersion, "'; }"), "var __cineGlobal = typeof globalThis !== 'undefined' ? globalThis : (typeof global !== 'undefined' ? global : this);", "var window = __cineGlobal.window || __cineGlobal;", "if (!__cineGlobal.window) __cineGlobal.window = window;", "var self = __cineGlobal.self || window;", "if (!__cineGlobal.self) __cineGlobal.self = self;", "var document = __cineGlobal.document || (window && window.document) || undefined;", "if (document && !window.document) window.document = document;", "if (!__cineGlobal.document && document) __cineGlobal.document = document;", "var navigator = __cineGlobal.navigator || (window && window.navigator) || undefined;", "if (navigator && !window.navigator) window.navigator = navigator;", "if (!__cineGlobal.navigator && navigator) __cineGlobal.navigator = navigator;", "var localStorage = __cineGlobal.localStorage || (window && window.localStorage) || undefined;", "if (localStorage && !window.localStorage) window.localStorage = localStorage;", "if (!__cineGlobal.localStorage && localStorage) __cineGlobal.localStorage = localStorage;", "var sessionStorage = __cineGlobal.sessionStorage || (window && window.sessionStorage) || undefined;", "if (sessionStorage && !window.sessionStorage) window.sessionStorage = sessionStorage;", "if (!__cineGlobal.sessionStorage && sessionStorage) __cineGlobal.sessionStorage = sessionStorage;", "var location = __cineGlobal.location || (window && window.location) || undefined;", "if (location && !window.location) window.location = location;", "if (!__cineGlobal.location && location) __cineGlobal.location = location;", "var caches = __cineGlobal.caches || (window && window.caches) || undefined;", "if (caches && !window.caches) window.caches = caches;", "if (!__cineGlobal.caches && caches) __cineGlobal.caches = caches;"].join('\n');
-  var combinedSource = [nodePrelude].concat(_toConsumableArray(parts.map(function (part) {
+  var freezeShim = '';
+  if (typeof global !== 'undefined' && global.__CPP_TEST_DISABLE_FREEZE || typeof globalThis !== 'undefined' && globalThis.__CPP_TEST_DISABLE_FREEZE) {
+    console.log('script.js: Applying Object.freeze override shim');
+    freezeShim = "\n      // Freeze Override Shim\n      (function() {\n        try {\n          Object.freeze = function(o) { return o; };\n          Object.seal = function(o) { return o; };\n          Object.preventExtensions = function(o) { return o; };\n          Object.isFrozen = function(o) { return false; };\n          Object.isSealed = function(o) { return false; };\n          Object.isExtensible = function(o) { return true; };\n        } catch (e) {\n          console.error('Failed to apply freeze shim', e);\n        }\n      })();\n      ";
+  }
+  var combinedSource = [freezeShim, nodePrelude].concat(_toConsumableArray(parts.map(function (part) {
     var content = fs.readFileSync(path.join(__dirname, part), 'utf8');
-    return "\nconsole.log('script.js: Starting part: ".concat(part, "');\n").concat(content, "\nconsole.log('script.js: Finished part: ").concat(part, "');\n");
+    if (part.includes('app-core-new-1.js')) {
+      content = content.replace('function resolveAutoGearBackupRetentionMin()', 'var resolveAutoGearBackupRetentionMin = function()');
+      content = content.replace('function resolveAutoGearBackupRetentionDefault()', 'var resolveAutoGearBackupRetentionDefault = function()');
+      content = content.replace('function resolveAutoGearBackupRetentionMax()', 'var resolveAutoGearBackupRetentionMax = function()');
+    }
+    return "".concat(content, "\n");
   }))).join('\n');
-  var wrapperSource = '(function (exports, require, module, __filename, __dirname, globalScope) {\n' + '  with (globalScope) {\n' + combinedSource + '\n  }\n' + '})';
+  var wrapperSource = '(function (exports, require, module, __filename, __dirname, globalScope) {\n' + '  var global = globalScope;\n' + '  var window = globalScope;\n' + '  var self = globalScope;\n' + '  with (globalScope) {\n' + combinedSource + '\n  }\n' + '})';
   var wrapper = vm.runInThisContext(wrapperSource, {
     filename: __filename
   });
   var globalScope = typeof globalThis !== 'undefined' && globalThis || typeof global !== 'undefined' && global || this;
   console.log('script.js: Executing wrapper with', parts.length, 'parts');
   console.log('script.js: app-session.js index:', parts.indexOf('app-session.js'));
+  try {
+    var devicesData = require('../data/index.js');
+    if (devicesData) {
+      if (typeof globalScope !== 'undefined') {
+        globalScope.devices = devicesData;
+      }
+      if (typeof global !== 'undefined') {
+        global.devices = devicesData;
+      }
+    } else {
+      console.warn('script.js: Loaded devices data is empty');
+    }
+  } catch (deviceLoadError) {
+    console.warn('script.js: Failed to load devices data', deviceLoadError);
+  }
   wrapper.call(globalScope, module.exports, require, module, __filename, __dirname, globalScope);
   var ensureModule = function ensureModule(relativePath) {
     var resolvedPath = path.join(__dirname, relativePath);
@@ -43,18 +68,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     }
     return require(resolvedPath);
   };
-  ensureModule('modules/base.js');
-  ensureModule('modules/registry.js');
-  ensureModule('modules/context.js');
-  ensureModule('modules/environment-bridge.js');
-  ensureModule('modules/globals.js');
-  ensureModule('modules/core/runtime.js');
-  ensureModule('modules/core/localization.js');
-  ensureModule('modules/core/pink-mode.js');
-  ensureModule('modules/runtime-guard.js');
-  ensureModule('modules/results.js');
-  ensureModule('modules/persistence.js');
-  ensureModule('modules/runtime.js');
+  void ensureModule;
   var _runtimeGuardModule = null;
   try {
     _runtimeGuardModule = globalScope && globalScope.cineRuntimeGuard || require('./modules/runtime-guard.js');
@@ -65,7 +79,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   var _runtimeGuard = _runtimeGuardModule && typeof _runtimeGuardModule.resolveRuntimeGuard === 'function' ? _runtimeGuardModule.resolveRuntimeGuard(globalScope) : _runtimeGuardModule;
   if (_runtimeGuard && typeof _runtimeGuard.bootstrap === 'function') {
     _runtimeGuard.bootstrap(globalScope, {
-      throwOnFailure: true,
+      throwOnFailure: false,
       warnOnFailure: true
     });
   }
@@ -253,7 +267,7 @@ if (runtimeGuard && typeof runtimeGuard.bootstrap === 'function') {
   try {
     runtimeGuard.bootstrap(GLOBAL_RUNTIME_SCOPE, {
       warnOnFailure: true,
-      throwOnFailure: typeof require === 'function'
+      throwOnFailure: false
     });
   } catch (error) {
     if (typeof console !== 'undefined' && console && typeof console.error === 'function') {

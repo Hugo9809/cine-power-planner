@@ -1474,7 +1474,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     createInlineLocalizationFallback: createInlineLocalizationFallback,
     createInlineRuntimeSharedFallback: createInlineRuntimeSharedFallback,
     createBootstrapSuite: createBootstrapSuite,
-    normalizeBootstrapInvocationOptions: normalizeBootstrapInvocationOptions
+    normalizeBootstrapInvocationOptions: normalizeBootstrapInvocationOptions,
+    collectBootstrapFallbackScopes: collectBootstrapFallbackScopes
   };
   var resolverNamespaceName = 'cineCoreAppCoreBootstrapResolver';
   var existingResolver = isObject(globalScope) && isObject(globalScope[resolverNamespaceName]) ? globalScope[resolverNamespaceName] : existing;

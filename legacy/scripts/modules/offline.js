@@ -1538,6 +1538,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           result: undefined
         });
       }, ms);
+      if (timerId && typeof timerId.unref === 'function') {
+        timerId.unref();
+      }
     });
   }
   function fallbackExposeGlobal(name, value) {

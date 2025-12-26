@@ -27,6 +27,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
   }
 })();
+var global = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {};
 var localResolveDocumentDirection = typeof cineLocale !== 'undefined' && cineLocale && typeof cineLocale.resolveDocumentDirection === 'function' ? cineLocale.resolveDocumentDirection : function fallbackResolveDocumentDirection(lang) {
   return 'ltr';
 };
@@ -468,7 +469,7 @@ var CORE_RUNTIME_LOCALIZATION = function resolveCoreRuntimeLocalization() {
       void coreRuntimeLocalizationResolveError;
     }
   }
-  var scopeCandidates = [CORE_PART1_RUNTIME_SCOPE && (typeof CORE_PART1_RUNTIME_SCOPE === "undefined" ? "undefined" : _typeof(CORE_PART1_RUNTIME_SCOPE)) === 'object' ? CORE_PART1_RUNTIME_SCOPE : null, typeof globalThis !== 'undefined' && globalThis && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && window && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && self && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && global && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null];
+  var scopeCandidates = [CORE_PART1_RUNTIME_SCOPE && (typeof CORE_PART1_RUNTIME_SCOPE === "undefined" ? "undefined" : _typeof(CORE_PART1_RUNTIME_SCOPE)) === 'object' ? CORE_PART1_RUNTIME_SCOPE : null, typeof globalThis !== 'undefined' && globalThis && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && window && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && self && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && global && _typeof(global) === 'object' ? global : null];
   for (var index = 0; index < scopeCandidates.length; index += 1) {
     var scope = scopeCandidates[index];
     if (!scope || _typeof(scope) !== 'object') {
@@ -1822,7 +1823,7 @@ function resolveCoreDeviceSchema() {
   if (typeof self !== 'undefined' && self && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object') {
     scopeCandidates.push(self);
   }
-  if (typeof global !== 'undefined' && global && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object') {
+  if (typeof global !== 'undefined' && global && _typeof(global) === 'object') {
     scopeCandidates.push(global);
   }
   for (var index = 0; index < scopeCandidates.length; index += 1) {
@@ -4878,6 +4879,7 @@ var localParseBatteryCurrentLimit = function localParseBatteryCurrentLimit(value
   return null;
 };
 function updateBatteryOptions() {
+  if (!batterySelect || !hotswapSelect || !cameraSelect) return;
   var current = batterySelect.value;
   var currentSwap = hotswapSelect.value;
   var plate = getSelectedPlate();
@@ -5822,7 +5824,7 @@ function setLanguage(_x) {
 function _setLanguage() {
   _setLanguage = _asyncToGenerator(_regenerator().m(function _callee2(lang) {
     var _texts$en54, _texts$en55, _texts$en56, _texts$en57, _texts$en58, _texts$en59, _texts$en60, _texts$en61, _texts$en62, _texts$en63, _texts$en64, _texts$en65, _texts$en66, _texts$en67, _texts$en68, _texts$en69, _texts$en70, _texts$en71, _texts$en72, _texts$en73, _texts$en75, _texts$en180, _texts$en181, _texts$lang, _texts$en182, _texts$lang2, _texts$en183, _texts$lang3, _texts$en184, _texts$lang4, _texts$en185, _texts$en247;
-    var requested, resolved, normalizedLang, loadResult, translationSource, previousLang, shouldDispatchLanguageChange, dispatchLanguageChange, doc, runtimeScope, attemptRefreshDeviceLists, retryRefresh, fallbackLocale, normalizeTemperatureUnitSafe, FALLBACK_NORMALIZE_FOCUS_SCALE, ensureNormalizeFocusScaleHelper, normalizeFocusScaleSafe, resolveFocusScalePreference, resolveLocaleString, applyTextContent, createHelpLink, applySuggestionTemplate, applySuggestionText, resolveRuntimeValue, registerResolvedElement, resolveElement, settingsShowAutoBackupsEl, backupSettingsButton, backupDiffToggleButtonEl, backupDiffHeadingEl, backupDiffIntroEl, backupDiffPrimaryLabelEl, backupDiffPrimarySelectEl, backupDiffSecondaryLabelEl, backupDiffSecondarySelectEl, backupDiffEmptyStateEl, backupDiffNotesLabelEl, backupDiffNotesEl, backupDiffExportButtonEl, backupDiffCloseButtonEl, restoreRehearsalButton, restoreRehearsalHeading, restoreRehearsalIntro, restoreRehearsalModeLabel, restoreRehearsalModeBackupText, restoreRehearsalModeProjectText, restoreRehearsalFileLabel, restoreRehearsalBrowse, restoreRehearsalFileName, restoreRehearsalStatus, restoreRehearsalRuleHeading, restoreRehearsalRuleIntro, restoreRehearsalRuleEmpty, restoreRehearsalTableCaption, restoreRehearsalMetricHeader, restoreRehearsalLiveHeader, restoreRehearsalSandboxHeader, restoreRehearsalDifferenceHeader, restoreRehearsalCloseButton, restoreRehearsalProceedButton, restoreRehearsalAbortButton, offlineElem, offlineLabel, offlineNotice, offlineHelp, isExplicitlyOffline, legalLinks, impressumElem, privacyElem, setupManageHeadingElem, deviceSelectionHeadingElem, resultsHeadingElem, deviceManagerHeadingElem, batteryComparisonHeadingElem, batteryComparisonDescriptionElem, batteryTableElem, setupDiagramHeadingElem, sideMenuLinks, savedSetupsLabelElem, setupNameLabelElem, sharedLinkLabelElem, deleteGearListHelp, editProjectBtnElem, addExtraGearBtnElem, _texts$en27, extraLabel, _texts$en28, heading, _texts$en29, filenameLabel, _texts$en30, confirmLabel, _texts$en31, cancelLabel, _texts$en32, _texts$en33, label, help, _texts$en34, _texts$en35, _label3, _help2, sharedImportLegendText, _texts$en36, title, _texts$en37, message, _texts$en38, _label4, _texts$en39, _label5, _texts$en40, legend, _texts$en41, _texts$en42, _label6, _help3, _texts$en43, _texts$en44, _label7, _help4, _texts$en45, _texts$en46, _label8, _help5, cameraLabelElem, monitorLabelElem, videoLabelElem, cageLabelElem, distanceLabelElem, batteryPlateLabelElem, batteryHotswapLabelElem, fizLegendElem, fizMotorsLabelElem, fizControllersLabelElem, cineResultsModule, resultsLocalizationApplied, batteryComparisonLocalized, resultsPlainSummaryElem, resultsPlainSummaryTitleElem, resultsPlainSummaryTextElem, resultsPlainSummaryNoteElem, breakdownListTarget, totalPowerLabelElem, batteryCountLabelElem, unitElem, fb, _label9, userNote, idx, tempNoteElem, lensDeviceMountHeadingElem, lensDeviceMountLabelElem, lensFocusScaleLabelElem, focusScaleLabel, focusScaleHelp, monitorLatencyLabelElem, monitorLatencyHelpText, viewfinderLatencyLabelElem, viewfinderLatencyHelpText, videoPowerHeadingElem, videoPowerLabelElem, powerHelp, addDeviceLabel, updateDeviceLabel, noneMap, existingDevicesHeading, settingsTitleElem, settingsTablistRef, _texts$en47, sectionsLabel, getSettingsTabLabelText, summarizeSettingsTabHelp, applySettingsTabLabel, _texts$en48, _texts$en49, generalLabel, generalHelp, _texts$en50, sectionHeading, _texts$en51, _sectionHeading, _texts$en52, _sectionHeading2, _texts$en53, _sectionHeading3, settingsLanguageLabel, languageHelp, settingsDarkLabel, darkModeHelp, settingsPinkLabel, pinkModeHelp, accentLabel, accentHelp, _texts$en74, description, cameraColorHelpTemplate, cameraColorLabelEntries, accentResetLabel, accentResetHelp, settingsTemperatureUnitLabel, tempUnitHelp, settingsFocusScaleLabel, _focusScaleHelp, fontSizeLabel, sizeHelp, fontFamilyLabel, familyHelp, localFontsHelp, builtInLabel, localLabel, localFontsLabel, statusKey, arg, template, settingsLogoLabel, logoHelp, _texts$en77, _texts$en78, headingHelp, _texts$en79, _texts$en80, _heading, _texts$en81, _description, _texts$en83, _texts$en84, _texts$en85, _label0, _help6, _texts$en86, _label1, _texts$en87, _label10, _texts$en88, _texts$en89, _label11, _help7, _texts$en90, _texts$en91, _label12, _help8, _texts$en92, _texts$en93, _label13, _help9, _texts$en94, _texts$en95, _label14, _help0, _texts$en96, _texts$en97, _label15, _help1, _texts$en98, placeholder, _texts$en99, _texts$en100, _label16, _help10, _texts$en101, _label17, _texts$en102, _texts$en103, _description2, _texts$en104, _texts$en105, _label18, _help11, _texts$en106, hiddenText, _texts$en107, _texts$en108, _label19, _help12, _texts$en109, _label20, _texts$en110, _label21, _texts$en111, emptyText, _texts$en112, _texts$en113, _label22, _help13, _texts$en114, _texts$en115, _label23, _help14, _texts$en116, _label24, _texts$en117, _texts$en118, _label25, _help15, _texts$en119, _texts$en120, _label26, _help16, _texts$en121, _texts$en122, modeLabel, modeHelp, _texts$en123, _texts$en124, baseLabel, baseHelp, _texts$en125, _texts$en126, factorLabel, factorHelp, _texts$en127, _texts$en128, _texts$en129, _texts$en130, _texts$en131, _texts$en132, _label27, _help17, minimumLabel, maximumLabel, everyLabel, valueLabel, _texts$en133, _texts$en134, _label28, _help18, _texts$en135, _texts$en136, _label29, _help19, _texts$en137, _texts$en138, _label30, _help20, _texts$en139, _texts$en140, _label31, _help21, _texts$en141, _texts$en142, _label32, _help22, _texts$en143, _texts$en144, _label33, _help23, _texts$en145, _texts$en146, _texts$en147, _texts$en148, _label34, _help24, _texts$en149, _texts$en150, _label35, _help25, _texts$en151, _label36, _texts$en152, _texts$en153, _texts$en154, greaterLabel, lessLabel, equalLabel, _texts$en155, _texts$en156, _label37, _help26, _texts$en157, _help27, _texts$en158, _texts$en159, _label38, _help28, _texts$en160, _texts$en161, _label39, _help29, _texts$en162, _texts$en163, _label40, _help30, _texts$en164, _texts$en165, _label41, _help31, _texts$en166, _texts$en167, _label42, _help32, _texts$en168, _texts$en169, _label43, _help33, _texts$en170, _texts$en171, _label44, _help34, _texts$en172, _texts$en173, _label45, _help35, _texts$en174, _texts$en175, _label46, _help36, _texts$en176, _texts$en177, _label47, _help37, _texts$en178, _texts$en179, _label48, _help38, logicLabelText, logicHelpText, logicOptionTexts, _texts$en186, _texts$en187, _texts$en188, _texts$en189, _label49, _help39, _placeholder, _texts$en190, _texts$en191, _label50, hint, helpText, _texts$en192, _label51, _texts$en193, _label52, _texts$en194, _label53, _texts$en195, _label54, _texts$en196, _texts$en197, _texts$en198, _texts$en199, _texts$en200, _texts$en201, _texts$en202, noneLabel, monitorLabel, directorLabel, tripodHeadLabel, _tripodBowlLabel, _tripodTypesLabel, _tripodSpreaderLabel, selectorLabels, _texts$en203, _label55, _texts$en204, _label56, _texts$en205, _texts$en206, _texts$en207, _texts$en208, _label57, _help40, _placeholder2, _texts$en209, _texts$en210, _label58, _hint, _helpText, _texts$en211, _label59, _texts$en212, _label60, _texts$en213, _label61, _texts$en214, _label62, _texts$en215, _texts$en216, _texts$en217, _texts$en218, _texts$en219, _texts$en220, _texts$en221, _noneLabel, _monitorLabel, _directorLabel, _tripodHeadLabel, _tripodBowlLabel2, _tripodTypesLabel2, _tripodSpreaderLabel2, _selectorLabels, _texts$en222, _label63, _texts$en223, _label64, _texts$en224, _heading2, _texts$en225, _description3, _texts$en226, _heading3, _texts$en227, _label65, _texts$en228, _label66, contrastLabel, contrastHelp, accessibilityHeading, backupHeading, projectBackupsHeading, headingText, descriptionText, projectBackupsDescription, _descriptionText, dataHelp, _texts$en229, _texts$en230, _headingText, _headingHelp, _texts$en231, _texts$en232, _texts$en233, requestLabel, requestHelp, _texts$en234, idleText, _texts$en235, _texts$en236, _headingText2, _headingHelp2, _texts$en237, _texts$en238, _texts$en239, backupLabel, backupHelp, _texts$en240, _texts$en241, openLabel, openHelp, _texts$en242, _texts$en243, statusHeading, statusHelp, _texts$en244, _texts$en245, _texts$en246, statusDefaultText, _texts$en248, sectionHelp, _texts$en249, _texts$en250, _headingText3, _headingHelp3, _texts$en251, _texts$en252, _filterLabel, _texts$en253, _texts$en254, _texts$en255, _texts$en256, _texts$en257, optionTexts, filterHelp, _texts$en258, namespaceLabel, _texts$en259, _texts$en260, _placeholder3, namespaceHelp, _texts$en261, historyLabel, _texts$en262, historyHelp, _texts$en263, _texts$en264, limitHelp, limitAria, _texts$en265, consoleLabel, _texts$en266, consoleHelp, _texts$en267, consoleCaptureLabel, _texts$en268, consoleCaptureHelp, _texts$en269, captureLabel, _texts$en270, captureHelp, _texts$en271, persistLabel, _texts$en272, persistHelp, _texts$en273, exportLabel, _texts$en274, exportHelp, _texts$en275, statusText, _texts$en276, _emptyText, _texts$en277, showAutoBackupsLabel, autoBackupsHelp, compareLabel, compareHelp, primaryLabel, compareLabelText, _placeholder4, _exportLabel, _exportHelp, closeLabel, _backupLabel, _backupHelp, restoreLabel, restoreHelp, rehearsalLabel, rehearsalHelp, browseLabel, _texts$en278, _texts$en279, _texts$en280, resolvedRestoreRehearsalCloseButton, _closeLabel, _texts$en281, _texts$en282, proceedLabel, proceedHelp, _texts$en283, _texts$en284, abortLabel, abortHelp, resetLabel, resetHelp, aboutHeading, aboutVersionElem, supportLinkConfigs, langTexts, fallbackTexts, _texts$en285, _label67, saveHelp, _texts$en286, _cancelLabel, cancelHelp, menuToggle, _texts$en287, _texts$en288, menuLabel, _closeLabel2, closeHelp, menuHelp, sideMenu, sideMenuHelp, sideMenuTitle, _texts$en289, titleLabel, titleHelp, closeMenuButton, closeMenuLabel, _texts$en290, _closeLabel3, _closeHelp, reloadLabel, reloadHelp, _offlineNotice, helpShortcutList, helpAriaShortcuts, quickStartHeading, fallback, onboardingCopyElement, fallbackCopy, dataSafetyHeading, _fallback, restoreDrillHeading, _fallback2, restoreDrillNote, _fallback3, _fallback4, _fallback5, exportRevert, downloadDiagramButton, snapActive, resetViewBtn, zoomInBtn, zoomOutBtn, diagramHint, fallbackProjectForm, projectFormTexts, _texts$en291, _texts$lang5, setLabelText, setPlaceholder, setOptionText, crewLabelText, rangeTemplate, defaultHint, legendText, slowRangeTemplate, slowDefaultHint, seriesEmptyText, optionsEmptyText, removeTemplate, mountLabelText, _noneLabel2, yesLabel, projectCancelButton, cancelText, submitText, crewPlaceholders, crewRoleLabels, fallbackContacts, contactsTexts, profileSnapshot, stripTrailingPunctuation, addEntryLabel, crewLabel, _label68, prepLabel, _label69, shootLabel, _label70, returnLabel, _label71, closeText, _t;
+    var requested, resolved, normalizedLang, loadResult, translationSource, previousLang, shouldDispatchLanguageChange, dispatchLanguageChange, doc, runtimeScope, attemptRefreshDeviceLists, retryRefresh, fallbackLocale, normalizeTemperatureUnitSafe, FALLBACK_NORMALIZE_FOCUS_SCALE, ensureNormalizeFocusScaleHelper, normalizeFocusScaleSafe, resolveFocusScalePreference, resolveLocaleString, applyTextContent, createHelpLink, applySuggestionTemplate, applySuggestionText, resolveRuntimeValue, registerResolvedElement, resolveElement, settingsShowAutoBackupsEl, backupSettingsButton, backupDiffToggleButtonEl, backupDiffHeadingEl, backupDiffIntroEl, backupDiffPrimaryLabelEl, backupDiffPrimarySelectEl, backupDiffSecondaryLabelEl, backupDiffSecondarySelectEl, backupDiffEmptyStateEl, backupDiffNotesLabelEl, backupDiffNotesEl, backupDiffExportButtonEl, backupDiffCloseButtonEl, restoreRehearsalButton, restoreRehearsalHeading, restoreRehearsalIntro, restoreRehearsalModeLabel, restoreRehearsalModeBackupText, restoreRehearsalModeProjectText, restoreRehearsalFileLabel, restoreRehearsalBrowse, restoreRehearsalFileName, restoreRehearsalStatus, restoreRehearsalRuleHeading, restoreRehearsalRuleIntro, restoreRehearsalRuleEmpty, restoreRehearsalTableCaption, restoreRehearsalMetricHeader, restoreRehearsalLiveHeader, restoreRehearsalSandboxHeader, restoreRehearsalDifferenceHeader, restoreRehearsalCloseButton, restoreRehearsalProceedButton, restoreRehearsalAbortButton, offlineElem, offlineLabel, offlineNotice, offlineHelp, isExplicitlyOffline, legalLinks, impressumElem, privacyElem, setupManageHeadingElem, deviceSelectionHeadingElem, resultsHeadingElem, deviceManagerHeadingElem, batteryComparisonHeadingElem, batteryComparisonDescriptionElem, batteryTableElem, setupDiagramHeadingElem, sideMenuLinks, savedSetupsLabelElem, setupNameLabelElem, sharedLinkLabelElem, safeSetupSelect, safeSetupNameInput, safeDeleteSetupBtn, safeSaveSetupBtn, safeGenerateOverviewBtn, safeGenerateGearListBtn, deleteGearListHelp, safeDeleteGearListProjectBtn, editProjectBtnElem, addExtraGearBtnElem, _texts$en27, extraLabel, _texts$en28, heading, _texts$en29, filenameLabel, _texts$en30, confirmLabel, _texts$en31, cancelLabel, _texts$en32, _texts$en33, label, help, _texts$en34, _texts$en35, _label3, _help2, sharedImportLegendText, _texts$en36, title, _texts$en37, message, _texts$en38, _label4, _texts$en39, _label5, _texts$en40, legend, _texts$en41, _texts$en42, _label6, _help3, _texts$en43, _texts$en44, _label7, _help4, _texts$en45, _texts$en46, _label8, _help5, cameraLabelElem, monitorLabelElem, videoLabelElem, cageLabelElem, distanceLabelElem, batteryPlateLabelElem, batteryHotswapLabelElem, fizLegendElem, fizMotorsLabelElem, fizControllersLabelElem, cineResultsModule, resultsLocalizationApplied, batteryComparisonLocalized, resultsPlainSummaryElem, resultsPlainSummaryTitleElem, resultsPlainSummaryTextElem, resultsPlainSummaryNoteElem, breakdownListTarget, totalPowerLabelElem, batteryCountLabelElem, unitElem, fb, _label9, userNote, idx, tempNoteElem, safeSetText, safeSetAttr, lensDeviceMountHeadingElem, lensDeviceMountLabelElem, lensFocusScaleLabelElem, focusScaleLabel, focusScaleHelp, monitorLatencyLabelElem, monitorLatencyHelpText, viewfinderLatencyLabelElem, viewfinderLatencyHelpText, videoPowerLabelElem, powerHelp, addDeviceLabel, updateDeviceLabel, addDeviceBtnElem, cancelEditBtnElem, exportBtnElem, importDataBtnElem, toggleDeviceBtnElem, deviceManagerSectionElem, newCategorySelectElem, noneMap, existingDevicesHeading, settingsTitleElem, settingsTablistRef, _texts$en47, sectionsLabel, getSettingsTabLabelText, summarizeSettingsTabHelp, applySettingsTabLabel, _texts$en48, _texts$en49, generalLabel, generalHelp, _texts$en50, sectionHeading, _texts$en51, _sectionHeading, _texts$en52, _sectionHeading2, _texts$en53, _sectionHeading3, settingsLanguageLabel, languageHelp, settingsDarkLabel, darkModeHelp, settingsPinkLabel, pinkModeHelp, accentLabel, accentHelp, _texts$en74, description, cameraColorHelpTemplate, cameraColorLabelEntries, accentResetLabel, accentResetHelp, settingsTemperatureUnitLabel, tempUnitHelp, settingsFocusScaleLabel, _focusScaleHelp, fontSizeLabel, sizeHelp, fontFamilyLabel, familyHelp, localFontsHelp, builtInLabel, localLabel, localFontsLabel, statusKey, arg, template, settingsLogoLabel, logoHelp, _texts$en77, _texts$en78, headingHelp, _texts$en79, _texts$en80, _heading, _texts$en81, _description, _texts$en83, _texts$en84, _texts$en85, _label0, _help6, _texts$en86, _label1, _texts$en87, _label10, _texts$en88, _texts$en89, _label11, _help7, _texts$en90, _texts$en91, _label12, _help8, _texts$en92, _texts$en93, _label13, _help9, _texts$en94, _texts$en95, _label14, _help0, _texts$en96, _texts$en97, _label15, _help1, _texts$en98, placeholder, _texts$en99, _texts$en100, _label16, _help10, _texts$en101, _label17, _texts$en102, _texts$en103, _description2, _texts$en104, _texts$en105, _label18, _help11, _texts$en106, hiddenText, _texts$en107, _texts$en108, _label19, _help12, _texts$en109, _label20, _texts$en110, _label21, _texts$en111, emptyText, _texts$en112, _texts$en113, _label22, _help13, _texts$en114, _texts$en115, _label23, _help14, _texts$en116, _label24, _texts$en117, _texts$en118, _label25, _help15, _texts$en119, _texts$en120, _label26, _help16, _texts$en121, _texts$en122, modeLabel, modeHelp, _texts$en123, _texts$en124, baseLabel, baseHelp, _texts$en125, _texts$en126, factorLabel, factorHelp, _texts$en127, _texts$en128, _texts$en129, _texts$en130, _texts$en131, _texts$en132, _label27, _help17, minimumLabel, maximumLabel, everyLabel, valueLabel, _texts$en133, _texts$en134, _label28, _help18, _texts$en135, _texts$en136, _label29, _help19, _texts$en137, _texts$en138, _label30, _help20, _texts$en139, _texts$en140, _label31, _help21, _texts$en141, _texts$en142, _label32, _help22, _texts$en143, _texts$en144, _label33, _help23, _texts$en145, _texts$en146, _texts$en147, _texts$en148, _label34, _help24, _texts$en149, _texts$en150, _label35, _help25, _texts$en151, _label36, _texts$en152, _texts$en153, _texts$en154, greaterLabel, lessLabel, equalLabel, _texts$en155, _texts$en156, _label37, _help26, _texts$en157, _help27, _texts$en158, _texts$en159, _label38, _help28, _texts$en160, _texts$en161, _label39, _help29, _texts$en162, _texts$en163, _label40, _help30, _texts$en164, _texts$en165, _label41, _help31, _texts$en166, _texts$en167, _label42, _help32, _texts$en168, _texts$en169, _label43, _help33, _texts$en170, _texts$en171, _label44, _help34, _texts$en172, _texts$en173, _label45, _help35, _texts$en174, _texts$en175, _label46, _help36, _texts$en176, _texts$en177, _label47, _help37, _texts$en178, _texts$en179, _label48, _help38, logicLabelText, logicHelpText, logicOptionTexts, _texts$en186, _texts$en187, _texts$en188, _texts$en189, _label49, _help39, _placeholder, _texts$en190, _texts$en191, _label50, hint, helpText, _texts$en192, _label51, _texts$en193, _label52, _texts$en194, _label53, _texts$en195, _label54, _texts$en196, _texts$en197, _texts$en198, _texts$en199, _texts$en200, _texts$en201, _texts$en202, noneLabel, monitorLabel, directorLabel, tripodHeadLabel, _tripodBowlLabel, _tripodTypesLabel, _tripodSpreaderLabel, selectorLabels, _texts$en203, _label55, _texts$en204, _label56, _texts$en205, _texts$en206, _texts$en207, _texts$en208, _label57, _help40, _placeholder2, _texts$en209, _texts$en210, _label58, _hint, _helpText, _texts$en211, _label59, _texts$en212, _label60, _texts$en213, _label61, _texts$en214, _label62, _texts$en215, _texts$en216, _texts$en217, _texts$en218, _texts$en219, _texts$en220, _texts$en221, _noneLabel, _monitorLabel, _directorLabel, _tripodHeadLabel, _tripodBowlLabel2, _tripodTypesLabel2, _tripodSpreaderLabel2, _selectorLabels, _texts$en222, _label63, _texts$en223, _label64, _texts$en224, _heading2, _texts$en225, _description3, _texts$en226, _heading3, _texts$en227, _label65, _texts$en228, _label66, contrastLabel, contrastHelp, accessibilityHeading, backupHeading, projectBackupsHeading, headingText, descriptionText, projectBackupsDescription, _descriptionText, dataHelp, _texts$en229, _texts$en230, _headingText, _headingHelp, _texts$en231, _texts$en232, _texts$en233, requestLabel, requestHelp, _texts$en234, idleText, _texts$en235, _texts$en236, _headingText2, _headingHelp2, _texts$en237, _texts$en238, _texts$en239, backupLabel, backupHelp, _texts$en240, _texts$en241, openLabel, openHelp, _texts$en242, _texts$en243, statusHeading, statusHelp, _texts$en244, _texts$en245, _texts$en246, statusDefaultText, _texts$en248, sectionHelp, _texts$en249, _texts$en250, _headingText3, _headingHelp3, _texts$en251, _texts$en252, _filterLabel, _texts$en253, _texts$en254, _texts$en255, _texts$en256, _texts$en257, optionTexts, filterHelp, _texts$en258, namespaceLabel, _texts$en259, _texts$en260, _placeholder3, namespaceHelp, _texts$en261, historyLabel, _texts$en262, historyHelp, _texts$en263, _texts$en264, limitHelp, limitAria, _texts$en265, consoleLabel, _texts$en266, consoleHelp, _texts$en267, consoleCaptureLabel, _texts$en268, consoleCaptureHelp, _texts$en269, captureLabel, _texts$en270, captureHelp, _texts$en271, persistLabel, _texts$en272, persistHelp, _texts$en273, exportLabel, _texts$en274, exportHelp, _texts$en275, statusText, _texts$en276, _emptyText, _texts$en277, showAutoBackupsLabel, autoBackupsHelp, compareLabel, compareHelp, primaryLabel, compareLabelText, _placeholder4, _exportLabel, _exportHelp, closeLabel, _backupLabel, _backupHelp, restoreLabel, restoreHelp, rehearsalLabel, rehearsalHelp, browseLabel, _texts$en278, _texts$en279, _texts$en280, resolvedRestoreRehearsalCloseButton, _closeLabel, _texts$en281, _texts$en282, proceedLabel, proceedHelp, _texts$en283, _texts$en284, abortLabel, abortHelp, resetLabel, resetHelp, aboutHeading, aboutVersionElem, supportLinkConfigs, langTexts, fallbackTexts, _texts$en285, _label67, saveHelp, _texts$en286, _cancelLabel, cancelHelp, menuToggle, _texts$en287, _texts$en288, menuLabel, _closeLabel2, closeHelp, menuHelp, sideMenu, sideMenuHelp, sideMenuTitle, _texts$en289, titleLabel, titleHelp, closeMenuButton, closeMenuLabel, _texts$en290, _closeLabel3, _closeHelp, reloadLabel, reloadHelp, _offlineNotice, helpShortcutList, helpAriaShortcuts, quickStartHeading, fallback, onboardingCopyElement, fallbackCopy, dataSafetyHeading, _fallback, restoreDrillHeading, _fallback2, restoreDrillNote, _fallback3, _fallback4, _fallback5, exportRevert, downloadDiagramButton, snapActive, resetViewBtn, zoomInBtn, zoomOutBtn, diagramHint, fallbackProjectForm, projectFormTexts, _texts$en291, _texts$lang5, setLabelText, setPlaceholder, setOptionText, crewLabelText, rangeTemplate, defaultHint, legendText, slowRangeTemplate, slowDefaultHint, seriesEmptyText, optionsEmptyText, removeTemplate, mountLabelText, _noneLabel2, yesLabel, projectCancelButton, cancelText, submitText, crewPlaceholders, crewRoleLabels, fallbackContacts, contactsTexts, profileSnapshot, stripTrailingPunctuation, addEntryLabel, crewLabel, _label68, prepLabel, _label69, shootLabel, _label70, returnLabel, _label71, closeText, _t;
     return _regenerator().w(function (_context2) {
       while (1) switch (_context2.p = _context2.n) {
         case 0:
@@ -6259,25 +6261,38 @@ function _setLanguage() {
             }
           }
           setupManageHeadingElem = document.getElementById("setupManageHeading");
-          setupManageHeadingElem.textContent = texts[lang].setupManageHeading;
-          setupManageHeadingElem.setAttribute("data-help", texts[lang].setupManageHeadingHelp);
+          if (setupManageHeadingElem) {
+            setupManageHeadingElem.textContent = texts[lang].setupManageHeading;
+            setupManageHeadingElem.setAttribute("data-help", texts[lang].setupManageHeadingHelp);
+          }
           deviceSelectionHeadingElem = document.getElementById("deviceSelectionHeading");
-          deviceSelectionHeadingElem.textContent = texts[lang].deviceSelectionHeading;
-          deviceSelectionHeadingElem.setAttribute("data-help", texts[lang].deviceSelectionHeadingHelp);
+          if (deviceSelectionHeadingElem) {
+            deviceSelectionHeadingElem.textContent = texts[lang].deviceSelectionHeading;
+            deviceSelectionHeadingElem.setAttribute("data-help", texts[lang].deviceSelectionHeadingHelp);
+          }
           resultsHeadingElem = document.getElementById("resultsHeading");
-          resultsHeadingElem.textContent = texts[lang].resultsHeading;
-          resultsHeadingElem.setAttribute("data-help", texts[lang].resultsHeadingHelp);
+          if (resultsHeadingElem) {
+            resultsHeadingElem.textContent = texts[lang].resultsHeading;
+            resultsHeadingElem.setAttribute("data-help", texts[lang].resultsHeadingHelp);
+          }
           deviceManagerHeadingElem = document.getElementById("deviceManagerHeading");
-          deviceManagerHeadingElem.textContent = texts[lang].deviceManagerHeading;
-          deviceManagerHeadingElem.setAttribute("data-help", texts[lang].deviceManagerHeadingHelp);
+          if (deviceManagerHeadingElem) {
+            deviceManagerHeadingElem.textContent = texts[lang].deviceManagerHeading;
+            deviceManagerHeadingElem.setAttribute("data-help", texts[lang].deviceManagerHeadingHelp);
+          }
           batteryComparisonHeadingElem = document.getElementById("batteryComparisonHeading");
           batteryComparisonDescriptionElem = document.getElementById("batteryComparisonDescription");
           batteryTableElem = document.getElementById("batteryTable");
           setupDiagramHeadingElem = document.getElementById("setupDiagramHeading");
-          setupDiagramHeadingElem.textContent = texts[lang].setupDiagramHeading;
-          setupDiagramHeadingElem.setAttribute("data-help", texts[lang].setupDiagramHeadingHelp);
+          if (setupDiagramHeadingElem) {
+            setupDiagramHeadingElem.textContent = texts[lang].setupDiagramHeading;
+            setupDiagramHeadingElem.setAttribute("data-help", texts[lang].setupDiagramHeadingHelp);
+          }
           sideMenuLinks = document.querySelectorAll("#sideMenu [data-nav-key]");
           sideMenuLinks.forEach(function (link) {
+            if (!link || !link.dataset) {
+              return;
+            }
             var navKey = link.dataset.navKey;
             if (!navKey) {
               return;
@@ -6306,50 +6321,85 @@ function _setLanguage() {
           });
           applyOwnGearLocalization(lang);
           savedSetupsLabelElem = document.getElementById("savedSetupsLabel");
-          savedSetupsLabelElem.textContent = texts[lang].savedSetupsLabel;
-          savedSetupsLabelElem.setAttribute("data-help", texts[lang].setupSelectHelp);
+          if (savedSetupsLabelElem) {
+            savedSetupsLabelElem.textContent = texts[lang].savedSetupsLabel;
+            savedSetupsLabelElem.setAttribute("data-help", texts[lang].setupSelectHelp);
+          }
           setupNameLabelElem = document.getElementById("setupNameLabel");
-          setupNameLabelElem.textContent = texts[lang].setupNameLabel;
-          setupNameLabelElem.setAttribute("data-help", texts[lang].setupNameHelp);
-          setButtonLabelWithIconBinding(deleteSetupBtn, texts[lang].deleteSetupBtn, ICON_GLYPHS.trash);
+          if (setupNameLabelElem) {
+            setupNameLabelElem.textContent = texts[lang].setupNameLabel;
+            setupNameLabelElem.setAttribute("data-help", texts[lang].setupNameHelp);
+          }
+          if (typeof deleteSetupBtn !== 'undefined' && deleteSetupBtn) {
+            setButtonLabelWithIconBinding(deleteSetupBtn, texts[lang].deleteSetupBtn, ICON_GLYPHS.trash);
+          }
           sharedLinkLabelElem = document.getElementById("sharedLinkLabel");
-          sharedLinkLabelElem.textContent = texts[lang].sharedLinkLabel;
-          sharedLinkLabelElem.setAttribute("data-help", texts[lang].sharedLinkHelp);
-          setButtonLabelWithIconBinding(applySharedLinkBtn, texts[lang].loadSharedLinkBtn, ICON_GLYPHS.fileImport);
-          setupSelect.setAttribute("data-help", texts[lang].setupSelectHelp);
-          setupNameInput.setAttribute("data-help", texts[lang].setupNameHelp);
-          deleteSetupBtn.setAttribute("title", texts[lang].deleteSetupHelp);
-          deleteSetupBtn.setAttribute("aria-label", texts[lang].deleteSetupHelp);
-          deleteSetupBtn.setAttribute("data-help", texts[lang].deleteSetupHelp);
-          saveSetupBtn.setAttribute("title", texts[lang].saveSetupHelp);
-          saveSetupBtn.setAttribute("aria-label", texts[lang].saveSetupHelp);
-          saveSetupBtn.setAttribute("data-help", texts[lang].saveSetupHelp);
-          generateOverviewBtn.setAttribute("title", texts[lang].generateOverviewBtn);
-          generateOverviewBtn.setAttribute("data-help", texts[lang].generateOverviewHelp);
-          generateGearListBtn.setAttribute("title", texts[lang].generateGearListBtn);
-          generateGearListBtn.setAttribute("data-help", texts[lang].generateGearListHelp);
-          deleteGearListHelp = texts[lang].deleteGearListBtnHelp || texts[lang].deleteGearListBtn;
-          if (deleteGearListProjectBtn) {
-            setButtonLabelWithIconBinding(deleteGearListProjectBtn, texts[lang].deleteGearListBtn, ICON_GLYPHS.trash);
-            deleteGearListProjectBtn.setAttribute("title", deleteGearListHelp);
-            deleteGearListProjectBtn.setAttribute("data-help", deleteGearListHelp);
-            deleteGearListProjectBtn.setAttribute("aria-label", deleteGearListHelp);
+          if (sharedLinkLabelElem) {
+            sharedLinkLabelElem.textContent = texts[lang].sharedLinkLabel;
+            sharedLinkLabelElem.setAttribute("data-help", texts[lang].sharedLinkHelp);
+          }
+          if (typeof applySharedLinkBtn !== 'undefined' && applySharedLinkBtn) {
+            setButtonLabelWithIconBinding(applySharedLinkBtn, texts[lang].loadSharedLinkBtn, ICON_GLYPHS.fileImport);
+          }
+          safeSetupSelect = typeof setupSelect !== 'undefined' ? setupSelect : document.getElementById('setupSelect');
+          if (safeSetupSelect) {
+            safeSetupSelect.setAttribute("data-help", texts[lang].setupSelectHelp);
+          }
+          safeSetupNameInput = typeof setupNameInput !== 'undefined' ? setupNameInput : document.getElementById('setupNameInput');
+          if (safeSetupNameInput) {
+            safeSetupNameInput.setAttribute("data-help", texts[lang].setupNameHelp);
+          }
+          safeDeleteSetupBtn = deleteSetupBtn;
+          if (safeDeleteSetupBtn && typeof safeDeleteSetupBtn.setAttribute === 'function') {
+            safeDeleteSetupBtn.setAttribute("title", texts[lang].deleteSetupHelp);
+            safeDeleteSetupBtn.setAttribute("aria-label", texts[lang].deleteSetupHelp);
+            safeDeleteSetupBtn.setAttribute("data-help", texts[lang].deleteSetupHelp);
+          }
+          safeSaveSetupBtn = saveSetupBtn;
+          if (safeSaveSetupBtn) {
+            safeSaveSetupBtn.setAttribute("title", texts[lang].saveSetupHelp);
+            safeSaveSetupBtn.setAttribute("aria-label", texts[lang].saveSetupHelp);
+            safeSaveSetupBtn.setAttribute("data-help", texts[lang].saveSetupHelp);
+          }
+          safeGenerateOverviewBtn = generateOverviewBtn;
+          if (safeGenerateOverviewBtn) {
+            safeGenerateOverviewBtn.setAttribute("title", texts[lang].generateOverviewBtn);
+            safeGenerateOverviewBtn.setAttribute("data-help", texts[lang].generateOverviewHelp);
+          }
+          safeGenerateGearListBtn = generateGearListBtn;
+          if (safeGenerateGearListBtn) {
+            safeGenerateGearListBtn.setAttribute("title", texts[lang].generateGearListBtn);
+            safeGenerateGearListBtn.setAttribute("data-help", texts[lang].generateGearListHelp);
+          }
+          try {
+            deleteGearListHelp = texts[lang].deleteGearListBtnHelp || texts[lang].deleteGearListBtn;
+            safeDeleteGearListProjectBtn = deleteGearListProjectBtn;
+            if (safeDeleteGearListProjectBtn && typeof safeDeleteGearListProjectBtn.setAttribute === 'function') {
+              setButtonLabelWithIconBinding(safeDeleteGearListProjectBtn, texts[lang].deleteGearListBtn, ICON_GLYPHS.trash);
+              safeDeleteGearListProjectBtn.setAttribute("title", deleteGearListHelp);
+              safeDeleteGearListProjectBtn.setAttribute("data-help", deleteGearListHelp);
+              safeDeleteGearListProjectBtn.setAttribute("aria-label", deleteGearListHelp);
+            }
+          } catch (err) {
+            console.warn("Error setting deleteGearListProjectBtn attributes", err);
           }
           editProjectBtnElem = document.getElementById("editProjectBtn");
-          if (editProjectBtnElem) {
+          if (editProjectBtnElem && typeof editProjectBtnElem.setAttribute === 'function') {
             editProjectBtnElem.textContent = texts[lang].editProjectBtn;
             editProjectBtnElem.setAttribute("title", texts[lang].editProjectBtn);
             editProjectBtnElem.setAttribute("data-help", texts[lang].editProjectBtn);
           }
           addExtraGearBtnElem = document.getElementById("addExtraGearBtn");
-          if (addExtraGearBtnElem) {
+          if (addExtraGearBtnElem && typeof addExtraGearBtnElem.setAttribute === 'function') {
             extraLabel = texts[lang].addExtraGearBtn || ((_texts$en27 = texts.en) === null || _texts$en27 === void 0 ? void 0 : _texts$en27.addExtraGearBtn) || "Add temporary extra gear";
             addExtraGearBtnElem.textContent = extraLabel;
             addExtraGearBtnElem.setAttribute("title", extraLabel);
             addExtraGearBtnElem.setAttribute("data-help", extraLabel);
           }
-          shareSetupBtn.setAttribute("title", texts[lang].shareSetupBtn);
-          shareSetupBtn.setAttribute("data-help", texts[lang].shareSetupHelp);
+          if (shareSetupBtn) {
+            shareSetupBtn.setAttribute("title", texts[lang].shareSetupBtn);
+            shareSetupBtn.setAttribute("data-help", texts[lang].shareSetupHelp);
+          }
           if (shareDialogHeadingElem) {
             heading = texts[lang].shareDialogTitle || ((_texts$en28 = texts.en) === null || _texts$en28 === void 0 ? void 0 : _texts$en28.shareDialogTitle) || shareDialogHeadingElem.textContent;
             shareDialogHeadingElem.textContent = heading;
@@ -6375,7 +6425,7 @@ function _setLanguage() {
             label = texts[lang].shareIncludeAutoGearLabel || ((_texts$en32 = texts.en) === null || _texts$en32 === void 0 ? void 0 : _texts$en32.shareIncludeAutoGearLabel) || shareIncludeAutoGearText.textContent;
             shareIncludeAutoGearText.textContent = label;
             help = texts[lang].shareIncludeAutoGearHelp || ((_texts$en33 = texts.en) === null || _texts$en33 === void 0 ? void 0 : _texts$en33.shareIncludeAutoGearHelp) || label;
-            if (shareIncludeAutoGearLabelElem) {
+            if (shareIncludeAutoGearLabelElem && typeof shareIncludeAutoGearLabelElem.setAttribute === 'function') {
               shareIncludeAutoGearLabelElem.setAttribute('data-help', help);
             }
             if (shareIncludeAutoGearCheckbox) {
@@ -6386,7 +6436,7 @@ function _setLanguage() {
             _label3 = texts[lang].shareIncludeOwnedGearLabel || ((_texts$en34 = texts.en) === null || _texts$en34 === void 0 ? void 0 : _texts$en34.shareIncludeOwnedGearLabel) || shareIncludeOwnedGearText.textContent;
             shareIncludeOwnedGearText.textContent = _label3;
             _help2 = texts[lang].shareIncludeOwnedGearHelp || ((_texts$en35 = texts.en) === null || _texts$en35 === void 0 ? void 0 : _texts$en35.shareIncludeOwnedGearHelp) || _label3;
-            if (shareIncludeOwnedGearLabelElem) {
+            if (shareIncludeOwnedGearLabelElem && typeof shareIncludeOwnedGearLabelElem.setAttribute === 'function') {
               shareIncludeOwnedGearLabelElem.setAttribute('data-help', _help2);
             }
             if (shareIncludeOwnedGearCheckbox) {
@@ -6449,35 +6499,49 @@ function _setLanguage() {
             sharedImportModeGlobalOption.setAttribute('title', _help5);
             sharedImportModeGlobalOption.setAttribute('aria-label', _label8);
           }
-          applySharedLinkBtn.setAttribute("title", texts[lang].loadSharedLinkBtn);
-          applySharedLinkBtn.setAttribute("data-help", texts[lang].applySharedLinkHelp);
-          runtimeFeedbackBtn.setAttribute("title", texts[lang].runtimeFeedbackBtn);
-          runtimeFeedbackBtn.setAttribute("data-help", texts[lang].runtimeFeedbackBtnHelp);
-          setButtonLabelWithIconBinding(runtimeFeedbackBtn, texts[lang].runtimeFeedbackBtn, ICON_GLYPHS.feedback);
+          if (applySharedLinkBtn) {
+            applySharedLinkBtn.setAttribute("title", texts[lang].loadSharedLinkBtn);
+            applySharedLinkBtn.setAttribute("data-help", texts[lang].applySharedLinkHelp);
+          }
+          if (runtimeFeedbackBtn) {
+            runtimeFeedbackBtn.setAttribute("title", texts[lang].runtimeFeedbackBtn);
+            runtimeFeedbackBtn.setAttribute("data-help", texts[lang].runtimeFeedbackBtnHelp);
+            setButtonLabelWithIconBinding(runtimeFeedbackBtn, texts[lang].runtimeFeedbackBtn, ICON_GLYPHS.feedback);
+          }
           if (setupSelect && setupSelect.options && setupSelect.options.length > 0) {
             setupSelect.options[0].textContent = texts[lang].newSetupOption;
           }
           checkSetupChanged();
           cameraLabelElem = document.getElementById("cameraLabel");
-          cameraLabelElem.textContent = texts[lang].cameraLabel;
-          cameraLabelElem.setAttribute("data-help", texts[lang].cameraSelectHelp);
+          if (cameraLabelElem) {
+            cameraLabelElem.textContent = texts[lang].cameraLabel;
+            cameraLabelElem.setAttribute("data-help", texts[lang].cameraSelectHelp);
+          }
           monitorLabelElem = document.getElementById("monitorLabel");
-          monitorLabelElem.textContent = texts[lang].monitorLabel;
-          monitorLabelElem.setAttribute("data-help", texts[lang].monitorSelectHelp);
+          if (monitorLabelElem) {
+            monitorLabelElem.textContent = texts[lang].monitorLabel;
+            monitorLabelElem.setAttribute("data-help", texts[lang].monitorSelectHelp);
+          }
           videoLabelElem = document.getElementById("videoLabel");
-          videoLabelElem.textContent = texts[lang].videoLabel;
-          videoLabelElem.setAttribute("data-help", texts[lang].videoSelectHelp);
+          if (videoLabelElem) {
+            videoLabelElem.textContent = texts[lang].videoLabel;
+            videoLabelElem.setAttribute("data-help", texts[lang].videoSelectHelp);
+          }
           cageLabelElem = document.getElementById("cageLabel");
           if (cageLabelElem) {
             cageLabelElem.textContent = texts[lang].cageLabel;
             cageLabelElem.setAttribute("data-help", texts[lang].cageSelectHelp);
           }
           distanceLabelElem = document.getElementById("distanceLabel");
-          distanceLabelElem.textContent = texts[lang].distanceLabel;
-          distanceLabelElem.setAttribute("data-help", texts[lang].distanceSelectHelp);
+          if (distanceLabelElem) {
+            distanceLabelElem.textContent = texts[lang].distanceLabel;
+            distanceLabelElem.setAttribute("data-help", texts[lang].distanceSelectHelp);
+          }
           batteryPlateLabelElem = document.getElementById("batteryPlateLabel");
-          batteryPlateLabelElem.textContent = texts[lang].batteryPlateLabel;
-          batteryPlateLabelElem.setAttribute("data-help", texts[lang].batteryPlateSelectHelp);
+          if (batteryPlateLabelElem) {
+            batteryPlateLabelElem.textContent = texts[lang].batteryPlateLabel;
+            batteryPlateLabelElem.setAttribute("data-help", texts[lang].batteryPlateSelectHelp);
+          }
           batteryHotswapLabelElem = document.getElementById("batteryHotswapLabel");
           if (batteryHotswapLabelElem) {
             batteryHotswapLabelElem.textContent = texts[lang].batteryHotswapLabel;
@@ -6650,67 +6714,71 @@ function _setLanguage() {
             tempNoteElem = document.getElementById("temperatureNote");
             if (tempNoteElem) tempNoteElem.setAttribute("data-help", texts[lang].temperatureNoteHelp);
           }
-          document.getElementById("addDeviceHeading").textContent = texts[lang].addDeviceHeading;
-          document.getElementById("categoryLabel").textContent = texts[lang].categoryLabel;
-          document.getElementById("subcategoryLabel").textContent = texts[lang].subcategoryLabel;
-          document.getElementById("deviceNameLabel").textContent = texts[lang].deviceNameLabel;
-          document.getElementById("consumptionLabel").textContent = texts[lang].consumptionLabel;
-          document.getElementById("capacityLabel").textContent = texts[lang].capacityLabel;
-          document.getElementById("pinLabel").textContent = texts[lang].pinLabel;
-          document.getElementById("dtapLabel").textContent = texts[lang].dtapLabel;
-          document.getElementById("cameraWattLabel").textContent = texts[lang].cameraWattLabel;
-          document.getElementById("cameraVoltageLabel").textContent = texts[lang].cameraVoltageLabel;
-          document.getElementById("cameraPortTypeLabel").textContent = texts[lang].cameraPortTypeLabel;
-          document.getElementById("cameraPlatesLabel").textContent = texts[lang].cameraPlatesLabel;
-          document.getElementById("cameraMediaLabel").textContent = texts[lang].cameraMediaLabel;
-          document.getElementById("cameraLensMountLabel").textContent = texts[lang].cameraLensMountLabel;
-          document.getElementById("cameraPowerDistLabel").textContent = texts[lang].powerDistributionLabel;
-          document.getElementById("cameraVideoOutputsLabel").textContent = texts[lang].videoOutputsLabel;
-          document.getElementById("cameraFIZConnectorLabel").textContent = texts[lang].fizConnectorLabel;
-          document.getElementById("cameraViewfinderLabel").textContent = texts[lang].viewfinderLabel;
-          document.getElementById("cameraTimecodeLabel").textContent = texts[lang].timecodeLabel;
-          document.getElementById("powerInputsHeading").textContent = texts[lang].powerInputsHeading;
-          document.getElementById("powerDistributionHeading").textContent = texts[lang].powerDistributionHeading;
-          document.getElementById("videoOutputsHeading").textContent = texts[lang].videoOutputsHeading;
-          document.getElementById("fizConnectorHeading").textContent = texts[lang].fizConnectorHeading;
-          document.getElementById("mediaHeading").textContent = texts[lang].mediaHeading;
-          document.getElementById("viewfinderHeading").textContent = texts[lang].viewfinderHeading;
-          document.getElementById("lensMountHeading").textContent = texts[lang].lensMountHeading;
-          lensDeviceMountHeadingElem = document.getElementById("lensDeviceMountHeading");
-          if (lensDeviceMountHeadingElem) {
-            lensDeviceMountHeadingElem.textContent = texts[lang].lensDeviceMountHeading;
-          }
-          lensDeviceMountLabelElem = document.getElementById("lensDeviceMountLabel");
+          safeSetText = function safeSetText(id, text) {
+            var el = document.getElementById(id);
+            if (el && text !== undefined) el.textContent = text;
+            return el;
+          };
+          safeSetAttr = function safeSetAttr(id, attr, value) {
+            var el = document.getElementById(id);
+            if (el && attr && value !== undefined) el.setAttribute(attr, value);
+            return el;
+          };
+          safeSetText("addDeviceHeading", texts[lang].addDeviceHeading);
+          safeSetText("categoryLabel", texts[lang].categoryLabel);
+          safeSetText("subcategoryLabel", texts[lang].subcategoryLabel);
+          safeSetText("deviceNameLabel", texts[lang].deviceNameLabel);
+          safeSetText("consumptionLabel", texts[lang].consumptionLabel);
+          safeSetText("capacityLabel", texts[lang].capacityLabel);
+          safeSetText("pinLabel", texts[lang].pinLabel);
+          safeSetText("dtapLabel", texts[lang].dtapLabel);
+          safeSetText("cameraWattLabel", texts[lang].cameraWattLabel);
+          safeSetText("cameraVoltageLabel", texts[lang].cameraVoltageLabel);
+          safeSetText("cameraPortTypeLabel", texts[lang].cameraPortTypeLabel);
+          safeSetText("cameraPlatesLabel", texts[lang].cameraPlatesLabel);
+          safeSetText("cameraMediaLabel", texts[lang].cameraMediaLabel);
+          safeSetText("cameraLensMountLabel", texts[lang].cameraLensMountLabel);
+          safeSetText("cameraPowerDistLabel", texts[lang].powerDistributionLabel);
+          safeSetText("cameraVideoOutputsLabel", texts[lang].videoOutputsLabel);
+          safeSetText("cameraFIZConnectorLabel", texts[lang].fizConnectorLabel);
+          safeSetText("cameraViewfinderLabel", texts[lang].viewfinderLabel);
+          safeSetText("cameraTimecodeLabel", texts[lang].timecodeLabel);
+          safeSetText("powerInputsHeading", texts[lang].powerInputsHeading);
+          safeSetText("powerDistributionHeading", texts[lang].powerDistributionHeading);
+          safeSetText("videoOutputsHeading", texts[lang].videoOutputsHeading);
+          safeSetText("fizConnectorHeading", texts[lang].fizConnectorHeading);
+          safeSetText("mediaHeading", texts[lang].mediaHeading);
+          safeSetText("viewfinderHeading", texts[lang].viewfinderHeading);
+          safeSetText("lensMountHeading", texts[lang].lensMountHeading);
+          lensDeviceMountHeadingElem = safeSetText("lensDeviceMountHeading", texts[lang].lensDeviceMountHeading);
+          lensDeviceMountLabelElem = safeSetText("lensDeviceMountLabel", texts[lang].lensDeviceMountLabel);
           if (lensDeviceMountLabelElem) {
-            lensDeviceMountLabelElem.textContent = texts[lang].lensDeviceMountLabel;
-            lensDeviceMountLabelElem.setAttribute('data-help', texts[lang].lensDeviceMountHelp);
+            safeSetAttr("lensDeviceMountLabel", 'data-help', texts[lang].lensDeviceMountHelp);
           }
-          lensFocusScaleLabelElem = document.getElementById("lensFocusScaleUnitLabel");
+          lensFocusScaleLabelElem = safeSetText("lensFocusScaleUnitLabel", texts[lang].lensFocusScaleLabel || texts[lang].focusScaleSetting);
           if (lensFocusScaleLabelElem) {
             focusScaleLabel = texts[lang].lensFocusScaleLabel || texts[lang].focusScaleSetting;
             focusScaleHelp = texts[lang].lensFocusScaleHelp || texts[lang].lensFocusScaleLabel || texts[lang].focusScaleSettingHelp || focusScaleLabel;
-            lensFocusScaleLabelElem.textContent = focusScaleLabel;
-            lensFocusScaleLabelElem.setAttribute('data-help', focusScaleHelp);
+            safeSetAttr("lensFocusScaleUnitLabel", 'data-help', focusScaleHelp);
             if (lensFocusScaleSelect) {
               lensFocusScaleSelect.setAttribute('data-help', focusScaleHelp);
               lensFocusScaleSelect.setAttribute('aria-label', focusScaleLabel);
             }
           }
           updateLensFocusScaleSelectOptions(lang);
-          document.getElementById("timecodeHeading").textContent = texts[lang].timecodeHeading;
-          document.getElementById("monitorScreenSizeLabel").textContent = texts[lang].monitorScreenSizeLabel;
-          document.getElementById("monitorBrightnessLabel").textContent = texts[lang].monitorBrightnessLabel;
-          document.getElementById("monitorWattLabel").textContent = texts[lang].monitorWattLabel;
-          document.getElementById("monitorVoltageLabel").textContent = texts[lang].monitorVoltageLabel;
-          document.getElementById("monitorPortTypeLabel").textContent = texts[lang].monitorPortTypeLabel;
-          document.getElementById("monitorVideoInputsHeading").textContent = texts[lang].monitorVideoInputsHeading;
-          document.getElementById("monitorVideoOutputsHeading").textContent = texts[lang].monitorVideoOutputsHeading;
-          document.getElementById("monitorVideoInputsLabel").textContent = texts[lang].monitorVideoInputsLabel;
-          document.getElementById("monitorVideoOutputsLabel").textContent = texts[lang].monitorVideoOutputsLabel;
-          document.getElementById("monitorWirelessTxLabel").textContent = texts[lang].monitorWirelessTxLabel;
-          monitorLatencyLabelElem = document.getElementById("monitorLatencyLabel");
+          safeSetText("timecodeHeading", texts[lang].timecodeHeading);
+          safeSetText("monitorScreenSizeLabel", texts[lang].monitorScreenSizeLabel);
+          safeSetText("monitorBrightnessLabel", texts[lang].monitorBrightnessLabel);
+          safeSetText("monitorWattLabel", texts[lang].monitorWattLabel);
+          safeSetText("monitorVoltageLabel", texts[lang].monitorVoltageLabel);
+          safeSetText("monitorPortTypeLabel", texts[lang].monitorPortTypeLabel);
+          safeSetText("monitorVideoInputsHeading", texts[lang].monitorVideoInputsHeading);
+          safeSetText("monitorVideoOutputsHeading", texts[lang].monitorVideoOutputsHeading);
+          safeSetText("monitorVideoInputsLabel", texts[lang].monitorVideoInputsLabel);
+          safeSetText("monitorVideoOutputsLabel", texts[lang].monitorVideoOutputsLabel);
+          safeSetText("monitorWirelessTxLabel", texts[lang].monitorWirelessTxLabel);
+          monitorLatencyLabelElem = safeSetText("monitorLatencyLabel", texts[lang].monitorLatencyLabel);
           if (monitorLatencyLabelElem) {
-            monitorLatencyLabelElem.textContent = texts[lang].monitorLatencyLabel;
             monitorLatencyHelpText = texts[lang].monitorLatencyHelp;
             if (monitorLatencyHelpText) {
               monitorLatencyLabelElem.setAttribute('data-help', monitorLatencyHelpText);
@@ -6728,19 +6796,19 @@ function _setLanguage() {
               }
             }
           }
-          document.getElementById("monitorAudioOutputLabel").textContent = texts[lang].monitorAudioOutputLabel;
-          document.getElementById("viewfinderDetailsHeading").textContent = texts[lang].viewfinderDetailsHeading;
-          document.getElementById("viewfinderScreenSizeLabel").textContent = texts[lang].viewfinderScreenSizeLabel;
-          document.getElementById("viewfinderBrightnessLabel").textContent = texts[lang].viewfinderBrightnessLabel;
-          document.getElementById("viewfinderWattLabel").textContent = texts[lang].viewfinderWattLabel;
-          document.getElementById("viewfinderVoltageLabel").textContent = texts[lang].viewfinderVoltageLabel;
-          document.getElementById("viewfinderPortTypeLabel").textContent = texts[lang].viewfinderPortTypeLabel;
-          document.getElementById("viewfinderVideoInputsHeading").textContent = texts[lang].viewfinderVideoInputsHeading;
-          document.getElementById("viewfinderVideoOutputsHeading").textContent = texts[lang].viewfinderVideoOutputsHeading;
-          document.getElementById("viewfinderVideoInputsLabel").textContent = texts[lang].viewfinderVideoInputsLabel;
-          document.getElementById("viewfinderVideoOutputsLabel").textContent = texts[lang].viewfinderVideoOutputsLabel;
-          document.getElementById("viewfinderWirelessTxLabel").textContent = texts[lang].viewfinderWirelessTxLabel;
-          viewfinderLatencyLabelElem = document.getElementById("viewfinderLatencyLabel");
+          safeSetText("monitorAudioOutputLabel", texts[lang].monitorAudioOutputLabel);
+          safeSetText("viewfinderDetailsHeading", texts[lang].viewfinderDetailsHeading);
+          safeSetText("viewfinderScreenSizeLabel", texts[lang].viewfinderScreenSizeLabel);
+          safeSetText("viewfinderBrightnessLabel", texts[lang].viewfinderBrightnessLabel);
+          safeSetText("viewfinderWattLabel", texts[lang].viewfinderWattLabel);
+          safeSetText("viewfinderVoltageLabel", texts[lang].viewfinderVoltageLabel);
+          safeSetText("viewfinderPortTypeLabel", texts[lang].viewfinderPortTypeLabel);
+          safeSetText("viewfinderVideoInputsHeading", texts[lang].viewfinderVideoInputsHeading);
+          safeSetText("viewfinderVideoOutputsHeading", texts[lang].viewfinderVideoOutputsHeading);
+          safeSetText("viewfinderVideoInputsLabel", texts[lang].viewfinderVideoInputsLabel);
+          safeSetText("viewfinderVideoOutputsLabel", texts[lang].viewfinderVideoOutputsLabel);
+          safeSetText("viewfinderWirelessTxLabel", texts[lang].viewfinderWirelessTxLabel);
+          viewfinderLatencyLabelElem = safeSetText("viewfinderLatencyLabel", texts[lang].viewfinderLatencyLabel);
           if (viewfinderLatencyLabelElem) {
             viewfinderLatencyLabelElem.textContent = texts[lang].viewfinderLatencyLabel;
             viewfinderLatencyHelpText = texts[lang].viewfinderLatencyHelp;
@@ -6760,10 +6828,7 @@ function _setLanguage() {
               }
             }
           }
-          videoPowerHeadingElem = document.getElementById("videoPowerInputsHeading");
-          if (videoPowerHeadingElem) {
-            videoPowerHeadingElem.textContent = texts[lang].videoPowerInputsHeading || texts[lang].powerInputsHeading || 'Power Inputs';
-          }
+          safeSetText("videoPowerInputsHeading", texts[lang].videoPowerInputsHeading || texts[lang].powerInputsHeading || 'Power Inputs');
           videoPowerLabelElem = document.getElementById("videoPowerInputLabel");
           if (videoPowerLabelElem) {
             videoPowerLabelElem.textContent = texts[lang].videoPowerInputLabel || texts[lang].powerInputsHeading;
@@ -6776,49 +6841,66 @@ function _setLanguage() {
               videoPowerLabelElem.removeAttribute('title');
             }
           }
-          document.getElementById("videoVideoInputsHeading").textContent = texts[lang].videoVideoInputsHeading;
-          document.getElementById("videoVideoInputsLabel").textContent = texts[lang].videoVideoInputsLabel;
-          document.getElementById("videoVideoOutputsHeading").textContent = texts[lang].videoVideoOutputsHeading;
-          document.getElementById("videoVideoOutputsLabel").textContent = texts[lang].videoVideoOutputsLabel;
-          document.getElementById("monitorDetailsHeading").textContent = texts[lang].monitorDetailsHeading;
-          document.getElementById("monitorPowerHeading").textContent = texts[lang].monitorPowerHeading;
-          addDeviceLabel = texts[lang].addDeviceBtn;
-          updateDeviceLabel = texts[lang].updateDeviceBtn;
-          if (addDeviceBtn.dataset.mode === "edit") {
-            setButtonLabelWithIconBinding(addDeviceBtn, updateDeviceLabel, ICON_GLYPHS.save);
-            addDeviceBtn.setAttribute('data-help', texts[lang].updateDeviceBtnHelp);
-          } else {
-            setButtonLabelWithIconBinding(addDeviceBtn, addDeviceLabel, ICON_GLYPHS.add);
-            addDeviceBtn.setAttribute('data-help', texts[lang].addDeviceBtnHelp);
+          safeSetText("videoVideoInputsHeading", texts[lang].videoVideoInputsHeading);
+          safeSetText("videoVideoInputsLabel", texts[lang].videoVideoInputsLabel);
+          safeSetText("videoVideoOutputsHeading", texts[lang].videoVideoOutputsHeading);
+          safeSetText("videoVideoOutputsLabel", texts[lang].videoVideoOutputsLabel);
+          safeSetText("monitorDetailsHeading", texts[lang].monitorDetailsHeading);
+          safeSetText("monitorPowerHeading", texts[lang].monitorPowerHeading);
+          addDeviceLabel = texts[lang] && texts[lang].addDeviceBtn || "Add";
+          updateDeviceLabel = texts[lang] && texts[lang].updateDeviceBtn || "Update";
+          addDeviceBtnElem = document.getElementById("addDeviceBtn");
+          if (addDeviceBtnElem) {
+            if (addDeviceBtnElem.dataset && addDeviceBtnElem.dataset.mode === "edit") {
+              setButtonLabelWithIconBinding(addDeviceBtnElem, updateDeviceLabel, ICON_GLYPHS.save);
+              addDeviceBtnElem.setAttribute('data-help', texts[lang] && texts[lang].updateDeviceBtnHelp || "");
+            } else {
+              setButtonLabelWithIconBinding(addDeviceBtnElem, addDeviceLabel, ICON_GLYPHS.add);
+              addDeviceBtnElem.setAttribute('data-help', texts[lang] && texts[lang].addDeviceBtnHelp || "");
+            }
           }
-          setButtonLabelWithIconBinding(cancelEditBtn, texts[lang].cancelEditBtn, ICON_GLYPHS.circleX);
-          cancelEditBtn.setAttribute('data-help', texts[lang].cancelEditBtnHelp);
-          setButtonLabelWithIconBinding(exportBtn, texts[lang].exportDataBtn, ICON_GLYPHS.fileExport);
-          exportBtn.setAttribute('data-help', texts[lang].exportDataBtnHelp);
-          setButtonLabelWithIconBinding(importDataBtn, texts[lang].importDataBtn, ICON_GLYPHS.fileImport);
-          importDataBtn.setAttribute('data-help', texts[lang].importDataBtnHelp);
-          setupNameInput.placeholder = texts[lang].setupNameLabel.replace(":", "");
-          newNameInput.placeholder = texts[lang].placeholder_deviceName;
-          newWattInput.placeholder = texts[lang].placeholder_watt;
-          newCapacityInput.placeholder = texts[lang].placeholder_capacity;
-          newPinAInput.placeholder = texts[lang].placeholder_pin;
-          newDtapAInput.placeholder = texts[lang].placeholder_dtap;
-          cameraVoltageInput.placeholder = texts[lang].placeholder_voltage;
-          monitorVoltageInput.placeholder = texts[lang].placeholder_voltage;
+          cancelEditBtnElem = document.getElementById("cancelEditBtn");
+          if (cancelEditBtnElem) {
+            setButtonLabelWithIconBinding(cancelEditBtnElem, texts[lang].cancelEditBtn, ICON_GLYPHS.circleX);
+            cancelEditBtnElem.setAttribute('data-help', texts[lang].cancelEditBtnHelp);
+          }
+          exportBtnElem = document.getElementById("exportDataBtn");
+          if (exportBtnElem) {
+            setButtonLabelWithIconBinding(exportBtnElem, texts[lang].exportDataBtn, ICON_GLYPHS.fileExport);
+            exportBtnElem.setAttribute('data-help', texts[lang].exportDataHelp);
+          }
+          importDataBtnElem = document.getElementById("importDataBtn");
+          if (importDataBtnElem) {
+            setButtonLabelWithIconBinding(importDataBtnElem, texts[lang].importDataBtn, ICON_GLYPHS.fileImport);
+            importDataBtnElem.setAttribute('data-help', texts[lang].importDataHelp);
+          }
+          if (typeof setupNameInput !== 'undefined' && setupNameInput) setupNameInput.placeholder = (texts[lang].setupNameLabel || "").replace(":", "");
+          if (typeof newNameInput !== 'undefined' && newNameInput) newNameInput.placeholder = texts[lang].placeholder_deviceName;
+          if (typeof newWattInput !== 'undefined' && newWattInput) newWattInput.placeholder = texts[lang].placeholder_watt;
+          if (typeof newCapacityInput !== 'undefined' && newCapacityInput) newCapacityInput.placeholder = texts[lang].placeholder_capacity;
+          if (typeof newPinAInput !== 'undefined' && newPinAInput) newPinAInput.placeholder = texts[lang].placeholder_pin;
+          if (typeof newDtapAInput !== 'undefined' && newDtapAInput) newDtapAInput.placeholder = texts[lang].placeholder_dtap;
+          if (typeof cameraVoltageInput !== 'undefined' && cameraVoltageInput) cameraVoltageInput.placeholder = texts[lang].placeholder_voltage;
+          if (typeof monitorVoltageInput !== 'undefined' && monitorVoltageInput) monitorVoltageInput.placeholder = texts[lang].placeholder_voltage;
           updateDeviceManagerLocalization(lang);
-          if (deviceManagerSection.classList.contains('hidden')) {
-            setButtonLabelWithIconBinding(toggleDeviceBtn, texts[lang].toggleDeviceManager, ICON_GLYPHS.gears);
-            toggleDeviceBtn.setAttribute("title", texts[lang].toggleDeviceManager);
-            toggleDeviceBtn.setAttribute("data-help", texts[lang].toggleDeviceManagerHelp);
-            toggleDeviceBtn.setAttribute("aria-expanded", "false");
-          } else {
-            setButtonLabelWithIconBinding(toggleDeviceBtn, texts[lang].hideDeviceManager, ICON_GLYPHS.minus);
-            toggleDeviceBtn.setAttribute("title", texts[lang].hideDeviceManager);
-            toggleDeviceBtn.setAttribute("data-help", texts[lang].hideDeviceManagerHelp);
-            toggleDeviceBtn.setAttribute("aria-expanded", "true");
+          toggleDeviceBtnElem = document.getElementById("toggleDeviceManager");
+          deviceManagerSectionElem = document.getElementById("device-manager");
+          if (deviceManagerSectionElem && toggleDeviceBtnElem) {
+            if (deviceManagerSectionElem.classList.contains('hidden')) {
+              setButtonLabelWithIconBinding(toggleDeviceBtnElem, texts[lang].toggleDeviceManager, ICON_GLYPHS.gears);
+              toggleDeviceBtnElem.setAttribute("title", texts[lang].toggleDeviceManager);
+              toggleDeviceBtnElem.setAttribute("data-help", texts[lang].toggleDeviceManagerHelp);
+              toggleDeviceBtnElem.setAttribute("aria-expanded", "false");
+            } else {
+              setButtonLabelWithIconBinding(toggleDeviceBtnElem, texts[lang].hideDeviceManager, ICON_GLYPHS.minus);
+              toggleDeviceBtnElem.setAttribute("title", texts[lang].hideDeviceManager);
+              toggleDeviceBtnElem.setAttribute("data-help", texts[lang].hideDeviceManagerHelp);
+              toggleDeviceBtnElem.setAttribute("aria-expanded", "true");
+            }
           }
-          if (newCategorySelect.options) {
-            Array.from(newCategorySelect.options).forEach(function (opt) {
+          newCategorySelectElem = document.getElementById("newCategory");
+          if (newCategorySelectElem && newCategorySelectElem.options) {
+            Array.from(newCategorySelectElem.options).forEach(function (opt) {
               opt.textContent = getCategoryLabel(opt.value, lang);
             });
           }
@@ -9267,6 +9349,8 @@ var tripodSpreaderLabel = document.getElementById("tripodSpreaderLabel");
 var projectSubmitBtn = document.getElementById("projectSubmit");
 var crewContainer = document.getElementById("crewContainer");
 var addPersonBtn = document.getElementById("addPersonBtn");
+console.log('DEBUG: addPersonBtn found:', !!addPersonBtn);
+console.log('DEBUG: crewContainer found:', !!crewContainer);
 var prepContainer = document.getElementById("prepContainer");
 var addPrepBtn = document.getElementById("addPrepBtn");
 var shootContainer = document.getElementById("shootContainer");
@@ -11474,6 +11558,9 @@ function initializeContactsModule() {
 function createCrewRow() {
   var _texts$en, _texts$currentLang, _texts$currentLang2, _texts$en2, _texts$currentLang3, _texts$en3, _texts$currentLang4, _texts$en4;
   var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  console.log('DEBUG: createCrewRow called', {
+    crewContainer: !!crewContainer
+  });
   if (!crewContainer) return;
   var row = document.createElement('div');
   row.className = 'person-row';
@@ -12303,8 +12390,10 @@ function updateStorageRequirementTranslations(projectFormTexts, fallbackProjectF
   });
 }
 if (addPersonBtn) {
+  console.log('DEBUG: Attaching click listener to addPersonBtn');
   addPersonBtn.addEventListener('click', function () {
-    return createCrewRow();
+    console.log('DEBUG: addPersonBtn clicked');
+    createCrewRow();
   });
 }
 if (addPrepBtn) {
@@ -13874,7 +13963,7 @@ function getRuntimeTemperatureUnit() {
   if (typeof self !== 'undefined' && self && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object') {
     fallbackUnitCandidates.push(self.temperatureUnit);
   }
-  if (typeof global !== 'undefined' && global && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object') {
+  if (typeof global !== 'undefined' && global && _typeof(global) === 'object') {
     fallbackUnitCandidates.push(global.temperatureUnit);
   }
   for (var index = 0; index < fallbackUnitCandidates.length; index += 1) {
