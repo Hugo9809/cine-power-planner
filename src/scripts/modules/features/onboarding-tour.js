@@ -6416,26 +6416,61 @@
     themeGroup.appendChild(themeSelect);
     fragment.appendChild(themeGroup);
 
+    const pinkPreferenceBridge = GLOBAL_SCOPE && GLOBAL_SCOPE.cinePinkModePreference
+      ? GLOBAL_SCOPE.cinePinkModePreference
+      : null;
+
     const pinkToggle = DOCUMENT.getElementById('settingsPinkMode');
-    if (pinkToggle) {
-      const pinkGroup = DOCUMENT.createElement('div');
-      pinkGroup.className = 'onboarding-field-group';
-      const pinkId = getProxyControlId('pink');
-      const pinkLabel = DOCUMENT.createElement('label');
-      pinkLabel.className = 'onboarding-field-label';
-      pinkLabel.setAttribute('for', pinkId);
-      pinkLabel.textContent = getTourString('unitsPreferencesPinkLabel', 'Pink mode accents');
-      const pinkSelect = DOCUMENT.createElement('select');
-      pinkSelect.id = pinkId;
-      pinkSelect.className = 'onboarding-field-select';
-      const pinkOff = DOCUMENT.createElement('option');
-      pinkOff.value = 'disabled';
-      pinkOff.textContent = getTourString('unitsPreferencesPinkOff', 'Disabled');
-      const pinkOn = DOCUMENT.createElement('option');
-      pinkOn.value = 'enabled';
-      pinkOn.textContent = getTourString('unitsPreferencesPinkOn', 'Enabled');
-      pinkSelect.appendChild(pinkOff);
-      pinkSelect.appendChild(pinkOn);
+    const pinkGroup = DOCUMENT.createElement('div');
+    pinkGroup.className = 'onboarding-field-group';
+    const pinkId = getProxyControlId('pink');
+    const pinkLabel = DOCUMENT.createElement('label');
+    pinkLabel.className = 'onboarding-field-label';
+    pinkLabel.setAttribute('for', pinkId);
+    pinkLabel.textContent = getTourString('unitsPreferencesPinkLabel', 'Pink mode accents');
+    const pinkSelect = DOCUMENT.createElement('select');
+    pinkSelect.id = pinkId;
+    pinkSelect.className = 'onboarding-field-select';
+    const pinkOff = DOCUMENT.createElement('option');
+    pinkOff.value = 'disabled';
+    pinkOff.textContent = getTourString('unitsPreferencesPinkOff', 'Disabled');
+    const pinkOn = DOCUMENT.createElement('option');
+    pinkOn.value = 'enabled';
+    pinkOn.textContent = getTourString('unitsPreferencesPinkOn', 'Enabled');
+    pinkSelect.appendChild(pinkOff);
+    pinkSelect.appendChild(pinkOn);
+
+    if (
+      pinkPreferenceBridge
+      && typeof pinkPreferenceBridge.registerControl === 'function'
+      && typeof pinkPreferenceBridge.getValue === 'function'
+    ) {
+      try {
+        const currentPink = pinkPreferenceBridge.getValue();
+        if (typeof currentPink === 'boolean') {
+          pinkSelect.value = currentPink ? 'enabled' : 'disabled';
+        }
+      } catch (bridgeError) {
+        safeWarn('cine.features.onboardingTour: pink bridge getValue failed.', bridgeError);
+      }
+
+      let unregisterPinkControl = null;
+      try {
+        unregisterPinkControl = pinkPreferenceBridge.registerControl(pinkSelect, { type: 'select' });
+      } catch (registerError) {
+        safeWarn('cine.features.onboardingTour: pink bridge registerControl failed.', registerError);
+      }
+
+      if (typeof unregisterPinkControl === 'function') {
+        registerCleanup(() => {
+          try {
+            unregisterPinkControl();
+          } catch (cleanupError) {
+            safeWarn('cine.features.onboardingTour: pink bridge cleanup failed.', cleanupError);
+          }
+        });
+      }
+    } else if (pinkToggle) {
       pinkSelect.value = pinkToggle.checked ? 'enabled' : 'disabled';
 
       const syncPinkToTarget = () => {
@@ -6461,7 +6496,9 @@
       registerCleanup(() => {
         pinkToggle.removeEventListener('change', syncPinkFromTarget);
       });
+    }
 
+    if (pinkPreferenceBridge || pinkToggle) {
       pinkGroup.appendChild(pinkLabel);
       pinkGroup.appendChild(pinkSelect);
       fragment.appendChild(pinkGroup);

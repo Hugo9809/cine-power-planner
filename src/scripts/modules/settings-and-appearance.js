@@ -1162,6 +1162,223 @@
       };
     }
 
+    function detectBooleanControlType(element, provided) {
+      if (provided) {
+        return provided;
+      }
+      if (!element || typeof element.tagName !== 'string') {
+        return 'button';
+      }
+      const tagName = element.tagName.toLowerCase();
+      if (tagName === 'select') {
+        return 'select';
+      }
+      if (tagName === 'input') {
+        const typeAttr = typeof element.getAttribute === 'function'
+          ? (element.getAttribute('type') || '').toLowerCase()
+          : '';
+        if (typeAttr === 'checkbox') {
+          return 'checkbox';
+        }
+      }
+      return 'button';
+    }
+
+    function createPinkModeControlReader(element, type, provided, getCurrent) {
+      if (typeof provided === 'function') {
+        return provided;
+      }
+      if (type === 'select') {
+        return () => !!(element && element.value === 'enabled');
+      }
+      if (type === 'checkbox') {
+        return () => !!(element && element.checked);
+      }
+      return () => !getCurrent();
+    }
+
+    function createPinkModeControlWriter(element, type, provided) {
+      if (typeof provided === 'function') {
+        return provided;
+      }
+      if (type === 'select') {
+        return value => {
+          if (!element) {
+            return;
+          }
+          const expected = value ? 'enabled' : 'disabled';
+          if (element.value !== expected) {
+            element.value = expected;
+          }
+        };
+      }
+      if (type === 'checkbox') {
+        return value => {
+          if (!element) {
+            return;
+          }
+          const expected = !!value;
+          if (element.checked !== expected) {
+            element.checked = expected;
+          }
+        };
+      }
+      return value => {
+        if (!element || typeof element.setAttribute !== 'function') {
+          return;
+        }
+        element.setAttribute('aria-pressed', value ? 'true' : 'false');
+      };
+    }
+
+    function createPinkModePreferenceController(options) {
+      const controllerOptions = options && typeof options === 'object' ? options : {};
+      const controls = [];
+      let applying = false;
+      let currentPreference = isPinkModeActive();
+
+      const getCurrentPreference = () => currentPreference;
+
+      function applyPreference(value, config) {
+        const optionsConfig = config && typeof config === 'object' ? config : {};
+        const normalized = !!value;
+        const previous = currentPreference;
+        currentPreference = normalized;
+
+        applying = true;
+        try {
+          for (let index = 0; index < controls.length; index += 1) {
+            const control = controls[index];
+            if (!control || control === optionsConfig.source || typeof control.write !== 'function') {
+              continue;
+            }
+            try {
+              control.write(normalized, { previous });
+            } catch (error) {
+              safeWarn('cineSettingsAppearance: Unable to sync pink mode control.', error);
+            }
+          }
+
+          try {
+            applyPinkMode(normalized);
+          } catch (error) {
+            safeWarn('cineSettingsAppearance: applyPinkMode failed during update.', error);
+          }
+        } finally {
+          applying = false;
+        }
+
+        if (optionsConfig.source && typeof optionsConfig.source.write === 'function') {
+          try {
+            optionsConfig.source.write(normalized, { previous });
+          } catch (error) {
+            safeWarn('cineSettingsAppearance: Unable to sync source pink mode control.', error);
+          }
+        }
+
+        if (optionsConfig.persist !== false) {
+          persistPinkModePreference(normalized);
+        }
+
+        return previous !== normalized;
+      }
+
+      function registerControl(element, controlOptions) {
+        if (!element) {
+          return () => { };
+        }
+
+        const configuration = controlOptions && typeof controlOptions === 'object' ? controlOptions : {};
+        const type = detectBooleanControlType(element, configuration.type);
+        const read = createPinkModeControlReader(element, type, configuration.read, getCurrentPreference);
+        const write = createPinkModeControlWriter(element, type, configuration.write);
+        const eventType = configuration.event || (type === 'button' ? 'click' : 'change');
+
+        const control = { element, type, read, write, eventType };
+
+        const handler = event => {
+          if (applying) {
+            return;
+          }
+          let nextValue;
+          try {
+            nextValue = control.read(currentPreference, event);
+          } catch (error) {
+            safeWarn('cineSettingsAppearance: Unable to read pink mode control value.', error);
+            nextValue = currentPreference;
+          }
+
+          applyPreference(!!nextValue, { source: control });
+        };
+
+        if (typeof element.addEventListener === 'function') {
+          element.addEventListener(eventType, handler);
+        }
+
+        control.handler = handler;
+        controls.push(control);
+
+        try {
+          control.write(currentPreference);
+        } catch (error) {
+          safeWarn('cineSettingsAppearance: Unable to apply pink mode preference to control during registration.', error);
+        }
+
+        return function unregisterControl() {
+          for (let index = controls.length - 1; index >= 0; index -= 1) {
+            const storedControl = controls[index];
+            if (!storedControl || storedControl.element !== element) {
+              continue;
+            }
+            controls.splice(index, 1);
+            if (element && typeof element.removeEventListener === 'function') {
+              element.removeEventListener(storedControl.eventType, storedControl.handler);
+            }
+            break;
+          }
+        };
+      }
+
+      function setValue(value, optionsConfig) {
+        const config = optionsConfig && typeof optionsConfig === 'object' ? optionsConfig : {};
+        applyPreference(value, { persist: config.persist !== false });
+      }
+
+      function getValue() {
+        return currentPreference;
+      }
+
+      function reloadFromStorage(optionsConfig) {
+        const config = optionsConfig && typeof optionsConfig === 'object' ? optionsConfig : {};
+        let stored = null;
+        try {
+          const raw = localStorage.getItem(PINK_MODE_STORAGE_KEY) || localStorage.getItem(LEGACY_PINK_MODE_STORAGE_KEY);
+          if (raw === 'true' || raw === 'false') {
+            stored = raw === 'true';
+          }
+        } catch (e) {
+          void e;
+        }
+
+        if (stored === null) {
+          if (config.persist !== false) {
+            persistPinkModePreference(currentPreference);
+          }
+          return currentPreference;
+        }
+        applyPreference(stored, { persist: config.persist !== false });
+        return stored;
+      }
+
+      return {
+        registerControl,
+        setValue,
+        getValue,
+        reloadFromStorage,
+        persist: persistPinkModePreference,
+      };
+    }
+
     function createThemePreferenceController(options) {
       const controllerOptions = options && typeof options === 'object' ? options : {};
       const controls = [];
@@ -2055,6 +2272,7 @@
       stopPinkModeAnimatedIconRotation,
       isPinkModeActive,
       createThemePreferenceController,
+      createPinkModePreferenceController,
       setAccentColor,
       setPrevAccentColor,
       getAccentColor,

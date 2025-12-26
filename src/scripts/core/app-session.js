@@ -6805,6 +6805,28 @@ const appearanceModuleValidator = candidate => !!candidate && typeof candidate.i
 
 let appearanceModule = null;
 let themePreferenceController = null;
+let pinkModePreferenceController = null;
+const pendingThemeControls = [];
+const pendingPinkModeControls = [];
+
+const processPendingControls = (controller, queue) => {
+  if (!controller || typeof controller.registerControl !== 'function' || !Array.isArray(queue)) {
+    return;
+  }
+  while (queue.length > 0) {
+    const item = queue.shift();
+    if (item && item.element) {
+      try {
+        const unregister = controller.registerControl(item.element, item.options);
+        if (typeof item.callback === 'function') {
+          item.callback(unregister);
+        }
+      } catch (e) {
+        console.warn('Failed to process pending control registration', e);
+      }
+    }
+  }
+};
 let appearanceModuleInitialized = false;
 let appearanceModuleUnavailableWarningHandle = null;
 
@@ -7071,6 +7093,22 @@ function buildThemePreferenceController(module) {
   return null;
 }
 
+function buildPinkModePreferenceController(module) {
+  if (!module || typeof module.createPinkModePreferenceController !== 'function') {
+    return null;
+  }
+
+  try {
+    return module.createPinkModePreferenceController({});
+  } catch (error) {
+    if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+      console.warn('cineSettingsAppearance: failed to create pink mode preference controller.', error);
+    }
+  }
+
+  return null;
+}
+
 function applyAppearanceModuleBindings(module) {
   if (!module || typeof module !== 'object') {
     return false;
@@ -7220,6 +7258,13 @@ function applyAppearanceModuleBindings(module) {
   const controller = buildThemePreferenceController(module);
   if (controller) {
     themePreferenceController = controller;
+    processPendingControls(themePreferenceController, pendingThemeControls);
+  }
+
+  const pinkController = buildPinkModePreferenceController(module);
+  if (pinkController) {
+    pinkModePreferenceController = pinkController;
+    processPendingControls(pinkModePreferenceController, pendingPinkModeControls);
   }
 
   return true;
@@ -7652,18 +7697,60 @@ if (themePreferenceController) {
 
 if (themePreferenceGlobalScope) {
   try {
-    themePreferenceGlobalScope.cineThemePreference = themePreferenceController
-      ? {
-        registerControl: (element, options) => registerThemeControl(element, options),
-        setValue: (value, options) => setThemePreference(value, options),
-        getValue: () => getThemePreference(),
-        reloadFromStorage: options => (
-          themePreferenceController && typeof themePreferenceController.reloadFromStorage === 'function'
-            ? themePreferenceController.reloadFromStorage(options)
-            : getThemePreference()
-        ),
-      }
-      : null;
+    themePreferenceGlobalScope.cineThemePreference = {
+      registerControl: (element, options) => {
+        if (themePreferenceController && typeof themePreferenceController.registerControl === 'function') {
+          return themePreferenceController.registerControl(element, options);
+        }
+        let unregister = () => { };
+        pendingThemeControls.push({
+          element,
+          options,
+          callback: (fn) => { unregister = fn; }
+        });
+        return () => unregister();
+      },
+      setValue: (value, options) => setThemePreference(value, options),
+      getValue: () => getThemePreference(),
+      reloadFromStorage: options => (
+        themePreferenceController && typeof themePreferenceController.reloadFromStorage === 'function'
+          ? themePreferenceController.reloadFromStorage(options)
+          : getThemePreference()
+      ),
+    };
+
+    themePreferenceGlobalScope.cinePinkModePreference = {
+      registerControl: (element, options) => {
+        if (pinkModePreferenceController && typeof pinkModePreferenceController.registerControl === 'function') {
+          return pinkModePreferenceController.registerControl(element, options);
+        }
+        let unregister = () => { };
+        pendingPinkModeControls.push({
+          element,
+          options,
+          callback: (fn) => { unregister = fn; }
+        });
+        return () => unregister();
+      },
+      setValue: (value, options) => {
+        if (pinkModePreferenceController && typeof pinkModePreferenceController.setValue === 'function') {
+          return pinkModePreferenceController.setValue(value, options);
+        }
+        return false;
+      },
+      getValue: () => {
+        if (pinkModePreferenceController && typeof pinkModePreferenceController.getValue === 'function') {
+          return pinkModePreferenceController.getValue();
+        }
+        return isPinkModeActive();
+      },
+      reloadFromStorage: options => {
+        if (pinkModePreferenceController && typeof pinkModePreferenceController.reloadFromStorage === 'function') {
+          return pinkModePreferenceController.reloadFromStorage(options);
+        }
+        return isPinkModeActive();
+      },
+    };
   } catch (exposeError) {
     console.warn('Unable to expose theme preference bridge', exposeError);
   }
@@ -7708,27 +7795,36 @@ rememberSettingsFocusScaleBaseline();
 rememberSettingsShowAutoBackupsBaseline();
 rememberSettingsMountVoltagesBaseline();
 
-if (typeof document !== 'undefined') {
-  document.addEventListener('click', (event) => {
-    if (!event || !event.target) return;
-    const toggle = event.target.closest('#pinkModeToggle');
-    if (toggle) {
-      persistPinkModePreference(!document.body.classList.contains('pink-mode'));
-    }
-  });
-
-  if (typeof window !== 'undefined') {
-    // Expose helper for programmatic access and testing
-    window.togglePinkMode = () => {
-      persistPinkModePreference(!document.body.classList.contains('pink-mode'));
-    };
+if (pinkModePreferenceController) {
+  if (pinkModeToggle) {
+    pinkModePreferenceController.registerControl(pinkModeToggle, { type: 'button' });
   }
-}
+  if (settingsPinkMode) {
+    pinkModePreferenceController.registerControl(settingsPinkMode, { type: 'checkbox' });
+  }
+} else {
+  if (typeof document !== 'undefined') {
+    document.addEventListener('click', (event) => {
+      if (!event || !event.target) return;
+      const toggle = event.target.closest('#pinkModeToggle');
+      if (toggle) {
+        persistPinkModePreference(!document.body.classList.contains('pink-mode'));
+      }
+    });
 
-if (settingsPinkMode) {
-  settingsPinkMode.addEventListener('change', () => {
-    persistPinkModePreference(settingsPinkMode.checked);
-  });
+    if (typeof window !== 'undefined') {
+      // Expose helper for programmatic access and testing
+      window.togglePinkMode = () => {
+        persistPinkModePreference(!document.body.classList.contains('pink-mode'));
+      };
+    }
+  }
+
+  if (settingsPinkMode) {
+    settingsPinkMode.addEventListener('change', () => {
+      persistPinkModePreference(settingsPinkMode.checked);
+    });
+  }
 }
 
 if (settingsShowAutoBackups) {
