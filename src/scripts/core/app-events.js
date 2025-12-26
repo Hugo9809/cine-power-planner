@@ -5111,10 +5111,12 @@ addSafeEventListener('device-manager', 'keydown', (event) => {
 // Category selection in add device form
 // Category selection in add device form
 addSafeEventListener('newCategory', "change", () => {
+  console.log('[newCategory change] Category change event fired');
   const wasEditing = addDeviceBtn?.dataset.mode === "edit";
   const previousName = newNameInput ? newNameInput.value : "";
   const newCategorySelectElement = document.getElementById('newCategory');
   const val = newCategorySelectElement ? newCategorySelectElement.value : '';
+  console.log('[newCategory change] Selected category:', val);
   placeWattField(val);
   clearDynamicFields();
   if (subcategoryFieldDiv) subcategoryFieldDiv.hidden = true;
@@ -5188,10 +5190,12 @@ addSafeEventListener('newCategory', "change", () => {
       );
     }
   } else {
+    console.log('[newCategory change] Using generic (else) branch for category:', val);
     // Check if the category uses wattage (e.g. for cages it should be hidden)
     const schemaAttrs = typeof getSchemaAttributesForCategory === 'function'
       ? getSchemaAttributesForCategory(val)
       : [];
+    console.log('[newCategory change] schemaAttrs from getSchemaAttributesForCategory:', schemaAttrs);
     const hasWattage = schemaAttrs.includes('powerDrawWatts');
 
     if (wattFieldDiv) {
@@ -5203,6 +5207,7 @@ addSafeEventListener('newCategory', "change", () => {
       dtapRow.style.display = hasDtap ? "" : "none";
     }
 
+    console.log('[newCategory change] Calling buildDynamicFields for category:', val, 'with exclude:', categoryExcludedAttrs[val] || []);
     buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
   }
   if (newWattInput) newWattInput.value = "";
