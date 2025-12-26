@@ -4271,10 +4271,18 @@ if (typeof setTimeout === 'function') {
 updateQueuedBackupBannerFromVault();
 
 function showDeviceManagerSection() {
+  console.log('Safari Debug: showDeviceManagerSection called');
   const section = deviceManagerSection || document.getElementById('device-manager');
   const btn = toggleDeviceBtn || document.getElementById('toggleDeviceManager');
-  if (!section || !btn) return;
-  if (!section.classList.contains('hidden')) return;
+  if (!section || !btn) {
+    console.warn('Safari Debug: showDeviceManagerSection - Missing section or button');
+    return;
+  }
+  if (!section.classList.contains('hidden')) {
+    console.log('Safari Debug: showDeviceManagerSection - Already visible, returning');
+    return;
+  }
+  console.log('Safari Debug: showDeviceManagerSection - Removing hidden class');
   section.classList.remove('hidden');
   document.body.classList.add('device-manager-active');
   const { langTexts, fallbackTexts } = getEventsLanguageTexts();
@@ -4284,8 +4292,10 @@ function showDeviceManagerSection() {
   btn.setAttribute('title', hideLabel);
   btn.setAttribute('data-help', hideHelp);
   btn.setAttribute('aria-expanded', 'true');
+  console.log('Safari Debug: showDeviceManagerSection - Calling refreshDeviceListsSafe');
   refreshDeviceListsSafe();
   updateCalculations();
+  console.log('Safari Debug: showDeviceManagerSection - Complete');
 }
 
 function hideDeviceManagerSection() {
@@ -4305,12 +4315,21 @@ function hideDeviceManagerSection() {
 }
 
 function toggleDeviceManagerSection() {
+  console.log('Safari Debug: toggleDeviceManagerSection called');
   const section = deviceManagerSection || document.getElementById('device-manager');
   const btn = toggleDeviceBtn || document.getElementById('toggleDeviceManager');
-  if (!section || !btn) return;
-  if (section.classList.contains('hidden')) {
+  console.log('Safari Debug: section=', section, 'btn=', btn);
+  if (!section || !btn) {
+    console.warn('Safari Debug: Missing section or button, returning');
+    return;
+  }
+  const isHidden = section.classList.contains('hidden');
+  console.log('Safari Debug: section.classList.contains("hidden")=', isHidden);
+  if (isHidden) {
+    console.log('Safari Debug: Calling showDeviceManagerSection');
     showDeviceManagerSection();
   } else {
+    console.log('Safari Debug: Calling hideDeviceManagerSection');
     hideDeviceManagerSection();
   }
 }
