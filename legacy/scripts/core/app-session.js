@@ -1,8 +1,8 @@
 var _excluded = ["parsed", "timestamp"];
-function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() { }; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
 function _objectWithoutProperties(e, t) { if (null == e) return {}; var o, r, i = _objectWithoutPropertiesLoose(e, t); if (Object.getOwnPropertySymbols) { var n = Object.getOwnPropertySymbols(e); for (r = 0; r < n.length; r++) o = n[r], -1 === t.indexOf(o) && {}.propertyIsEnumerable.call(e, o) && (i[o] = e[o]); } return i; }
 function _objectWithoutPropertiesLoose(r, e) { if (null == r) return {}; var t = {}; for (var n in r) if ({}.hasOwnProperty.call(r, n)) { if (-1 !== e.indexOf(n)) continue; t[n] = r[n]; } return t; }
-function _regenerator() { var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
+function _regenerator() { var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() { } function GeneratorFunction() { } function GeneratorFunctionPrototype() { } t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
@@ -81,19 +81,19 @@ function resolveSessionRuntimeFunction(name) {
   };
   try {
     enqueue(typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null);
-  } catch (_unused) {}
+  } catch (_unused) { }
   try {
     enqueue(typeof globalThis !== 'undefined' ? globalThis : null);
-  } catch (_unused2) {}
+  } catch (_unused2) { }
   try {
     enqueue(typeof window !== 'undefined' ? window : null);
-  } catch (_unused3) {}
+  } catch (_unused3) { }
   try {
     enqueue(typeof self !== 'undefined' ? self : null);
-  } catch (_unused4) {}
+  } catch (_unused4) { }
   try {
     enqueue(typeof global !== 'undefined' ? global : null);
-  } catch (_unused5) {}
+  } catch (_unused5) { }
   for (var index = 0; index < candidates.length; index += 1) {
     var scope = candidates[index];
     if (!scope) {
@@ -2280,7 +2280,7 @@ if (sessionGlobalScope && _typeof(sessionGlobalScope) === 'object') {
     }
   }
 }
-var recordFullBackupHistoryEntryFn = function recordFullBackupHistoryEntryFn() {};
+var recordFullBackupHistoryEntryFn = function recordFullBackupHistoryEntryFn() { };
 var ensureCriticalStorageBackupsFn = function ensureCriticalStorageBackupsFn() {
   return {
     ensured: [],
@@ -5530,28 +5530,28 @@ if (setupNameInput && saveSetupBtn) {
     }
   });
 }
-var warnMountVoltageHelper = typeof warnMissingMountVoltageHelper === 'function' ? warnMissingMountVoltageHelper : function () {};
-var updateThemeColor = function updateThemeColor() {};
-var setToggleIcon = function setToggleIcon() {};
-var applyDarkMode = function applyDarkMode() {};
-var applyHighContrast = function applyHighContrast() {};
-var applyReduceMotion = function applyReduceMotion() {};
-var applyRelaxedSpacing = function applyRelaxedSpacing() {};
-var applyPinkMode = function applyPinkMode() {};
-var persistPinkModePreference = function persistPinkModePreference() {};
-var rememberSettingsPinkModeBaseline = function rememberSettingsPinkModeBaseline() {};
-var revertSettingsPinkModeIfNeeded = function revertSettingsPinkModeIfNeeded() {};
-var rememberSettingsTemperatureUnitBaseline = function rememberSettingsTemperatureUnitBaseline() {};
-var revertSettingsTemperatureUnitIfNeeded = function revertSettingsTemperatureUnitIfNeeded() {};
-var rememberSettingsFocusScaleBaseline = function rememberSettingsFocusScaleBaseline() {};
-var revertSettingsFocusScaleIfNeeded = function revertSettingsFocusScaleIfNeeded() {};
-var applyShowAutoBackupsPreference = function applyShowAutoBackupsPreference() {};
-var rememberSettingsShowAutoBackupsBaseline = function rememberSettingsShowAutoBackupsBaseline() {};
-var revertSettingsShowAutoBackupsIfNeeded = function revertSettingsShowAutoBackupsIfNeeded() {};
-var rememberSettingsMountVoltagesBaseline = function rememberSettingsMountVoltagesBaseline() {};
-var revertSettingsMountVoltagesIfNeeded = function revertSettingsMountVoltagesIfNeeded() {};
-var handlePinkModeIconPress = function handlePinkModeIconPress() {};
-var triggerPinkModeIconAnimation = function triggerPinkModeIconAnimation() {};
+var warnMountVoltageHelper = typeof warnMissingMountVoltageHelper === 'function' ? warnMissingMountVoltageHelper : function () { };
+var updateThemeColor = function updateThemeColor() { };
+var setToggleIcon = function setToggleIcon() { };
+var applyDarkMode = function applyDarkMode() { };
+var applyHighContrast = function applyHighContrast() { };
+var applyReduceMotion = function applyReduceMotion() { };
+var applyRelaxedSpacing = function applyRelaxedSpacing() { };
+var applyPinkMode = function applyPinkMode() { };
+var persistPinkModePreference = function persistPinkModePreference() { };
+var rememberSettingsPinkModeBaseline = function rememberSettingsPinkModeBaseline() { };
+var revertSettingsPinkModeIfNeeded = function revertSettingsPinkModeIfNeeded() { };
+var rememberSettingsTemperatureUnitBaseline = function rememberSettingsTemperatureUnitBaseline() { };
+var revertSettingsTemperatureUnitIfNeeded = function revertSettingsTemperatureUnitIfNeeded() { };
+var rememberSettingsFocusScaleBaseline = function rememberSettingsFocusScaleBaseline() { };
+var revertSettingsFocusScaleIfNeeded = function revertSettingsFocusScaleIfNeeded() { };
+var applyShowAutoBackupsPreference = function applyShowAutoBackupsPreference() { };
+var rememberSettingsShowAutoBackupsBaseline = function rememberSettingsShowAutoBackupsBaseline() { };
+var revertSettingsShowAutoBackupsIfNeeded = function revertSettingsShowAutoBackupsIfNeeded() { };
+var rememberSettingsMountVoltagesBaseline = function rememberSettingsMountVoltagesBaseline() { };
+var revertSettingsMountVoltagesIfNeeded = function revertSettingsMountVoltagesIfNeeded() { };
+var handlePinkModeIconPress = function handlePinkModeIconPress() { };
+var triggerPinkModeIconAnimation = function triggerPinkModeIconAnimation() { };
 var pendingPinkModeSupportCalls = [];
 var pinkModeSupportFlushScheduled = false;
 var PINK_MODE_SUPPORT_QUEUE_LIMIT = 25;
@@ -5638,8 +5638,8 @@ var FALLBACK_TRIGGER_PINK_MODE_ICON_RAIN = function FALLBACK_TRIGGER_PINK_MODE_I
   return callPinkModeSupport('triggerPinkModeIconRain', null, 'cineSession: triggerPinkModeIconRain failed.');
 };
 var sessionTriggerPinkModeIconRain = typeof window !== 'undefined' && typeof window.triggerPinkModeIconRain === 'function' ? window.triggerPinkModeIconRain : FALLBACK_TRIGGER_PINK_MODE_ICON_RAIN;
-var startPinkModeIconRotation = function startPinkModeIconRotation() {};
-var stopPinkModeIconRotation = function stopPinkModeIconRotation() {};
+var startPinkModeIconRotation = function startPinkModeIconRotation() { };
+var stopPinkModeIconRotation = function stopPinkModeIconRotation() { };
 var FALLBACK_START_PINK_MODE_ANIMATED_ICONS = function FALLBACK_START_PINK_MODE_ANIMATED_ICONS() {
   return callPinkModeSupport('startPinkModeAnimatedIcons', null, 'cineSession: startPinkModeAnimatedIcons failed.');
 };
@@ -5648,9 +5648,9 @@ var FALLBACK_STOP_PINK_MODE_ANIMATED_ICONS = function FALLBACK_STOP_PINK_MODE_AN
   return callPinkModeSupport('stopPinkModeAnimatedIcons', null, 'cineSession: stopPinkModeAnimatedIcons failed.');
 };
 var sessionStopPinkModeAnimatedIcons = typeof window !== 'undefined' && typeof window.stopPinkModeAnimatedIcons === 'function' ? window.stopPinkModeAnimatedIcons : FALLBACK_STOP_PINK_MODE_ANIMATED_ICONS;
-var startPinkModeAnimatedIconRotation = function startPinkModeAnimatedIconRotation() {};
-var stopPinkModeAnimatedIconRotation = function stopPinkModeAnimatedIconRotation() {};
-var applyPinkModeIcon = function applyPinkModeIcon() {};
+var startPinkModeAnimatedIconRotation = function startPinkModeAnimatedIconRotation() { };
+var stopPinkModeAnimatedIconRotation = function stopPinkModeAnimatedIconRotation() { };
+var applyPinkModeIcon = function applyPinkModeIcon() { };
 var isPinkModeActive = function isPinkModeActive() {
   return !!(typeof document !== 'undefined' && document.body && document.body.classList.contains('pink-mode'));
 };
@@ -5955,6 +5955,31 @@ function detectSystemThemePreference() {
   }
   return null;
 }
+var pinkModePreferenceController = null;
+var pendingThemeControls = [];
+var pendingPinkModeControls = [];
+
+function processPendingControls(controller, queue) {
+  if (!controller || typeof controller.registerControl !== 'function' || !Array.isArray(queue)) {
+    return;
+  }
+  while (queue.length > 0) {
+    var item = queue.shift();
+    if (item && item.element) {
+      try {
+        var unregister = controller.registerControl(item.element, item.options);
+        if (typeof item.callback === 'function') {
+          item.callback(unregister);
+        }
+      } catch (error) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('processPendingControls: failed to register control', error);
+        }
+      }
+    }
+  }
+}
+
 function buildThemePreferenceController(module) {
   if (!module || typeof module.createThemePreferenceController !== 'function') {
     return null;
@@ -5966,6 +5991,20 @@ function buildThemePreferenceController(module) {
   } catch (error) {
     if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
       console.warn('cineSettingsAppearance: failed to create theme preference controller.', error);
+    }
+  }
+  return null;
+}
+
+function buildPinkModePreferenceController(module) {
+  if (!module || typeof module.createPinkModePreferenceController !== 'function') {
+    return null;
+  }
+  try {
+    return module.createPinkModePreferenceController();
+  } catch (error) {
+    if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+      console.warn('cineSettingsAppearance: failed to create pink mode preference controller.', error);
     }
   }
   return null;
@@ -6109,6 +6148,12 @@ function applyAppearanceModuleBindings(module) {
   var controller = buildThemePreferenceController(module);
   if (controller) {
     themePreferenceController = controller;
+    processPendingControls(themePreferenceController, pendingThemeControls);
+  }
+  var pinkController = buildPinkModePreferenceController(module);
+  if (pinkController) {
+    pinkModePreferenceController = pinkController;
+    processPendingControls(pinkModePreferenceController, pendingPinkModeControls);
   }
   return true;
 }
@@ -6452,17 +6497,17 @@ var getThemePreference = function getThemePreference() {
 };
 var registerThemeControl = function registerThemeControl(element, config) {
   if (!themePreferenceController || typeof themePreferenceController.registerControl !== 'function') {
-    return function () {};
+    return function () { };
   }
   try {
     return themePreferenceController.registerControl(element, config);
   } catch (registrationError) {
     console.warn('Failed to register theme control', registrationError);
-    return function () {};
+    return function () { };
   }
 };
-var unregisterHeaderThemeControl = function unregisterHeaderThemeControl() {};
-var unregisterSettingsThemeControl = function unregisterSettingsThemeControl() {};
+var unregisterHeaderThemeControl = function unregisterHeaderThemeControl() { };
+var unregisterSettingsThemeControl = function unregisterSettingsThemeControl() { };
 if (themePreferenceController) {
   if (darkModeToggle) {
     unregisterHeaderThemeControl = registerThemeControl(darkModeToggle, {
@@ -6500,9 +6545,22 @@ if (themePreferenceController) {
 }
 if (themePreferenceGlobalScope) {
   try {
-    themePreferenceGlobalScope.cineThemePreference = themePreferenceController ? {
+    themePreferenceGlobalScope.cineThemePreference = {
       registerControl: function registerControl(element, options) {
-        return registerThemeControl(element, options);
+        if (themePreferenceController && typeof themePreferenceController.registerControl === 'function') {
+          return themePreferenceController.registerControl(element, options);
+        }
+        var unregister = function unregister() { };
+        pendingThemeControls.push({
+          element: element,
+          options: options,
+          callback: function callback(fn) {
+            unregister = fn;
+          }
+        });
+        return function () {
+          return unregister();
+        };
       },
       setValue: function setValue(value, options) {
         return setThemePreference(value, options);
@@ -6513,7 +6571,43 @@ if (themePreferenceGlobalScope) {
       reloadFromStorage: function reloadFromStorage(options) {
         return themePreferenceController && typeof themePreferenceController.reloadFromStorage === 'function' ? themePreferenceController.reloadFromStorage(options) : getThemePreference();
       }
-    } : null;
+    };
+    themePreferenceGlobalScope.cinePinkModePreference = {
+      registerControl: function registerControl(element, options) {
+        if (pinkModePreferenceController && typeof pinkModePreferenceController.registerControl === 'function') {
+          return pinkModePreferenceController.registerControl(element, options);
+        }
+        var unregister = function unregister() { };
+        pendingPinkModeControls.push({
+          element: element,
+          options: options,
+          callback: function callback(fn) {
+            unregister = fn;
+          }
+        });
+        return function () {
+          return unregister();
+        };
+      },
+      setValue: function setValue(value, options) {
+        if (pinkModePreferenceController && typeof pinkModePreferenceController.setValue === 'function') {
+          return pinkModePreferenceController.setValue(value, options);
+        }
+        return false;
+      },
+      getValue: function getValue() {
+        if (pinkModePreferenceController && typeof pinkModePreferenceController.getValue === 'function') {
+          return pinkModePreferenceController.getValue();
+        }
+        return isPinkModeActive();
+      },
+      reloadFromStorage: function reloadFromStorage(options) {
+        if (pinkModePreferenceController && typeof pinkModePreferenceController.reloadFromStorage === 'function') {
+          return pinkModePreferenceController.reloadFromStorage(options);
+        }
+        return isPinkModeActive();
+      }
+    };
   } catch (exposeError) {
     console.warn('Unable to expose theme preference bridge', exposeError);
   }
@@ -7586,11 +7680,11 @@ var ensureAutoBackupSpinnerStyles = function ensureAutoBackupSpinnerStyles() {
 };
 var showAutoBackupActivityIndicator = function showAutoBackupActivityIndicator(message) {
   if (typeof document === 'undefined') {
-    return function () {};
+    return function () { };
   }
   var container = _ensureNotificationContainer();
   if (!container) {
-    return function () {};
+    return function () { };
   }
   ensureAutoBackupSpinnerStyles();
   var indicator = document.getElementById(AUTO_BACKUP_INDICATOR_ID);
@@ -7771,11 +7865,11 @@ var getHighResolutionTimestamp = function getHighResolutionTimestamp() {
 };
 var showGlobalLoadingIndicator = function showGlobalLoadingIndicator(message) {
   if (typeof document === 'undefined') {
-    return function () {};
+    return function () { };
   }
   var container = _ensureNotificationContainer();
   if (!container) {
-    return function () {};
+    return function () { };
   }
   ensureAutoBackupSpinnerStyles();
   var bootstrapNotice = typeof window !== 'undefined' ? window.__cineLoadingNotice : null;
@@ -13604,7 +13698,7 @@ function copyTextToClipboardBestEffort(text) {
     return;
   }
   if (typeof navigator !== 'undefined' && navigator && navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
-    navigator.clipboard.writeText(text).catch(function () {});
+    navigator.clipboard.writeText(text).catch(function () { });
     return;
   }
   if (typeof document === 'undefined' || !document || !document.body || typeof document.createElement !== 'function') {
@@ -13622,26 +13716,26 @@ function copyTextToClipboardBestEffort(text) {
     document.body.appendChild(textarea);
     try {
       textarea.focus();
-    } catch (_unused7) {}
+    } catch (_unused7) { }
     try {
       textarea.select();
       if (typeof textarea.setSelectionRange === 'function') {
         textarea.setSelectionRange(0, textarea.value.length);
       }
-    } catch (_unused8) {}
+    } catch (_unused8) { }
     if (typeof document.execCommand === 'function') {
       try {
         document.execCommand('copy');
-      } catch (_unused9) {}
+      } catch (_unused9) { }
     }
-  } catch (_unused0) {} finally {
+  } catch (_unused0) { } finally {
     if (textarea && textarea.parentNode) {
       textarea.parentNode.removeChild(textarea);
     }
     if (previousActiveElement && typeof previousActiveElement.focus === 'function') {
       try {
         previousActiveElement.focus();
-      } catch (_unused1) {}
+      } catch (_unused1) { }
     }
   }
 }
@@ -14248,7 +14342,7 @@ var setupHelpSystem = function setupHelpSystem() {
           if (candidate) {
             highlightEl = candidate;
           }
-        } catch (_unused13) {}
+        } catch (_unused13) { }
       }
       var targetInsideHelp = helpDialog.contains(focusEl);
       var runFocus = function runFocus() {
@@ -14599,7 +14693,7 @@ var setupHelpSystem = function setupHelpSystem() {
         try {
           var match = document.querySelector(selector);
           addCandidate(match);
-        } catch (_unused16) {}
+        } catch (_unused16) { }
       });
     };
     var addFromIds = function addFromIds(raw) {
@@ -17757,7 +17851,7 @@ function ensureFilterDetailEditButton(element) {
           editLabel = trimmed;
         }
       }
-    } catch (_unused19) {}
+    } catch (_unused19) { }
   }
   var button = doc.createElement('button');
   button.type = 'button';

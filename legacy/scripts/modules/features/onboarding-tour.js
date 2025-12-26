@@ -1,4 +1,4 @@
-function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() { }; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -541,7 +541,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function subscribeDeviceLibrary(callback) {
     if (typeof callback !== 'function') {
-      return function () {};
+      return function () { };
     }
     deviceLibrarySubscribers.push(callback);
     return function () {
@@ -939,7 +939,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           if (typeof context.complete === 'function') {
             context.complete();
           }
-          return function () {};
+          return function () { };
         }
         var handler = function handler() {
           var matches = false;
@@ -1440,8 +1440,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return evaluate();
       },
       attach: function attach(context) {
-        var complete = typeof (context === null || context === void 0 ? void 0 : context.complete) === 'function' ? context.complete : function () {};
-        var incomplete = typeof (context === null || context === void 0 ? void 0 : context.incomplete) === 'function' ? context.incomplete : function () {};
+        var complete = typeof (context === null || context === void 0 ? void 0 : context.complete) === 'function' ? context.complete : function () { };
+        var incomplete = typeof (context === null || context === void 0 ? void 0 : context.incomplete) === 'function' ? context.incomplete : function () { };
         var projectForm = getElement('#projectForm');
         if (!projectForm) {
           complete();
@@ -1571,8 +1571,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return hasProjectLogisticsEntry();
       },
       attach: function attach(context) {
-        var complete = typeof (context === null || context === void 0 ? void 0 : context.complete) === 'function' ? context.complete : function () {};
-        var incomplete = typeof (context === null || context === void 0 ? void 0 : context.incomplete) === 'function' ? context.incomplete : function () {};
+        var complete = typeof (context === null || context === void 0 ? void 0 : context.complete) === 'function' ? context.complete : function () { };
+        var incomplete = typeof (context === null || context === void 0 ? void 0 : context.incomplete) === 'function' ? context.incomplete : function () { };
         var projectForm = getElement('#projectForm');
         if (!projectForm) {
           complete();
@@ -4942,7 +4942,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var raw = profileInput && typeof profileInput.value === 'string' ? profileInput.value.trim() : '';
       return raw ? raw.charAt(0).toUpperCase() : '•';
     };
-    var applyAvatarActionLabel = function applyAvatarActionLabel() {};
+    var applyAvatarActionLabel = function applyAvatarActionLabel() { };
     var updateAvatarPreview = function updateAvatarPreview() {
       var hasPhoto = false;
       while (avatarPreview.firstChild) {
@@ -5534,28 +5534,57 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       pinkOn.textContent = getTourString('unitsPreferencesPinkOn', 'Enabled');
       pinkSelect.appendChild(pinkOff);
       pinkSelect.appendChild(pinkOn);
-      pinkSelect.value = pinkToggle.checked ? 'enabled' : 'disabled';
-      var syncPinkToTarget = function syncPinkToTarget() {
-        var shouldEnable = pinkSelect.value === 'enabled';
-        if (pinkToggle.checked !== shouldEnable) {
-          pinkToggle.checked = shouldEnable;
-          dispatchSyntheticEvent(pinkToggle, 'change');
+      var pinkPreferenceBridge = GLOBAL_SCOPE && GLOBAL_SCOPE.cinePinkModePreference ? GLOBAL_SCOPE.cinePinkModePreference : null;
+      if (pinkPreferenceBridge && typeof pinkPreferenceBridge.registerControl === 'function' && typeof pinkPreferenceBridge.getValue === 'function') {
+        try {
+          var currentPink = pinkPreferenceBridge.getValue();
+          if (typeof currentPink === 'boolean') {
+            pinkSelect.value = currentPink ? 'enabled' : 'disabled';
+          }
+        } catch (bridgeError) {
+          safeWarn('cine.features.onboardingTour: pink bridge getValue failed.', bridgeError);
         }
-      };
-      var syncPinkFromTarget = function syncPinkFromTarget() {
-        var expected = pinkToggle.checked ? 'enabled' : 'disabled';
-        if (pinkSelect.value !== expected) {
-          pinkSelect.value = expected;
+        var unregisterPinkControl = null;
+        try {
+          unregisterPinkControl = pinkPreferenceBridge.registerControl(pinkSelect, {
+            type: 'select'
+          });
+        } catch (registerError) {
+          safeWarn('cine.features.onboardingTour: pink bridge registerControl failed.', registerError);
         }
-      };
-      pinkSelect.addEventListener('change', syncPinkToTarget);
-      registerCleanup(function () {
-        pinkSelect.removeEventListener('change', syncPinkToTarget);
-      });
-      pinkToggle.addEventListener('change', syncPinkFromTarget);
-      registerCleanup(function () {
-        pinkToggle.removeEventListener('change', syncPinkFromTarget);
-      });
+        if (typeof unregisterPinkControl === 'function') {
+          registerCleanup(function () {
+            try {
+              unregisterPinkControl();
+            } catch (cleanupError) {
+              safeWarn('cine.features.onboardingTour: pink bridge cleanup failed.', cleanupError);
+            }
+          });
+        }
+      } else {
+        pinkSelect.value = pinkToggle.checked ? 'enabled' : 'disabled';
+        var syncPinkToTarget = function syncPinkToTarget() {
+          var shouldEnable = pinkSelect.value === 'enabled';
+          if (pinkToggle.checked !== shouldEnable) {
+            pinkToggle.checked = shouldEnable;
+            dispatchSyntheticEvent(pinkToggle, 'change');
+          }
+        };
+        var syncPinkFromTarget = function syncPinkFromTarget() {
+          var expected = pinkToggle.checked ? 'enabled' : 'disabled';
+          if (pinkSelect.value !== expected) {
+            pinkSelect.value = expected;
+          }
+        };
+        pinkSelect.addEventListener('change', syncPinkToTarget);
+        registerCleanup(function () {
+          pinkSelect.removeEventListener('change', syncPinkToTarget);
+        });
+        pinkToggle.addEventListener('change', syncPinkFromTarget);
+        registerCleanup(function () {
+          pinkToggle.removeEventListener('change', syncPinkFromTarget);
+        });
+      }
       pinkGroup.appendChild(pinkLabel);
       pinkGroup.appendChild(pinkSelect);
       fragment.appendChild(pinkGroup);

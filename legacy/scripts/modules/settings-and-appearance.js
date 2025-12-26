@@ -322,7 +322,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     } catch (error) {
       void error;
     }
-  } : function noopInform() {};
+  } : function noopInform() { };
   var registerOrQueueModule = typeof MODULE_BASE.registerOrQueueModule === 'function' ? function registerWithBase(name, api, metadata, onError) {
     try {
       MODULE_BASE.registerOrQueueModule(name, api, metadata, onError);
@@ -337,7 +337,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         safeWarn('cineSettingsAppearance: Unable to register module.', error);
       }
     }
-  } : function fallbackRegister() {};
+  } : function fallbackRegister() { };
   var exposeGlobal = typeof MODULE_BASE.exposeGlobal === 'function' ? function exposeWithBase(name, value, options) {
     try {
       return MODULE_BASE.exposeGlobal(name, value, GLOBAL_SCOPE, options);
@@ -771,7 +771,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (iconSpan._lottieAnim) {
         try {
           iconSpan._lottieAnim.destroy();
-        } catch (_unused) {}
+        } catch (_unused) { }
         iconSpan._lottieAnim = null;
       }
       var glyphConfig = glyph && _typeof(glyph) === 'object' && (glyph.markup || glyph.className || glyph.lottiePath) ? glyph : {
@@ -861,8 +861,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               };
               anim.addEventListener('data_failed', handleFailure);
               anim.addEventListener('error', handleFailure);
-            } catch (_unused2) {}
-          }).catch(function () {});
+            } catch (_unused2) { }
+          }).catch(function () { });
         };
         if (glyphConfig.markup) {
           var markup = ensureSvgHasAriaHidden(glyphConfig.markup);
@@ -1080,7 +1080,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       function registerControl(element, controlOptions) {
         if (!element) {
-          return function () {};
+          return function () { };
         }
         var configuration = controlOptions && _typeof(controlOptions) === 'object' ? controlOptions : {};
         var type = detectThemeControlType(element, configuration.type);
@@ -1192,6 +1192,225 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         getValue: getValue,
         reloadFromStorage: reloadFromStorage,
         persist: persistThemePreference
+      };
+    }
+    function detectPinkModeControlType(element, provided) {
+      if (provided) {
+        return provided;
+      }
+      if (!element || typeof element.tagName !== 'string') {
+        return 'button';
+      }
+      var tagName = element.tagName.toLowerCase();
+      if (tagName === 'select') {
+        return 'select';
+      }
+      if (tagName === 'input') {
+        var typeAttr = typeof element.getAttribute === 'function' ? (element.getAttribute('type') || '').toLowerCase() : '';
+        if (typeAttr === 'checkbox') {
+          return 'checkbox';
+        }
+      }
+      return 'button';
+    }
+    function createPinkModeControlReader(element, type, provided, getCurrent) {
+      if (typeof provided === 'function') {
+        return provided;
+      }
+      if (type === 'select') {
+        return function () {
+          return !!(element && element.value === 'enabled');
+        };
+      }
+      if (type === 'checkbox') {
+        return function () {
+          return !!(element && element.checked);
+        };
+      }
+      return function () {
+        return !getCurrent();
+      };
+    }
+    function createPinkModeControlWriter(element, type, provided) {
+      if (typeof provided === 'function') {
+        return provided;
+      }
+      if (type === 'select') {
+        return function (value) {
+          if (!element) {
+            return;
+          }
+          var expected = value ? 'enabled' : 'disabled';
+          if (element.value !== expected) {
+            element.value = expected;
+          }
+        };
+      }
+      if (type === 'checkbox') {
+        return function (value) {
+          if (element) {
+            element.checked = !!value;
+          }
+        };
+      }
+      return function (value) {
+        if (!element || typeof element.setAttribute !== 'function') {
+          return;
+        }
+        element.setAttribute('aria-pressed', value ? 'true' : 'false');
+      };
+    }
+    function createPinkModePreferenceController(options) {
+      var controllerOptions = options && _typeof(options) === 'object' ? options : {};
+      var controls = [];
+      var applying = false;
+      var currentPreference = isPinkModeActive();
+      var getCurrentPreference = function getCurrentPreference() {
+        return currentPreference;
+      };
+      function applyPreference(value, config) {
+        var optionsConfig = config && _typeof(config) === 'object' ? config : {};
+        var normalized = !!value;
+        var previous = currentPreference;
+        currentPreference = normalized;
+        applying = true;
+        try {
+          for (var _indexP = 0; _indexP < controls.length; _indexP += 1) {
+            var control = controls[_indexP];
+            if (!control || control === optionsConfig.source || typeof control.write !== 'function') {
+              continue;
+            }
+            try {
+              control.write(normalized, {
+                previous: previous
+              });
+            } catch (error) {
+              safeWarn('cineSettingsAppearance: Unable to sync pink mode control.', error);
+            }
+          }
+          try {
+            applyPinkMode(normalized);
+          } catch (error) {
+            safeWarn('cineSettingsAppearance: applyPinkMode failed during update.', error);
+          }
+        } finally {
+          applying = false;
+        }
+        if (optionsConfig.source && typeof optionsConfig.source.write === 'function') {
+          try {
+            optionsConfig.source.write(normalized, {
+              previous: previous
+            });
+          } catch (error) {
+            safeWarn('cineSettingsAppearance: Unable to sync source pink mode control.', error);
+          }
+        }
+        if (optionsConfig.persist !== false) {
+          persistPinkModePreference(normalized);
+        }
+        return previous !== normalized;
+      }
+      function registerControl(element, controlOptions) {
+        if (!element) {
+          return function () { };
+        }
+        var configuration = controlOptions && _typeof(controlOptions) === 'object' ? controlOptions : {};
+        var type = detectPinkModeControlType(element, configuration.type);
+        var read = createPinkModeControlReader(element, type, configuration.read, getCurrentPreference);
+        var write = createPinkModeControlWriter(element, type, configuration.write);
+        var eventType = configuration.event || (type === 'button' ? 'click' : 'change');
+        var control = {
+          element: element,
+          type: type,
+          read: read,
+          write: write,
+          eventType: eventType
+        };
+        var handler = function handler(event) {
+          if (applying) {
+            return;
+          }
+          var nextValue;
+          try {
+            nextValue = control.read(currentPreference, event);
+          } catch (error) {
+            safeWarn('cineSettingsAppearance: Unable to read pink mode control value.', error);
+            nextValue = currentPreference;
+          }
+          applyPreference(!!nextValue, {
+            source: control
+          });
+        };
+        if (typeof element.addEventListener === 'function') {
+          element.addEventListener(eventType, handler);
+        }
+        control.handler = handler;
+        controls.push(control);
+        try {
+          control.write(currentPreference);
+        } catch (error) {
+          safeWarn('cineSettingsAppearance: Unable to apply pink mode preference to control during registration.', error);
+        }
+        return function unregisterControl() {
+          for (var _indexPU = controls.length - 1; _indexPU >= 0; _indexPU -= 1) {
+            var storedControl = controls[_indexPU];
+            if (!storedControl || storedControl.element !== element) {
+              continue;
+            }
+            controls.splice(_indexPU, 1);
+            if (element && typeof element.removeEventListener === 'function') {
+              element.removeEventListener(storedControl.eventType, storedControl.handler);
+            }
+            break;
+          }
+        };
+      }
+      function setValue(value, optionsConfig) {
+        var config = optionsConfig && _typeof(optionsConfig) === 'object' ? optionsConfig : {};
+        applyPreference(value, {
+          persist: config.persist !== false,
+          source: config.source || null
+        });
+      }
+      function getValue() {
+        return currentPreference;
+      }
+      function reloadFromStorage(optionsConfig) {
+        var config = optionsConfig && _typeof(optionsConfig) === 'object' ? optionsConfig : {};
+        var storage = getLocalStorage(context);
+        var stored = null;
+        if (storage) {
+          try {
+            var item = storage.getItem(PINK_MODE_STORAGE_KEY);
+            if (item !== null) {
+              stored = item === 'true' || item === true;
+            } else {
+              item = storage.getItem(LEGACY_PINK_MODE_STORAGE_KEY);
+              if (item !== null) {
+                stored = item === 'true' || item === true;
+              }
+            }
+          } catch (error) {
+            safeWarn('cineSettingsAppearance: Could not read pink mode preference from storage.', error);
+          }
+        }
+        if (stored === null) {
+          if (config.persist !== false) {
+            persistPinkModePreference(currentPreference);
+          }
+          return currentPreference;
+        }
+        applyPreference(stored, {
+          persist: config.persist !== false
+        });
+        return stored;
+      }
+      return {
+        registerControl: registerControl,
+        setValue: setValue,
+        getValue: getValue,
+        reloadFromStorage: reloadFromStorage,
+        persist: persistPinkModePreference
       };
     }
     function applyHighContrast(enabled) {
@@ -1448,11 +1667,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }, {
         key: "triggerRain",
-        value: function triggerRain() {}
+        value: function triggerRain() { }
       }]);
     }();
     var localPinkModeManager = new LocalPinkModeManager();
-    function triggerPinkModeIconRain() {}
+    function triggerPinkModeIconRain() { }
     function handlePinkModeIconPress() {
       pinkModeIconPressCount = recordPinkModeIconPressTimestamp();
       if (PINK_MODE_ICON_PRESS_RESET_MS > 0) {
@@ -1750,7 +1969,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var cloneFn = mountVoltages.getPreferencesClone;
       var applyFn = mountVoltages.applyPreferences;
       var updateInputsFn = mountVoltages.updateInputsFromState;
-      var warnHelper = mountVoltages.warnMissingHelper || function () {};
+      var warnHelper = mountVoltages.warnMissingHelper || function () { };
       var supportedTypes = Array.isArray(mountVoltages.supportedTypes) ? mountVoltages.supportedTypes : [];
       var defaults = mountVoltages.defaultVoltages && _typeof(mountVoltages.defaultVoltages) === 'object' ? mountVoltages.defaultVoltages : {};
       var baseline = mountVoltages.settingsInitial;
@@ -1824,6 +2043,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       stopPinkModeAnimatedIconRotation: stopPinkModeAnimatedIconRotation,
       isPinkModeActive: isPinkModeActive,
       createThemePreferenceController: createThemePreferenceController,
+      createPinkModePreferenceController: createPinkModePreferenceController,
       setAccentColor: setAccentColor,
       setPrevAccentColor: setPrevAccentColor,
       getAccentColor: getAccentColor,

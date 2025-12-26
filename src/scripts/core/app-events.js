@@ -4277,9 +4277,12 @@ function showDeviceManagerSection() {
   if (!section.classList.contains('hidden')) return;
   section.classList.remove('hidden');
   document.body.classList.add('device-manager-active');
-  setButtonLabelWithIconForEvents(btn, texts[currentLang].hideDeviceManager, ICON_GLYPHS.minus);
-  btn.setAttribute('title', texts[currentLang].hideDeviceManager);
-  btn.setAttribute('data-help', texts[currentLang].hideDeviceManagerHelp);
+  const { langTexts, fallbackTexts } = getEventsLanguageTexts();
+  const hideLabel = langTexts.hideDeviceManager || fallbackTexts.hideDeviceManager || 'Close Device Data';
+  const hideHelp = langTexts.hideDeviceManagerHelp || fallbackTexts.hideDeviceManagerHelp || 'Close defaults library editor';
+  setButtonLabelWithIconForEvents(btn, hideLabel, ICON_GLYPHS.minus);
+  btn.setAttribute('title', hideLabel);
+  btn.setAttribute('data-help', hideHelp);
   btn.setAttribute('aria-expanded', 'true');
   refreshDeviceListsSafe();
   updateCalculations();
@@ -4292,9 +4295,12 @@ function hideDeviceManagerSection() {
   if (section.classList.contains('hidden')) return;
   section.classList.add('hidden');
   document.body.classList.remove('device-manager-active');
-  setButtonLabelWithIconForEvents(btn, texts[currentLang].toggleDeviceManager, ICON_GLYPHS.gears);
-  btn.setAttribute('title', texts[currentLang].toggleDeviceManager);
-  btn.setAttribute('data-help', texts[currentLang].toggleDeviceManagerHelp);
+  const { langTexts, fallbackTexts } = getEventsLanguageTexts();
+  const toggleLabel = langTexts.toggleDeviceManager || fallbackTexts.toggleDeviceManager || 'Edit Device Data…';
+  const toggleHelp = langTexts.toggleDeviceManagerHelp || fallbackTexts.toggleDeviceManagerHelp || 'Manage available batteries, cameras, lenses...';
+  setButtonLabelWithIconForEvents(btn, toggleLabel, ICON_GLYPHS.gears);
+  btn.setAttribute('title', toggleLabel);
+  btn.setAttribute('data-help', toggleHelp);
   btn.setAttribute('aria-expanded', 'false');
 }
 
@@ -4441,18 +4447,25 @@ registerEventsCineUi();
 
 
 function toggleDeviceDetails(button) {
-  const details = button.closest('li').querySelector('.device-details');
+  const li = button.closest('li');
+  if (!li) return;
+  const details = li.querySelector('.device-details');
+  if (!details) return;
   const expanded = button.getAttribute('aria-expanded') === 'true';
   if (expanded) {
     details.style.display = 'none';
-    button.textContent = texts[currentLang].showDetails;
+    const { langTexts, fallbackTexts } = getEventsLanguageTexts();
+    const showDetailsLabel = langTexts.showDetails || fallbackTexts.showDetails || 'Show Details';
+    button.textContent = showDetailsLabel;
     button.setAttribute('aria-expanded', 'false');
-    button.setAttribute('data-help', texts[currentLang].showDetails);
+    button.setAttribute('data-help', showDetailsLabel);
   } else {
     details.style.display = 'block';
-    button.textContent = texts[currentLang].hideDetails;
+    const { langTexts, fallbackTexts } = getEventsLanguageTexts();
+    const hideDetailsLabel = langTexts.hideDetails || fallbackTexts.hideDetails || 'Hide Details';
+    button.textContent = hideDetailsLabel;
     button.setAttribute('aria-expanded', 'true');
-    button.setAttribute('data-help', texts[currentLang].hideDetails);
+    button.setAttribute('data-help', hideDetailsLabel);
     if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function') {
       const rawName = typeof button.dataset.name === 'string' ? button.dataset.name : '';
       const rawCategory = typeof button.dataset.category === 'string' ? button.dataset.category : '';
@@ -4474,12 +4487,14 @@ function toggleDeviceDetails(button) {
 function inferDeviceCategory(key, data) {
   if (key === "batteries" || key.endsWith('.batteries') || data.capacity !== undefined) return "batteries";
   if (key === "cameras" || data.recordingMedia || data.lensMount || data.power?.batteryPlateSupport) return "cameras";
+  if (key === "lenses" || data.mountOptions || data.focusScale) return "lenses";
   if (key === "monitors" || (data.screenSizeInches !== undefined && !key.includes("viewfinder"))) return "monitors";
   if (key === "viewfinders" || key.includes("viewfinder")) return "viewfinders";
   if (key === "video" || key === "wirelessReceivers" || key === "iosVideo" || data.videoInputs || data.videoOutputs || data.frequency !== undefined) return "video";
   if (key === "fiz.motors" || data.torqueNm !== undefined || data.gearTypes) return "fiz.motors";
   if (key === "fiz.controllers" || data.powerSource || data.batteryType || data.connectivity) return "fiz.controllers";
-  if (key === "fiz.distance" || data.measurementMethod || data.connectionCompatibility || data.measurementRange || data.accuracy) return "fiz.distance";
+  if (key === "fiz.distance" || data.measurementMethod || data.connectionCompatibility || data.measurementRange || data.accuracy) return "distances";
+  if (key === "accessories.cables" || (typeof key === 'string' && key.startsWith("accessories.cables"))) return "accessories.cables";
   return "generic";
 }
 

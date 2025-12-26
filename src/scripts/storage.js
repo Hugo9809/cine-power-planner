@@ -13171,17 +13171,18 @@
 
   function deleteProject(name) {
     if (name === undefined) {
-      deleteFromStorage(
-        getSafeLocalStorage(),
-        PROJECT_STORAGE_KEY,
-        "Error deleting project from localStorage:",
-      );
       const storagesToPrune = [getSafeLocalStorage()];
       if (typeof localStorage !== 'undefined' && storagesToPrune.indexOf(localStorage) === -1) {
         storagesToPrune.push(localStorage);
       }
 
       storagesToPrune.forEach((storage) => {
+        deleteFromStorage(
+          storage,
+          PROJECT_STORAGE_KEY,
+          "Error deleting project from storage:",
+        );
+
         if (storage && typeof storage.length === 'number') {
           const shardKeys = [];
           for (let i = 0; i < storage.length; i++) {
@@ -13193,7 +13194,7 @@
           shardKeys.forEach((key) => deleteFromStorage(
             storage,
             key,
-            "Error deleting project shard from localStorage:",
+            "Error deleting project shard from storage:",
           ));
         }
       });
