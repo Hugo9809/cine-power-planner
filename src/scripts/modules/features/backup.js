@@ -1092,7 +1092,7 @@
         `          link.href = url;\n` +
         `          link.download = record.fileName || 'cine-power-planner-backup.json';\n` +
         `          link.click();\n` +
-        `          setTimeout(function () { URL.revokeObjectURL(url); }, 0);\n` +
+        `          setTimeout(function () { URL.revokeObjectURL(url); }, 1000);\n` +
         `        } catch (error) {\n` +
         `          if (typeof window.opener.cineShowAlertDialog === 'function') {\n` +
         `            window.opener.cineShowAlertDialog('Download blocked — copy the JSON below instead.');\n` +
@@ -2580,7 +2580,7 @@
               } catch (revokeError) {
                 void revokeError;
               }
-            }, 0);
+            }, 1000);
           }
           if (triggered) {
             return { success: true, method: 'blob-url', permission: permissionMonitor };

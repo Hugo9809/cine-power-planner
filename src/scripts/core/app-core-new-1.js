@@ -2809,54 +2809,70 @@ const localCreateCrewRowSync = typeof resolvedCreateCrewRowSync === 'function'
   : (rowState = {}, contact = {}) => ({ ...rowState, ...contact });
 
 try {
-  const appliedSchema = applyDeviceSchema(bundledSchema);
-  if (appliedSchema) {
-    deviceSchema = appliedSchema;
-  }
-} catch (requireError) {
-  void requireError;
-
-  if (!deviceSchema && cachedDeviceSchema) {
-    const appliedCachedSchema = applyDeviceSchema(cachedDeviceSchema);
-    if (appliedCachedSchema) {
-      deviceSchema = appliedCachedSchema;
+  console.log('[deviceSchema] Attempting to apply bundledSchema:', bundledSchema ? 'exists' : 'null');
+  if (bundledSchema) {
+    const appliedSchema = applyDeviceSchema(bundledSchema);
+    if (appliedSchema) {
+      deviceSchema = appliedSchema;
+      console.log('[deviceSchema] Successfully applied bundledSchema');
     }
   }
 
-  // Falling back to the cached copy allows the app to keep functioning when
-  // users are offline, which is critical for field usage.
-  if (typeof fetch === 'function') {
-    fetch(DEVICE_SCHEMA_PATH)
-      .then(response => {
-        if (!response || !response.ok) {
-          throw new Error(
-            `Unexpected response when loading schema.json: ${response ? response.status : 'no response'}`
-          );
-        }
-        return response.json();
-      })
-      .then(candidate => {
-        finalizeDeviceSchemaLoad(candidate);
-      })
-      .catch(error => {
-        console.warn('Failed to fetch schema.json', error);
+  // If bundledSchema was null or failed to apply, fetch from the server
+  if (!deviceSchema || !Object.keys(deviceSchema).length) {
+    console.log('[deviceSchema] bundledSchema not available, attempting fetch from:', DEVICE_SCHEMA_PATH);
 
-        loadDeviceSchemaFromCacheStorage()
-          .then(schemaFromCache => {
-            if (isValidDeviceSchema(schemaFromCache)) {
-              finalizeDeviceSchemaLoad(schemaFromCache);
-            } else {
+    if (!deviceSchema && cachedDeviceSchema) {
+      const appliedCachedSchema = applyDeviceSchema(cachedDeviceSchema);
+      if (appliedCachedSchema) {
+        deviceSchema = appliedCachedSchema;
+        console.log('[deviceSchema] Applied cached schema as fallback');
+      }
+    }
+
+    // Falling back to the cached copy allows the app to keep functioning when
+    // users are offline, which is critical for field usage.
+    if (typeof fetch === 'function') {
+      fetch(DEVICE_SCHEMA_PATH)
+        .then(response => {
+          if (!response || !response.ok) {
+            throw new Error(
+              `Unexpected response when loading schema.json: ${response ? response.status : 'no response'}`
+            );
+          }
+          return response.json();
+        })
+        .then(candidate => {
+          console.log('[deviceSchema] Successfully fetched schema.json, applying...');
+          finalizeDeviceSchemaLoad(candidate);
+          // Also update the local deviceSchema variable
+          if (candidate && typeof candidate === 'object') {
+            deviceSchema = candidate;
+            console.log('[deviceSchema] deviceSchema updated from fetch. Categories:', Object.keys(deviceSchema));
+          }
+        })
+        .catch(error => {
+          console.warn('Failed to fetch schema.json', error);
+
+          loadDeviceSchemaFromCacheStorage()
+            .then(schemaFromCache => {
+              if (isValidDeviceSchema(schemaFromCache)) {
+                finalizeDeviceSchemaLoad(schemaFromCache);
+              } else {
+                finalizeDeviceSchemaLoad(deviceSchema);
+              }
+            })
+            .catch(cacheError => {
+              console.warn('Failed to load schema.json from cache storage', cacheError);
               finalizeDeviceSchemaLoad(deviceSchema);
-            }
-          })
-          .catch(cacheError => {
-            console.warn('Failed to load schema.json from cache storage', cacheError);
-            finalizeDeviceSchemaLoad(deviceSchema);
-          });
-      });
-  } else {
-    finalizeDeviceSchemaLoad(deviceSchema);
+            });
+        });
+    } else {
+      finalizeDeviceSchemaLoad(deviceSchema);
+    }
   }
+} catch (requireError) {
+  console.error('[deviceSchema] Error in schema loading:', requireError);
 }
 
 const LEGAL_LINKS = {
