@@ -9994,6 +9994,11 @@ body.light-mode #topBar select:focus-visible {
 
 .diagram-detail-dialog {
   padding: 0;
+  display: none;
+}
+
+.diagram-detail-dialog[open] {
+  display: block;
 }
 
 /* Popup Category Colors */
