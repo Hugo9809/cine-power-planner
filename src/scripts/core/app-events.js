@@ -4839,22 +4839,27 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
       subcategoryDiv.hidden = false;
     }
     const subcategoryKeys = getCableSubcategoryKeysForUi(subcategory ? [subcategory] : []);
-    newSubcategorySelect.innerHTML = '';
-    for (let index = 0; index < subcategoryKeys.length; index += 1) {
-      const sc = subcategoryKeys[index];
-      const opt = document.createElement('option');
-      opt.value = sc;
-      opt.textContent = sc.charAt(0).toUpperCase() + sc.slice(1);
-      newSubcategorySelect.appendChild(opt);
+    if (newSubcategorySelect) {
+      newSubcategorySelect.innerHTML = '';
+      for (let index = 0; index < subcategoryKeys.length; index += 1) {
+        const sc = subcategoryKeys[index];
+        const opt = document.createElement('option');
+        opt.value = sc;
+        opt.textContent = sc.charAt(0).toUpperCase() + sc.slice(1);
+        newSubcategorySelect.appendChild(opt);
+      }
     }
     const effectiveSubcategory =
       subcategory && subcategoryKeys.includes(subcategory)
         ? subcategory
-        : (newSubcategorySelect.options.length > 0 ? newSubcategorySelect.options[0].value : '');
-    newSubcategorySelect.value = effectiveSubcategory || '';
-    // Allow selecting a different subcategory while editing so devices can
-    // be reorganised without re-creating them from scratch.
-    newSubcategorySelect.disabled = false;
+        : (newSubcategorySelect && newSubcategorySelect.options.length > 0 ? newSubcategorySelect.options[0].value : '');
+
+    if (newSubcategorySelect) {
+      newSubcategorySelect.value = effectiveSubcategory || '';
+      // Allow selecting a different subcategory while editing so devices can
+      // be reorganised without re-creating them from scratch.
+      newSubcategorySelect.disabled = false;
+    }
     if (effectiveSubcategory) {
       buildDynamicFields(
         `accessories.cables.${effectiveSubcategory}`,
@@ -4864,7 +4869,9 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     }
   } else {
     const watt = typeof deviceData === 'object' ? deviceData.powerDrawWatts : deviceData;
-    newWattInput.value = watt || '';
+    if (newWattInput) {
+      newWattInput.value = watt || '';
+    }
 
     // Check if the category actually uses wattage
     const schemaAttrs = typeof getSchemaAttributesForCategory === 'function'

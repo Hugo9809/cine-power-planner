@@ -7710,32 +7710,40 @@ async function setLanguage(lang) {
   }
   // Section headings with descriptive hover help
   const setupManageHeadingElem = document.getElementById("setupManageHeading");
-  setupManageHeadingElem.textContent = texts[lang].setupManageHeading;
-  setupManageHeadingElem.setAttribute(
-    "data-help",
-    texts[lang].setupManageHeadingHelp
-  );
+  if (setupManageHeadingElem) {
+    setupManageHeadingElem.textContent = texts[lang].setupManageHeading;
+    setupManageHeadingElem.setAttribute(
+      "data-help",
+      texts[lang].setupManageHeadingHelp
+    );
+  }
 
   const deviceSelectionHeadingElem = document.getElementById("deviceSelectionHeading");
-  deviceSelectionHeadingElem.textContent = texts[lang].deviceSelectionHeading;
-  deviceSelectionHeadingElem.setAttribute(
-    "data-help",
-    texts[lang].deviceSelectionHeadingHelp
-  );
+  if (deviceSelectionHeadingElem) {
+    deviceSelectionHeadingElem.textContent = texts[lang].deviceSelectionHeading;
+    deviceSelectionHeadingElem.setAttribute(
+      "data-help",
+      texts[lang].deviceSelectionHeadingHelp
+    );
+  }
 
   const resultsHeadingElem = document.getElementById("resultsHeading");
-  resultsHeadingElem.textContent = texts[lang].resultsHeading; // Heading text and hover help both come from the active locale
-  resultsHeadingElem.setAttribute(
-    "data-help",
-    texts[lang].resultsHeadingHelp
-  );
+  if (resultsHeadingElem) {
+    resultsHeadingElem.textContent = texts[lang].resultsHeading; // Heading text and hover help both come from the active locale
+    resultsHeadingElem.setAttribute(
+      "data-help",
+      texts[lang].resultsHeadingHelp
+    );
+  }
 
   const deviceManagerHeadingElem = document.getElementById("deviceManagerHeading");
-  deviceManagerHeadingElem.textContent = texts[lang].deviceManagerHeading;
-  deviceManagerHeadingElem.setAttribute(
-    "data-help",
-    texts[lang].deviceManagerHeadingHelp
-  );
+  if (deviceManagerHeadingElem) {
+    deviceManagerHeadingElem.textContent = texts[lang].deviceManagerHeading;
+    deviceManagerHeadingElem.setAttribute(
+      "data-help",
+      texts[lang].deviceManagerHeadingHelp
+    );
+  }
 
   const batteryComparisonHeadingElem = document.getElementById("batteryComparisonHeading");
   const batteryComparisonDescriptionElem = document.getElementById(
@@ -7744,11 +7752,13 @@ async function setLanguage(lang) {
   const batteryTableElem = document.getElementById("batteryTable");
 
   const setupDiagramHeadingElem = document.getElementById("setupDiagramHeading");
-  setupDiagramHeadingElem.textContent = texts[lang].setupDiagramHeading;
-  setupDiagramHeadingElem.setAttribute(
-    "data-help",
-    texts[lang].setupDiagramHeadingHelp
-  );
+  if (setupDiagramHeadingElem) {
+    setupDiagramHeadingElem.textContent = texts[lang].setupDiagramHeading;
+    setupDiagramHeadingElem.setAttribute(
+      "data-help",
+      texts[lang].setupDiagramHeadingHelp
+    );
+  }
 
   const sideMenuLinks = document.querySelectorAll("#sideMenu [data-nav-key]");
   sideMenuLinks.forEach((link) => {
@@ -7871,8 +7881,10 @@ async function setLanguage(lang) {
     addExtraGearBtnElem.setAttribute("data-help", extraLabel);
   }
 
-  shareSetupBtn.setAttribute("title", texts[lang].shareSetupBtn);
-  shareSetupBtn.setAttribute("data-help", texts[lang].shareSetupHelp);
+  if (shareSetupBtn) {
+    shareSetupBtn.setAttribute("title", texts[lang].shareSetupBtn);
+    shareSetupBtn.setAttribute("data-help", texts[lang].shareSetupHelp);
+  }
 
   if (shareDialogHeadingElem) {
     const heading = texts[lang].shareDialogTitle
@@ -8018,12 +8030,16 @@ async function setLanguage(lang) {
     sharedImportModeGlobalOption.setAttribute('aria-label', label);
   }
 
-  applySharedLinkBtn.setAttribute("title", texts[lang].loadSharedLinkBtn);
-  applySharedLinkBtn.setAttribute("data-help", texts[lang].applySharedLinkHelp);
+  if (applySharedLinkBtn) {
+    applySharedLinkBtn.setAttribute("title", texts[lang].loadSharedLinkBtn);
+    applySharedLinkBtn.setAttribute("data-help", texts[lang].applySharedLinkHelp);
+  }
 
-  runtimeFeedbackBtn.setAttribute("title", texts[lang].runtimeFeedbackBtn);
-  runtimeFeedbackBtn.setAttribute("data-help", texts[lang].runtimeFeedbackBtnHelp);
-  setButtonLabelWithIconBinding(runtimeFeedbackBtn, texts[lang].runtimeFeedbackBtn, ICON_GLYPHS.feedback);
+  if (runtimeFeedbackBtn) {
+    runtimeFeedbackBtn.setAttribute("title", texts[lang].runtimeFeedbackBtn);
+    runtimeFeedbackBtn.setAttribute("data-help", texts[lang].runtimeFeedbackBtnHelp);
+    setButtonLabelWithIconBinding(runtimeFeedbackBtn, texts[lang].runtimeFeedbackBtn, ICON_GLYPHS.feedback);
+  }
   // Update the "-- New Setup --" option text
   if (setupSelect && setupSelect.options && setupSelect.options.length > 0) {
     setupSelect.options[0].textContent = texts[lang].newSetupOption;
@@ -8031,16 +8047,22 @@ async function setLanguage(lang) {
   checkSetupChanged();
   // Device selection labels with help
   const cameraLabelElem = document.getElementById("cameraLabel");
-  cameraLabelElem.textContent = texts[lang].cameraLabel;
-  cameraLabelElem.setAttribute("data-help", texts[lang].cameraSelectHelp);
+  if (cameraLabelElem) {
+    cameraLabelElem.textContent = texts[lang].cameraLabel;
+    cameraLabelElem.setAttribute("data-help", texts[lang].cameraSelectHelp);
+  }
 
   const monitorLabelElem = document.getElementById("monitorLabel");
-  monitorLabelElem.textContent = texts[lang].monitorLabel;
-  monitorLabelElem.setAttribute("data-help", texts[lang].monitorSelectHelp);
+  if (monitorLabelElem) {
+    monitorLabelElem.textContent = texts[lang].monitorLabel;
+    monitorLabelElem.setAttribute("data-help", texts[lang].monitorSelectHelp);
+  }
 
   const videoLabelElem = document.getElementById("videoLabel");
-  videoLabelElem.textContent = texts[lang].videoLabel;
-  videoLabelElem.setAttribute("data-help", texts[lang].videoSelectHelp);
+  if (videoLabelElem) {
+    videoLabelElem.textContent = texts[lang].videoLabel;
+    videoLabelElem.setAttribute("data-help", texts[lang].videoSelectHelp);
+  }
 
   const cageLabelElem = document.getElementById("cageLabel");
   if (cageLabelElem) {
@@ -8049,12 +8071,16 @@ async function setLanguage(lang) {
   }
 
   const distanceLabelElem = document.getElementById("distanceLabel");
-  distanceLabelElem.textContent = texts[lang].distanceLabel;
-  distanceLabelElem.setAttribute("data-help", texts[lang].distanceSelectHelp);
+  if (distanceLabelElem) {
+    distanceLabelElem.textContent = texts[lang].distanceLabel;
+    distanceLabelElem.setAttribute("data-help", texts[lang].distanceSelectHelp);
+  }
 
   const batteryPlateLabelElem = document.getElementById("batteryPlateLabel");
-  batteryPlateLabelElem.textContent = texts[lang].batteryPlateLabel;
-  batteryPlateLabelElem.setAttribute("data-help", texts[lang].batteryPlateSelectHelp);
+  if (batteryPlateLabelElem) {
+    batteryPlateLabelElem.textContent = texts[lang].batteryPlateLabel;
+    batteryPlateLabelElem.setAttribute("data-help", texts[lang].batteryPlateSelectHelp);
+  }
 
   const batteryHotswapLabelElem = document.getElementById("batteryHotswapLabel");
   if (batteryHotswapLabelElem) {
