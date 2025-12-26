@@ -4402,7 +4402,23 @@ function bindDeviceManagerToggleHandler() {
   }
 }
 
-bindDeviceManagerToggleHandler();
+// Defer binding until DOM is ready to ensure button exists
+if (typeof document !== 'undefined' && document) {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('Safari Debug: DOMContentLoaded - calling bindDeviceManagerToggleHandler');
+      bindDeviceManagerToggleHandler();
+    });
+  } else {
+    // DOM already ready, bind immediately
+    console.log('Safari Debug: DOM already ready - calling bindDeviceManagerToggleHandler immediately');
+    bindDeviceManagerToggleHandler();
+  }
+} else {
+  // Fallback for edge cases
+  bindDeviceManagerToggleHandler();
+}
+
 
 function getEventsLanguageTexts() {
   const scope =
