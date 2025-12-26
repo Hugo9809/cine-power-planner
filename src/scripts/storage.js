@@ -15630,13 +15630,13 @@
       console.warn('Failed to unregister service workers', swError);
     }
 
-    try {
-      if (typeof globalThis !== 'undefined') globalThis.__cameraPowerPlannerFactoryResetting = false;
-      if (typeof global !== 'undefined') global.__cameraPowerPlannerFactoryResetting = false;
-      if (typeof window !== 'undefined') window.__cameraPowerPlannerFactoryResetting = false;
-      if (GLOBAL_SCOPE) GLOBAL_SCOPE.__cameraPowerPlannerFactoryResetting = false;
-    } catch (e) {
-      void e;
+    // We intentionally DO NOT reset the factory reset flag here.
+    // The page is about to reload, and we want to ensure that NO subsequent
+    // saves (triggered by UI resets, unload handlers, etc.) can occur
+    // between now and the reload. The flag will naturally be false on the
+    // next page load.
+    if (typeof console !== 'undefined' && typeof console.log === 'function') {
+      console.log('Factory reset cleanup complete. Waiting for reload.');
     }
   }
 
