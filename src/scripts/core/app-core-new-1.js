@@ -7108,6 +7108,37 @@ try {
   void setLangError;
 }
 
+// Synchronize language selector with the initial currentLang value
+const syncLanguageSelectorsWithCurrentLang = () => {
+  try {
+    if (typeof document !== "undefined" && document) {
+      const languageSelectElement = document.getElementById("languageSelect");
+      if (languageSelectElement) {
+        languageSelectElement.value = currentLang;
+      }
+      const settingsLanguageElement = document.getElementById("settingsLanguage");
+      if (settingsLanguageElement) {
+        settingsLanguageElement.value = currentLang;
+      }
+    }
+  } catch (syncError) {
+    console.warn("Could not synchronize language selectors with initial language", syncError);
+  }
+};
+
+// Try to sync immediately (in case DOM is already loaded)
+syncLanguageSelectorsWithCurrentLang();
+
+// Also sync on DOMContentLoaded to handle early script execution
+if (typeof document !== "undefined" && document) {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', syncLanguageSelectorsWithCurrentLang, { once: true });
+  } else {
+    // DOM already loaded, sync again to be safe
+    syncLanguageSelectorsWithCurrentLang();
+  }
+}
+
 // Helper to apply translations to all UI text
 async function setLanguage(lang) {
   const requested = typeof lang === "string" ? lang : "";
