@@ -3,6 +3,7 @@
     if (!window.ensureSvgHasAriaHidden) window.ensureSvgHasAriaHidden = function (m) { return m; };
   }
 })();
+const global = typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : {}));
 /*
  * Cine Power Planner runtime split (part 1 of 2).
  *
@@ -437,7 +438,6 @@ if (
 // resolves that bridge through the lightweight localisation support module so
 // this file can focus on orchestration.
 // Bootstrap suite orchestration moved to app-core-bootstrap.js
-
 
 
 if (typeof resolveCoreSupportModule === 'undefined') {
@@ -7762,6 +7762,9 @@ async function setLanguage(lang) {
 
   const sideMenuLinks = document.querySelectorAll("#sideMenu [data-nav-key]");
   sideMenuLinks.forEach((link) => {
+    if (!link || !link.dataset) {
+      return;
+    }
     const navKey = link.dataset.navKey;
     if (!navKey) {
       return;
@@ -8355,71 +8358,77 @@ async function setLanguage(lang) {
     if (tempNoteElem)
       tempNoteElem.setAttribute("data-help", texts[lang].temperatureNoteHelp);
   }
-  // Add device form labels and button
-  document.getElementById("addDeviceHeading").textContent = texts[lang].addDeviceHeading;
-  document.getElementById("categoryLabel").textContent = texts[lang].categoryLabel;
-  document.getElementById("subcategoryLabel").textContent = texts[lang].subcategoryLabel;
-  document.getElementById("deviceNameLabel").textContent = texts[lang].deviceNameLabel;
-  document.getElementById("consumptionLabel").textContent = texts[lang].consumptionLabel;
-  document.getElementById("capacityLabel").textContent = texts[lang].capacityLabel;
-  document.getElementById("pinLabel").textContent = texts[lang].pinLabel;
-  document.getElementById("dtapLabel").textContent = texts[lang].dtapLabel;
-  document.getElementById("cameraWattLabel").textContent = texts[lang].cameraWattLabel;
-  document.getElementById("cameraVoltageLabel").textContent = texts[lang].cameraVoltageLabel;
-  document.getElementById("cameraPortTypeLabel").textContent = texts[lang].cameraPortTypeLabel;
-  document.getElementById("cameraPlatesLabel").textContent = texts[lang].cameraPlatesLabel;
-  document.getElementById("cameraMediaLabel").textContent = texts[lang].cameraMediaLabel;
-  document.getElementById("cameraLensMountLabel").textContent = texts[lang].cameraLensMountLabel;
-  document.getElementById("cameraPowerDistLabel").textContent = texts[lang].powerDistributionLabel;
-  document.getElementById("cameraVideoOutputsLabel").textContent = texts[lang].videoOutputsLabel;
-  document.getElementById("cameraFIZConnectorLabel").textContent = texts[lang].fizConnectorLabel;
-  document.getElementById("cameraViewfinderLabel").textContent = texts[lang].viewfinderLabel;
-  document.getElementById("cameraTimecodeLabel").textContent = texts[lang].timecodeLabel;
-  document.getElementById("powerInputsHeading").textContent = texts[lang].powerInputsHeading;
-  document.getElementById("powerDistributionHeading").textContent = texts[lang].powerDistributionHeading;
-  document.getElementById("videoOutputsHeading").textContent = texts[lang].videoOutputsHeading;
-  document.getElementById("fizConnectorHeading").textContent = texts[lang].fizConnectorHeading;
-  document.getElementById("mediaHeading").textContent = texts[lang].mediaHeading;
-  document.getElementById("viewfinderHeading").textContent = texts[lang].viewfinderHeading;
-  document.getElementById("lensMountHeading").textContent = texts[lang].lensMountHeading;
-  const lensDeviceMountHeadingElem = document.getElementById("lensDeviceMountHeading");
-  if (lensDeviceMountHeadingElem) {
-    lensDeviceMountHeadingElem.textContent = texts[lang].lensDeviceMountHeading;
-  }
-  const lensDeviceMountLabelElem = document.getElementById("lensDeviceMountLabel");
+
+  // Device manager section localization
+  const safeSetText = (id, text) => {
+    const el = document.getElementById(id);
+    if (el && text !== undefined) el.textContent = text;
+    return el;
+  };
+  const safeSetAttr = (id, attr, value) => {
+    const el = document.getElementById(id);
+    if (el && attr && value !== undefined) el.setAttribute(attr, value);
+    return el;
+  };
+
+  safeSetText("addDeviceHeading", texts[lang].addDeviceHeading);
+  safeSetText("categoryLabel", texts[lang].categoryLabel);
+  safeSetText("subcategoryLabel", texts[lang].subcategoryLabel);
+  safeSetText("deviceNameLabel", texts[lang].deviceNameLabel);
+  safeSetText("consumptionLabel", texts[lang].consumptionLabel);
+  safeSetText("capacityLabel", texts[lang].capacityLabel);
+  safeSetText("pinLabel", texts[lang].pinLabel);
+  safeSetText("dtapLabel", texts[lang].dtapLabel);
+  safeSetText("cameraWattLabel", texts[lang].cameraWattLabel);
+  safeSetText("cameraVoltageLabel", texts[lang].cameraVoltageLabel);
+  safeSetText("cameraPortTypeLabel", texts[lang].cameraPortTypeLabel);
+  safeSetText("cameraPlatesLabel", texts[lang].cameraPlatesLabel);
+  safeSetText("cameraMediaLabel", texts[lang].cameraMediaLabel);
+  safeSetText("cameraLensMountLabel", texts[lang].cameraLensMountLabel);
+  safeSetText("cameraPowerDistLabel", texts[lang].powerDistributionLabel);
+  safeSetText("cameraVideoOutputsLabel", texts[lang].videoOutputsLabel);
+  safeSetText("cameraFIZConnectorLabel", texts[lang].fizConnectorLabel);
+  safeSetText("cameraViewfinderLabel", texts[lang].viewfinderLabel);
+  safeSetText("cameraTimecodeLabel", texts[lang].timecodeLabel);
+  safeSetText("powerInputsHeading", texts[lang].powerInputsHeading);
+  safeSetText("powerDistributionHeading", texts[lang].powerDistributionHeading);
+  safeSetText("videoOutputsHeading", texts[lang].videoOutputsHeading);
+  safeSetText("fizConnectorHeading", texts[lang].fizConnectorHeading);
+  safeSetText("mediaHeading", texts[lang].mediaHeading);
+  safeSetText("viewfinderHeading", texts[lang].viewfinderHeading);
+  safeSetText("lensMountHeading", texts[lang].lensMountHeading);
+  const lensDeviceMountHeadingElem = safeSetText("lensDeviceMountHeading", texts[lang].lensDeviceMountHeading);
+  const lensDeviceMountLabelElem = safeSetText("lensDeviceMountLabel", texts[lang].lensDeviceMountLabel);
   if (lensDeviceMountLabelElem) {
-    lensDeviceMountLabelElem.textContent = texts[lang].lensDeviceMountLabel;
-    lensDeviceMountLabelElem.setAttribute('data-help', texts[lang].lensDeviceMountHelp);
+    safeSetAttr("lensDeviceMountLabel", 'data-help', texts[lang].lensDeviceMountHelp);
   }
-  const lensFocusScaleLabelElem = document.getElementById("lensFocusScaleUnitLabel");
+  const lensFocusScaleLabelElem = safeSetText("lensFocusScaleUnitLabel", texts[lang].lensFocusScaleLabel || texts[lang].focusScaleSetting);
   if (lensFocusScaleLabelElem) {
     const focusScaleLabel = texts[lang].lensFocusScaleLabel || texts[lang].focusScaleSetting;
     const focusScaleHelp = texts[lang].lensFocusScaleHelp
       || texts[lang].lensFocusScaleLabel
       || texts[lang].focusScaleSettingHelp
       || focusScaleLabel;
-    lensFocusScaleLabelElem.textContent = focusScaleLabel;
-    lensFocusScaleLabelElem.setAttribute('data-help', focusScaleHelp);
+    safeSetAttr("lensFocusScaleUnitLabel", 'data-help', focusScaleHelp);
     if (lensFocusScaleSelect) {
       lensFocusScaleSelect.setAttribute('data-help', focusScaleHelp);
       lensFocusScaleSelect.setAttribute('aria-label', focusScaleLabel);
     }
   }
   updateLensFocusScaleSelectOptions(lang);
-  document.getElementById("timecodeHeading").textContent = texts[lang].timecodeHeading;
-  document.getElementById("monitorScreenSizeLabel").textContent = texts[lang].monitorScreenSizeLabel;
-  document.getElementById("monitorBrightnessLabel").textContent = texts[lang].monitorBrightnessLabel;
-  document.getElementById("monitorWattLabel").textContent = texts[lang].monitorWattLabel;
-  document.getElementById("monitorVoltageLabel").textContent = texts[lang].monitorVoltageLabel;
-  document.getElementById("monitorPortTypeLabel").textContent = texts[lang].monitorPortTypeLabel;
-  document.getElementById("monitorVideoInputsHeading").textContent = texts[lang].monitorVideoInputsHeading;
-  document.getElementById("monitorVideoOutputsHeading").textContent = texts[lang].monitorVideoOutputsHeading;
-  document.getElementById("monitorVideoInputsLabel").textContent = texts[lang].monitorVideoInputsLabel;
-  document.getElementById("monitorVideoOutputsLabel").textContent = texts[lang].monitorVideoOutputsLabel;
-  document.getElementById("monitorWirelessTxLabel").textContent = texts[lang].monitorWirelessTxLabel;
-  const monitorLatencyLabelElem = document.getElementById("monitorLatencyLabel");
+  safeSetText("timecodeHeading", texts[lang].timecodeHeading);
+  safeSetText("monitorScreenSizeLabel", texts[lang].monitorScreenSizeLabel);
+  safeSetText("monitorBrightnessLabel", texts[lang].monitorBrightnessLabel);
+  safeSetText("monitorWattLabel", texts[lang].monitorWattLabel);
+  safeSetText("monitorVoltageLabel", texts[lang].monitorVoltageLabel);
+  safeSetText("monitorPortTypeLabel", texts[lang].monitorPortTypeLabel);
+  safeSetText("monitorVideoInputsHeading", texts[lang].monitorVideoInputsHeading);
+  safeSetText("monitorVideoOutputsHeading", texts[lang].monitorVideoOutputsHeading);
+  safeSetText("monitorVideoInputsLabel", texts[lang].monitorVideoInputsLabel);
+  safeSetText("monitorVideoOutputsLabel", texts[lang].monitorVideoOutputsLabel);
+  safeSetText("monitorWirelessTxLabel", texts[lang].monitorWirelessTxLabel);
+  const monitorLatencyLabelElem = safeSetText("monitorLatencyLabel", texts[lang].monitorLatencyLabel);
   if (monitorLatencyLabelElem) {
-    monitorLatencyLabelElem.textContent = texts[lang].monitorLatencyLabel;
     const monitorLatencyHelpText = texts[lang].monitorLatencyHelp;
     if (monitorLatencyHelpText) {
       monitorLatencyLabelElem.setAttribute('data-help', monitorLatencyHelpText);
@@ -8437,19 +8446,19 @@ async function setLanguage(lang) {
       }
     }
   }
-  document.getElementById("monitorAudioOutputLabel").textContent = texts[lang].monitorAudioOutputLabel;
-  document.getElementById("viewfinderDetailsHeading").textContent = texts[lang].viewfinderDetailsHeading;
-  document.getElementById("viewfinderScreenSizeLabel").textContent = texts[lang].viewfinderScreenSizeLabel;
-  document.getElementById("viewfinderBrightnessLabel").textContent = texts[lang].viewfinderBrightnessLabel;
-  document.getElementById("viewfinderWattLabel").textContent = texts[lang].viewfinderWattLabel;
-  document.getElementById("viewfinderVoltageLabel").textContent = texts[lang].viewfinderVoltageLabel;
-  document.getElementById("viewfinderPortTypeLabel").textContent = texts[lang].viewfinderPortTypeLabel;
-  document.getElementById("viewfinderVideoInputsHeading").textContent = texts[lang].viewfinderVideoInputsHeading;
-  document.getElementById("viewfinderVideoOutputsHeading").textContent = texts[lang].viewfinderVideoOutputsHeading;
-  document.getElementById("viewfinderVideoInputsLabel").textContent = texts[lang].viewfinderVideoInputsLabel;
-  document.getElementById("viewfinderVideoOutputsLabel").textContent = texts[lang].viewfinderVideoOutputsLabel;
-  document.getElementById("viewfinderWirelessTxLabel").textContent = texts[lang].viewfinderWirelessTxLabel;
-  const viewfinderLatencyLabelElem = document.getElementById("viewfinderLatencyLabel");
+  safeSetText("monitorAudioOutputLabel", texts[lang].monitorAudioOutputLabel);
+  safeSetText("viewfinderDetailsHeading", texts[lang].viewfinderDetailsHeading);
+  safeSetText("viewfinderScreenSizeLabel", texts[lang].viewfinderScreenSizeLabel);
+  safeSetText("viewfinderBrightnessLabel", texts[lang].viewfinderBrightnessLabel);
+  safeSetText("viewfinderWattLabel", texts[lang].viewfinderWattLabel);
+  safeSetText("viewfinderVoltageLabel", texts[lang].viewfinderVoltageLabel);
+  safeSetText("viewfinderPortTypeLabel", texts[lang].viewfinderPortTypeLabel);
+  safeSetText("viewfinderVideoInputsHeading", texts[lang].viewfinderVideoInputsHeading);
+  safeSetText("viewfinderVideoOutputsHeading", texts[lang].viewfinderVideoOutputsHeading);
+  safeSetText("viewfinderVideoInputsLabel", texts[lang].viewfinderVideoInputsLabel);
+  safeSetText("viewfinderVideoOutputsLabel", texts[lang].viewfinderVideoOutputsLabel);
+  safeSetText("viewfinderWirelessTxLabel", texts[lang].viewfinderWirelessTxLabel);
+  const viewfinderLatencyLabelElem = safeSetText("viewfinderLatencyLabel", texts[lang].viewfinderLatencyLabel);
   if (viewfinderLatencyLabelElem) {
     viewfinderLatencyLabelElem.textContent = texts[lang].viewfinderLatencyLabel;
     const viewfinderLatencyHelpText = texts[lang].viewfinderLatencyHelp;
@@ -8469,11 +8478,7 @@ async function setLanguage(lang) {
       }
     }
   }
-  const videoPowerHeadingElem = document.getElementById("videoPowerInputsHeading");
-  if (videoPowerHeadingElem) {
-    videoPowerHeadingElem.textContent =
-      texts[lang].videoPowerInputsHeading || texts[lang].powerInputsHeading || 'Power Inputs';
-  }
+  safeSetText("videoPowerInputsHeading", texts[lang].videoPowerInputsHeading || texts[lang].powerInputsHeading || 'Power Inputs');
   const videoPowerLabelElem = document.getElementById("videoPowerInputLabel");
   if (videoPowerLabelElem) {
     videoPowerLabelElem.textContent = texts[lang].videoPowerInputLabel || texts[lang].powerInputsHeading;
@@ -8486,39 +8491,43 @@ async function setLanguage(lang) {
       videoPowerLabelElem.removeAttribute('title');
     }
   }
-  document.getElementById("videoVideoInputsHeading").textContent = texts[lang].videoVideoInputsHeading;
-  document.getElementById("videoVideoInputsLabel").textContent = texts[lang].videoVideoInputsLabel;
-  document.getElementById("videoVideoOutputsHeading").textContent = texts[lang].videoVideoOutputsHeading;
-  document.getElementById("videoVideoOutputsLabel").textContent = texts[lang].videoVideoOutputsLabel;
-  document.getElementById("monitorDetailsHeading").textContent = texts[lang].monitorDetailsHeading;
-  document.getElementById("monitorPowerHeading").textContent = texts[lang].monitorPowerHeading;
+  safeSetText("videoVideoInputsHeading", texts[lang].videoVideoInputsHeading);
+  safeSetText("videoVideoInputsLabel", texts[lang].videoVideoInputsLabel);
+  safeSetText("videoVideoOutputsHeading", texts[lang].videoVideoOutputsHeading);
+  safeSetText("videoVideoOutputsLabel", texts[lang].videoVideoOutputsLabel);
+  safeSetText("monitorDetailsHeading", texts[lang].monitorDetailsHeading);
+  safeSetText("monitorPowerHeading", texts[lang].monitorPowerHeading);
+
   // Determine text for Add/Update button
-  const addDeviceLabel = texts[lang].addDeviceBtn;
-  const updateDeviceLabel = texts[lang].updateDeviceBtn;
-  if (typeof addDeviceBtn !== 'undefined' && addDeviceBtn) {
-    if (addDeviceBtn.dataset && addDeviceBtn.dataset.mode === "edit") {
-      setButtonLabelWithIconBinding(addDeviceBtn, updateDeviceLabel, ICON_GLYPHS.save);
-      addDeviceBtn.setAttribute('data-help', texts[lang].updateDeviceBtnHelp);
+  const addDeviceLabel = (texts[lang] && texts[lang].addDeviceBtn) || "Add";
+  const updateDeviceLabel = (texts[lang] && texts[lang].updateDeviceBtn) || "Update";
+  const addDeviceBtnElem = document.getElementById("addDeviceBtn");
+  if (addDeviceBtnElem) {
+    if (addDeviceBtnElem.dataset && addDeviceBtnElem.dataset.mode === "edit") {
+      setButtonLabelWithIconBinding(addDeviceBtnElem, updateDeviceLabel, ICON_GLYPHS.save);
+      addDeviceBtnElem.setAttribute('data-help', (texts[lang] && texts[lang].updateDeviceBtnHelp) || "");
     } else {
-      setButtonLabelWithIconBinding(addDeviceBtn, addDeviceLabel, ICON_GLYPHS.add);
-      addDeviceBtn.setAttribute('data-help', texts[lang].addDeviceBtnHelp);
+      setButtonLabelWithIconBinding(addDeviceBtnElem, addDeviceLabel, ICON_GLYPHS.add);
+      addDeviceBtnElem.setAttribute('data-help', (texts[lang] && texts[lang].addDeviceBtnHelp) || "");
     }
   }
-  if (typeof cancelEditBtn !== 'undefined' && cancelEditBtn) {
-    setButtonLabelWithIconBinding(cancelEditBtn, texts[lang].cancelEditBtn, ICON_GLYPHS.circleX);
-    cancelEditBtn.setAttribute('data-help', texts[lang].cancelEditBtnHelp);
+  const cancelEditBtnElem = document.getElementById("cancelEditBtn");
+  if (cancelEditBtnElem) {
+    setButtonLabelWithIconBinding(cancelEditBtnElem, texts[lang].cancelEditBtn, ICON_GLYPHS.circleX);
+    cancelEditBtnElem.setAttribute('data-help', texts[lang].cancelEditBtnHelp);
   }
-  if (typeof exportBtn !== 'undefined' && exportBtn) {
-    setButtonLabelWithIconBinding(exportBtn, texts[lang].exportDataBtn, ICON_GLYPHS.fileExport);
-    exportBtn.setAttribute('data-help', texts[lang].exportDataBtnHelp);
+  const exportBtnElem = document.getElementById("exportDataBtn");
+  if (exportBtnElem) {
+    setButtonLabelWithIconBinding(exportBtnElem, texts[lang].exportDataBtn, ICON_GLYPHS.fileExport);
+    exportBtnElem.setAttribute('data-help', texts[lang].exportDataHelp);
   }
-  if (typeof importDataBtn !== 'undefined' && importDataBtn) {
-    setButtonLabelWithIconBinding(importDataBtn, texts[lang].importDataBtn, ICON_GLYPHS.fileImport);
-    importDataBtn.setAttribute('data-help', texts[lang].importDataBtnHelp);
+  const importDataBtnElem = document.getElementById("importDataBtn");
+  if (importDataBtnElem) {
+    setButtonLabelWithIconBinding(importDataBtnElem, texts[lang].importDataBtn, ICON_GLYPHS.fileImport);
+    importDataBtnElem.setAttribute('data-help', texts[lang].importDataHelp);
   }
   // Placeholders for inputs
-  // Placeholders for inputs
-  if (typeof setupNameInput !== 'undefined' && setupNameInput) setupNameInput.placeholder = texts[lang].setupNameLabel.replace(":", "");
+  if (typeof setupNameInput !== 'undefined' && setupNameInput) setupNameInput.placeholder = (texts[lang].setupNameLabel || "").replace(":", "");
   if (typeof newNameInput !== 'undefined' && newNameInput) newNameInput.placeholder = texts[lang].placeholder_deviceName;
   if (typeof newWattInput !== 'undefined' && newWattInput) newWattInput.placeholder = texts[lang].placeholder_watt;
   if (typeof newCapacityInput !== 'undefined' && newCapacityInput) newCapacityInput.placeholder = texts[lang].placeholder_capacity;
@@ -8526,25 +8535,30 @@ async function setLanguage(lang) {
   if (typeof newDtapAInput !== 'undefined' && newDtapAInput) newDtapAInput.placeholder = texts[lang].placeholder_dtap;
   if (typeof cameraVoltageInput !== 'undefined' && cameraVoltageInput) cameraVoltageInput.placeholder = texts[lang].placeholder_voltage;
   if (typeof monitorVoltageInput !== 'undefined' && monitorVoltageInput) monitorVoltageInput.placeholder = texts[lang].placeholder_voltage;
+
   updateDeviceManagerLocalization(lang);
+
   // Toggle device manager button text (depends on current visibility)
-  // Toggle device manager button text (depends on current visibility)
-  if (typeof deviceManagerSection !== 'undefined' && deviceManagerSection && typeof toggleDeviceBtn !== 'undefined' && toggleDeviceBtn) {
-    if (deviceManagerSection.classList.contains('hidden')) {
-      setButtonLabelWithIconBinding(toggleDeviceBtn, texts[lang].toggleDeviceManager, ICON_GLYPHS.gears);
-      toggleDeviceBtn.setAttribute("title", texts[lang].toggleDeviceManager);
-      toggleDeviceBtn.setAttribute("data-help", texts[lang].toggleDeviceManagerHelp);
-      toggleDeviceBtn.setAttribute("aria-expanded", "false");
+  const toggleDeviceBtnElem = document.getElementById("toggleDeviceManager");
+  const deviceManagerSectionElem = document.getElementById("device-manager");
+  if (deviceManagerSectionElem && toggleDeviceBtnElem) {
+    if (deviceManagerSectionElem.classList.contains('hidden')) {
+      setButtonLabelWithIconBinding(toggleDeviceBtnElem, texts[lang].toggleDeviceManager, ICON_GLYPHS.gears);
+      toggleDeviceBtnElem.setAttribute("title", texts[lang].toggleDeviceManager);
+      toggleDeviceBtnElem.setAttribute("data-help", texts[lang].toggleDeviceManagerHelp);
+      toggleDeviceBtnElem.setAttribute("aria-expanded", "false");
     } else {
-      setButtonLabelWithIconBinding(toggleDeviceBtn, texts[lang].hideDeviceManager, ICON_GLYPHS.minus);
-      toggleDeviceBtn.setAttribute("title", texts[lang].hideDeviceManager);
-      toggleDeviceBtn.setAttribute("data-help", texts[lang].hideDeviceManagerHelp);
-      toggleDeviceBtn.setAttribute("aria-expanded", "true");
+      setButtonLabelWithIconBinding(toggleDeviceBtnElem, texts[lang].hideDeviceManager, ICON_GLYPHS.minus);
+      toggleDeviceBtnElem.setAttribute("title", texts[lang].hideDeviceManager);
+      toggleDeviceBtnElem.setAttribute("data-help", texts[lang].hideDeviceManagerHelp);
+      toggleDeviceBtnElem.setAttribute("aria-expanded", "true");
     }
   }
+
   // Update newCategory select option texts
-  if (newCategorySelect.options) {
-    Array.from(newCategorySelect.options).forEach(opt => {
+  const newCategorySelectElem = document.getElementById("newCategory");
+  if (newCategorySelectElem && newCategorySelectElem.options) {
+    Array.from(newCategorySelectElem.options).forEach(opt => {
       opt.textContent = getCategoryLabel(opt.value, lang);
     });
   }
