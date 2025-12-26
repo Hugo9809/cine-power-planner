@@ -7838,7 +7838,7 @@ async function setLanguage(lang) {
   }
 
   const safeDeleteSetupBtn = deleteSetupBtn;
-  if (safeDeleteSetupBtn) {
+  if (safeDeleteSetupBtn && typeof safeDeleteSetupBtn.setAttribute === 'function') {
     safeDeleteSetupBtn.setAttribute("title", texts[lang].deleteSetupHelp);
     safeDeleteSetupBtn.setAttribute("aria-label", texts[lang].deleteSetupHelp);
     safeDeleteSetupBtn.setAttribute("data-help", texts[lang].deleteSetupHelp);
@@ -7863,28 +7863,32 @@ async function setLanguage(lang) {
     safeGenerateGearListBtn.setAttribute("data-help", texts[lang].generateGearListHelp);
   }
 
-  const deleteGearListHelp =
-    texts[lang].deleteGearListBtnHelp || texts[lang].deleteGearListBtn;
-  const safeDeleteGearListProjectBtn = deleteGearListProjectBtn;
-  if (safeDeleteGearListProjectBtn) {
-    setButtonLabelWithIconBinding(
-      safeDeleteGearListProjectBtn,
-      texts[lang].deleteGearListBtn,
-      ICON_GLYPHS.trash
-    );
-    safeDeleteGearListProjectBtn.setAttribute("title", deleteGearListHelp);
-    safeDeleteGearListProjectBtn.setAttribute("data-help", deleteGearListHelp);
-    safeDeleteGearListProjectBtn.setAttribute("aria-label", deleteGearListHelp);
+  try {
+    const deleteGearListHelp =
+      texts[lang].deleteGearListBtnHelp || texts[lang].deleteGearListBtn;
+    const safeDeleteGearListProjectBtn = deleteGearListProjectBtn;
+    if (safeDeleteGearListProjectBtn && typeof safeDeleteGearListProjectBtn.setAttribute === 'function') {
+      setButtonLabelWithIconBinding(
+        safeDeleteGearListProjectBtn,
+        texts[lang].deleteGearListBtn,
+        ICON_GLYPHS.trash
+      );
+      safeDeleteGearListProjectBtn.setAttribute("title", deleteGearListHelp);
+      safeDeleteGearListProjectBtn.setAttribute("data-help", deleteGearListHelp);
+      safeDeleteGearListProjectBtn.setAttribute("aria-label", deleteGearListHelp);
+    }
+  } catch (err) {
+    console.warn("Error setting deleteGearListProjectBtn attributes", err);
   }
 
   const editProjectBtnElem = document.getElementById("editProjectBtn");
-  if (editProjectBtnElem) {
+  if (editProjectBtnElem && typeof editProjectBtnElem.setAttribute === 'function') {
     editProjectBtnElem.textContent = texts[lang].editProjectBtn;
     editProjectBtnElem.setAttribute("title", texts[lang].editProjectBtn);
     editProjectBtnElem.setAttribute("data-help", texts[lang].editProjectBtn);
   }
   const addExtraGearBtnElem = document.getElementById("addExtraGearBtn");
-  if (addExtraGearBtnElem) {
+  if (addExtraGearBtnElem && typeof addExtraGearBtnElem.setAttribute === 'function') {
     const extraLabel = texts[lang].addExtraGearBtn || texts.en?.addExtraGearBtn || "Add temporary extra gear";
     addExtraGearBtnElem.textContent = extraLabel;
     addExtraGearBtnElem.setAttribute("title", extraLabel);
@@ -7937,7 +7941,7 @@ async function setLanguage(lang) {
     const help = texts[lang].shareIncludeAutoGearHelp
       || texts.en?.shareIncludeAutoGearHelp
       || label;
-    if (shareIncludeAutoGearLabelElem) {
+    if (shareIncludeAutoGearLabelElem && typeof shareIncludeAutoGearLabelElem.setAttribute === 'function') {
       shareIncludeAutoGearLabelElem.setAttribute('data-help', help);
     }
     if (shareIncludeAutoGearCheckbox) {
@@ -7953,7 +7957,7 @@ async function setLanguage(lang) {
     const help = texts[lang].shareIncludeOwnedGearHelp
       || texts.en?.shareIncludeOwnedGearHelp
       || label;
-    if (shareIncludeOwnedGearLabelElem) {
+    if (shareIncludeOwnedGearLabelElem && typeof shareIncludeOwnedGearLabelElem.setAttribute === 'function') {
       shareIncludeOwnedGearLabelElem.setAttribute('data-help', help);
     }
     if (shareIncludeOwnedGearCheckbox) {
