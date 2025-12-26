@@ -7827,7 +7827,12 @@ if (mountVoltageResetButtonRef) {
   });
 }
 
-if (settingsButton && settingsDialog) {
+const initialSettingsButton = resolveSettingsButton();
+const initialSettingsDialog = resolveSettingsDialog();
+
+if (initialSettingsButton && initialSettingsDialog) {
+  const settingsButton = initialSettingsButton;
+  const settingsDialog = initialSettingsDialog;
   settingsButton.addEventListener('click', () => {
     const context = consumeSettingsOpenContext({ reason: 'settings-button' });
     const hiddenBefore = typeof settingsDialog.hasAttribute === 'function'

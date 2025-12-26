@@ -8324,7 +8324,7 @@
           console.warn(`[Storage Cleanup] Removed ${candidate.key} to free ${size} chars.`);
           // If we freed a significant amount, we might stop, but for now let's be aggressive
           // to ensure the user's save succeeds.
-          if (freed > 50000) { // Arbitrary threshold to stop if we freed "enough"
+          if (freed > 500000) { // Arbitrary threshold to stop if we freed "enough"
             break;
           }
         } catch (e) {
@@ -9468,8 +9468,8 @@
       dataToPersist,
       "Error saving device data to localStorage:",
       {
-        disableCompression: true,
-        forceCompressionOnQuota: false,
+        disableCompression: false,
+        forceCompressionOnQuota: true,
       },
     );
   }
@@ -9574,7 +9574,8 @@
       serializedSetups,
       "Error saving setups to localStorage:",
       {
-        disableCompression: true,
+        disableCompression: false,
+        forceCompressionOnQuota: true,
         onQuotaExceeded: () => {
           const removedKey = removeOldestAutoBackupEntry(serializedSetups);
           if (!removedKey) {
@@ -12729,6 +12730,7 @@
       `Error saving project shard "${name}":`,
       {
         disableCompression: skipCompression,
+        forceCompressionOnQuota: true,
         onQuotaExceeded: () => {
           // Cross-shard quota recovery: try to prune the oldest auto-backup shard.
           // Note: we don't want forMutation: true here because we are in the middle of a save.
@@ -13822,7 +13824,10 @@
       CONTACTS_STORAGE_KEY,
       normalized,
       'Error saving contacts to localStorage:',
-      { disableCompression: true },
+      {
+        disableCompression: false,
+        forceCompressionOnQuota: true,
+      },
     );
   }
 
@@ -13891,7 +13896,10 @@
       OWN_GEAR_STORAGE_KEY,
       normalized,
       'Error saving own gear to localStorage:',
-      { disableCompression: true },
+      {
+        disableCompression: false,
+        forceCompressionOnQuota: true,
+      },
     );
   }
 
@@ -13994,7 +14002,8 @@
       normalized,
       'Error saving user profile to localStorage:',
       {
-        disableCompression: true,
+        disableCompression: false,
+        forceCompressionOnQuota: true,
         enableCompressionSweep: false,
       },
     );
@@ -14133,7 +14142,10 @@
       FULL_BACKUP_HISTORY_STORAGE_KEY,
       safeEntries,
       "Error saving full backup history to localStorage:",
-      { disableCompression: true },
+      {
+        disableCompression: false,
+        forceCompressionOnQuota: true,
+      },
     );
   }
 
