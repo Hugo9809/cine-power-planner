@@ -177,6 +177,23 @@
     if (!DOCUMENT || typeof DOCUMENT.createElement !== 'function') {
       return false;
     }
+
+    // Safari has a critical bug where dialog top layer blocks all pointer events
+    // on the page, even with pointer-events:none. Disable for Safari.
+    const isSafari = (function detectSafari() {
+      if (!GLOBAL_SCOPE || !GLOBAL_SCOPE.navigator) {
+        return false;
+      }
+      const ua = GLOBAL_SCOPE.navigator.userAgent || '';
+      const vendor = GLOBAL_SCOPE.navigator.vendor || '';
+      // Safari has vendor "Apple Computer, Inc." and userAgent contains Safari but not Chrome/Chromium
+      return /Safari/.test(ua) && /Apple Computer/.test(vendor) && !/Chrome|Chromium|Edg/.test(ua);
+    }());
+
+    if (isSafari) {
+      return false;
+    }
+
     try {
       const dialog = DOCUMENT.createElement('dialog');
       return typeof dialog.show === 'function' && typeof dialog.close === 'function';
