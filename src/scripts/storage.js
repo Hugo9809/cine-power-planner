@@ -15334,12 +15334,33 @@
       // as clear() might be intercepted or only partially effective in some environments.
       try {
         const keysToRemove = [];
-        const length = storage.length;
-        for (let i = 0; i < length; i++) {
-          const key = storage.key(i);
-          if (key) {
-            keysToRemove.push(key);
+
+        // Strategy A: Iterate by index
+        try {
+          const length = storage.length;
+          for (let i = 0; i < length; i++) {
+            const key = storage.key(i);
+            if (key) {
+              keysToRemove.push(key);
+            }
           }
+        } catch (indexError) {
+          console.warn(`Failed to iterate ${storageName} by index`, indexError);
+        }
+
+        // Strategy B: Object.keys fallback (works for standard localStorage in many runtimes)
+        try {
+          const objectKeys = Object.keys(storage);
+          if (Array.isArray(objectKeys)) {
+            objectKeys.forEach(k => {
+              if (k && !keysToRemove.includes(k)) {
+                keysToRemove.push(k);
+              }
+            });
+          }
+        } catch (objKeysError) {
+          // Ignore, Object.keys might not work on all storage implementations
+          void objKeysError;
         }
 
         keysToRemove.forEach((key) => {
@@ -15467,7 +15488,12 @@
       typeof GLOBAL_SCOPE !== 'undefined' && GLOBAL_SCOPE.TEMPERATURE_UNIT_STORAGE_KEY,
       typeof GLOBAL_SCOPE !== 'undefined' && GLOBAL_SCOPE.FOCUS_SCALE_STORAGE_KEY,
       typeof GLOBAL_SCOPE !== 'undefined' && GLOBAL_SCOPE.INSTALL_BANNER_DISMISSED_KEY,
-      'cine_install_banner_dismissed'
+      'cine_install_banner_dismissed',
+      // Explicitly target backup keys that might be missed by dynamic resolution
+      'cameraPowerPlanner_project__backup',
+      'cameraPowerPlanner_project__legacyMigrationBackup',
+      'cameraPowerPlanner_setups__backup',
+      'cameraPowerPlanner_setups__legacyMigrationBackup'
     ];
 
     explicitKeys.forEach(k => {
