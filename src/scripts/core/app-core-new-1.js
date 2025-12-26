@@ -7810,9 +7810,11 @@ async function setLanguage(lang) {
   setupSelect.setAttribute("data-help", texts[lang].setupSelectHelp);
   setupNameInput.setAttribute("data-help", texts[lang].setupNameHelp);
 
-  deleteSetupBtn.setAttribute("title", texts[lang].deleteSetupHelp);
-  deleteSetupBtn.setAttribute("aria-label", texts[lang].deleteSetupHelp);
-  deleteSetupBtn.setAttribute("data-help", texts[lang].deleteSetupHelp);
+  if (deleteSetupBtn) {
+    deleteSetupBtn.setAttribute("title", texts[lang].deleteSetupHelp);
+    deleteSetupBtn.setAttribute("aria-label", texts[lang].deleteSetupHelp);
+    deleteSetupBtn.setAttribute("data-help", texts[lang].deleteSetupHelp);
+  }
 
   saveSetupBtn.setAttribute("title", texts[lang].saveSetupHelp);
   saveSetupBtn.setAttribute("aria-label", texts[lang].saveSetupHelp);

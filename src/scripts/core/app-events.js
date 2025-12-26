@@ -5114,7 +5114,7 @@ addSafeEventListener('newCategory', "change", () => {
       previousSubcategoryValue && subcategoryKeys.includes(previousSubcategoryValue)
         ? previousSubcategoryValue
         : (newSubcategorySelect.options.length > 0 ? newSubcategorySelect.options[0].value : '');
-    newSubcategorySelect.value = effectiveSubcategory || '';
+    newSubcategorySelect.value = (newSubcategorySelect && effectiveSubcategory) || '';
     if (effectiveSubcategory) {
       buildDynamicFields(
         `accessories.cables.${effectiveSubcategory}`,

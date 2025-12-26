@@ -2666,7 +2666,9 @@
 
         changedKeys.forEach((key) => {
           if (Object.prototype.hasOwnProperty.call(payload, key)) {
-            expanded[key] = cloneAutoBackupValue(payload[key]);
+            if (expanded) {
+              expanded[key] = cloneAutoBackupValue(payload[key]);
+            }
           }
         });
 
