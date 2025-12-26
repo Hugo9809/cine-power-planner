@@ -2130,7 +2130,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var expanded = cloneAutoBackupValue(baseValue);
         changedKeys.forEach(function (key) {
           if (Object.prototype.hasOwnProperty.call(payload, key)) {
-            expanded[key] = cloneAutoBackupValue(payload[key]);
+            if (expanded) {
+              expanded[key] = cloneAutoBackupValue(payload[key]);
+            }
           }
         });
         removedKeys.forEach(function (key) {
@@ -7121,7 +7123,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           freed += size;
           cleaned += 1;
           console.warn("[Storage Cleanup] Removed ".concat(candidate.key, " to free ").concat(size, " chars."));
-          if (freed > 50000) {
+          if (freed > 500000) {
             break;
           }
         } catch (e) {
@@ -8076,8 +8078,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var dataToPersist = normalizedDeviceData || deviceData;
     ensurePreWriteMigrationBackup(safeStorage, DEVICE_STORAGE_KEY);
     saveJSONToStorage(safeStorage, DEVICE_STORAGE_KEY, dataToPersist, "Error saving device data to localStorage:", {
-      disableCompression: true,
-      forceCompressionOnQuota: false
+      disableCompression: false,
+      forceCompressionOnQuota: true
     });
   }
   function normalizeSetups(rawData) {
@@ -8175,7 +8177,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var safeStorage = getSafeLocalStorage();
     ensurePreWriteMigrationBackup(safeStorage, SETUP_STORAGE_KEY);
     saveJSONToStorage(safeStorage, SETUP_STORAGE_KEY, serializedSetups, "Error saving setups to localStorage:", {
-      disableCompression: true,
+      disableCompression: false,
+      forceCompressionOnQuota: true,
       onQuotaExceeded: function onQuotaExceeded() {
         var removedKey = removeOldestAutoBackupEntry(serializedSetups);
         if (!removedKey) {
@@ -10785,6 +10788,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var projectData = serialized[name];
     var result = saveJSONToStorage(safeStorage, shardKey, projectData, "Error saving project shard \"".concat(name, "\":"), {
       disableCompression: skipCompression,
+      forceCompressionOnQuota: true,
       onQuotaExceeded: function onQuotaExceeded() {
         var _readAllProjectsFromS2 = readAllProjectsFromStorage({
             forMutation: false
@@ -11187,12 +11191,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function deleteProject(name) {
     if (name === undefined) {
-      deleteFromStorage(getSafeLocalStorage(), PROJECT_STORAGE_KEY, "Error deleting project from localStorage:");
       var storagesToPrune = [getSafeLocalStorage()];
       if (typeof localStorage !== 'undefined' && storagesToPrune.indexOf(localStorage) === -1) {
         storagesToPrune.push(localStorage);
       }
       storagesToPrune.forEach(function (storage) {
+        if (storage && typeof storage.removeItem === 'function') {
+          try {
+            storage.removeItem(PROJECT_STORAGE_KEY);
+            var backupSuffix = typeof STORAGE_BACKUP_SUFFIX === 'string' ? STORAGE_BACKUP_SUFFIX : '__backup';
+            storage.removeItem("".concat(PROJECT_STORAGE_KEY).concat(backupSuffix));
+            storage.removeItem('cameraPowerPlanner_project__backup');
+          } catch (e) {
+            console.warn("[FactoryReset] Failed to force delete project keys", e);
+          }
+        }
+        deleteFromStorage(storage, PROJECT_STORAGE_KEY, "Error deleting project from storage:");
         if (storage && typeof storage.length === 'number') {
           var shardKeys = [];
           for (var i = 0; i < storage.length; i++) {
@@ -11202,7 +11216,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
           }
           shardKeys.forEach(function (key) {
-            return deleteFromStorage(storage, key, "Error deleting project shard from localStorage:");
+            return deleteFromStorage(storage, key, "Error deleting project shard from storage:");
           });
         }
       });
@@ -11761,7 +11775,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var normalized = normalizeContactsList(contacts);
     ensurePreWriteMigrationBackup(safeStorage, CONTACTS_STORAGE_KEY);
     saveJSONToStorage(safeStorage, CONTACTS_STORAGE_KEY, normalized, 'Error saving contacts to localStorage:', {
-      disableCompression: true
+      disableCompression: false,
+      forceCompressionOnQuota: true
     });
   }
   function normalizeOwnGearItem(entry) {
@@ -11816,7 +11831,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var normalized = items.map(normalizeOwnGearItem).filter(Boolean);
     ensurePreWriteMigrationBackup(safeStorage, OWN_GEAR_STORAGE_KEY);
     saveJSONToStorage(safeStorage, OWN_GEAR_STORAGE_KEY, normalized, 'Error saving own gear to localStorage:', {
-      disableCompression: true
+      disableCompression: false,
+      forceCompressionOnQuota: true
     });
   }
   function normalizeUserProfileField(value) {
@@ -11918,7 +11934,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     ensurePreWriteMigrationBackup(safeStorage, USER_PROFILE_STORAGE_KEY);
     saveJSONToStorage(safeStorage, USER_PROFILE_STORAGE_KEY, normalized, 'Error saving user profile to localStorage:', {
-      disableCompression: true,
+      disableCompression: false,
+      forceCompressionOnQuota: true,
       enableCompressionSweep: false
     });
   }
@@ -12009,7 +12026,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     ensurePreWriteMigrationBackup(safeStorage, FULL_BACKUP_HISTORY_STORAGE_KEY);
     saveJSONToStorage(safeStorage, FULL_BACKUP_HISTORY_STORAGE_KEY, safeEntries, "Error saving full backup history to localStorage:", {
-      disableCompression: true
+      disableCompression: false,
+      forceCompressionOnQuota: true
     });
   }
   var recordFullBackupHistoryEntry = function recordFullBackupHistoryEntry(entry) {

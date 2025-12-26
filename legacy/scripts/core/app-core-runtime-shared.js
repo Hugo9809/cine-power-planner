@@ -51,17 +51,26 @@ var RUNTIME_SHARED_BOOTSTRAP_LOADER_TOOLS = resolveCoreSupportModule('cineCoreAp
 var RUNTIME_SHARED_BOOTSTRAP_MANAGER_TOOLS = resolveCoreSupportModule('cineCoreAppRuntimeSharedBootstrapManager', './modules/app-core/runtime.js');
 var RUNTIME_SHARED_BOOTSTRAP_RESOLVER_TOOLS = resolveCoreSupportModule('cineCoreAppRuntimeSharedBootstrapResolver', './modules/app-core/runtime.js');
 var RUNTIME_SHARED_BOOTSTRAP_CONTEXT_TOOLS = resolveCoreSupportModule('cineCoreAppRuntimeSharedBootstrapContext', './modules/app-core/runtime.js');
+function getDefaultRuntimeScope() {
+  return typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' && CORE_PART1_RUNTIME_SCOPE ? CORE_PART1_RUNTIME_SCOPE : null;
+}
+function getDefaultCoreGlobalScope() {
+  return typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null;
+}
+var createInlineRuntimeSharedFallback = APP_CORE_BOOTSTRAP_TOOLS && APP_CORE_BOOTSTRAP_TOOLS.resolver && typeof APP_CORE_BOOTSTRAP_TOOLS.resolver.createInlineRuntimeSharedFallback === 'function' ? APP_CORE_BOOTSTRAP_TOOLS.resolver.createInlineRuntimeSharedFallback : function createInlineRuntimeSharedFallback() {
+  return null;
+};
 var runtimeSharedBootstrapResult = function resolveRuntimeSharedBootstrapResult() {
   var runtimeScope = getDefaultRuntimeScope();
   var coreGlobalScope = getDefaultCoreGlobalScope();
   var requireFn = typeof require === 'function' ? require : null;
   var currentRuntimeShared = typeof CORE_RUNTIME_SHARED !== 'undefined' && CORE_RUNTIME_SHARED ? CORE_RUNTIME_SHARED : null;
-  var fallbackScopes = collectBootstrapFallbackScopes({
+  var fallbackScopes = RUNTIME_SHARED_BOOTSTRAP_RESOLVER_TOOLS && typeof RUNTIME_SHARED_BOOTSTRAP_RESOLVER_TOOLS.collectBootstrapFallbackScopes === 'function' ? RUNTIME_SHARED_BOOTSTRAP_RESOLVER_TOOLS.collectBootstrapFallbackScopes({
     fallbackScopes: [],
     runtimeScope: runtimeScope,
     coreGlobalScope: coreGlobalScope
-  });
-  var bootstrapTools = RESOLVED_APP_CORE_BOOTSTRAP_TOOLS;
+  }) : [];
+  var bootstrapTools = APP_CORE_BOOTSTRAP_TOOLS;
   var moduleOptions = {
     bootstrapTools: bootstrapTools,
     bootstrapFallbackTools: APP_CORE_BOOTSTRAP_FALLBACK_TOOLS,
@@ -79,11 +88,14 @@ var runtimeSharedBootstrapResult = function resolveRuntimeSharedBootstrapResult(
     currentRuntimeShared: currentRuntimeShared,
     fallbackScopes: fallbackScopes,
     collectFallbackScopes: function collectFallbackScopes(scopes) {
-      return collectBootstrapFallbackScopes({
-        fallbackScopes: Array.isArray(scopes) ? scopes : [],
-        runtimeScope: runtimeScope,
-        coreGlobalScope: coreGlobalScope
-      });
+      if (RUNTIME_SHARED_BOOTSTRAP_RESOLVER_TOOLS && typeof RUNTIME_SHARED_BOOTSTRAP_RESOLVER_TOOLS.collectBootstrapFallbackScopes === 'function') {
+        return RUNTIME_SHARED_BOOTSTRAP_RESOLVER_TOOLS.collectBootstrapFallbackScopes({
+          fallbackScopes: Array.isArray(scopes) ? scopes : [],
+          runtimeScope: runtimeScope,
+          coreGlobalScope: coreGlobalScope
+        });
+      }
+      return [];
     },
     createInlineRuntimeSharedFallback: createInlineRuntimeSharedFallback,
     runtimeSharedBootstrapInlineRequirePath: null,
