@@ -338,13 +338,13 @@
 
     function generatePowerSummary() {
         // Extract values from main DOM
-        const totalWatt = document.getElementById('totalPower')?.textContent || '0 W';
-        const runtime = document.getElementById('batteryLife')?.textContent || '—';
-        const batteryCount = document.getElementById('batteryCount')?.textContent || '0';
+        const totalWatt = document.getElementById('heroTotalDraw')?.textContent || document.getElementById('totalPower')?.textContent || '0 W';
+        const runtime = document.getElementById('heroRuntime')?.textContent || document.getElementById('batteryLife')?.textContent || '—';
+        const batteryCount = document.getElementById('heroBatteryCount')?.textContent || document.getElementById('batteryCount')?.textContent || '0';
 
         // Try to get more details if available
         const batteryName = document.getElementById('batterySelect')?.selectedOptions[0]?.text || 'Battery';
-        const peakLoad = document.getElementById('totalCurrent144Elem')?.textContent || ''; // Approximation
+        const peakLoad = document.getElementById('heroCurrent144')?.textContent || document.getElementById('totalCurrent144Elem')?.textContent || ''; // Approximation
 
         return `
             <div style="display: flex; gap: 15px;">

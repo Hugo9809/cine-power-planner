@@ -12434,6 +12434,9 @@ function gearListGenerateHtmlImpl(info = {}) {
   };
   const categoryGroups = [];
   const addRow = (cat, items) => {
+    if (!items || !String(items).trim()) {
+      return;
+    }
     const rawLabel = typeof cat === 'string' ? cat : String(cat ?? '');
     const categoryLabel = rawLabel.trim() || String(cat ?? '');
     const categoryKey = createCustomCategoryKey(categoryLabel);
@@ -12446,7 +12449,7 @@ function gearListGenerateHtmlImpl(info = {}) {
       : '';
     const buttonContent = addIcon || escapeHtml('+');
     const addButtonHtml = `<button type="button" class="gear-custom-add-btn" data-gear-custom-add="${escapeHtml(categoryKey)}" data-gear-custom-category="${safeLabel}" aria-label="${escapeHtml(addAria)}" title="${escapeHtml(addLabel)}">${buttonContent}</button>`;
-    const standardItemsHtml = items ? `<div class="gear-standard-items">${items}</div>` : '';
+    const standardItemsHtml = `<div class="gear-standard-items">${items}</div>`;
     const customSectionHtml = `<div class="gear-custom-section" data-gear-custom-key="${escapeHtml(categoryKey)}" data-gear-custom-category="${safeLabel}"><div class="gear-custom-items" data-gear-custom-list="${escapeHtml(categoryKey)}" data-gear-custom-category="${safeLabel}" aria-live="polite"></div></div>`;
     const rowContent = `${standardItemsHtml}${customSectionHtml}`;
     categoryGroups.push(
@@ -12478,7 +12481,7 @@ function gearListGenerateHtmlImpl(info = {}) {
     const hiddenLabelHtml = cageLabelText
       ? `<span class="visually-hidden">${escapeHtml(cageLabelText)}</span>`
       : '';
-    const wrapperHtml = `<span class="cage-select-wrapper"><span>1x</span>${hiddenLabelHtml}<select id="gearListCage"${ariaLabelAttr}>${options}</select></span>`;
+    const wrapperHtml = `<span class="cage-select-wrapper"><span>1x</span><select id="gearListCage"${ariaLabelAttr}>${options}</select></span>`;
     const attributesText = selectedNames.cage ? selectedNames.cage.trim() : '';
     const dataName = cageLabelText;
     const cageExtraAttributes = selectedNames.cage && hasCameraForLinking
@@ -12488,7 +12491,7 @@ function gearListGenerateHtmlImpl(info = {}) {
       name: dataName,
       quantity: 1,
       label: cageLabelText,
-      attributes: attributesText,
+      attributes: '',
       extraAttributes: cageExtraAttributes,
     });
   }
@@ -13426,7 +13429,15 @@ function gearListGenerateHtmlImpl(info = {}) {
   addRow('Chargers', formatItems(chargersAcc));
   addRow('Monitoring', monitoringItems);
   ensureItems(monitoringSupportAcc, 'accessories.monitoringSupport');
-  const monitoringSupportHardware = formatItems(monitoringSupportAcc);
+  const monitoringSupportHardware = formatItems(monitoringSupportAcc.filter(item => {
+    if (typeof item !== 'string') return true;
+    // Filter out plain text items that duplicate smart selector items
+    if (item.startsWith('Monitoring Battery ')) return false;
+    // Filter out plain text Monitor items that duplicate smart selector items
+    // (matches "Director Handheld Monitor", "Focus Monitor", etc.)
+    if (item.endsWith('Monitor')) return false;
+    return true;
+  }));
   const monitoringSupportItems = monitoringSupportHardware;
   addRow('Monitoring support', monitoringSupportItems);
   const cartDatabase = devices && typeof devices === 'object' && devices.carts && typeof devices.carts === 'object'

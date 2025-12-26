@@ -1231,8 +1231,7 @@
       };
     }
 
-    function createPinkModePreferenceController(options) {
-      const controllerOptions = options && typeof options === 'object' ? options : {};
+    function createPinkModePreferenceController() {
       const controls = [];
       let applying = false;
       let currentPreference = isPinkModeActive();

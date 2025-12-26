@@ -17788,6 +17788,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
 
       const options = Array.from(cageSelect.options || []);
+
+      const arriCageName = Object.entries(compatibleCages).find(([name, data]) => {
+        return data && (
+          (data.brand && typeof data.brand === 'string' && data.brand.toUpperCase() === 'ARRI') ||
+          (typeof name === 'string' && name.toLowerCase().includes('arri'))
+        );
+      })?.[0];
+
+      if (arriCageName) {
+        applyCageSelectValue(arriCageName);
+        return;
+      }
+
       const noneOption = options.find(opt => opt.value === 'None');
       if (desiredValue === 'None' && noneOption) {
         applyCageSelectValue('None');
