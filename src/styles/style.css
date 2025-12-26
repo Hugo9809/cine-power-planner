@@ -7377,6 +7377,7 @@ textarea:disabled {
 
 .onboarding-overlay::backdrop {
   background: transparent;
+  pointer-events: none;
 }
 
 .onboarding-overlay--anchored {

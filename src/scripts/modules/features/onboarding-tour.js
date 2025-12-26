@@ -317,6 +317,11 @@
       return;
     }
 
+    // Safari: Ensure pointer-events is always set to none to prevent click blocking
+    if (overlayRoot.style) {
+      overlayRoot.style.pointerEvents = 'none';
+    }
+
     if (supportsDialogTopLayer && isDialogElement(overlayRoot) && typeof overlayRoot.show === 'function') {
       try {
         if (overlayRoot.open && typeof overlayRoot.close === 'function') {
@@ -327,6 +332,10 @@
       }
       try {
         overlayRoot.show();
+        // Re-apply after show() in case Safari resets it
+        if (overlayRoot.style) {
+          overlayRoot.style.pointerEvents = 'none';
+        }
       } catch (showError) {
         safeWarn('cine.features.onboardingTour could not refresh overlay top layer.', showError);
       }
@@ -3375,6 +3384,9 @@
     overlayRoot.id = OVERLAY_ID;
     overlayRoot.className = 'onboarding-overlay';
     overlayRoot.setAttribute('aria-hidden', 'true');
+    // Safari's dialog top layer can block pointer events even with CSS
+    // pointer-events:none. Adding inline style ensures clicks pass through.
+    overlayRoot.style.pointerEvents = 'none';
     clearScrollState();
 
     highlightEl = DOCUMENT.createElement('div');
@@ -8015,6 +8027,10 @@
       bringOverlayToTopLayer();
       overlayRoot.classList.add('active');
       overlayRoot.setAttribute('aria-hidden', 'false');
+      // Safari: Aggressively ensure clicks pass through overlay
+      if (overlayRoot.style) {
+        overlayRoot.style.pointerEvents = 'none';
+      }
     }
 
     active = true;
