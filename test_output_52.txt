@@ -1,0 +1,371 @@
+
+> cine-power-planner@1.0.47 test
+> npm run check:pink-mode-icons && npm run build:auto-gear && npm run lint && npm run check-consistency && npm run test:jest tests/dom/projectAutosave.test.js
+
+
+> cine-power-planner@1.0.47 check:pink-mode-icons
+> node tools/generatePinkModeAnimatedIcons.js --check
+
+Pink mode animated icon store is up to date.
+
+> cine-power-planner@1.0.47 build:auto-gear
+> tsc -p tsconfig.auto-gear.json
+
+
+> cine-power-planner@1.0.47 lint
+> eslint .
+
+
+> cine-power-planner@1.0.47 check-consistency
+> node tools/checkConsistency.js
+
+All devices have required fields.
+Service worker asset manifest is up to date.
+
+> cine-power-planner@1.0.47 test:jest
+> node --max-old-space-size=3072 ./node_modules/jest/bin/jest.js --runInBand tests/dom/projectAutosave.test.js
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at log (src/scripts/shims/legacy-globals-shim.js:166:13)
+
+  console.log
+    script.js: Applying Object.freeze override shim
+
+      at Object.log (src/scripts/script.js:134:13)
+
+  console.log
+    script.js: Executing wrapper with 67 parts
+
+      at Object.log (src/scripts/script.js:172:11)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Object.log (src/scripts/script.js:173:11)
+
+  console.log
+    mount-voltage.js: refreshTotalCurrentLabels defined
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    mount-voltage.js: Execution complete
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    Legacy shims initialized (Extended)
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    DEBUG: loadRuntime failed (expected during bisection): ReferenceError: resolveCoreSupportModule is not defined
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:75113:34
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:192:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at Object.loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:20:7)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    DEBUG: JSDOM click working after loadRuntime
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    script.js: Executing wrapper with 67 parts
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    mount-voltage.js: refreshTotalCurrentLabels defined
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    mount-voltage.js: Execution complete
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    Legacy shims initialized (Extended)
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    script.js: Executing wrapper with 67 parts
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    mount-voltage.js: refreshTotalCurrentLabels defined
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    mount-voltage.js: Execution complete
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    Legacy shims initialized (Extended)
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    script.js: Executing wrapper with 67 parts
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    mount-voltage.js: refreshTotalCurrentLabels defined
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    mount-voltage.js: Execution complete
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    Legacy shims initialized (Extended)
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    script.js: Executing wrapper with 67 parts
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    mount-voltage.js: refreshTotalCurrentLabels defined
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    mount-voltage.js: Execution complete
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    Legacy shims initialized (Extended)
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    script.js: Executing wrapper with 67 parts
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    mount-voltage.js: refreshTotalCurrentLabels defined
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    mount-voltage.js: Execution complete
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    Legacy shims initialized (Extended)
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    script.js: Executing wrapper with 67 parts
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    mount-voltage.js: refreshTotalCurrentLabels defined
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    mount-voltage.js: Execution complete
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+  console.log
+    Legacy shims initialized (Extended)
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:261:16)
+
+FAIL dom tests/dom/projectAutosave.test.js
+  project autosave
+    ✓ sanity check jsdom behavior (272 ms)
+    ✕ persists project data to localStorage when form changes (246 ms)
+    ✕ autosaves partially filled crew entries (146 ms)
+    ✕ saves pending project edits when switching setups without waiting for autosave timer (150 ms)
+    ✕ does not overwrite other project requirements when typing a different project name (141 ms)
+    ✕ blank project entries remain empty when editing another project (170 ms)
+    ✕ switching to a new setup keeps previously saved requirements intact (303 ms)
+
+  ● project autosave › persists project data to localStorage when form changes
+
+    ReferenceError: resolveCoreSupportModule is not defined
+
+
+
+      at src/scripts/script.js:75099:34
+      at Object.call (src/scripts/script.js:192:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:38:17)
+
+  ● project autosave › autosaves partially filled crew entries
+
+    ReferenceError: resolveCoreSupportModule is not defined
+
+
+
+      at src/scripts/script.js:75099:34
+      at Object.call (src/scripts/script.js:192:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:99:17)
+
+  ● project autosave › saves pending project edits when switching setups without waiting for autosave timer
+
+    ReferenceError: resolveCoreSupportModule is not defined
+
+
+
+      at src/scripts/script.js:75099:34
+      at Object.call (src/scripts/script.js:192:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:154:17)
+
+  ● project autosave › does not overwrite other project requirements when typing a different project name
+
+    ReferenceError: resolveCoreSupportModule is not defined
+
+
+
+      at src/scripts/script.js:75099:34
+      at Object.call (src/scripts/script.js:192:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:241:17)
+
+  ● project autosave › blank project entries remain empty when editing another project
+
+    ReferenceError: resolveCoreSupportModule is not defined
+
+
+
+      at src/scripts/script.js:75099:34
+      at Object.call (src/scripts/script.js:192:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:315:17)
+
+  ● project autosave › switching to a new setup keeps previously saved requirements intact
+
+    ReferenceError: resolveCoreSupportModule is not defined
+
+
+
+      at src/scripts/script.js:75099:34
+      at Object.call (src/scripts/script.js:192:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:378:17)
+
+Test Suites: 1 failed, 1 total
+Tests:       6 failed, 1 passed, 7 total
+Snapshots:   0 total
+Time:        1.867 s, estimated 2 s
+Ran all test suites matching tests/dom/projectAutosave.test.js.
+Test Suites: 1 failed, 1 total
+Tests:       6 failed, 1 passed, 7 total
+Snapshots:   0 total
+Time:        1.868 s, estimated 2 s
+Ran all test suites matching tests/dom/projectAutosave.test.js.

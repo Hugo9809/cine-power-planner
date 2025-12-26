@@ -6031,6 +6031,7 @@ var localParseBatteryCurrentLimit = value => {
 };
 
 function updateBatteryOptions() {
+  if (!batterySelect || !hotswapSelect || !cameraSelect) return;
   const current = batterySelect.value;
   const currentSwap = hotswapSelect.value;
   const plate = getSelectedPlate();
@@ -11567,6 +11568,8 @@ const tripodSpreaderLabel = document.getElementById("tripodSpreaderLabel");
 const projectSubmitBtn = document.getElementById("projectSubmit");
 var crewContainer = document.getElementById("crewContainer");
 const addPersonBtn = document.getElementById("addPersonBtn");
+console.log('DEBUG: addPersonBtn found:', !!addPersonBtn);
+console.log('DEBUG: crewContainer found:', !!crewContainer);
 var prepContainer = document.getElementById("prepContainer");
 const addPrepBtn = document.getElementById("addPrepBtn");
 var shootContainer = document.getElementById("shootContainer");
@@ -13902,6 +13905,7 @@ function initializeContactsModule() {
 }
 
 function createCrewRow(data = {}) {
+  console.log('DEBUG: createCrewRow called', { crewContainer: !!crewContainer });
   if (!crewContainer) return;
   const row = document.createElement('div');
   row.className = 'person-row';
@@ -14792,7 +14796,11 @@ function updateStorageRequirementTranslations(projectFormTexts, fallbackProjectF
 }
 
 if (addPersonBtn) {
-  addPersonBtn.addEventListener('click', () => createCrewRow());
+  console.log('DEBUG: Attaching click listener to addPersonBtn');
+  addPersonBtn.addEventListener('click', () => {
+    console.log('DEBUG: addPersonBtn clicked');
+    createCrewRow();
+  });
 }
 if (addPrepBtn) {
   addPrepBtn.addEventListener('click', () => createPrepRow());

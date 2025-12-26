@@ -15477,6 +15477,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     function setVideoOutputs(list) {
+      if (!videoOutputsContainer) return;
       videoOutputsContainer.innerHTML = '';
       const filtered = filterNoneEntries(list);
       if (filtered.length) {
@@ -15540,6 +15541,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     function setMonitorVideoInputs(list) {
+      if (!monitorVideoInputsContainer) return;
       monitorVideoInputsContainer.innerHTML = '';
       const filtered = filterNoneEntries(list, 'type');
       if (filtered.length) {
@@ -15603,6 +15605,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     function setMonitorVideoOutputs(list) {
+      if (!monitorVideoOutputsContainer) return;
       monitorVideoOutputsContainer.innerHTML = '';
       const filtered = filterNoneEntries(list, 'type');
       if (filtered.length) {

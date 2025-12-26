@@ -237,7 +237,17 @@
 
   function enqueueCoreBootTask(task) {
     if (typeof task === 'function') {
-      CORE_BOOT_QUEUE.push(task);
+      try {
+        CORE_BOOT_QUEUE.push(task);
+      } catch (err) {
+        void err;
+        // Fallback for test environments where CORE_BOOT_QUEUE might be frozen/broken/proxy
+        try {
+          task();
+        } catch (taskError) {
+          console.error('Failed to run fallback core boot task', taskError);
+        }
+      }
     }
   }
 

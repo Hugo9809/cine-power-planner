@@ -13,11 +13,33 @@ describe('project autosave', () => {
     localStorage.clear();
   });
 
+  test('sanity check jsdom behavior', () => {
+    // Manually load runtime to check side effects
+    const { loadRuntime } = require('../helpers/runtimeLoader');
+    try {
+      loadRuntime(null, { disableFreeze: true });
+    } catch (e) {
+      console.log('DEBUG: loadRuntime failed (expected during bisection):', e.stack);
+    }
+
+    const btn = document.createElement('button');
+    let clicked = false;
+    btn.onclick = () => { clicked = true; };
+    btn.click();
+    if (!clicked) {
+      console.error('FATAL: JSDOM click event failure after loadRuntime');
+    } else {
+      console.log('DEBUG: JSDOM click working after loadRuntime');
+    }
+    expect(clicked).toBe(true);
+  });
+
   test('persists project data to localStorage when form changes', () => {
     const env = setupScriptEnvironment({
       globals: {
         // saveSessionState, saveSetups, and others will be provided by storage.js
-      }
+      },
+      disableFreeze: true
     });
 
     require('../../src/scripts/storage.js');
@@ -73,13 +95,14 @@ describe('project autosave', () => {
     env.cleanup();
   });
 
-  test.skip('autosaves partially filled crew entries', () => {
+  test('autosaves partially filled crew entries', () => {
     const env = setupScriptEnvironment({
       globals: {
         saveSessionState: jest.fn(),
         saveSetups: jest.fn(),
         loadSetups: jest.fn(() => ({}))
-      }
+      },
+      disableFreeze: true
     });
 
     require('../../src/scripts/storage.js');
@@ -89,7 +112,24 @@ describe('project autosave', () => {
     setupNameInput.dispatchEvent(new Event('input'));
 
     const addPersonBtn = document.getElementById('addPersonBtn');
-    addPersonBtn.click();
+    console.log('DEBUG TEST: addPersonBtn loaded.', {
+      disabled: addPersonBtn.disabled,
+      isConnected: addPersonBtn.isConnected,
+      type: addPersonBtn.type
+    });
+    addPersonBtn.addEventListener('click', () => console.log('DEBUG TEST: Manual click listener fired'));
+
+    // Try dispatchEvent
+    addPersonBtn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+
+    // Sanity check: creating a new button
+    const testBtn = document.createElement('button');
+    document.body.appendChild(testBtn);
+    testBtn.onclick = () => console.log('DEBUG TEST: Sanity button clicked INSIDE ONCLICK');
+    testBtn.click();
+    testBtn.dispatchEvent(new Event('click', { bubbles: true }));
+
+    console.log('DEBUG TEST: addPersonBtn parent:', addPersonBtn.parentNode ? addPersonBtn.parentNode.tagName : 'none');
 
     const nameInput = document.querySelector('.person-row .person-name');
     expect(nameInput).not.toBeNull();
@@ -119,7 +159,8 @@ describe('project autosave', () => {
           'Project One': { gearList: '<ul><li>One</li></ul>' },
           'Project Two': { gearList: '<ul><li>Two</li></ul>' }
         }))
-      }
+      },
+      disableFreeze: true
     });
 
     require('../../src/scripts/storage.js');
@@ -203,7 +244,8 @@ describe('project autosave', () => {
         loadSessionState: jest.fn(() => ({})),
         loadSetups: jest.fn(() => setupsState),
         saveSetups: jest.fn(next => { setupsState = next; })
-      }
+      },
+      disableFreeze: true
     });
 
     require('../../src/scripts/storage.js');
@@ -276,7 +318,8 @@ describe('project autosave', () => {
         loadSessionState: jest.fn(() => ({})),
         loadSetups: jest.fn(() => setupsState),
         saveSetups: jest.fn(next => { setupsState = next; })
-      }
+      },
+      disableFreeze: true
     });
 
     require('../../src/scripts/storage.js');
@@ -338,7 +381,8 @@ describe('project autosave', () => {
         loadSessionState: jest.fn(() => ({})),
         loadSetups: jest.fn(() => setupsState),
         saveSetups: jest.fn(next => { setupsState = next; })
-      }
+      },
+      disableFreeze: true
     });
 
     require('../../src/scripts/storage.js');

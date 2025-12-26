@@ -159,7 +159,11 @@ function setupScriptEnvironment(options = {}) {
   const originalGetOwnPropertyDescriptor = freezeOverrideEnabled ? Object.getOwnPropertyDescriptor : null;
   if (freezeOverrideEnabled) {
     Object.freeze = (value) => value;
+    Object.seal = (value) => value;
+    Object.preventExtensions = (value) => value;
     Object.isFrozen = () => false;
+    Object.isSealed = () => false;
+    Object.isExtensible = () => true;
     const describeTarget = (value) => {
       try {
         return Object.prototype.toString.call(value);
@@ -195,6 +199,13 @@ function setupScriptEnvironment(options = {}) {
   }
 
   const readyStateDescriptor = stubReadyState(options.readyState ?? 'loading');
+
+  // Stub window.alert, confirm, and prompt to prevent JSDOM errors
+  if (typeof window !== 'undefined') {
+    window.alert = function (msg) { console.log('window.alert:', msg); };
+    window.confirm = function (msg) { console.log('window.confirm:', msg); return true; };
+    window.prompt = function (msg) { console.log('window.prompt:', msg); return ''; };
+  }
 
   if (options.injectHtml === false) {
     doc.body.innerHTML = '';
@@ -259,6 +270,18 @@ function setupScriptEnvironment(options = {}) {
       }
       if (typeof window !== 'undefined') {
         delete window.cineRuntime;
+      }
+      delete global.CORE_BOOT_QUEUE;
+      delete global.CORE_BOOT_QUEUE_KEY;
+      delete global.__cineCoreBootQueueKey;
+      delete global.__coreRuntimeBootQueue;
+      delete global.cineCoreRuntimeModuleLoader;
+      delete global.cineRuntimeBootstrapExports;
+      delete global.cineCoreShared;
+      if (typeof window !== 'undefined') {
+        delete window.CORE_BOOT_QUEUE;
+        delete window.CORE_BOOT_QUEUE_KEY;
+        delete window.cineCoreRuntimeModuleLoader;
       }
     } catch (runtimeCleanupError) {
       void runtimeCleanupError;

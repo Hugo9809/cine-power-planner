@@ -2971,6 +2971,85 @@ Service worker asset manifest is up to date.
       at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:77:17)
 
   console.log
+    DEBUG TEST: addPersonBtn loaded. { disabled: false, isConnected: true, type: 'button' }
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1550:28)
+
+  console.log
+    DEBUG TEST: pointerEvents: auto
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1550:28)
+
+  console.log
+    DEBUG TEST: addEventListener is: addEventListener(type, callback) {
+          const esValue = this !== null && this !== undefined ? this : globalObject;
+          if (!exports.is(esValue)) {
+            throw new globalObject.TypeError(
+              "'addEventListener' called on an object that is not a valid instance of EventTarget."
+            );
+          }
+    
+          if (arguments.length < 2) {
+            throw new globalObject.TypeError(
+              `Failed to execute 'addEventListener' on 'EventTarget': 2 arguments required, but only ${arguments.length} present.`
+            );
+          }
+          const args = [];
+          {
+            let curArg = arguments[0];
+            curArg = conversions["DOMString"](curArg, {
+              context: "Failed to execute 'addEventListener' on 'EventTarget': parameter 1",
+              globals: globalObject
+            });
+            args.push(curArg);
+          }
+          {
+            let curArg = arguments[1];
+            if (curArg === null || curArg === undefined) {
+              curArg = null;
+            } else {
+              curArg = EventListener.convert(globalObject, curArg, {
+                context: "Failed to execute 'addEventListener' on 'EventTarget': parameter 2"
+              });
+            }
+            args.push(curArg);
+          }
+          {
+            let curArg = arguments[2];
+            if (curArg !== undefined) {
+              if (curArg === null || curArg === undefined) {
+                curArg = AddEventListenerOptions.convert(globalObject, curArg, {
+                  context: "Failed to execute 'addEventListener' on 'EventTarget': parameter 3"
+                });
+              } else if (utils.isObject(curArg)) {
+                curArg = AddEventListenerOptions.convert(globalObject, curArg, {
+                  context: "Failed to execute 'addEventListener' on 'EventTarget': parameter 3" + " dictionary"
+                });
+              } else if (typeof curArg === "boolean") {
+                curArg = conversions["boolean"](curArg, {
+                  context: "Failed to execute 'addEventListener' on 'EventTarget': parameter 3",
+                  globals: globalObject
+                });
+              } else {
+                curArg = conversions["boolean"](curArg, {
+                  context: "Failed to execute 'addEventListener' on 'EventTarget': parameter 3",
+                  globals: globalObject
+                });
+              }
+            }
+            args.push(curArg);
+          }
+          return esValue[implSymbol].addEventListener(...args);
+        }
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1550:28)
+
+  console.log
+    DEBUG TEST: addPersonBtn parent: DIV
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1550:28)
+
+  console.log
     script.js: Executing wrapper with 64 parts
 
       at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1550:28)
@@ -3042,7 +3121,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:114:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:146:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -3083,7 +3162,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:114:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:146:17)
 
   console.warn
     cineModuleSystem: Unable to register module "cineModuleContext". Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -3102,7 +3181,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:114:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:146:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -3144,7 +3223,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:114:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:146:17)
 
   console.warn
     cineModuleSystem: Unable to register module "cineModuleContext". Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -3163,7 +3242,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:114:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:146:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -3205,7 +3284,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:114:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:146:17)
 
   console.warn
     cineModuleSystem: Unable to register module "cineModuleContext". Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -3224,7 +3303,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:114:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:146:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -3264,7 +3343,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:114:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:146:17)
 
   console.warn
     cineModuleContext: Module base failed to register module. Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -3284,7 +3363,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:114:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:146:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -3327,7 +3406,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:114:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:146:17)
 
   console.warn
     cineModuleContext: Registry registration failed. Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -3345,7 +3424,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:114:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:146:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -3385,7 +3464,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:114:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:146:17)
 
   console.log
     script.js: Finished part: modules/context.js
@@ -3949,7 +4028,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:114:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:146:17)
 
   console.log
     DEBUG: addPersonBtn found: true
@@ -4034,7 +4113,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:114:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:146:17)
 
   console.log
     script.js: Finished part: core/app-core-new-2.js
@@ -4088,7 +4167,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:114:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:146:17)
 
   console.warn
     cineUi help "saveSetup" was replaced. Using the latest registration.
@@ -4123,7 +4202,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:114:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:146:17)
 
   console.warn
     cineUi help "saveSetup" was replaced. Using the latest registration.
@@ -4158,7 +4237,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:114:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:146:17)
 
   console.warn
     cineUi help "saveSetup" was replaced. Using the latest registration.
@@ -4191,7 +4270,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:114:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:146:17)
 
   console.warn
     cineUi help "autoBackupBeforeDeletion" was replaced. Using the latest registration.
@@ -4225,7 +4304,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:114:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:146:17)
 
   console.warn
     cineUi help "autoBackupBeforeDeletion" was replaced. Using the latest registration.
@@ -4260,7 +4339,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:114:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:146:17)
 
   console.warn
     cineUi help "autoBackupBeforeDeletion" was replaced. Using the latest registration.
@@ -4295,7 +4374,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:114:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:146:17)
 
   console.warn
     cineUi help "autoBackupBeforeDeletion" was replaced. Using the latest registration.
@@ -4328,7 +4407,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:114:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:146:17)
 
   console.log
     script.js: Finished part: core/app-events.js
@@ -4397,7 +4476,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:114:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:146:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -4440,7 +4519,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:114:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:146:17)
 
   console.warn
     cineModuleSystem: Unable to register module "cineModuleContext". Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -4464,7 +4543,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:114:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:146:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -4508,7 +4587,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:114:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:146:17)
 
   console.warn
     cineModuleSystem: Unable to register module "cineModuleContext". Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -4532,7 +4611,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:114:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:146:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -4576,7 +4655,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:114:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:146:17)
 
   console.warn
     cineModuleSystem: Unable to register module "cineModuleContext". Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -4600,7 +4679,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:114:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:146:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -4642,7 +4721,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:114:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:146:17)
 
   console.warn
     cineModuleContext: Module base failed to register module. Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -4667,7 +4746,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:114:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:146:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -4712,7 +4791,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:114:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:146:17)
 
   console.warn
     cineModuleContext: Registry registration failed. Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -4735,7 +4814,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:114:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:146:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -4777,7 +4856,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:114:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:146:17)
 
   console.log
     script.js: Executing wrapper with 64 parts
@@ -4851,7 +4930,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:200:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:232:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -4894,7 +4973,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:200:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:232:17)
 
   console.warn
     cineModuleSystem: Unable to register module "cineModuleContext". Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -4913,7 +4992,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:200:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:232:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -4957,7 +5036,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:200:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:232:17)
 
   console.warn
     cineModuleSystem: Unable to register module "cineModuleContext". Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -4976,7 +5055,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:200:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:232:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -5020,7 +5099,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:200:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:232:17)
 
   console.warn
     cineModuleSystem: Unable to register module "cineModuleContext". Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -5039,7 +5118,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:200:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:232:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -5081,7 +5160,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:200:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:232:17)
 
   console.warn
     cineModuleContext: Module base failed to register module. Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -5101,7 +5180,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:200:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:232:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -5146,7 +5225,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:200:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:232:17)
 
   console.warn
     cineModuleContext: Registry registration failed. Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -5164,7 +5243,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:200:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:232:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -5206,7 +5285,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:200:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:232:17)
 
   console.log
     script.js: Finished part: modules/context.js
@@ -5772,7 +5851,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:200:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:232:17)
 
   console.log
     DEBUG: addPersonBtn found: true
@@ -5859,7 +5938,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:200:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:232:17)
 
   console.log
     script.js: Finished part: core/app-core-new-2.js
@@ -5915,7 +5994,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:200:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:232:17)
 
   console.warn
     cineUi help "saveSetup" was replaced. Using the latest registration.
@@ -5952,7 +6031,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:200:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:232:17)
 
   console.warn
     cineUi help "saveSetup" was replaced. Using the latest registration.
@@ -5989,7 +6068,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:200:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:232:17)
 
   console.warn
     cineUi help "saveSetup" was replaced. Using the latest registration.
@@ -6024,7 +6103,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:200:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:232:17)
 
   console.warn
     cineUi help "autoBackupBeforeDeletion" was replaced. Using the latest registration.
@@ -6060,7 +6139,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:200:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:232:17)
 
   console.warn
     cineUi help "autoBackupBeforeDeletion" was replaced. Using the latest registration.
@@ -6097,7 +6176,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:200:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:232:17)
 
   console.warn
     cineUi help "autoBackupBeforeDeletion" was replaced. Using the latest registration.
@@ -6134,7 +6213,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:200:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:232:17)
 
   console.warn
     cineUi help "autoBackupBeforeDeletion" was replaced. Using the latest registration.
@@ -6169,7 +6248,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:200:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:232:17)
 
   console.log
     script.js: Finished part: core/app-events.js
@@ -6238,7 +6317,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:200:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:232:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -6283,7 +6362,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:200:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:232:17)
 
   console.warn
     cineModuleSystem: Unable to register module "cineModuleContext". Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -6307,7 +6386,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:200:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:232:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -6353,7 +6432,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:200:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:232:17)
 
   console.warn
     cineModuleSystem: Unable to register module "cineModuleContext". Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -6377,7 +6456,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:200:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:232:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -6423,7 +6502,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:200:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:232:17)
 
   console.warn
     cineModuleSystem: Unable to register module "cineModuleContext". Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -6447,7 +6526,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:200:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:232:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -6491,7 +6570,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:200:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:232:17)
 
   console.warn
     cineModuleContext: Module base failed to register module. Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -6516,7 +6595,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:200:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:232:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -6563,7 +6642,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:200:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:232:17)
 
   console.warn
     cineModuleContext: Registry registration failed. Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -6586,7 +6665,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:200:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:232:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -6630,7 +6709,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:200:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:232:17)
 
   console.log
     script.js: Executing wrapper with 64 parts
@@ -6704,7 +6783,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:273:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:305:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -6749,7 +6828,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:273:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:305:17)
 
   console.warn
     cineModuleSystem: Unable to register module "cineModuleContext". Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -6768,7 +6847,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:273:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:305:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -6814,7 +6893,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:273:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:305:17)
 
   console.warn
     cineModuleSystem: Unable to register module "cineModuleContext". Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -6833,7 +6912,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:273:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:305:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -6879,7 +6958,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:273:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:305:17)
 
   console.warn
     cineModuleSystem: Unable to register module "cineModuleContext". Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -6898,7 +6977,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:273:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:305:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -6942,7 +7021,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:273:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:305:17)
 
   console.warn
     cineModuleContext: Module base failed to register module. Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -6962,7 +7041,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:273:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:305:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -7009,7 +7088,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:273:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:305:17)
 
   console.warn
     cineModuleContext: Registry registration failed. Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -7027,7 +7106,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:273:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:305:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -7071,7 +7150,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:273:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:305:17)
 
   console.log
     script.js: Finished part: modules/context.js
@@ -7639,7 +7718,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:273:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:305:17)
 
   console.log
     DEBUG: addPersonBtn found: true
@@ -7728,7 +7807,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:273:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:305:17)
 
   console.log
     script.js: Finished part: core/app-core-new-2.js
@@ -7786,7 +7865,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:273:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:305:17)
 
   console.warn
     cineUi help "saveSetup" was replaced. Using the latest registration.
@@ -7825,7 +7904,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:273:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:305:17)
 
   console.warn
     cineUi help "saveSetup" was replaced. Using the latest registration.
@@ -7864,7 +7943,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:273:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:305:17)
 
   console.warn
     cineUi help "saveSetup" was replaced. Using the latest registration.
@@ -7901,7 +7980,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:273:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:305:17)
 
   console.warn
     cineUi help "autoBackupBeforeDeletion" was replaced. Using the latest registration.
@@ -7939,7 +8018,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:273:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:305:17)
 
   console.warn
     cineUi help "autoBackupBeforeDeletion" was replaced. Using the latest registration.
@@ -7978,7 +8057,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:273:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:305:17)
 
   console.warn
     cineUi help "autoBackupBeforeDeletion" was replaced. Using the latest registration.
@@ -8017,7 +8096,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:273:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:305:17)
 
   console.warn
     cineUi help "autoBackupBeforeDeletion" was replaced. Using the latest registration.
@@ -8054,7 +8133,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:273:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:305:17)
 
   console.log
     script.js: Finished part: core/app-events.js
@@ -8123,7 +8202,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:273:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:305:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -8170,7 +8249,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:273:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:305:17)
 
   console.warn
     cineModuleSystem: Unable to register module "cineModuleContext". Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -8194,7 +8273,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:273:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:305:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -8242,7 +8321,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:273:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:305:17)
 
   console.warn
     cineModuleSystem: Unable to register module "cineModuleContext". Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -8266,7 +8345,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:273:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:305:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -8314,7 +8393,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:273:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:305:17)
 
   console.warn
     cineModuleSystem: Unable to register module "cineModuleContext". Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -8338,7 +8417,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:273:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:305:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -8384,7 +8463,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:273:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:305:17)
 
   console.warn
     cineModuleContext: Module base failed to register module. Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -8409,7 +8488,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:273:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:305:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -8458,7 +8537,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:273:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:305:17)
 
   console.warn
     cineModuleContext: Registry registration failed. Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -8481,7 +8560,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:273:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:305:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -8527,7 +8606,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:273:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:305:17)
 
   console.log
     script.js: Executing wrapper with 64 parts
@@ -8601,7 +8680,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:335:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:367:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -8648,7 +8727,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:335:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:367:17)
 
   console.warn
     cineModuleSystem: Unable to register module "cineModuleContext". Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -8667,7 +8746,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:335:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:367:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -8715,7 +8794,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:335:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:367:17)
 
   console.warn
     cineModuleSystem: Unable to register module "cineModuleContext". Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -8734,7 +8813,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:335:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:367:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -8782,7 +8861,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:335:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:367:17)
 
   console.warn
     cineModuleSystem: Unable to register module "cineModuleContext". Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -8801,7 +8880,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:335:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:367:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -8847,7 +8926,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:335:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:367:17)
 
   console.warn
     cineModuleContext: Module base failed to register module. Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -8867,7 +8946,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:335:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:367:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -8916,7 +8995,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:335:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:367:17)
 
   console.warn
     cineModuleContext: Registry registration failed. Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -8934,7 +9013,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:335:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:367:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -8980,7 +9059,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:335:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:367:17)
 
   console.log
     script.js: Finished part: modules/context.js
@@ -9550,7 +9629,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:335:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:367:17)
 
   console.log
     DEBUG: addPersonBtn found: true
@@ -9641,7 +9720,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:335:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:367:17)
 
   console.log
     script.js: Finished part: core/app-core-new-2.js
@@ -9701,7 +9780,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:335:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:367:17)
 
   console.warn
     cineUi help "saveSetup" was replaced. Using the latest registration.
@@ -9742,7 +9821,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:335:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:367:17)
 
   console.warn
     cineUi help "saveSetup" was replaced. Using the latest registration.
@@ -9783,7 +9862,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:335:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:367:17)
 
   console.warn
     cineUi help "saveSetup" was replaced. Using the latest registration.
@@ -9822,7 +9901,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:335:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:367:17)
 
   console.warn
     cineUi help "autoBackupBeforeDeletion" was replaced. Using the latest registration.
@@ -9862,7 +9941,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:335:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:367:17)
 
   console.warn
     cineUi help "autoBackupBeforeDeletion" was replaced. Using the latest registration.
@@ -9903,7 +9982,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:335:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:367:17)
 
   console.warn
     cineUi help "autoBackupBeforeDeletion" was replaced. Using the latest registration.
@@ -9944,7 +10023,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:335:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:367:17)
 
   console.warn
     cineUi help "autoBackupBeforeDeletion" was replaced. Using the latest registration.
@@ -9983,7 +10062,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:335:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:367:17)
 
   console.log
     script.js: Finished part: core/app-events.js
@@ -10052,7 +10131,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:335:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:367:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -10101,7 +10180,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:335:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:367:17)
 
   console.warn
     cineModuleSystem: Unable to register module "cineModuleContext". Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -10125,7 +10204,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:335:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:367:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -10175,7 +10254,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:335:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:367:17)
 
   console.warn
     cineModuleSystem: Unable to register module "cineModuleContext". Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -10199,7 +10278,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:335:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:367:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -10249,7 +10328,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:335:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:367:17)
 
   console.warn
     cineModuleSystem: Unable to register module "cineModuleContext". Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -10273,7 +10352,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:335:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:367:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -10321,7 +10400,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:335:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:367:17)
 
   console.warn
     cineModuleContext: Module base failed to register module. Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -10346,7 +10425,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:335:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:367:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -10397,7 +10476,7 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:335:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:367:17)
 
   console.warn
     cineModuleContext: Registry registration failed. Error: cineModules: Module "cineModuleContext" is already registered. Use { replace: true } to overwrite.
@@ -10420,7 +10499,7 @@ Service worker asset manifest is up to date.
         at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
         at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
         at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:238:8)
-        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:335:17)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:367:17)
         at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
         at new Promise (<anonymous>)
         at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
@@ -10468,16 +10547,16 @@ Service worker asset manifest is up to date.
       at require (tests/helpers/runtimeLoader.js:123:22)
       at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
       at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
-      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:335:17)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:367:17)
 
-FAIL dom tests/dom/projectAutosave.test.js (14.329 s)
+FAIL dom tests/dom/projectAutosave.test.js (14.152 s)
   project autosave
-    ✓ persists project data to localStorage when form changes (5004 ms)
-    ✕ autosaves partially filled crew entries (281 ms)
-    ✓ saves pending project edits when switching setups without waiting for autosave timer (441 ms)
-    ✓ does not overwrite other project requirements when typing a different project name (432 ms)
-    ✓ blank project entries remain empty when editing another project (1206 ms)
-    ✓ switching to a new setup keeps previously saved requirements intact (6862 ms)
+    ✓ persists project data to localStorage when form changes (4807 ms)
+    ✕ autosaves partially filled crew entries (291 ms)
+    ✓ saves pending project edits when switching setups without waiting for autosave timer (413 ms)
+    ✓ does not overwrite other project requirements when typing a different project name (424 ms)
+    ✓ blank project entries remain empty when editing another project (1191 ms)
+    ✓ switching to a new setup keeps previously saved requirements intact (6811 ms)
 
   ● project autosave › autosaves partially filled crew entries
 
@@ -10485,23 +10564,23 @@ FAIL dom tests/dom/projectAutosave.test.js (14.329 s)
 
     Received: null
 
-      93 |
-      94 |     const nameInput = document.querySelector('.person-row .person-name');
-    > 95 |     expect(nameInput).not.toBeNull();
-         |                           ^
-      96 |     nameInput.value = 'Jamie';
-      97 |     nameInput.dispatchEvent(new Event('input', { bubbles: true }));
-      98 |
+      125 |
+      126 |     const nameInput = document.querySelector('.person-row .person-name');
+    > 127 |     expect(nameInput).not.toBeNull();
+          |                           ^
+      128 |     nameInput.value = 'Jamie';
+      129 |     nameInput.dispatchEvent(new Event('input', { bubbles: true }));
+      130 |
 
-      at Object.toBeNull (tests/dom/projectAutosave.test.js:95:27)
+      at Object.toBeNull (tests/dom/projectAutosave.test.js:127:27)
 
 Test Suites: 1 failed, 1 total
 Tests:       1 failed, 5 passed, 6 total
 Snapshots:   0 total
-Time:        14.552 s
+Time:        14.357 s, estimated 15 s
 Ran all test suites matching tests/dom/projectAutosave.test.js.
 Test Suites: 1 failed, 1 total
 Tests:       1 failed, 5 passed, 6 total
 Snapshots:   0 total
-Time:        14.554 s
+Time:        14.358 s, estimated 15 s
 Ran all test suites matching tests/dom/projectAutosave.test.js.

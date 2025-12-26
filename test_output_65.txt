@@ -1,0 +1,1199 @@
+
+> cine-power-planner@1.0.47 test
+> npm run check:pink-mode-icons && npm run build:auto-gear && npm run lint && npm run check-consistency && npm run test:jest tests/dom/projectAutosave.test.js
+
+
+> cine-power-planner@1.0.47 check:pink-mode-icons
+> node tools/generatePinkModeAnimatedIcons.js --check
+
+Pink mode animated icon store is up to date.
+
+> cine-power-planner@1.0.47 build:auto-gear
+> tsc -p tsconfig.auto-gear.json
+
+
+> cine-power-planner@1.0.47 lint
+> eslint .
+
+
+> cine-power-planner@1.0.47 check-consistency
+> node tools/checkConsistency.js
+
+All devices have required fields.
+Service worker asset manifest is up to date.
+
+> cine-power-planner@1.0.47 test:jest
+> node --max-old-space-size=3072 ./node_modules/jest/bin/jest.js --runInBand tests/dom/projectAutosave.test.js
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at log (src/scripts/shims/legacy-globals-shim.js:166:13)
+
+  console.log
+    script.js: Applying Object.freeze override shim
+
+      at Object.log (src/scripts/script.js:134:13)
+
+  console.log
+    script.js: Executing wrapper with 67 parts
+
+      at Object.log (src/scripts/script.js:190:11)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Object.log (src/scripts/script.js:191:11)
+
+  console.log
+    mount-voltage.js: refreshTotalCurrentLabels defined
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    mount-voltage.js: Execution complete
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Legacy shims initialized (Extended)
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    DEBUG: addPersonBtn found: false
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    DEBUG: crewContainer found: false
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-2.js: corePart2Runtime starting
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-2.js: CORE_SHARED_LOCAL resolved
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-2.js: collectAutoGearSelectedValues resolved
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-2.js: CORE_RUNTIME_FALLBACKS resolved
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-2.js: CORE_RUNTIME_UI_BRIDGE resolved
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-2.js: autoGearHelpers resolved
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.error
+    Cine Power Planner core runtime segment failed to evaluate. TypeError: Cannot set properties of null (setting 'innerHTML')
+        at setMonitorVideoInputs (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:119640:45)
+        at corePart2Runtime (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:122294:5)
+        at runCoreRuntimeSegment (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:84280:14)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:123673:7
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:210:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at Object.loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:20:7)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at Proxy.originalFn (tests/setup/jest.setup.js:63:12)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+      at runCoreRuntimeSegment (src/scripts/script.js:84284:15)
+      at src/scripts/script.js:123673:7
+      at Object.call (src/scripts/script.js:210:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at Object.loadRuntime (tests/dom/projectAutosave.test.js:20:7)
+
+  console.log
+    app-core-new-2.js: corePart2Runtime starting
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-2.js: CORE_SHARED_LOCAL resolved
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-2.js: collectAutoGearSelectedValues resolved
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-2.js: CORE_RUNTIME_FALLBACKS resolved
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-2.js: CORE_RUNTIME_UI_BRIDGE resolved
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-2.js: autoGearHelpers resolved
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    DEBUG: loadRuntime failed (expected during bisection): TypeError: Cannot set properties of null (setting 'innerHTML')
+        at setMonitorVideoInputs (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:119640:45)
+        at corePart2Runtime (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:122294:5)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:123677:5
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:210:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at Object.loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:20:7)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    DEBUG: JSDOM click working after loadRuntime
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    script.js: Executing wrapper with 67 parts
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    mount-voltage.js: refreshTotalCurrentLabels defined
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    mount-voltage.js: Execution complete
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Legacy shims initialized (Extended)
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.warn
+    Cine Power Planner core runtime (part 1) already initialized. Skipping duplicate load.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at src/scripts/script.js:83881:13
+      at Object.call (src/scripts/script.js:210:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:38:17)
+
+  console.log
+    DEBUG: addPersonBtn found: true
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    DEBUG: crewContainer found: true
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    DEBUG: Attaching click listener to addPersonBtn
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories starting
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: collecting categories
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: categories collected 40
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: updating localization
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: finished
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.warn
+    Cine Power Planner core runtime (part 2) already initialized. Skipping duplicate load.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at src/scripts/script.js:104087:13
+      at Object.call (src/scripts/script.js:210:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:38:17)
+
+  console.log
+    Registering setups with cineUi...
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Setups registration status: true
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-setups.js: Execution complete
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-session.js: Starting execution
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    script.js: Executing wrapper with 67 parts
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    mount-voltage.js: refreshTotalCurrentLabels defined
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    mount-voltage.js: Execution complete
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Legacy shims initialized (Extended)
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.warn
+    Cine Power Planner core runtime (part 1) already initialized. Skipping duplicate load.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at src/scripts/script.js:83881:13
+      at Object.call (src/scripts/script.js:210:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:99:17)
+
+  console.log
+    DEBUG: addPersonBtn found: true
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    DEBUG: crewContainer found: true
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    DEBUG: Attaching click listener to addPersonBtn
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories starting
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: collecting categories
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: categories collected 40
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: updating localization
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: finished
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.warn
+    Cine Power Planner core runtime (part 2) already initialized. Skipping duplicate load.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at src/scripts/script.js:104087:13
+      at Object.call (src/scripts/script.js:210:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:99:17)
+
+  console.log
+    Registering setups with cineUi...
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Setups registration status: true
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-setups.js: Execution complete
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-session.js: Starting execution
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    script.js: Executing wrapper with 67 parts
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    mount-voltage.js: refreshTotalCurrentLabels defined
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    mount-voltage.js: Execution complete
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Legacy shims initialized (Extended)
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.warn
+    Cine Power Planner core runtime (part 1) already initialized. Skipping duplicate load.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at src/scripts/script.js:83881:13
+      at Object.call (src/scripts/script.js:210:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:154:17)
+
+  console.log
+    DEBUG: addPersonBtn found: true
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    DEBUG: crewContainer found: true
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    DEBUG: Attaching click listener to addPersonBtn
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories starting
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: collecting categories
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: categories collected 40
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: updating localization
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: finished
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.warn
+    Cine Power Planner core runtime (part 2) already initialized. Skipping duplicate load.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at src/scripts/script.js:104087:13
+      at Object.call (src/scripts/script.js:210:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:154:17)
+
+  console.log
+    Registering setups with cineUi...
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Setups registration status: true
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-setups.js: Execution complete
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-session.js: Starting execution
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    script.js: Executing wrapper with 67 parts
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    mount-voltage.js: refreshTotalCurrentLabels defined
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    mount-voltage.js: Execution complete
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Legacy shims initialized (Extended)
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.warn
+    Cine Power Planner core runtime (part 1) already initialized. Skipping duplicate load.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at src/scripts/script.js:83881:13
+      at Object.call (src/scripts/script.js:210:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:241:17)
+
+  console.log
+    DEBUG: addPersonBtn found: true
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    DEBUG: crewContainer found: true
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    DEBUG: Attaching click listener to addPersonBtn
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories starting
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: collecting categories
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: categories collected 40
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: updating localization
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: finished
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.warn
+    Cine Power Planner core runtime (part 2) already initialized. Skipping duplicate load.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at src/scripts/script.js:104087:13
+      at Object.call (src/scripts/script.js:210:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:241:17)
+
+  console.log
+    Registering setups with cineUi...
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Setups registration status: true
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-setups.js: Execution complete
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-session.js: Starting execution
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    script.js: Executing wrapper with 67 parts
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    mount-voltage.js: refreshTotalCurrentLabels defined
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    mount-voltage.js: Execution complete
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Legacy shims initialized (Extended)
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.warn
+    Cine Power Planner core runtime (part 1) already initialized. Skipping duplicate load.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at src/scripts/script.js:83881:13
+      at Object.call (src/scripts/script.js:210:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:315:17)
+
+  console.log
+    DEBUG: addPersonBtn found: true
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    DEBUG: crewContainer found: true
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    DEBUG: Attaching click listener to addPersonBtn
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories starting
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: collecting categories
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: categories collected 40
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: updating localization
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: finished
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.warn
+    Cine Power Planner core runtime (part 2) already initialized. Skipping duplicate load.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at src/scripts/script.js:104087:13
+      at Object.call (src/scripts/script.js:210:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:315:17)
+
+  console.log
+    Registering setups with cineUi...
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Setups registration status: true
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-setups.js: Execution complete
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-session.js: Starting execution
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    script.js: Executing wrapper with 67 parts
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    mount-voltage.js: refreshTotalCurrentLabels defined
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    mount-voltage.js: Execution complete
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Legacy shims initialized (Extended)
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.warn
+    Cine Power Planner core runtime (part 1) already initialized. Skipping duplicate load.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at src/scripts/script.js:83881:13
+      at Object.call (src/scripts/script.js:210:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:378:17)
+
+  console.log
+    DEBUG: addPersonBtn found: true
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    DEBUG: crewContainer found: true
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    DEBUG: Attaching click listener to addPersonBtn
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories starting
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: collecting categories
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: categories collected 40
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: updating localization
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: finished
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.warn
+    Cine Power Planner core runtime (part 2) already initialized. Skipping duplicate load.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.globalScope (src/scripts/script.js:260:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at src/scripts/script.js:104087:13
+      at Object.call (src/scripts/script.js:210:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:378:17)
+
+  console.log
+    Registering setups with cineUi...
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    Setups registration status: true
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-setups.js: Execution complete
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+  console.log
+    app-session.js: Starting execution
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:273:25)
+
+FAIL dom tests/dom/projectAutosave.test.js (22.847 s)
+  project autosave
+    ✓ sanity check jsdom behavior (327 ms)
+    ✕ persists project data to localStorage when form changes (408 ms)
+    ✕ autosaves partially filled crew entries (237 ms)
+    ✕ saves pending project edits when switching setups without waiting for autosave timer (252 ms)
+    ✕ does not overwrite other project requirements when typing a different project name (472 ms)
+    ✕ blank project entries remain empty when editing another project (2728 ms)
+    ✕ switching to a new setup keeps previously saved requirements intact (18287 ms)
+
+  ● project autosave › persists project data to localStorage when form changes
+
+    ReferenceError: renderSetupDiagram is not defined
+
+
+
+      at src/scripts/script.js:166577:5
+      at Object.call (src/scripts/script.js:210:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:38:17)
+
+  ● project autosave › autosaves partially filled crew entries
+
+    ReferenceError: renderSetupDiagram is not defined
+
+
+
+      at src/scripts/script.js:166577:5
+      at Object.call (src/scripts/script.js:210:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:99:17)
+
+  ● project autosave › saves pending project edits when switching setups without waiting for autosave timer
+
+    ReferenceError: renderSetupDiagram is not defined
+
+
+
+      at src/scripts/script.js:166577:5
+      at Object.call (src/scripts/script.js:210:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:154:17)
+
+  ● project autosave › does not overwrite other project requirements when typing a different project name
+
+    ReferenceError: renderSetupDiagram is not defined
+
+
+
+      at src/scripts/script.js:166577:5
+      at Object.call (src/scripts/script.js:210:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:241:17)
+
+  ● project autosave › blank project entries remain empty when editing another project
+
+    ReferenceError: renderSetupDiagram is not defined
+
+
+
+      at src/scripts/script.js:166577:5
+      at Object.call (src/scripts/script.js:210:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:315:17)
+
+  ● project autosave › switching to a new setup keeps previously saved requirements intact
+
+    ReferenceError: renderSetupDiagram is not defined
+
+
+
+      at src/scripts/script.js:166577:5
+      at Object.call (src/scripts/script.js:210:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:378:17)
+
+Test Suites: 1 failed, 1 total
+Tests:       6 failed, 1 passed, 7 total
+Snapshots:   0 total
+Time:        23.197 s
+Ran all test suites matching tests/dom/projectAutosave.test.js.
+Test Suites: 1 failed, 1 total
+Tests:       6 failed, 1 passed, 7 total
+Snapshots:   0 total
+Time:        23.2 s
+Ran all test suites matching tests/dom/projectAutosave.test.js.

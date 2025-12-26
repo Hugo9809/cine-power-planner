@@ -8,6 +8,16 @@
     // Executed immediately so subsequent scripts (app-events.js, app-session.js) find these variables defined.
     // Even if getElementById returns null (DOM not ready), defining them as null on window prevents ReferenceErrors.
 
+    if (typeof window.ICON_FONT_KEYS === 'undefined') {
+        window.ICON_FONT_KEYS = {
+            UICONS: 'uicons',
+            ESSENTIAL: 'essential',
+            GADGET: 'gadget',
+            FILM: 'film',
+            TEXT: 'text'
+        };
+    }
+
     if (!window.cameraSelect) window.cameraSelect = document.getElementById("cameraSelect");
     if (!window.monitorSelect) window.monitorSelect = document.getElementById("monitorSelect");
     if (!window.videoSelect) window.videoSelect = document.getElementById("videoSelect");

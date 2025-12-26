@@ -1,0 +1,346 @@
+
+> cine-power-planner@1.0.47 test
+> npm run check:pink-mode-icons && npm run build:auto-gear && npm run lint && npm run check-consistency && npm run test:jest tests/dom/projectAutosave.test.js
+
+
+> cine-power-planner@1.0.47 check:pink-mode-icons
+> node tools/generatePinkModeAnimatedIcons.js --check
+
+Pink mode animated icon store is up to date.
+
+> cine-power-planner@1.0.47 build:auto-gear
+> tsc -p tsconfig.auto-gear.json
+
+
+> cine-power-planner@1.0.47 lint
+> eslint .
+
+
+> cine-power-planner@1.0.47 check-consistency
+> node tools/checkConsistency.js
+
+All devices have required fields.
+Service worker asset manifest is up to date.
+
+> cine-power-planner@1.0.47 test:jest
+> node --max-old-space-size=3072 ./node_modules/jest/bin/jest.js --runInBand tests/dom/projectAutosave.test.js
+
+  console.log
+    script.js: Executing wrapper with 10 parts
+
+      at Object.log (src/scripts/script.js:88:11)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Object.log (src/scripts/script.js:89:11)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-scopes.js
+
+      at join (src/scripts/script.js:75:5)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-scopes.js
+
+      at runtimeGuardModule (src/scripts/script.js:352:5)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-candidate-scopes.js
+
+      at runtimeGuard (src/scripts/script.js:356:7)
+
+  console.log
+    DEBUG: loadRuntime failed (expected during bisection): Cannot access 'resolveCoreSupportModule' before initialization
+
+      at Object.log (tests/dom/projectAutosave.test.js:22:15)
+
+  console.log
+    DEBUG: JSDOM click working after loadRuntime
+
+      at Object.log (tests/dom/projectAutosave.test.js:32:15)
+
+  console.log
+    script.js: Executing wrapper with 10 parts
+
+      at Object.log (src/scripts/script.js:88:11)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Object.log (src/scripts/script.js:89:11)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-scopes.js
+
+      at join (src/scripts/script.js:75:5)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-scopes.js
+
+      at runtimeGuardModule (src/scripts/script.js:352:5)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-candidate-scopes.js
+
+      at runtimeGuard (src/scripts/script.js:356:7)
+
+  console.log
+    script.js: Executing wrapper with 10 parts
+
+      at Object.log (src/scripts/script.js:88:11)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Object.log (src/scripts/script.js:89:11)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-scopes.js
+
+      at join (src/scripts/script.js:75:5)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-scopes.js
+
+      at runtimeGuardModule (src/scripts/script.js:352:5)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-candidate-scopes.js
+
+      at runtimeGuard (src/scripts/script.js:356:7)
+
+  console.log
+    script.js: Executing wrapper with 10 parts
+
+      at Object.log (src/scripts/script.js:88:11)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Object.log (src/scripts/script.js:89:11)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-scopes.js
+
+      at join (src/scripts/script.js:75:5)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-scopes.js
+
+      at runtimeGuardModule (src/scripts/script.js:352:5)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-candidate-scopes.js
+
+      at runtimeGuard (src/scripts/script.js:356:7)
+
+  console.log
+    script.js: Executing wrapper with 10 parts
+
+      at Object.log (src/scripts/script.js:88:11)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Object.log (src/scripts/script.js:89:11)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-scopes.js
+
+      at join (src/scripts/script.js:75:5)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-scopes.js
+
+      at runtimeGuardModule (src/scripts/script.js:352:5)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-candidate-scopes.js
+
+      at runtimeGuard (src/scripts/script.js:356:7)
+
+  console.log
+    script.js: Executing wrapper with 10 parts
+
+      at Object.log (src/scripts/script.js:88:11)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Object.log (src/scripts/script.js:89:11)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-scopes.js
+
+      at join (src/scripts/script.js:75:5)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-scopes.js
+
+      at runtimeGuardModule (src/scripts/script.js:352:5)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-candidate-scopes.js
+
+      at runtimeGuard (src/scripts/script.js:356:7)
+
+  console.log
+    script.js: Executing wrapper with 10 parts
+
+      at Object.log (src/scripts/script.js:88:11)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Object.log (src/scripts/script.js:89:11)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-scopes.js
+
+      at join (src/scripts/script.js:75:5)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-scopes.js
+
+      at runtimeGuardModule (src/scripts/script.js:352:5)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-candidate-scopes.js
+
+      at runtimeGuard (src/scripts/script.js:356:7)
+
+FAIL dom tests/dom/projectAutosave.test.js
+  project autosave
+    ✓ sanity check jsdom behavior (138 ms)
+    ✕ persists project data to localStorage when form changes (176 ms)
+    ✕ autosaves partially filled crew entries (130 ms)
+    ✕ saves pending project edits when switching setups without waiting for autosave timer (113 ms)
+    ✕ does not overwrite other project requirements when typing a different project name (113 ms)
+    ✕ blank project entries remain empty when editing another project (115 ms)
+    ✕ switching to a new setup keeps previously saved requirements intact (112 ms)
+
+  ● project autosave › persists project data to localStorage when form changes
+
+    ReferenceError: Cannot access 'resolveCoreSupportModule' before initialization
+
+      364 |       warnOnFailure: true,
+      365 |       throwOnFailure: false, // typeof require === 'function',
+    > 366 |     });
+          |       ^
+      367 |   } catch (error) {
+      368 |     if (typeof console !== 'undefined' && console && typeof console.error === 'function') {
+      369 |       try {
+
+      at src/scripts/script.js:366:7
+      at Object.call (src/scripts/script.js:90:11)
+      at require (tests/helpers/runtimeLoader.js:123:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:38:17)
+
+  ● project autosave › autosaves partially filled crew entries
+
+    ReferenceError: Cannot access 'resolveCoreSupportModule' before initialization
+
+      364 |       warnOnFailure: true,
+      365 |       throwOnFailure: false, // typeof require === 'function',
+    > 366 |     });
+          |       ^
+      367 |   } catch (error) {
+      368 |     if (typeof console !== 'undefined' && console && typeof console.error === 'function') {
+      369 |       try {
+
+      at src/scripts/script.js:366:7
+      at Object.call (src/scripts/script.js:90:11)
+      at require (tests/helpers/runtimeLoader.js:123:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:98:17)
+
+  ● project autosave › saves pending project edits when switching setups without waiting for autosave timer
+
+    ReferenceError: Cannot access 'resolveCoreSupportModule' before initialization
+
+      364 |       warnOnFailure: true,
+      365 |       throwOnFailure: false, // typeof require === 'function',
+    > 366 |     });
+          |       ^
+      367 |   } catch (error) {
+      368 |     if (typeof console !== 'undefined' && console && typeof console.error === 'function') {
+      369 |       try {
+
+      at src/scripts/script.js:366:7
+      at Object.call (src/scripts/script.js:90:11)
+      at require (tests/helpers/runtimeLoader.js:123:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:152:17)
+
+  ● project autosave › does not overwrite other project requirements when typing a different project name
+
+    ReferenceError: Cannot access 'resolveCoreSupportModule' before initialization
+
+      364 |       warnOnFailure: true,
+      365 |       throwOnFailure: false, // typeof require === 'function',
+    > 366 |     });
+          |       ^
+      367 |   } catch (error) {
+      368 |     if (typeof console !== 'undefined' && console && typeof console.error === 'function') {
+      369 |       try {
+
+      at src/scripts/script.js:366:7
+      at Object.call (src/scripts/script.js:90:11)
+      at require (tests/helpers/runtimeLoader.js:123:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:238:17)
+
+  ● project autosave › blank project entries remain empty when editing another project
+
+    ReferenceError: Cannot access 'resolveCoreSupportModule' before initialization
+
+      364 |       warnOnFailure: true,
+      365 |       throwOnFailure: false, // typeof require === 'function',
+    > 366 |     });
+          |       ^
+      367 |   } catch (error) {
+      368 |     if (typeof console !== 'undefined' && console && typeof console.error === 'function') {
+      369 |       try {
+
+      at src/scripts/script.js:366:7
+      at Object.call (src/scripts/script.js:90:11)
+      at require (tests/helpers/runtimeLoader.js:123:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:311:17)
+
+  ● project autosave › switching to a new setup keeps previously saved requirements intact
+
+    ReferenceError: Cannot access 'resolveCoreSupportModule' before initialization
+
+      364 |       warnOnFailure: true,
+      365 |       throwOnFailure: false, // typeof require === 'function',
+    > 366 |     });
+          |       ^
+      367 |   } catch (error) {
+      368 |     if (typeof console !== 'undefined' && console && typeof console.error === 'function') {
+      369 |       try {
+
+      at src/scripts/script.js:366:7
+      at Object.call (src/scripts/script.js:90:11)
+      at require (tests/helpers/runtimeLoader.js:123:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:373:17)
+
+Test Suites: 1 failed, 1 total
+Tests:       6 failed, 1 passed, 7 total
+Snapshots:   0 total
+Time:        1.249 s, estimated 2 s
+Ran all test suites matching tests/dom/projectAutosave.test.js.
+Test Suites: 1 failed, 1 total
+Tests:       6 failed, 1 passed, 7 total
+Snapshots:   0 total
+Time:        1.25 s, estimated 2 s
+Ran all test suites matching tests/dom/projectAutosave.test.js.

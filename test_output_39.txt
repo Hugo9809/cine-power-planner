@@ -1,0 +1,3030 @@
+
+> cine-power-planner@1.0.47 test
+> npm run check:pink-mode-icons && npm run build:auto-gear && npm run lint && npm run check-consistency && npm run test:jest tests/dom/projectAutosave.test.js
+
+
+> cine-power-planner@1.0.47 check:pink-mode-icons
+> node tools/generatePinkModeAnimatedIcons.js --check
+
+Pink mode animated icon store is up to date.
+
+> cine-power-planner@1.0.47 build:auto-gear
+> tsc -p tsconfig.auto-gear.json
+
+
+> cine-power-planner@1.0.47 lint
+> eslint .
+
+
+> cine-power-planner@1.0.47 check-consistency
+> node tools/checkConsistency.js
+
+All devices have required fields.
+Service worker asset manifest is up to date.
+
+> cine-power-planner@1.0.47 test:jest
+> node --max-old-space-size=3072 ./node_modules/jest/bin/jest.js --runInBand tests/dom/projectAutosave.test.js
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at log (src/scripts/shims/legacy-globals-shim.js:166:13)
+
+  console.log
+    script.js: Executing wrapper with 16 parts
+
+      at Object.log (src/scripts/script.js:116:11)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Object.log (src/scripts/script.js:117:11)
+
+  console.log
+    script.js: Starting part: modules/icons.js
+
+      at src/scripts/script.js:80:1
+
+  console.log
+    script.js: Finished part: modules/icons.js
+
+      at src/scripts/script.js:379:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-scopes.js
+
+      at src/scripts/script.js:382:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-scopes.js
+
+      at src/scripts/script.js:612:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-support.js
+
+      at src/scripts/script.js:615:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-support.js
+
+      at src/scripts/script.js:1521:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-candidate-scopes.js
+
+      at src/scripts/script.js:1524:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-candidate-scopes.js
+
+      at src/scripts/script.js:1959:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-helpers.js
+
+      at src/scripts/script.js:1962:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-helpers.js
+
+      at src/scripts/script.js:2643:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-global-tools.js
+
+      at src/scripts/script.js:2646:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-global-tools.js
+
+      at src/scripts/script.js:3228:9
+
+  console.log
+    script.js: Starting part: modules/device-normalization.js
+
+      at src/scripts/script.js:3231:9
+
+  console.log
+    script.js: Finished part: modules/device-normalization.js
+
+      at src/scripts/script.js:3746:9
+
+  console.log
+    script.js: Starting part: auto-gear/normalizers.js
+
+      at src/scripts/script.js:3749:9
+
+  console.log
+    script.js: Finished part: auto-gear/normalizers.js
+
+      at src/scripts/script.js:5455:9
+
+  console.log
+    script.js: Starting part: auto-gear/storage.js
+
+      at src/scripts/script.js:5458:9
+
+  console.log
+    script.js: Finished part: auto-gear/storage.js
+
+      at src/scripts/script.js:6044:9
+
+  console.log
+    script.js: Starting part: core/app-core-text.js
+
+      at src/scripts/script.js:6047:9
+
+  console.log
+    script.js: Finished part: core/app-core-text.js
+
+      at src/scripts/script.js:6217:9
+
+  console.log
+    script.js: Starting part: core/app-core-environment.js
+
+      at src/scripts/script.js:6220:9
+
+  console.log
+    script.js: Finished part: core/app-core-environment.js
+
+      at src/scripts/script.js:8137:9
+
+  console.log
+    script.js: Starting part: core/app-core-bootstrap.js
+
+      at src/scripts/script.js:8140:9
+
+  console.log
+    script.js: Finished part: core/app-core-bootstrap.js
+
+      at src/scripts/script.js:8296:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-shared.js
+
+      at src/scripts/script.js:8299:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-shared.js
+
+      at src/scripts/script.js:8611:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-ui.js
+
+      at src/scripts/script.js:8614:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-ui.js
+
+      at src/scripts/script.js:8907:9
+
+  console.log
+    script.js: Starting part: core/modules/core/pink-mode.js
+
+      at src/scripts/script.js:8910:9
+
+  console.log
+    script.js: Finished part: core/modules/core/pink-mode.js
+
+      at src/scripts/script.js:9526:9
+
+  console.log
+    script.js: Starting part: core/app-core-new-1.js
+
+      at src/scripts/script.js:9529:9
+
+  console.warn
+    cineLogging: Unable to persist log history TypeError: Cannot add property __cineLoggingHistory, object is not extensible
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-localstorage-mock/src/localstorage.js:11:9)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:305:39
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:312:13)
+        at LocalStorage.mockConstructor (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:57:19)
+        at setItem (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:1695:15)
+        at persistHistorySafe (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:1903:5)
+        at appendEntry (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:2674:7)
+        at logInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:2469:9)
+        at syncConsoleCaptureState (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:3898:3)
+        at Object.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:3971:2)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging-resolver.js:140:24)
+        at tryRequireLogging (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging-resolver.js:156:24)
+        at Object.resolveLogging [as resolveLogger] (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging-resolver.js:354:21)
+        at resolveLogger (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/overview.js:141:37)
+        at Object.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/overview.js:151:2)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:11502:36
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:118:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at Object.loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:20:7)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at warn (src/scripts/modules/logging.js:1706:15)
+      at persistHistorySafe (src/scripts/modules/logging.js:1903:5)
+      at appendEntry (src/scripts/modules/logging.js:2674:7)
+      at logInternal (src/scripts/modules/logging.js:2469:9)
+      at syncConsoleCaptureState (src/scripts/modules/logging.js:3898:3)
+      at Object.<anonymous> (src/scripts/modules/logging.js:3971:2)
+      at require (src/scripts/modules/logging-resolver.js:140:24)
+      at tryRequireLogging (src/scripts/modules/logging-resolver.js:156:24)
+      at Object.resolveLogging [as resolveLogger] (src/scripts/modules/logging-resolver.js:354:21)
+      at resolveLogger (src/scripts/overview.js:141:37)
+      at Object.<anonymous> (src/scripts/overview.js:151:2)
+      at src/scripts/script.js:11502:36
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at Object.loadRuntime (tests/dom/projectAutosave.test.js:20:7)
+
+  console.error
+    Error saving automatic gear backup retention to localStorage: TypeError: Cannot add property cameraPowerPlanner_autoGearBackupRetention, object is not extensible
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-localstorage-mock/src/localstorage.js:11:9)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:305:39
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:312:13)
+        at LocalStorage.mockConstructor (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:57:19)
+        at setItem (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:8514:19)
+        at saveJSONToStorage (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:15184:5)
+        at persistAutoGearBackupRetention (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:5881:13)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:12813:1
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:118:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at Object.loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:20:7)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at Proxy.originalFn (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at error (src/scripts/storage.js:8539:19)
+      at saveJSONToStorage (src/scripts/storage.js:15184:5)
+      at persistAutoGearBackupRetention (src/scripts/script.js:5881:13)
+      at src/scripts/script.js:12813:1
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at Object.loadRuntime (tests/dom/projectAutosave.test.js:20:7)
+
+  console.warn
+    Unable to activate sessionStorage fallback during downgrade TypeError: Cannot add property __storage_test__, object is not extensible
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-localstorage-mock/src/localstorage.js:11:9)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:305:39
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:312:13)
+        at LocalStorage.mockConstructor (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:57:19)
+        at setItem (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:5902:15)
+        at verifyStorage (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:6211:28)
+        at downgradeSafeLocalStorageToMemory (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:8540:11)
+        at saveJSONToStorage (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:15184:5)
+        at persistAutoGearBackupRetention (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:5881:13)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:12813:1
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:118:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at Object.loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:20:7)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at warn (src/scripts/storage.js:6219:19)
+      at downgradeSafeLocalStorageToMemory (src/scripts/storage.js:8540:11)
+      at saveJSONToStorage (src/scripts/storage.js:15184:5)
+      at persistAutoGearBackupRetention (src/scripts/script.js:5881:13)
+      at src/scripts/script.js:12813:1
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at Object.loadRuntime (tests/dom/projectAutosave.test.js:20:7)
+
+  console.warn
+    Unable to activate sessionStorage fallback during downgrade TypeError: Cannot add property __storage_test__, object is not extensible
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-localstorage-mock/src/localstorage.js:11:9)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:305:39
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:312:13)
+        at LocalStorage.mockConstructor (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:57:19)
+        at setItem (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:5902:15)
+        at verifyStorage (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:6211:28)
+        at downgradeSafeLocalStorageToMemory (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:8540:11)
+        at saveJSONToStorage (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:15184:5)
+        at persistAutoGearBackupRetention (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:5881:13)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:12813:1
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:118:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at Object.loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:20:7)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at warn (src/scripts/storage.js:6219:19)
+      at downgradeSafeLocalStorageToMemory (src/scripts/storage.js:8540:11)
+      at saveJSONToStorage (src/scripts/storage.js:15184:5)
+      at persistAutoGearBackupRetention (src/scripts/script.js:5881:13)
+      at src/scripts/script.js:12813:1
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at Object.loadRuntime (tests/dom/projectAutosave.test.js:20:7)
+
+  console.warn
+    Unable to activate sessionStorage fallback during downgrade TypeError: Cannot add property __storage_test__, object is not extensible
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-localstorage-mock/src/localstorage.js:11:9)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:305:39
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:312:13)
+        at LocalStorage.mockConstructor (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:57:19)
+        at setItem (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:5902:15)
+        at verifyStorage (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:6211:28)
+        at downgradeSafeLocalStorageToMemory (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:8540:11)
+        at saveJSONToStorage (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:15184:5)
+        at persistAutoGearBackupRetention (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:5881:13)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:12813:1
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:118:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at Object.loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:20:7)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at warn (src/scripts/storage.js:6219:19)
+      at downgradeSafeLocalStorageToMemory (src/scripts/storage.js:8540:11)
+      at saveJSONToStorage (src/scripts/storage.js:15184:5)
+      at persistAutoGearBackupRetention (src/scripts/script.js:5881:13)
+      at src/scripts/script.js:12813:1
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at Object.loadRuntime (tests/dom/projectAutosave.test.js:20:7)
+
+  console.warn
+    Unable to activate sessionStorage fallback during downgrade TypeError: Cannot add property __storage_test__, object is not extensible
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-localstorage-mock/src/localstorage.js:11:9)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:305:39
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:312:13)
+        at LocalStorage.mockConstructor (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:57:19)
+        at setItem (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:5902:15)
+        at verifyStorage (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:6211:28)
+        at downgradeSafeLocalStorageToMemory (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:8540:11)
+        at saveJSONToStorage (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:15184:5)
+        at persistAutoGearBackupRetention (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:5881:13)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:12813:1
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:118:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at Object.loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:20:7)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at warn (src/scripts/storage.js:6219:19)
+      at downgradeSafeLocalStorageToMemory (src/scripts/storage.js:8540:11)
+      at saveJSONToStorage (src/scripts/storage.js:15184:5)
+      at persistAutoGearBackupRetention (src/scripts/script.js:5881:13)
+      at src/scripts/script.js:12813:1
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at Object.loadRuntime (tests/dom/projectAutosave.test.js:20:7)
+
+  console.warn
+    Unable to activate sessionStorage fallback during downgrade TypeError: Cannot add property __storage_test__, object is not extensible
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-localstorage-mock/src/localstorage.js:11:9)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:305:39
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:312:13)
+        at LocalStorage.mockConstructor (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:57:19)
+        at setItem (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:5902:15)
+        at verifyStorage (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:6211:28)
+        at downgradeSafeLocalStorageToMemory (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:8540:11)
+        at saveJSONToStorage (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:15184:5)
+        at persistAutoGearBackupRetention (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:5881:13)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:12813:1
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:118:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at Object.loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:20:7)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at warn (src/scripts/storage.js:6219:19)
+      at downgradeSafeLocalStorageToMemory (src/scripts/storage.js:8540:11)
+      at saveJSONToStorage (src/scripts/storage.js:15184:5)
+      at persistAutoGearBackupRetention (src/scripts/script.js:5881:13)
+      at src/scripts/script.js:12813:1
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at Object.loadRuntime (tests/dom/projectAutosave.test.js:20:7)
+
+  console.warn
+    Downgraded planner storage to in-memory fallback after write access errors. TypeError: Cannot add property cameraPowerPlanner_autoGearBackupRetention, object is not extensible
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-localstorage-mock/src/localstorage.js:11:9)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:305:39
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:312:13)
+        at LocalStorage.mockConstructor (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:57:19)
+        at setItem (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:8514:19)
+        at saveJSONToStorage (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:15184:5)
+        at persistAutoGearBackupRetention (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:5881:13)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:12813:1
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:118:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at Object.loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:20:7)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at warn (src/scripts/storage.js:6249:13)
+      at downgradeSafeLocalStorageToMemory (src/scripts/storage.js:8540:11)
+      at saveJSONToStorage (src/scripts/storage.js:15184:5)
+      at persistAutoGearBackupRetention (src/scripts/script.js:5881:13)
+      at src/scripts/script.js:12813:1
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at Object.loadRuntime (tests/dom/projectAutosave.test.js:20:7)
+
+  console.error
+    Error: Not implemented: window.alert
+        at module.exports (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/browser/Window.js:960:7
+        at alert (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:7427:12)
+        at alertStorageError (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:8541:11)
+        at saveJSONToStorage (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:15184:5)
+        at persistAutoGearBackupRetention (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:5881:13)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:12813:1
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:118:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at Object.loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:20:7)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7) {
+      type: 'not implemented'
+    }
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as error] (tests/setup/jest.setup.js:63:12)
+      at VirtualConsole.<anonymous> (node_modules/@jest/environment-jsdom-abstract/build/index.js:87:23)
+      at module.exports (node_modules/jsdom/lib/jsdom/browser/not-implemented.js:12:26)
+      at node_modules/jsdom/lib/jsdom/browser/Window.js:960:7
+      at alert (src/scripts/storage.js:7427:12)
+      at alertStorageError (src/scripts/storage.js:8541:11)
+      at saveJSONToStorage (src/scripts/storage.js:15184:5)
+      at persistAutoGearBackupRetention (src/scripts/script.js:5881:13)
+      at src/scripts/script.js:12813:1
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at Object.loadRuntime (tests/dom/projectAutosave.test.js:20:7)
+
+  console.log
+    DEBUG: loadRuntime failed (expected during bisection): devices is not defined
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    DEBUG: JSDOM click working after loadRuntime
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Executing wrapper with 16 parts
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: modules/icons.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: modules/icons.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-scopes.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-scopes.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-support.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-support.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-candidate-scopes.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-candidate-scopes.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-helpers.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-helpers.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-global-tools.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-global-tools.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: modules/device-normalization.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: modules/device-normalization.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: auto-gear/normalizers.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: auto-gear/normalizers.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: auto-gear/storage.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: auto-gear/storage.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-text.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-text.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-environment.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-environment.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-bootstrap.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-bootstrap.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-shared.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-shared.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-ui.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-ui.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/modules/core/pink-mode.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/modules/core/pink-mode.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-new-1.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.warn
+    Cine Power Planner core runtime (part 1) already initialized. Skipping duplicate load.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at src/scripts/script.js:10300:13
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:38:17)
+
+  console.warn
+    cineLogging: Unable to persist log history TypeError: Cannot add property __cineLoggingHistory, object is not extensible
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-localstorage-mock/src/localstorage.js:11:9)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:305:39
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:312:13)
+        at LocalStorage.mockConstructor (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:57:19)
+        at setItem (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:1695:15)
+        at persistHistorySafe (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:1903:5)
+        at appendEntry (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:2674:7)
+        at logInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:2469:9)
+        at syncConsoleCaptureState (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:3898:3)
+        at Object.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:3971:2)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging-resolver.js:140:24)
+        at tryRequireLogging (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging-resolver.js:156:24)
+        at Object.resolveLogging [as resolveLogger] (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging-resolver.js:354:21)
+        at resolveLogger (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/overview.js:141:37)
+        at Object.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/overview.js:151:2)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:11502:36
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:118:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:244:13)
+        at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
+        at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
+        at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:242:8)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:38:17)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at warn (src/scripts/modules/logging.js:1706:15)
+      at persistHistorySafe (src/scripts/modules/logging.js:1903:5)
+      at appendEntry (src/scripts/modules/logging.js:2674:7)
+      at logInternal (src/scripts/modules/logging.js:2469:9)
+      at syncConsoleCaptureState (src/scripts/modules/logging.js:3898:3)
+      at Object.<anonymous> (src/scripts/modules/logging.js:3971:2)
+      at require (src/scripts/modules/logging-resolver.js:140:24)
+      at tryRequireLogging (src/scripts/modules/logging-resolver.js:156:24)
+      at Object.resolveLogging [as resolveLogger] (src/scripts/modules/logging-resolver.js:354:21)
+      at resolveLogger (src/scripts/overview.js:141:37)
+      at Object.<anonymous> (src/scripts/overview.js:151:2)
+      at src/scripts/script.js:11502:36
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:38:17)
+
+  console.warn
+    localStorage upgrade verification failed TypeError: Cannot add property __storage_test__, object is not extensible
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-localstorage-mock/src/localstorage.js:11:9)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:305:39
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:312:13)
+        at LocalStorage.mockConstructor (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:57:19)
+        at setItem (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:5902:15)
+        at verifyStorage (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:6284:20)
+        at attemptLocalStorageUpgrade (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:6337:7)
+        at getSafeLocalStorage (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:7557:25)
+        at migrateLegacyStorageKeys (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:7622:5)
+        at applyLegacyStorageMigrations (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js:14592:5)
+        at readAutoGearRulesFromStorage (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:5992:22)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:12803:21
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:118:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:244:13)
+        at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
+        at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
+        at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:242:8)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:38:17)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at warn (src/scripts/storage.js:6286:17)
+      at attemptLocalStorageUpgrade (src/scripts/storage.js:6337:7)
+      at getSafeLocalStorage (src/scripts/storage.js:7557:25)
+      at migrateLegacyStorageKeys (src/scripts/storage.js:7622:5)
+      at applyLegacyStorageMigrations (src/scripts/storage.js:14592:5)
+      at readAutoGearRulesFromStorage (src/scripts/script.js:5992:22)
+      at src/scripts/script.js:12803:21
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:38:17)
+
+  console.log
+    DEBUG: addPersonBtn found: true
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    DEBUG: crewContainer found: true
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    DEBUG: Attaching click listener to addPersonBtn
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories starting
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: collecting categories
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: categories collected 34
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: updating localization
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: finished
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.warn
+    Could not save settings tab preference TypeError: Cannot add property settingsActiveTab, object is not extensible
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-localstorage-mock/src/localstorage.js:11:9)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:305:39
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:312:13)
+        at LocalStorage.mockConstructor (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:57:19)
+        at activateSettingsTab (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:28744:18)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:28751:3
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:118:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:244:13)
+        at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
+        at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
+        at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:242:8)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:38:17)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at activateSettingsTab (src/scripts/script.js:28746:13)
+      at src/scripts/script.js:28751:3
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:38:17)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Executing wrapper with 16 parts
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: modules/icons.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: modules/icons.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-scopes.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-scopes.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-support.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-support.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-candidate-scopes.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-candidate-scopes.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-helpers.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-helpers.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-global-tools.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-global-tools.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: modules/device-normalization.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: modules/device-normalization.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: auto-gear/normalizers.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: auto-gear/normalizers.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: auto-gear/storage.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: auto-gear/storage.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-text.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-text.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-environment.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-environment.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-bootstrap.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-bootstrap.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-shared.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-shared.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-ui.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-ui.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/modules/core/pink-mode.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/modules/core/pink-mode.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-new-1.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.warn
+    Cine Power Planner core runtime (part 1) already initialized. Skipping duplicate load.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at src/scripts/script.js:10300:13
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:99:17)
+
+  console.warn
+    cineLogging: Unable to persist log history TypeError: Cannot add property __cineLoggingHistory, object is not extensible
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-localstorage-mock/src/localstorage.js:11:9)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:305:39
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:312:13)
+        at LocalStorage.mockConstructor (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:57:19)
+        at setItem (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:1695:15)
+        at persistHistorySafe (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:1903:5)
+        at appendEntry (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:2674:7)
+        at logInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:2469:9)
+        at syncConsoleCaptureState (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:3898:3)
+        at Object.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:3971:2)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging-resolver.js:140:24)
+        at tryRequireLogging (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging-resolver.js:156:24)
+        at Object.resolveLogging [as resolveLogger] (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging-resolver.js:354:21)
+        at resolveLogger (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/overview.js:141:37)
+        at Object.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/overview.js:151:2)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:11502:36
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:118:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:244:13)
+        at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
+        at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
+        at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:242:8)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:99:17)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at warn (src/scripts/modules/logging.js:1706:15)
+      at persistHistorySafe (src/scripts/modules/logging.js:1903:5)
+      at appendEntry (src/scripts/modules/logging.js:2674:7)
+      at logInternal (src/scripts/modules/logging.js:2469:9)
+      at syncConsoleCaptureState (src/scripts/modules/logging.js:3898:3)
+      at Object.<anonymous> (src/scripts/modules/logging.js:3971:2)
+      at require (src/scripts/modules/logging-resolver.js:140:24)
+      at tryRequireLogging (src/scripts/modules/logging-resolver.js:156:24)
+      at Object.resolveLogging [as resolveLogger] (src/scripts/modules/logging-resolver.js:354:21)
+      at resolveLogger (src/scripts/overview.js:141:37)
+      at Object.<anonymous> (src/scripts/overview.js:151:2)
+      at src/scripts/script.js:11502:36
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:99:17)
+
+  console.log
+    DEBUG: addPersonBtn found: true
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    DEBUG: crewContainer found: true
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    DEBUG: Attaching click listener to addPersonBtn
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories starting
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: collecting categories
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: categories collected 34
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: updating localization
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: finished
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.warn
+    Could not save settings tab preference TypeError: Cannot add property settingsActiveTab, object is not extensible
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-localstorage-mock/src/localstorage.js:11:9)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:305:39
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:312:13)
+        at LocalStorage.mockConstructor (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:57:19)
+        at activateSettingsTab (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:28744:18)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:28751:3
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:118:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:244:13)
+        at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
+        at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
+        at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:242:8)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:99:17)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at activateSettingsTab (src/scripts/script.js:28746:13)
+      at src/scripts/script.js:28751:3
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:99:17)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Executing wrapper with 16 parts
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: modules/icons.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: modules/icons.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-scopes.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-scopes.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-support.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-support.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-candidate-scopes.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-candidate-scopes.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-helpers.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-helpers.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-global-tools.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-global-tools.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: modules/device-normalization.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: modules/device-normalization.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: auto-gear/normalizers.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: auto-gear/normalizers.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: auto-gear/storage.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: auto-gear/storage.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-text.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-text.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-environment.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-environment.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-bootstrap.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-bootstrap.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-shared.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-shared.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-ui.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-ui.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/modules/core/pink-mode.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/modules/core/pink-mode.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-new-1.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.warn
+    Cine Power Planner core runtime (part 1) already initialized. Skipping duplicate load.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at src/scripts/script.js:10300:13
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:154:17)
+
+  console.warn
+    cineLogging: Unable to persist log history TypeError: Cannot add property __cineLoggingHistory, object is not extensible
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-localstorage-mock/src/localstorage.js:11:9)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:305:39
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:312:13)
+        at LocalStorage.mockConstructor (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:57:19)
+        at setItem (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:1695:15)
+        at persistHistorySafe (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:1903:5)
+        at appendEntry (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:2674:7)
+        at logInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:2469:9)
+        at syncConsoleCaptureState (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:3898:3)
+        at Object.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:3971:2)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging-resolver.js:140:24)
+        at tryRequireLogging (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging-resolver.js:156:24)
+        at Object.resolveLogging [as resolveLogger] (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging-resolver.js:354:21)
+        at resolveLogger (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/overview.js:141:37)
+        at Object.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/overview.js:151:2)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:11502:36
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:118:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:244:13)
+        at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
+        at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
+        at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:242:8)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:154:17)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at warn (src/scripts/modules/logging.js:1706:15)
+      at persistHistorySafe (src/scripts/modules/logging.js:1903:5)
+      at appendEntry (src/scripts/modules/logging.js:2674:7)
+      at logInternal (src/scripts/modules/logging.js:2469:9)
+      at syncConsoleCaptureState (src/scripts/modules/logging.js:3898:3)
+      at Object.<anonymous> (src/scripts/modules/logging.js:3971:2)
+      at require (src/scripts/modules/logging-resolver.js:140:24)
+      at tryRequireLogging (src/scripts/modules/logging-resolver.js:156:24)
+      at Object.resolveLogging [as resolveLogger] (src/scripts/modules/logging-resolver.js:354:21)
+      at resolveLogger (src/scripts/overview.js:141:37)
+      at Object.<anonymous> (src/scripts/overview.js:151:2)
+      at src/scripts/script.js:11502:36
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:154:17)
+
+  console.log
+    DEBUG: addPersonBtn found: true
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    DEBUG: crewContainer found: true
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    DEBUG: Attaching click listener to addPersonBtn
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories starting
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: collecting categories
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: categories collected 34
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: updating localization
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: finished
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.warn
+    Could not save settings tab preference TypeError: Cannot add property settingsActiveTab, object is not extensible
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-localstorage-mock/src/localstorage.js:11:9)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:305:39
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:312:13)
+        at LocalStorage.mockConstructor (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:57:19)
+        at activateSettingsTab (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:28744:18)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:28751:3
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:118:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:244:13)
+        at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
+        at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
+        at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:242:8)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:154:17)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at activateSettingsTab (src/scripts/script.js:28746:13)
+      at src/scripts/script.js:28751:3
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:154:17)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Executing wrapper with 16 parts
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: modules/icons.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: modules/icons.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-scopes.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-scopes.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-support.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-support.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-candidate-scopes.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-candidate-scopes.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-helpers.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-helpers.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-global-tools.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-global-tools.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: modules/device-normalization.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: modules/device-normalization.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: auto-gear/normalizers.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: auto-gear/normalizers.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: auto-gear/storage.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: auto-gear/storage.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-text.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-text.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-environment.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-environment.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-bootstrap.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-bootstrap.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-shared.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-shared.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-ui.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-ui.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/modules/core/pink-mode.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/modules/core/pink-mode.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-new-1.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.warn
+    Cine Power Planner core runtime (part 1) already initialized. Skipping duplicate load.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at src/scripts/script.js:10300:13
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:241:17)
+
+  console.warn
+    cineLogging: Unable to persist log history TypeError: Cannot add property __cineLoggingHistory, object is not extensible
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-localstorage-mock/src/localstorage.js:11:9)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:305:39
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:312:13)
+        at LocalStorage.mockConstructor (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:57:19)
+        at setItem (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:1695:15)
+        at persistHistorySafe (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:1903:5)
+        at appendEntry (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:2674:7)
+        at logInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:2469:9)
+        at syncConsoleCaptureState (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:3898:3)
+        at Object.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:3971:2)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging-resolver.js:140:24)
+        at tryRequireLogging (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging-resolver.js:156:24)
+        at Object.resolveLogging [as resolveLogger] (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging-resolver.js:354:21)
+        at resolveLogger (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/overview.js:141:37)
+        at Object.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/overview.js:151:2)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:11502:36
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:118:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:244:13)
+        at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
+        at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
+        at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:242:8)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:241:17)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at warn (src/scripts/modules/logging.js:1706:15)
+      at persistHistorySafe (src/scripts/modules/logging.js:1903:5)
+      at appendEntry (src/scripts/modules/logging.js:2674:7)
+      at logInternal (src/scripts/modules/logging.js:2469:9)
+      at syncConsoleCaptureState (src/scripts/modules/logging.js:3898:3)
+      at Object.<anonymous> (src/scripts/modules/logging.js:3971:2)
+      at require (src/scripts/modules/logging-resolver.js:140:24)
+      at tryRequireLogging (src/scripts/modules/logging-resolver.js:156:24)
+      at Object.resolveLogging [as resolveLogger] (src/scripts/modules/logging-resolver.js:354:21)
+      at resolveLogger (src/scripts/overview.js:141:37)
+      at Object.<anonymous> (src/scripts/overview.js:151:2)
+      at src/scripts/script.js:11502:36
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:241:17)
+
+  console.log
+    DEBUG: addPersonBtn found: true
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    DEBUG: crewContainer found: true
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    DEBUG: Attaching click listener to addPersonBtn
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories starting
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: collecting categories
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: categories collected 34
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: updating localization
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: finished
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.warn
+    Could not save settings tab preference TypeError: Cannot add property settingsActiveTab, object is not extensible
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-localstorage-mock/src/localstorage.js:11:9)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:305:39
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:312:13)
+        at LocalStorage.mockConstructor (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:57:19)
+        at activateSettingsTab (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:28744:18)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:28751:3
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:118:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:244:13)
+        at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
+        at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
+        at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:242:8)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:241:17)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at activateSettingsTab (src/scripts/script.js:28746:13)
+      at src/scripts/script.js:28751:3
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:241:17)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Executing wrapper with 16 parts
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: modules/icons.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: modules/icons.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-scopes.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-scopes.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-support.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-support.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-candidate-scopes.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-candidate-scopes.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-helpers.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-helpers.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-global-tools.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-global-tools.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: modules/device-normalization.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: modules/device-normalization.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: auto-gear/normalizers.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: auto-gear/normalizers.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: auto-gear/storage.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: auto-gear/storage.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-text.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-text.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-environment.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-environment.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-bootstrap.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-bootstrap.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-shared.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-shared.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-ui.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-ui.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/modules/core/pink-mode.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/modules/core/pink-mode.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-new-1.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.warn
+    Cine Power Planner core runtime (part 1) already initialized. Skipping duplicate load.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at src/scripts/script.js:10300:13
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:315:17)
+
+  console.warn
+    cineLogging: Unable to persist log history TypeError: Cannot add property __cineLoggingHistory, object is not extensible
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-localstorage-mock/src/localstorage.js:11:9)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:305:39
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:312:13)
+        at LocalStorage.mockConstructor (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:57:19)
+        at setItem (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:1695:15)
+        at persistHistorySafe (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:1903:5)
+        at appendEntry (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:2674:7)
+        at logInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:2469:9)
+        at syncConsoleCaptureState (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:3898:3)
+        at Object.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:3971:2)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging-resolver.js:140:24)
+        at tryRequireLogging (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging-resolver.js:156:24)
+        at Object.resolveLogging [as resolveLogger] (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging-resolver.js:354:21)
+        at resolveLogger (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/overview.js:141:37)
+        at Object.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/overview.js:151:2)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:11502:36
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:118:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:244:13)
+        at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
+        at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
+        at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:242:8)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:315:17)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at warn (src/scripts/modules/logging.js:1706:15)
+      at persistHistorySafe (src/scripts/modules/logging.js:1903:5)
+      at appendEntry (src/scripts/modules/logging.js:2674:7)
+      at logInternal (src/scripts/modules/logging.js:2469:9)
+      at syncConsoleCaptureState (src/scripts/modules/logging.js:3898:3)
+      at Object.<anonymous> (src/scripts/modules/logging.js:3971:2)
+      at require (src/scripts/modules/logging-resolver.js:140:24)
+      at tryRequireLogging (src/scripts/modules/logging-resolver.js:156:24)
+      at Object.resolveLogging [as resolveLogger] (src/scripts/modules/logging-resolver.js:354:21)
+      at resolveLogger (src/scripts/overview.js:141:37)
+      at Object.<anonymous> (src/scripts/overview.js:151:2)
+      at src/scripts/script.js:11502:36
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:315:17)
+
+  console.log
+    DEBUG: addPersonBtn found: true
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    DEBUG: crewContainer found: true
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    DEBUG: Attaching click listener to addPersonBtn
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories starting
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: collecting categories
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: categories collected 34
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: updating localization
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: finished
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.warn
+    Could not save settings tab preference TypeError: Cannot add property settingsActiveTab, object is not extensible
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-localstorage-mock/src/localstorage.js:11:9)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:305:39
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:312:13)
+        at LocalStorage.mockConstructor (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:57:19)
+        at activateSettingsTab (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:28744:18)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:28751:3
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:118:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:244:13)
+        at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
+        at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
+        at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:242:8)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:315:17)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at activateSettingsTab (src/scripts/script.js:28746:13)
+      at src/scripts/script.js:28751:3
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:315:17)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Executing wrapper with 16 parts
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: modules/icons.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: modules/icons.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-scopes.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-scopes.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-support.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-support.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-candidate-scopes.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-candidate-scopes.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-helpers.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-helpers.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-global-tools.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-global-tools.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: modules/device-normalization.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: modules/device-normalization.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: auto-gear/normalizers.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: auto-gear/normalizers.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: auto-gear/storage.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: auto-gear/storage.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-text.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-text.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-environment.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-environment.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-bootstrap.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-bootstrap.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-shared.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-shared.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-ui.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-ui.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/modules/core/pink-mode.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Finished part: core/modules/core/pink-mode.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    script.js: Starting part: core/app-core-new-1.js
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.warn
+    Cine Power Planner core runtime (part 1) already initialized. Skipping duplicate load.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at src/scripts/script.js:10300:13
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:378:17)
+
+  console.warn
+    cineLogging: Unable to persist log history TypeError: Cannot add property __cineLoggingHistory, object is not extensible
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-localstorage-mock/src/localstorage.js:11:9)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:305:39
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:312:13)
+        at LocalStorage.mockConstructor (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:57:19)
+        at setItem (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:1695:15)
+        at persistHistorySafe (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:1903:5)
+        at appendEntry (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:2674:7)
+        at logInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:2469:9)
+        at syncConsoleCaptureState (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:3898:3)
+        at Object.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging.js:3971:2)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging-resolver.js:140:24)
+        at tryRequireLogging (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging-resolver.js:156:24)
+        at Object.resolveLogging [as resolveLogger] (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/modules/logging-resolver.js:354:21)
+        at resolveLogger (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/overview.js:141:37)
+        at Object.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/overview.js:151:2)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:11502:36
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:118:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:244:13)
+        at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
+        at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
+        at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:242:8)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:378:17)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at warn (src/scripts/modules/logging.js:1706:15)
+      at persistHistorySafe (src/scripts/modules/logging.js:1903:5)
+      at appendEntry (src/scripts/modules/logging.js:2674:7)
+      at logInternal (src/scripts/modules/logging.js:2469:9)
+      at syncConsoleCaptureState (src/scripts/modules/logging.js:3898:3)
+      at Object.<anonymous> (src/scripts/modules/logging.js:3971:2)
+      at require (src/scripts/modules/logging-resolver.js:140:24)
+      at tryRequireLogging (src/scripts/modules/logging-resolver.js:156:24)
+      at Object.resolveLogging [as resolveLogger] (src/scripts/modules/logging-resolver.js:354:21)
+      at resolveLogger (src/scripts/overview.js:141:37)
+      at Object.<anonymous> (src/scripts/overview.js:151:2)
+      at src/scripts/script.js:11502:36
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:378:17)
+
+  console.log
+    DEBUG: addPersonBtn found: true
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    DEBUG: crewContainer found: true
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    DEBUG: Attaching click listener to addPersonBtn
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories starting
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: collecting categories
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: categories collected 34
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: updating localization
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.log
+    app-core-new-1.js: syncDeviceManagerCategories: finished
+
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+
+  console.warn
+    Could not save settings tab preference TypeError: Cannot add property settingsActiveTab, object is not extensible
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-localstorage-mock/src/localstorage.js:11:9)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:305:39
+        at LocalStorage.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:312:13)
+        at LocalStorage.mockConstructor (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-mock/build/index.js:57:19)
+        at activateSettingsTab (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:28744:18)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:28751:3
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:118:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:244:13)
+        at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
+        at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
+        at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:242:8)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:378:17)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at activateSettingsTab (src/scripts/script.js:28746:13)
+      at src/scripts/script.js:28751:3
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:378:17)
+
+FAIL dom tests/dom/projectAutosave.test.js
+  project autosave
+    ✓ sanity check jsdom behavior (400 ms)
+    ✕ persists project data to localStorage when form changes (241 ms)
+    ✕ autosaves partially filled crew entries (172 ms)
+    ✕ saves pending project edits when switching setups without waiting for autosave timer (154 ms)
+    ✕ does not overwrite other project requirements when typing a different project name (170 ms)
+    ✕ blank project entries remain empty when editing another project (152 ms)
+    ✕ switching to a new setup keeps previously saved requirements intact (162 ms)
+
+  ● project autosave › persists project data to localStorage when form changes
+
+    ReferenceError: createDeferredAutoGearRefresher is not defined
+
+
+
+      at src/scripts/script.js:28875:11
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:38:17)
+
+  ● project autosave › autosaves partially filled crew entries
+
+    ReferenceError: createDeferredAutoGearRefresher is not defined
+
+
+
+      at src/scripts/script.js:28875:11
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:99:17)
+
+  ● project autosave › saves pending project edits when switching setups without waiting for autosave timer
+
+    ReferenceError: createDeferredAutoGearRefresher is not defined
+
+
+
+      at src/scripts/script.js:28875:11
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:154:17)
+
+  ● project autosave › does not overwrite other project requirements when typing a different project name
+
+    ReferenceError: createDeferredAutoGearRefresher is not defined
+
+
+
+      at src/scripts/script.js:28875:11
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:241:17)
+
+  ● project autosave › blank project entries remain empty when editing another project
+
+    ReferenceError: createDeferredAutoGearRefresher is not defined
+
+
+
+      at src/scripts/script.js:28875:11
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:315:17)
+
+  ● project autosave › switching to a new setup keeps previously saved requirements intact
+
+    ReferenceError: createDeferredAutoGearRefresher is not defined
+
+
+
+      at src/scripts/script.js:28875:11
+      at Object.call (src/scripts/script.js:118:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:244:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:242:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:378:17)
+
+Test Suites: 1 failed, 1 total
+Tests:       6 failed, 1 passed, 7 total
+Snapshots:   0 total
+Time:        1.784 s, estimated 2 s
+Ran all test suites matching tests/dom/projectAutosave.test.js.
+Test Suites: 1 failed, 1 total
+Tests:       6 failed, 1 passed, 7 total
+Snapshots:   0 total
+Time:        1.786 s, estimated 2 s
+Ran all test suites matching tests/dom/projectAutosave.test.js.

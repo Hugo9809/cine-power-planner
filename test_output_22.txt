@@ -1,0 +1,870 @@
+
+> cine-power-planner@1.0.47 test
+> npm run check:pink-mode-icons && npm run build:auto-gear && npm run lint && npm run check-consistency && npm run test:jest tests/dom/projectAutosave.test.js
+
+
+> cine-power-planner@1.0.47 check:pink-mode-icons
+> node tools/generatePinkModeAnimatedIcons.js --check
+
+Pink mode animated icon store is up to date.
+
+> cine-power-planner@1.0.47 build:auto-gear
+> tsc -p tsconfig.auto-gear.json
+
+
+> cine-power-planner@1.0.47 lint
+> eslint .
+
+
+> cine-power-planner@1.0.47 check-consistency
+> node tools/checkConsistency.js
+
+All devices have required fields.
+Service worker asset manifest is up to date.
+
+> cine-power-planner@1.0.47 test:jest
+> node --max-old-space-size=3072 ./node_modules/jest/bin/jest.js --runInBand tests/dom/projectAutosave.test.js
+
+  console.log
+    script.js: Executing wrapper with 10 parts
+
+      at Object.log (src/scripts/script.js:88:11)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Object.log (src/scripts/script.js:89:11)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-scopes.js
+
+      at join (src/scripts/script.js:75:5)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-scopes.js
+
+      at runtimeGuardModule (src/scripts/script.js:352:5)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-support.js
+
+      at runtimeGuard (src/scripts/script.js:356:7)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-support.js
+
+      at src/scripts/script.js:1170:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-candidate-scopes.js
+
+      at src/scripts/script.js:1173:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-candidate-scopes.js
+
+      at src/scripts/script.js:1608:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-helpers.js
+
+      at src/scripts/script.js:1611:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-helpers.js
+
+      at src/scripts/script.js:2292:9
+
+  console.log
+    script.js: Starting part: core/app-core-text.js
+
+      at src/scripts/script.js:2295:9
+
+  console.log
+    script.js: Finished part: core/app-core-text.js
+
+      at src/scripts/script.js:2465:9
+
+  console.log
+    script.js: Starting part: core/app-core-environment.js
+
+      at src/scripts/script.js:2468:9
+
+  console.log
+    script.js: Finished part: core/app-core-environment.js
+
+      at src/scripts/script.js:4385:9
+
+  console.log
+    script.js: Starting part: core/app-core-bootstrap.js
+
+      at src/scripts/script.js:4388:9
+
+  console.log
+    script.js: Finished part: core/app-core-bootstrap.js
+
+      at src/scripts/script.js:4544:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-shared.js
+
+      at src/scripts/script.js:4547:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-shared.js
+
+      at src/scripts/script.js:4859:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-ui.js
+
+      at src/scripts/script.js:4862:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-ui.js
+
+      at src/scripts/script.js:5155:9
+
+  console.log
+    script.js: Starting part: core/app-core-new-1.js
+
+      at src/scripts/script.js:5158:9
+
+  console.log
+    DEBUG: loadRuntime failed (expected during bisection): iconGlyph is not defined
+
+      at Object.log (tests/dom/projectAutosave.test.js:22:15)
+
+  console.log
+    DEBUG: JSDOM click working after loadRuntime
+
+      at Object.log (tests/dom/projectAutosave.test.js:32:15)
+
+  console.log
+    script.js: Executing wrapper with 10 parts
+
+      at Object.log (src/scripts/script.js:88:11)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Object.log (src/scripts/script.js:89:11)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-scopes.js
+
+      at join (src/scripts/script.js:75:5)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-scopes.js
+
+      at runtimeGuardModule (src/scripts/script.js:352:5)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-support.js
+
+      at runtimeGuard (src/scripts/script.js:356:7)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-support.js
+
+      at src/scripts/script.js:1170:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-candidate-scopes.js
+
+      at src/scripts/script.js:1173:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-candidate-scopes.js
+
+      at src/scripts/script.js:1608:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-helpers.js
+
+      at src/scripts/script.js:1611:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-helpers.js
+
+      at src/scripts/script.js:2292:9
+
+  console.log
+    script.js: Starting part: core/app-core-text.js
+
+      at src/scripts/script.js:2295:9
+
+  console.log
+    script.js: Finished part: core/app-core-text.js
+
+      at src/scripts/script.js:2465:9
+
+  console.log
+    script.js: Starting part: core/app-core-environment.js
+
+      at src/scripts/script.js:2468:9
+
+  console.log
+    script.js: Finished part: core/app-core-environment.js
+
+      at src/scripts/script.js:4385:9
+
+  console.log
+    script.js: Starting part: core/app-core-bootstrap.js
+
+      at src/scripts/script.js:4388:9
+
+  console.log
+    script.js: Finished part: core/app-core-bootstrap.js
+
+      at src/scripts/script.js:4544:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-shared.js
+
+      at src/scripts/script.js:4547:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-shared.js
+
+      at src/scripts/script.js:4859:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-ui.js
+
+      at src/scripts/script.js:4862:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-ui.js
+
+      at src/scripts/script.js:5155:9
+
+  console.log
+    script.js: Starting part: core/app-core-new-1.js
+
+      at src/scripts/script.js:5158:9
+
+  console.log
+    script.js: Executing wrapper with 10 parts
+
+      at Object.log (src/scripts/script.js:88:11)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Object.log (src/scripts/script.js:89:11)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-scopes.js
+
+      at join (src/scripts/script.js:75:5)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-scopes.js
+
+      at runtimeGuardModule (src/scripts/script.js:352:5)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-support.js
+
+      at runtimeGuard (src/scripts/script.js:356:7)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-support.js
+
+      at src/scripts/script.js:1170:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-candidate-scopes.js
+
+      at src/scripts/script.js:1173:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-candidate-scopes.js
+
+      at src/scripts/script.js:1608:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-helpers.js
+
+      at src/scripts/script.js:1611:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-helpers.js
+
+      at src/scripts/script.js:2292:9
+
+  console.log
+    script.js: Starting part: core/app-core-text.js
+
+      at src/scripts/script.js:2295:9
+
+  console.log
+    script.js: Finished part: core/app-core-text.js
+
+      at src/scripts/script.js:2465:9
+
+  console.log
+    script.js: Starting part: core/app-core-environment.js
+
+      at src/scripts/script.js:2468:9
+
+  console.log
+    script.js: Finished part: core/app-core-environment.js
+
+      at src/scripts/script.js:4385:9
+
+  console.log
+    script.js: Starting part: core/app-core-bootstrap.js
+
+      at src/scripts/script.js:4388:9
+
+  console.log
+    script.js: Finished part: core/app-core-bootstrap.js
+
+      at src/scripts/script.js:4544:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-shared.js
+
+      at src/scripts/script.js:4547:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-shared.js
+
+      at src/scripts/script.js:4859:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-ui.js
+
+      at src/scripts/script.js:4862:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-ui.js
+
+      at src/scripts/script.js:5155:9
+
+  console.log
+    script.js: Starting part: core/app-core-new-1.js
+
+      at src/scripts/script.js:5158:9
+
+  console.log
+    script.js: Executing wrapper with 10 parts
+
+      at Object.log (src/scripts/script.js:88:11)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Object.log (src/scripts/script.js:89:11)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-scopes.js
+
+      at join (src/scripts/script.js:75:5)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-scopes.js
+
+      at runtimeGuardModule (src/scripts/script.js:352:5)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-support.js
+
+      at runtimeGuard (src/scripts/script.js:356:7)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-support.js
+
+      at src/scripts/script.js:1170:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-candidate-scopes.js
+
+      at src/scripts/script.js:1173:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-candidate-scopes.js
+
+      at src/scripts/script.js:1608:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-helpers.js
+
+      at src/scripts/script.js:1611:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-helpers.js
+
+      at src/scripts/script.js:2292:9
+
+  console.log
+    script.js: Starting part: core/app-core-text.js
+
+      at src/scripts/script.js:2295:9
+
+  console.log
+    script.js: Finished part: core/app-core-text.js
+
+      at src/scripts/script.js:2465:9
+
+  console.log
+    script.js: Starting part: core/app-core-environment.js
+
+      at src/scripts/script.js:2468:9
+
+  console.log
+    script.js: Finished part: core/app-core-environment.js
+
+      at src/scripts/script.js:4385:9
+
+  console.log
+    script.js: Starting part: core/app-core-bootstrap.js
+
+      at src/scripts/script.js:4388:9
+
+  console.log
+    script.js: Finished part: core/app-core-bootstrap.js
+
+      at src/scripts/script.js:4544:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-shared.js
+
+      at src/scripts/script.js:4547:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-shared.js
+
+      at src/scripts/script.js:4859:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-ui.js
+
+      at src/scripts/script.js:4862:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-ui.js
+
+      at src/scripts/script.js:5155:9
+
+  console.log
+    script.js: Starting part: core/app-core-new-1.js
+
+      at src/scripts/script.js:5158:9
+
+  console.log
+    script.js: Executing wrapper with 10 parts
+
+      at Object.log (src/scripts/script.js:88:11)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Object.log (src/scripts/script.js:89:11)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-scopes.js
+
+      at join (src/scripts/script.js:75:5)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-scopes.js
+
+      at runtimeGuardModule (src/scripts/script.js:352:5)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-support.js
+
+      at runtimeGuard (src/scripts/script.js:356:7)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-support.js
+
+      at src/scripts/script.js:1170:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-candidate-scopes.js
+
+      at src/scripts/script.js:1173:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-candidate-scopes.js
+
+      at src/scripts/script.js:1608:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-helpers.js
+
+      at src/scripts/script.js:1611:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-helpers.js
+
+      at src/scripts/script.js:2292:9
+
+  console.log
+    script.js: Starting part: core/app-core-text.js
+
+      at src/scripts/script.js:2295:9
+
+  console.log
+    script.js: Finished part: core/app-core-text.js
+
+      at src/scripts/script.js:2465:9
+
+  console.log
+    script.js: Starting part: core/app-core-environment.js
+
+      at src/scripts/script.js:2468:9
+
+  console.log
+    script.js: Finished part: core/app-core-environment.js
+
+      at src/scripts/script.js:4385:9
+
+  console.log
+    script.js: Starting part: core/app-core-bootstrap.js
+
+      at src/scripts/script.js:4388:9
+
+  console.log
+    script.js: Finished part: core/app-core-bootstrap.js
+
+      at src/scripts/script.js:4544:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-shared.js
+
+      at src/scripts/script.js:4547:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-shared.js
+
+      at src/scripts/script.js:4859:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-ui.js
+
+      at src/scripts/script.js:4862:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-ui.js
+
+      at src/scripts/script.js:5155:9
+
+  console.log
+    script.js: Starting part: core/app-core-new-1.js
+
+      at src/scripts/script.js:5158:9
+
+  console.log
+    script.js: Executing wrapper with 10 parts
+
+      at Object.log (src/scripts/script.js:88:11)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Object.log (src/scripts/script.js:89:11)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-scopes.js
+
+      at join (src/scripts/script.js:75:5)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-scopes.js
+
+      at runtimeGuardModule (src/scripts/script.js:352:5)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-support.js
+
+      at runtimeGuard (src/scripts/script.js:356:7)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-support.js
+
+      at src/scripts/script.js:1170:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-candidate-scopes.js
+
+      at src/scripts/script.js:1173:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-candidate-scopes.js
+
+      at src/scripts/script.js:1608:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-helpers.js
+
+      at src/scripts/script.js:1611:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-helpers.js
+
+      at src/scripts/script.js:2292:9
+
+  console.log
+    script.js: Starting part: core/app-core-text.js
+
+      at src/scripts/script.js:2295:9
+
+  console.log
+    script.js: Finished part: core/app-core-text.js
+
+      at src/scripts/script.js:2465:9
+
+  console.log
+    script.js: Starting part: core/app-core-environment.js
+
+      at src/scripts/script.js:2468:9
+
+  console.log
+    script.js: Finished part: core/app-core-environment.js
+
+      at src/scripts/script.js:4385:9
+
+  console.log
+    script.js: Starting part: core/app-core-bootstrap.js
+
+      at src/scripts/script.js:4388:9
+
+  console.log
+    script.js: Finished part: core/app-core-bootstrap.js
+
+      at src/scripts/script.js:4544:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-shared.js
+
+      at src/scripts/script.js:4547:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-shared.js
+
+      at src/scripts/script.js:4859:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-ui.js
+
+      at src/scripts/script.js:4862:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-ui.js
+
+      at src/scripts/script.js:5155:9
+
+  console.log
+    script.js: Starting part: core/app-core-new-1.js
+
+      at src/scripts/script.js:5158:9
+
+  console.log
+    script.js: Executing wrapper with 10 parts
+
+      at Object.log (src/scripts/script.js:88:11)
+
+  console.log
+    script.js: app-session.js index: -1
+
+      at Object.log (src/scripts/script.js:89:11)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-scopes.js
+
+      at join (src/scripts/script.js:75:5)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-scopes.js
+
+      at runtimeGuardModule (src/scripts/script.js:352:5)
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-support.js
+
+      at runtimeGuard (src/scripts/script.js:356:7)
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-support.js
+
+      at src/scripts/script.js:1170:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-candidate-scopes.js
+
+      at src/scripts/script.js:1173:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-candidate-scopes.js
+
+      at src/scripts/script.js:1608:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-helpers.js
+
+      at src/scripts/script.js:1611:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-helpers.js
+
+      at src/scripts/script.js:2292:9
+
+  console.log
+    script.js: Starting part: core/app-core-text.js
+
+      at src/scripts/script.js:2295:9
+
+  console.log
+    script.js: Finished part: core/app-core-text.js
+
+      at src/scripts/script.js:2465:9
+
+  console.log
+    script.js: Starting part: core/app-core-environment.js
+
+      at src/scripts/script.js:2468:9
+
+  console.log
+    script.js: Finished part: core/app-core-environment.js
+
+      at src/scripts/script.js:4385:9
+
+  console.log
+    script.js: Starting part: core/app-core-bootstrap.js
+
+      at src/scripts/script.js:4388:9
+
+  console.log
+    script.js: Finished part: core/app-core-bootstrap.js
+
+      at src/scripts/script.js:4544:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-shared.js
+
+      at src/scripts/script.js:4547:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-shared.js
+
+      at src/scripts/script.js:4859:9
+
+  console.log
+    script.js: Starting part: core/app-core-runtime-ui.js
+
+      at src/scripts/script.js:4862:9
+
+  console.log
+    script.js: Finished part: core/app-core-runtime-ui.js
+
+      at src/scripts/script.js:5155:9
+
+  console.log
+    script.js: Starting part: core/app-core-new-1.js
+
+      at src/scripts/script.js:5158:9
+
+FAIL dom tests/dom/projectAutosave.test.js
+  project autosave
+    ✓ sanity check jsdom behavior (143 ms)
+    ✕ persists project data to localStorage when form changes (177 ms)
+    ✕ autosaves partially filled crew entries (144 ms)
+    ✕ saves pending project edits when switching setups without waiting for autosave timer (123 ms)
+    ✕ does not overwrite other project requirements when typing a different project name (122 ms)
+    ✕ blank project entries remain empty when editing another project (122 ms)
+    ✕ switching to a new setup keeps previously saved requirements intact (124 ms)
+
+  ● project autosave › persists project data to localStorage when form changes
+
+    ReferenceError: iconGlyph is not defined
+
+
+
+      at src/scripts/script.js:5776:33
+      at Object.call (src/scripts/script.js:90:11)
+      at require (tests/helpers/runtimeLoader.js:123:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:38:17)
+
+  ● project autosave › autosaves partially filled crew entries
+
+    ReferenceError: iconGlyph is not defined
+
+
+
+      at src/scripts/script.js:5776:33
+      at Object.call (src/scripts/script.js:90:11)
+      at require (tests/helpers/runtimeLoader.js:123:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:98:17)
+
+  ● project autosave › saves pending project edits when switching setups without waiting for autosave timer
+
+    ReferenceError: iconGlyph is not defined
+
+
+
+      at src/scripts/script.js:5776:33
+      at Object.call (src/scripts/script.js:90:11)
+      at require (tests/helpers/runtimeLoader.js:123:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:152:17)
+
+  ● project autosave › does not overwrite other project requirements when typing a different project name
+
+    ReferenceError: iconGlyph is not defined
+
+
+
+      at src/scripts/script.js:5776:33
+      at Object.call (src/scripts/script.js:90:11)
+      at require (tests/helpers/runtimeLoader.js:123:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:238:17)
+
+  ● project autosave › blank project entries remain empty when editing another project
+
+    ReferenceError: iconGlyph is not defined
+
+
+
+      at src/scripts/script.js:5776:33
+      at Object.call (src/scripts/script.js:90:11)
+      at require (tests/helpers/runtimeLoader.js:123:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:311:17)
+
+  ● project autosave › switching to a new setup keeps previously saved requirements intact
+
+    ReferenceError: iconGlyph is not defined
+
+
+
+      at src/scripts/script.js:5776:33
+      at Object.call (src/scripts/script.js:90:11)
+      at require (tests/helpers/runtimeLoader.js:123:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:373:17)
+
+Test Suites: 1 failed, 1 total
+Tests:       6 failed, 1 passed, 7 total
+Snapshots:   0 total
+Time:        1.366 s, estimated 2 s
+Ran all test suites matching tests/dom/projectAutosave.test.js.
+Test Suites: 1 failed, 1 total
+Tests:       6 failed, 1 passed, 7 total
+Snapshots:   0 total
+Time:        1.368 s, estimated 2 s
+Ran all test suites matching tests/dom/projectAutosave.test.js.

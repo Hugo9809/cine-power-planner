@@ -1,0 +1,256 @@
+
+> cine-power-planner@1.0.47 test
+> npm run check:pink-mode-icons && npm run build:auto-gear && npm run lint && npm run check-consistency && npm run test:jest tests/dom/projectAutosave.test.js
+
+
+> cine-power-planner@1.0.47 check:pink-mode-icons
+> node tools/generatePinkModeAnimatedIcons.js --check
+
+Pink mode animated icon store is up to date.
+
+> cine-power-planner@1.0.47 build:auto-gear
+> tsc -p tsconfig.auto-gear.json
+
+
+> cine-power-planner@1.0.47 lint
+> eslint .
+
+
+> cine-power-planner@1.0.47 check-consistency
+> node tools/checkConsistency.js
+
+All devices have required fields.
+Service worker asset manifest is up to date.
+
+> cine-power-planner@1.0.47 test:jest
+> node --max-old-space-size=3072 ./node_modules/jest/bin/jest.js --runInBand tests/dom/projectAutosave.test.js
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at log (src/scripts/shims/legacy-globals-shim.js:166:13)
+
+  console.log
+    script.js: Applying Object.freeze override shim
+
+      at Object.log (src/scripts/script.js:134:13)
+
+  console.log
+    DEBUG: loadRuntime failed (expected during bisection): /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:82113
+    var resolveAutoGearBackupRetentionMin =
+        ^
+    
+    SyntaxError: Identifier 'resolveAutoGearBackupRetentionMin' has already been declared
+        at new Script (node:vm:117:7)
+        at createScript (node:vm:269:10)
+        at Object.runInThisContext (node:vm:317:10)
+        at Object.runInThisContext (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:183:22)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at Object.loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:20:7)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      at Object.log (tests/dom/projectAutosave.test.js:22:15)
+
+  console.log
+    DEBUG: JSDOM click working after loadRuntime
+
+      at Object.log (tests/dom/projectAutosave.test.js:32:15)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at log (src/scripts/shims/legacy-globals-shim.js:166:13)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at log (src/scripts/shims/legacy-globals-shim.js:166:13)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at log (src/scripts/shims/legacy-globals-shim.js:166:13)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at log (src/scripts/shims/legacy-globals-shim.js:166:13)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at log (src/scripts/shims/legacy-globals-shim.js:166:13)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at log (src/scripts/shims/legacy-globals-shim.js:166:13)
+
+FAIL dom tests/dom/projectAutosave.test.js
+  project autosave
+    ✓ sanity check jsdom behavior (232 ms)
+    ✕ persists project data to localStorage when form changes (270 ms)
+    ✕ autosaves partially filled crew entries (261 ms)
+    ✕ saves pending project edits when switching setups without waiting for autosave timer (205 ms)
+    ✕ does not overwrite other project requirements when typing a different project name (203 ms)
+    ✕ blank project entries remain empty when editing another project (341 ms)
+    ✕ switching to a new setup keeps previously saved requirements intact (225 ms)
+
+  ● project autosave › persists project data to localStorage when form changes
+
+    /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:82099
+    var resolveAutoGearBackupRetentionMin =
+        ^
+
+    SyntaxError: Identifier 'resolveAutoGearBackupRetentionMin' has already been declared
+
+      181 |     '\n  }\n' +
+      182 |     '})';
+    > 183 |   const wrapper = vm.runInThisContext(wrapperSource, { filename: __filename });
+          |                      ^
+      184 |   const globalScope =
+      185 |     (typeof globalThis !== 'undefined' && globalThis)
+      186 |     || (typeof global !== 'undefined' && global)
+
+      at Object.runInThisContext (src/scripts/script.js:183:22)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:38:17)
+
+  ● project autosave › autosaves partially filled crew entries
+
+    /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:82099
+    var resolveAutoGearBackupRetentionMin =
+        ^
+
+    SyntaxError: Identifier 'resolveAutoGearBackupRetentionMin' has already been declared
+
+      181 |     '\n  }\n' +
+      182 |     '})';
+    > 183 |   const wrapper = vm.runInThisContext(wrapperSource, { filename: __filename });
+          |                      ^
+      184 |   const globalScope =
+      185 |     (typeof globalThis !== 'undefined' && globalThis)
+      186 |     || (typeof global !== 'undefined' && global)
+
+      at Object.runInThisContext (src/scripts/script.js:183:22)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:99:17)
+
+  ● project autosave › saves pending project edits when switching setups without waiting for autosave timer
+
+    /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:82099
+    var resolveAutoGearBackupRetentionMin =
+        ^
+
+    SyntaxError: Identifier 'resolveAutoGearBackupRetentionMin' has already been declared
+
+      181 |     '\n  }\n' +
+      182 |     '})';
+    > 183 |   const wrapper = vm.runInThisContext(wrapperSource, { filename: __filename });
+          |                      ^
+      184 |   const globalScope =
+      185 |     (typeof globalThis !== 'undefined' && globalThis)
+      186 |     || (typeof global !== 'undefined' && global)
+
+      at Object.runInThisContext (src/scripts/script.js:183:22)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:154:17)
+
+  ● project autosave › does not overwrite other project requirements when typing a different project name
+
+    /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:82099
+    var resolveAutoGearBackupRetentionMin =
+        ^
+
+    SyntaxError: Identifier 'resolveAutoGearBackupRetentionMin' has already been declared
+
+      181 |     '\n  }\n' +
+      182 |     '})';
+    > 183 |   const wrapper = vm.runInThisContext(wrapperSource, { filename: __filename });
+          |                      ^
+      184 |   const globalScope =
+      185 |     (typeof globalThis !== 'undefined' && globalThis)
+      186 |     || (typeof global !== 'undefined' && global)
+
+      at Object.runInThisContext (src/scripts/script.js:183:22)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:241:17)
+
+  ● project autosave › blank project entries remain empty when editing another project
+
+    /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:82099
+    var resolveAutoGearBackupRetentionMin =
+        ^
+
+    SyntaxError: Identifier 'resolveAutoGearBackupRetentionMin' has already been declared
+
+      181 |     '\n  }\n' +
+      182 |     '})';
+    > 183 |   const wrapper = vm.runInThisContext(wrapperSource, { filename: __filename });
+          |                      ^
+      184 |   const globalScope =
+      185 |     (typeof globalThis !== 'undefined' && globalThis)
+      186 |     || (typeof global !== 'undefined' && global)
+
+      at Object.runInThisContext (src/scripts/script.js:183:22)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:315:17)
+
+  ● project autosave › switching to a new setup keeps previously saved requirements intact
+
+    /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:82099
+    var resolveAutoGearBackupRetentionMin =
+        ^
+
+    SyntaxError: Identifier 'resolveAutoGearBackupRetentionMin' has already been declared
+
+      181 |     '\n  }\n' +
+      182 |     '})';
+    > 183 |   const wrapper = vm.runInThisContext(wrapperSource, { filename: __filename });
+          |                      ^
+      184 |   const globalScope =
+      185 |     (typeof globalThis !== 'undefined' && globalThis)
+      186 |     || (typeof global !== 'undefined' && global)
+
+      at Object.runInThisContext (src/scripts/script.js:183:22)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:378:17)
+
+Test Suites: 1 failed, 1 total
+Tests:       6 failed, 1 passed, 7 total
+Snapshots:   0 total
+Time:        2.307 s
+Ran all test suites matching tests/dom/projectAutosave.test.js.
+Test Suites: 1 failed, 1 total
+Tests:       6 failed, 1 passed, 7 total
+Snapshots:   0 total
+Time:        2.311 s
+Ran all test suites matching tests/dom/projectAutosave.test.js.
