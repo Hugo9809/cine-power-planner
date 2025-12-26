@@ -7309,6 +7309,21 @@ function attemptAppearanceModuleInitialization(moduleCandidate) {
   if (appearanceModuleInitialized) {
     return true;
   }
+  if (typeof document !== 'undefined') {
+    if (!appearanceContext.elements.darkModeToggle) {
+      appearanceContext.elements.darkModeToggle = darkModeToggle || document.getElementById('darkModeToggle');
+    }
+    if (!appearanceContext.elements.pinkModeToggle) {
+      appearanceContext.elements.pinkModeToggle = pinkModeToggle || document.getElementById('pinkModeToggle');
+    }
+    if (!appearanceContext.settings.darkMode) {
+      appearanceContext.settings.darkMode = (typeof settingsDarkMode !== 'undefined' ? settingsDarkMode : null) || document.getElementById('settingsDarkMode');
+    }
+    if (!appearanceContext.settings.pinkMode) {
+      appearanceContext.settings.pinkMode = (typeof settingsPinkMode !== 'undefined' ? settingsPinkMode : null) || document.getElementById('settingsPinkMode');
+    }
+  }
+
   const initialized = initializeAppearanceModule(moduleCandidate);
   if (initialized) {
     appearanceModuleInitialized = true;
@@ -7658,29 +7673,46 @@ const getThemePreference = () => {
     && document.body.classList.contains('dark-mode');
 };
 
-const registerThemeControl = (element, config) => {
-  if (!themePreferenceController || typeof themePreferenceController.registerControl !== 'function') {
-    return () => { };
-  }
-  try {
-    return themePreferenceController.registerControl(element, config);
-  } catch (registrationError) {
-    console.warn('Failed to register theme control', registrationError);
-    return () => { };
-  }
-};
-
 let unregisterHeaderThemeControl = () => { };
 let unregisterSettingsThemeControl = () => { };
 
-if (themePreferenceController) {
-  if (darkModeToggle) {
-    unregisterHeaderThemeControl = registerThemeControl(darkModeToggle, { type: 'button' });
+const registerThemeControl = (element, config) => {
+  if (themePreferenceController && typeof themePreferenceController.registerControl === 'function') {
+    return themePreferenceController.registerControl(element, config);
   }
-  if (settingsDarkMode) {
-    unregisterSettingsThemeControl = registerThemeControl(settingsDarkMode, { type: 'checkbox' });
+  let unregister = () => { };
+  pendingThemeControls.push({
+    element,
+    config,
+    callback: (fn) => { unregister = fn; }
+  });
+  return () => unregister();
+};
+
+const registerPinkModeControl = (element, config) => {
+  if (pinkModePreferenceController && typeof pinkModePreferenceController.registerControl === 'function') {
+    return pinkModePreferenceController.registerControl(element, config);
   }
-} else {
+  let unregister = () => { };
+  pendingPinkModeControls.push({
+    element,
+    options: config,
+    callback: (fn) => { unregister = fn; }
+  });
+  return () => unregister();
+};
+
+if (darkModeToggle || (typeof document !== 'undefined' && document.getElementById('darkModeToggle'))) {
+  unregisterHeaderThemeControl = registerThemeControl(darkModeToggle || document.getElementById('darkModeToggle'), { type: 'button' });
+}
+if (typeof settingsDarkMode !== 'undefined' || (typeof document !== 'undefined' && document.getElementById('settingsDarkMode'))) {
+  const settingsToggle = (typeof settingsDarkMode !== 'undefined' ? settingsDarkMode : null) || document.getElementById('settingsDarkMode');
+  if (settingsToggle) {
+    unregisterSettingsThemeControl = registerThemeControl(settingsToggle, { type: 'checkbox' });
+  }
+}
+
+if (!themePreferenceController) {
   let fallbackDarkMode = false;
   try {
     const stored = typeof localStorage !== 'undefined' ? localStorage.getItem('darkMode') : null;
@@ -7693,16 +7725,6 @@ if (themePreferenceController) {
     console.warn('Could not load dark mode preference', loadError);
   }
   applyDarkMode(fallbackDarkMode);
-  if (darkModeToggle) {
-    darkModeToggle.addEventListener('click', () => {
-      setThemePreference(!document.body.classList.contains('dark-mode'));
-    });
-  }
-  if (settingsDarkMode) {
-    settingsDarkMode.addEventListener('change', () => {
-      setThemePreference(settingsDarkMode.checked);
-    });
-  }
 }
 
 if (themePreferenceGlobalScope) {
@@ -7805,35 +7827,13 @@ rememberSettingsFocusScaleBaseline();
 rememberSettingsShowAutoBackupsBaseline();
 rememberSettingsMountVoltagesBaseline();
 
-if (pinkModePreferenceController) {
-  if (pinkModeToggle) {
-    pinkModePreferenceController.registerControl(pinkModeToggle, { type: 'button' });
-  }
-  if (settingsPinkMode) {
-    pinkModePreferenceController.registerControl(settingsPinkMode, { type: 'checkbox' });
-  }
-} else {
-  if (typeof document !== 'undefined') {
-    document.addEventListener('click', (event) => {
-      if (!event || !event.target) return;
-      const toggle = event.target.closest('#pinkModeToggle');
-      if (toggle) {
-        persistPinkModePreference(!document.body.classList.contains('pink-mode'));
-      }
-    });
-
-    if (typeof window !== 'undefined') {
-      // Expose helper for programmatic access and testing
-      window.togglePinkMode = () => {
-        persistPinkModePreference(!document.body.classList.contains('pink-mode'));
-      };
-    }
-  }
-
-  if (settingsPinkMode) {
-    settingsPinkMode.addEventListener('change', () => {
-      persistPinkModePreference(settingsPinkMode.checked);
-    });
+if (pinkModeToggle || (typeof document !== 'undefined' && document.getElementById('pinkModeToggle'))) {
+  registerPinkModeControl(pinkModeToggle || document.getElementById('pinkModeToggle'), { type: 'button' });
+}
+if (typeof settingsPinkMode !== 'undefined' || (typeof document !== 'undefined' && document.getElementById('settingsPinkMode'))) {
+  const settingsToggle = (typeof settingsPinkMode !== 'undefined' ? settingsPinkMode : null) || document.getElementById('settingsPinkMode');
+  if (settingsToggle) {
+    registerPinkModeControl(settingsToggle, { type: 'checkbox' });
   }
 }
 
@@ -15599,6 +15599,11 @@ const setupHelpSystem = () => {
   if (!btn || !dialog) return false;
   if (btn.dataset.helpInitialized) return true;
   btn.dataset.helpInitialized = 'true';
+
+  btn.addEventListener('click', e => {
+    e.preventDefault();
+    toggleHelp();
+  });
 
   // --- Help dialog and hover help -----------------------------------------
   // Provides a modal help dialog with live filtering and a "hover for help"

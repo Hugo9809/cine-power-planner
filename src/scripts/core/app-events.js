@@ -5115,8 +5115,11 @@ addSafeEventListener('newCategory', "change", () => {
   const wasEditing = addDeviceBtn?.dataset.mode === "edit";
   const previousName = newNameInput ? newNameInput.value : "";
   const newCategorySelectElement = document.getElementById('newCategory');
-  const val = newCategorySelectElement ? newCategorySelectElement.value : '';
-  console.log('[newCategory change] Selected category:', val);
+  const val = (newCategorySelectElement ? newCategorySelectElement.value : '').trim();
+  const type = (typeof inferDeviceCategory === 'function') ? inferDeviceCategory(val, {}) : 'generic';
+
+  console.log('[newCategory change] Inferred type:', type, 'for value:', `"${val}"`);
+
   placeWattField(val);
   clearDynamicFields();
   if (subcategoryFieldDiv) subcategoryFieldDiv.hidden = true;
@@ -5127,6 +5130,7 @@ addSafeEventListener('newCategory', "change", () => {
   }
   if (dtapRow) dtapRow.style.display = "";
   if (wattFieldDiv) wattFieldDiv.style.display = "";
+
   hideFormSection(batteryFieldsDiv);
   hideFormSection(cameraFieldsDiv);
   hideFormSection(monitorFieldsDiv);
@@ -5135,16 +5139,18 @@ addSafeEventListener('newCategory', "change", () => {
   hideFormSection(motorFieldsDiv);
   hideFormSection(controllerFieldsDiv);
   hideFormSection(distanceFieldsDiv);
-  if (val === "batteries" || val === "accessories.batteries" || val === "batteryHotswaps") {
-    console.log('[newCategory change] Battery category selected. batteryFieldsDiv:', batteryFieldsDiv);
+  hideFormSection(lensFieldsDiv);
+
+  if (type === "batteries") {
     if (wattFieldDiv) wattFieldDiv.style.display = "none";
     showFormSection(batteryFieldsDiv);
-    console.log('[newCategory change] After showFormSection, batteryFieldsDiv.hidden:', batteryFieldsDiv?.hidden, 'classList:', batteryFieldsDiv?.classList?.toString());
-    if (dtapRow) dtapRow.style.display = val === "batteryHotswaps" ? "none" : "";
-  } else if (val === "cameras") {
+    if (dtapRow) dtapRow.style.display = (val === "batteryHotswaps" || val === "accessories.batteryHotswaps") ? "none" : "";
+    buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
+  } else if (type === "cameras") {
     if (wattFieldDiv) wattFieldDiv.style.display = "none";
     showFormSection(cameraFieldsDiv);
-  } else if (val === "lenses") {
+    buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
+  } else if (type === "lenses") {
     if (wattFieldDiv) wattFieldDiv.style.display = "none";
     showFormSection(lensFieldsDiv);
     setLensDeviceMountOptions([], resolveDefaultLensMountType());
@@ -5152,21 +5158,28 @@ addSafeEventListener('newCategory', "change", () => {
       updateLensFocusScaleSelectOptions();
       lensFocusScaleSelect.value = '';
     }
-  } else if (val === "monitors" || val === "directorMonitors") {
+    buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
+  } else if (type === "monitors") {
     if (wattFieldDiv) wattFieldDiv.style.display = "none";
     showFormSection(monitorFieldsDiv);
-  } else if (val === "viewfinders") {
+    buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
+  } else if (type === "viewfinders") {
     if (wattFieldDiv) wattFieldDiv.style.display = "none";
     showFormSection(viewfinderFieldsDiv);
-  } else if (val === "video" || val === "wirelessReceivers" || val === "iosVideo") {
+    buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
+  } else if (type === "video") {
     showFormSection(videoFieldsDiv);
-  } else if (val === "fiz.motors") {
+    buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
+  } else if (type === "fiz.motors") {
     showFormSection(motorFieldsDiv);
-  } else if (val === "fiz.controllers") {
+    buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
+  } else if (type === "fiz.controllers") {
     showFormSection(controllerFieldsDiv);
-  } else if (val === "fiz.distance") {
+    buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
+  } else if (type === "distances") {
     showFormSection(distanceFieldsDiv);
-  } else if (val === "accessories.cables") {
+    buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
+  } else if (type === "accessories.cables") {
     if (wattFieldDiv) wattFieldDiv.style.display = "none";
     if (subcategoryFieldDiv) subcategoryFieldDiv.hidden = false;
     const subcategoryKeys = getCableSubcategoryKeysForUi(
@@ -5192,24 +5205,16 @@ addSafeEventListener('newCategory', "change", () => {
       );
     }
   } else {
-    console.log('[newCategory change] Using generic (else) branch for category:', val);
-    // Check if the category uses wattage (e.g. for cages it should be hidden)
-    const schemaAttrs = typeof getSchemaAttributesForCategory === 'function'
-      ? getSchemaAttributesForCategory(val)
-      : [];
-    console.log('[newCategory change] schemaAttrs from getSchemaAttributesForCategory:', schemaAttrs);
+    // Generic branch
+    const schemaAttrs = typeof getSchemaAttributesForCategory === 'function' ? getSchemaAttributesForCategory(val) : [];
     const hasWattage = schemaAttrs.includes('powerDrawWatts');
-
     if (wattFieldDiv) {
       wattFieldDiv.style.display = hasWattage ? "" : "none";
     }
-
     const hasDtap = schemaAttrs.includes('dtapA') || schemaAttrs.includes('pinA');
     if (dtapRow) {
       dtapRow.style.display = hasDtap ? "" : "none";
     }
-
-    console.log('[newCategory change] Calling buildDynamicFields for category:', val, 'with exclude:', categoryExcludedAttrs[val] || []);
     buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
   }
   if (newWattInput) newWattInput.value = "";

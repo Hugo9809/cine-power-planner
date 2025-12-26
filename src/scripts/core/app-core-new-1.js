@@ -16175,14 +16175,8 @@ function getCategoryLabel(categoryKey, lang = currentLang) {
   if (langNames[categoryKey]) return langNames[categoryKey];
   const fallbackNames = (typeof categoryNames === "object" && categoryNames && categoryNames.en) || {};
   if (fallbackNames[categoryKey]) return fallbackNames[categoryKey];
-  const parts = categoryKey.split('.');
-  if (parts[0] === "accessories" && parts.length > 1) {
-    const rest = parts.slice(1).map(part => humanizeKey(part));
-    return `${humanizeKey('accessory')} ${rest.join(' ')}`.trim();
-  }
-  if (parts[0] === "fiz" && parts.length > 1) {
-    const rest = parts.slice(1).map(part => humanizeKey(part));
-    return `FIZ ${rest.join(' ')}`.trim();
+  if (categoryKey === 'batteries' || categoryKey === 'accessories.batteries') {
+    return lang === 'en' ? 'Battery' : (lang === 'de' ? 'Akku' : 'Battery');
   }
   return parts.map(part => humanizeKey(part)).join(' ');
 }
@@ -16553,30 +16547,53 @@ function populateCategoryOptions() {
 
   // Add categories from schema when available
   if (deviceSchema) {
+    const categoriesToAdd = new Set();
     if (deviceSchema.accessories) {
       for (const [sub, obj] of Object.entries(deviceSchema.accessories)) {
         if (sub === 'cables') {
-          addOpt('accessories.cables');
+          categoriesToAdd.add('accessories.cables');
         } else if (obj && obj.attributes) {
-          addOpt(`accessories.${sub}`);
+          categoriesToAdd.add(`accessories.${sub}`);
         }
       }
     }
     for (const [key, obj] of Object.entries(deviceSchema)) {
       if (key === 'accessories' || key === 'fiz') continue;
-      if (obj && obj.attributes) addOpt(key);
+      if (obj && obj.attributes) categoriesToAdd.add(key);
     }
+
+    // Sort categories alphabetically by their labels for a better UI experience
+    const sortedCategories = Array.from(categoriesToAdd).sort((a, b) => {
+      const labelA = getCategoryLabel(a, currentLang);
+      const labelB = getCategoryLabel(b, currentLang);
+      return labelA.localeCompare(labelB, currentLang);
+    });
+
+    for (const catKey of sortedCategories) {
+      addOpt(catKey);
+    }
+
     if (deviceSchema.fiz) {
       for (const [sub, obj] of Object.entries(deviceSchema.fiz)) {
         if (obj && obj.attributes) addOpt(`fiz.${sub}`);
       }
+    }
+
+    // Trigger change event to initialize the form fields for the default selection
+    if (newCategorySelect && typeof newCategorySelect.dispatchEvent === 'function') {
+      newCategorySelect.dispatchEvent(new Event('change'));
     }
   }
 
   // Include any categories present in the device database that were not in the schema
   if (typeof devices === 'object') {
     const existing = new Set(newCategorySelect.options ? Array.from(newCategorySelect.options).map(o => o.value) : []);
-    const addIfMissing = (val) => { if (!existing.has(val)) { addOpt(val); existing.add(val); } };
+    const addIfMissing = (val) => {
+      if (!existing.has(val)) {
+        addOpt(val);
+        existing.add(val);
+      }
+    };
     for (const [key, obj] of Object.entries(devices)) {
       if (key === 'accessories') {
         for (const sub of Object.keys(obj || {})) {
@@ -16591,8 +16608,6 @@ function populateCategoryOptions() {
       }
     }
   }
-
-  syncDeviceManagerCategories();
 }
 
 populateCategoryOptions();
@@ -17456,9 +17471,10 @@ const monitorExcludedAttributes = [
 ];
 
 var categoryExcludedAttrs = {
-  batteries: ["capacity", "pinA", "dtapA"],
-  batteryHotswaps: ["capacity", "pinA"],
-  "accessories.batteries": ["capacity", "pinA"],
+  batteries: ["capacity", "pinA", "dtapA", "pinV"],
+  batteryHotswaps: ["capacity", "pinA", "dtapA"],
+  "accessories.batteries": ["capacity", "pinA", "dtapA", "pinV"],
+  "accessories.batteryHotswaps": ["capacity", "pinA", "dtapA"],
   cameras: ["powerDrawWatts", "power", "recordingMedia", "lensMount", "videoOutputs", "fizConnectors", "viewfinder", "timecode"],
   lenses: ["mount", "mountOptions", "focusScale"],
   monitors: monitorExcludedAttributes,
