@@ -5136,8 +5136,10 @@ addSafeEventListener('newCategory', "change", () => {
   hideFormSection(controllerFieldsDiv);
   hideFormSection(distanceFieldsDiv);
   if (val === "batteries" || val === "accessories.batteries" || val === "batteryHotswaps") {
+    console.log('[newCategory change] Battery category selected. batteryFieldsDiv:', batteryFieldsDiv);
     if (wattFieldDiv) wattFieldDiv.style.display = "none";
     showFormSection(batteryFieldsDiv);
+    console.log('[newCategory change] After showFormSection, batteryFieldsDiv.hidden:', batteryFieldsDiv?.hidden, 'classList:', batteryFieldsDiv?.classList?.toString());
     if (dtapRow) dtapRow.style.display = val === "batteryHotswaps" ? "none" : "";
   } else if (val === "cameras") {
     if (wattFieldDiv) wattFieldDiv.style.display = "none";

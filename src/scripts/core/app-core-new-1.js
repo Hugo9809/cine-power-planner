@@ -17895,13 +17895,17 @@ function createSchemaField(category, attr, value) {
 }
 
 function getSchemaAttributesForCategory(category) {
+  console.log('[getSchemaAttributesForCategory] deviceSchema:', deviceSchema ? Object.keys(deviceSchema) : 'null');
   if (!deviceSchema) return [];
   const parts = category.split('.');
   let node = deviceSchema;
+  console.log('[getSchemaAttributesForCategory] Looking up category:', category, 'parts:', parts);
   for (const p of parts) {
     node = node && node[p];
+    console.log('[getSchemaAttributesForCategory] After part', p, 'node:', node ? (node.attributes ? 'has attributes' : Object.keys(node)) : 'null');
     if (!node) return [];
   }
+  console.log('[getSchemaAttributesForCategory] Final node.attributes:', node.attributes);
   return Array.isArray(node.attributes) ? node.attributes : [];
 }
 
