@@ -5027,12 +5027,16 @@ addSafeEventListener('device-manager', "click", (event) => {
 
     populateDeviceForm(categoryKey, deviceData, subcategory);
     // Change button to "Update"
-    setButtonLabelWithIconForEvents(addDeviceBtn, texts[currentLang].updateDeviceBtn, ICON_GLYPHS.save);
-    addDeviceBtn.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);
-    addDeviceBtn.dataset.mode = "edit";
-    setButtonLabelWithIconForEvents(cancelEditBtn, texts[currentLang].cancelEditBtn, ICON_GLYPHS.circleX);
-    cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
-    showFormSection(cancelEditBtn);
+    if (addDeviceBtn) {
+      setButtonLabelWithIconForEvents(addDeviceBtn, texts[currentLang].updateDeviceBtn, ICON_GLYPHS.save);
+      addDeviceBtn.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);
+      addDeviceBtn.dataset.mode = "edit";
+    }
+    if (cancelEditBtn) {
+      setButtonLabelWithIconForEvents(cancelEditBtn, texts[currentLang].cancelEditBtn, ICON_GLYPHS.circleX);
+      cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
+      showFormSection(cancelEditBtn);
+    }
     document.getElementById("addDeviceHeading").scrollIntoView({ behavior: "smooth", block: "start" });
   } else if (button.classList.contains("delete-btn")) {
     const name = button.dataset.name;
@@ -5307,21 +5311,29 @@ addSafeEventListener('newCategory', "change", () => {
   }
   const cancelLabel = texts[currentLang].cancelEditBtn;
   if (wasEditing) {
-    setButtonLabelWithIconForEvents(addDeviceBtn, texts[currentLang].updateDeviceBtn, ICON_GLYPHS.save);
-    addDeviceBtn.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);
-    setButtonLabelWithIconForEvents(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
-    cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
-    showFormSection(cancelEditBtn);
+    if (addDeviceBtn) {
+      setButtonLabelWithIconForEvents(addDeviceBtn, texts[currentLang].updateDeviceBtn, ICON_GLYPHS.save);
+      addDeviceBtn.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);
+    }
+    if (cancelEditBtn) {
+      setButtonLabelWithIconForEvents(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
+      cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
+      showFormSection(cancelEditBtn);
+    }
   } else {
-    setButtonLabelWithIconForEvents(addDeviceBtn, texts[currentLang].addDeviceBtn, ICON_GLYPHS.add);
-    addDeviceBtn.setAttribute('data-help', texts[currentLang].addDeviceBtnHelp);
-    addDeviceBtn.dataset.mode = "add";
-    delete addDeviceBtn.dataset.originalName;
-    delete addDeviceBtn.dataset.originalSubcategory;
-    delete addDeviceBtn.dataset.originalCategory;
-    setButtonLabelWithIconForEvents(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
-    cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
-    hideFormSection(cancelEditBtn);
+    if (addDeviceBtn) {
+      setButtonLabelWithIconForEvents(addDeviceBtn, texts[currentLang].addDeviceBtn, ICON_GLYPHS.add);
+      addDeviceBtn.setAttribute('data-help', texts[currentLang].addDeviceBtnHelp);
+      addDeviceBtn.dataset.mode = "add";
+      delete addDeviceBtn.dataset.originalName;
+      delete addDeviceBtn.dataset.originalSubcategory;
+      delete addDeviceBtn.dataset.originalCategory;
+    }
+    if (cancelEditBtn) {
+      setButtonLabelWithIconForEvents(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
+      cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
+      hideFormSection(cancelEditBtn);
+    }
   }
 });
 
