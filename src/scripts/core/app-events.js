@@ -5976,7 +5976,9 @@ addSafeEventListener('exportDataBtn', "click", () => {
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  setTimeout(() => {
+    URL.revokeObjectURL(url);
+  }, 60000);
 });
 
 const exportAndRevertBtn = document.getElementById('exportAndRevertBtn');
@@ -6006,7 +6008,9 @@ if (exportAndRevertBtn) {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 60000);
 
       // Give a small delay to ensure download prompt appears before next step
       const revertTimer = setTimeout(() => {

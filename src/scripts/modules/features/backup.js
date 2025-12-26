@@ -2580,7 +2580,7 @@
               } catch (revokeError) {
                 void revokeError;
               }
-            }, 1000);
+            }, 60000);
           }
           if (triggered) {
             return { success: true, method: 'blob-url', permission: permissionMonitor };
