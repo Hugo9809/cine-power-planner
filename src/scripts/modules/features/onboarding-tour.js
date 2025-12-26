@@ -3391,7 +3391,9 @@
       return;
     }
 
-    if (supportsDialogTopLayer) {
+    // Temporarily disabled dialog top layer support to troubleshoot Safari click blocking
+    const forceLegacyOverlay = true;
+    if (supportsDialogTopLayer && !forceLegacyOverlay) {
       overlayRoot = DOCUMENT.createElement('dialog');
       overlayRoot.setAttribute('role', 'presentation');
       overlayRoot.setAttribute('aria-modal', 'false');

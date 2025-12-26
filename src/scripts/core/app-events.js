@@ -4326,7 +4326,10 @@ function bindDeviceManagerToggleHandler() {
   if (directBtn && typeof directBtn.addEventListener === 'function') {
     try {
       directBtn.addEventListener('click', (event) => {
-        // We don't stopPropagation here to avoid breaking tour listeners on document
+        // Prevent double-toggle when it bubbles to document
+        if (event && typeof event.preventDefault === 'function') {
+          event.preventDefault();
+        }
         toggleDeviceManagerSection();
       });
     } catch (btnError) {
