@@ -5094,6 +5094,10 @@ addSafeEventListener('device-manager', "click", (event) => {
   }
 });
 
+function resolveDeviceManagerSectionForEvents() {
+  return deviceManagerSection || document.getElementById('device-manager');
+}
+
 addSafeEventListener('device-manager', 'keydown', (event) => {
   if (!resolveDeviceManagerSectionForEvents()) {
     return;

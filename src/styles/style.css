@@ -9995,10 +9995,22 @@ body.light-mode #topBar select:focus-visible {
 .diagram-detail-dialog {
   padding: 0;
   display: none;
+  pointer-events: none;
+  background: transparent;
 }
 
 .diagram-detail-dialog[open] {
   display: block;
+  pointer-events: none;
+}
+
+.diagram-detail-dialog::backdrop {
+  background: transparent;
+  pointer-events: none;
+}
+
+.diagram-detail-dialog .modal-surface {
+  pointer-events: auto;
 }
 
 /* Popup Category Colors */
