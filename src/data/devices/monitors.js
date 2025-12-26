@@ -253,6 +253,39 @@
         }
       ]
     },
+    "ARRI CCM-1": {
+      "screenSizeInches": 7,
+      "brightnessNits": 1300,
+      "powerDrawWatts": 20,
+      "weight_g": 594,
+      "power": {
+        "input": {
+          "voltageRange": "10-34",
+          "type": [
+            "3-Pin Fischer",
+            "ARRI VF Cable"
+          ]
+        }
+      },
+      "wirelessTx": false,
+      "notes": "Camera Control Monitor designed for ARRI cameras. Brightness is 1300 nits with external power, 100 nits when powered via VF cable only. 1920x1200 resolution, 97% DCI-P3 color space.",
+      "videoInputs": [
+        {
+          "portType": "3G-SDI"
+        },
+        {
+          "portType": "3G-SDI (Input/Output)"
+        },
+        {
+          "portType": "ARRI VF"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "3G-SDI (Input/Output)"
+        }
+      ]
+    },
 
     "SmallHD Indie 7 Bolt 4K TX": {
       "screenSizeInches": 7,
