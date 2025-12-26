@@ -4342,18 +4342,23 @@ function bindDeviceManagerToggleHandler() {
 
   // Try adding direct listener for Safari/iOS robustness
   const directBtn = typeof document !== 'undefined' ? document.getElementById('toggleDeviceManager') : null;
+  console.log('Safari Debug: Attempting to attach direct listener. Button found:', directBtn);
   if (directBtn && typeof directBtn.addEventListener === 'function') {
     try {
       directBtn.addEventListener('click', (event) => {
+        console.log('Safari Debug: DIRECT LISTENER FIRED!', event);
         // Prevent double-toggle when it bubbles to document
         if (event && typeof event.preventDefault === 'function') {
           event.preventDefault();
         }
         toggleDeviceManagerSection();
       });
+      console.log('Safari Debug: Direct listener successfully attached to toggleDeviceManager');
     } catch (btnError) {
       console.warn('Failed to attach direct click listener to toggleDeviceManager', btnError);
     }
+  } else {
+    console.warn('Safari Debug: Could not attach direct listener - button not found or no addEventListener');
   }
 
   bindDeviceManagerToggleHandler.bound = true;
