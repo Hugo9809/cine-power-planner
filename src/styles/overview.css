@@ -45,7 +45,7 @@ select:focus-visible {
 }
 
 #overviewDialogContent {
-  font-family: 'Ubuntu', sans-serif;
+  font-family: var(--font-family);
   font-weight: var(--font-weight-light);
   padding: 24px;
   color: var(--text-color);
@@ -73,7 +73,7 @@ select:focus-visible {
 h1,
 h2,
 h3 {
-  font-family: 'Ubuntu', sans-serif;
+  font-family: var(--font-family);
   font-weight: var(--font-weight-regular);
   color: var(--accent-color);
 }
@@ -396,7 +396,7 @@ th {
 }
 
 .device-category h3 {
-  font-family: 'Ubuntu', sans-serif;
+  font-family: var(--font-family);
   font-weight: var(--font-weight-regular);
   margin-top: 0;
   margin-bottom: 5px;

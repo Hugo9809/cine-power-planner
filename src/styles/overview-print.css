@@ -91,7 +91,7 @@ body.dark-mode {
   --print-diagram-icon-scale: 1;
   --print-diagram-text-scale: 1;
   --print-diagram-label-scale: 1;
-  font-family: 'Ubuntu', sans-serif;
+  font-family: var(--font-family);
   font-weight: var(--font-weight-light);
   font-size: var(--font-size-base);
   line-height: var(--line-height-base, 1.6);
@@ -157,7 +157,7 @@ body.pink-mode,
 
 #overviewDialogContent #setupDiagram text {
   fill: var(--text-color);
-  font-family: 'Ubuntu', sans-serif;
+  font-family: var(--font-family);
 }
 
 #overviewDialogContent #setupDiagram .node-icon {
@@ -171,7 +171,7 @@ body.pink-mode,
 }
 
 #overviewDialogContent #setupDiagram .node-icon[data-icon-font='text'] {
-  font-family: 'Ubuntu', system-ui, sans-serif;
+  font-family: var(--font-family);
   font-weight: var(--font-weight-medium);
 }
 
@@ -211,7 +211,7 @@ body.pink-mode,
 #overviewDialogContent h1,
 #overviewDialogContent h2,
 #overviewDialogContent h3 {
-  font-family: 'Ubuntu', sans-serif;
+  font-family: var(--font-family);
   font-weight: var(--font-weight-regular);
   border-color: var(--accent-color) !important;
   color: var(--accent-color) !important;

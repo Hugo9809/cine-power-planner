@@ -15257,9 +15257,8 @@
       AUTO_BACKUP_COMPRESSION_CACHE_KEYS.length = 0;
     }
 
-    // Attempt to clear the backup vault (IndexedDB) if the backup module is available.
-    // We do this defensively so that core storage clearing proceeds even if the
-    // backup module fails or is not loaded.
+    // Attempt to clear all IndexedDB databases.
+    // We attempt to list databases if the browser supports it, otherwise we hit known ones.
     try {
       let clearVaultFn = null;
       if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.clearBackupVault === 'function') {
@@ -15272,8 +15271,25 @@
 
       if (clearVaultFn) {
         await clearVaultFn();
-      } else if (typeof indexedDB !== 'undefined') {
-        const vaultDbNames = ['cinePowerPlannerBackupVault'];
+      }
+
+      if (typeof indexedDB !== 'undefined') {
+        const vaultDbNames = ['cinePowerPlannerBackupVault', 'cinePowerPlanner', 'cameraPowerPlanner'];
+
+        // Try to get all database names if supported (Chrome, Edge, Firefox 125+, Safari 14+)
+        if (typeof indexedDB.databases === 'function') {
+          try {
+            const dbs = await indexedDB.databases();
+            dbs.forEach(db => {
+              if (db.name && !vaultDbNames.includes(db.name)) {
+                vaultDbNames.push(db.name);
+              }
+            });
+          } catch (listError) {
+            console.warn('Failed to list IndexedDB databases during factory reset', listError);
+          }
+        }
+
         await Promise.all(vaultDbNames.map(dbName => {
           return new Promise((resolve) => {
             try {
@@ -15304,15 +15320,18 @@
       if (!storage) {
         return;
       }
+
+      // First attempt a total clear
       if (typeof storage.clear === 'function') {
         try {
           storage.clear();
-          return;
         } catch (clearError) {
-          console.warn(`Failed to clear ${storageName}, falling back to key removal.`, clearError);
+          console.warn(`Failed to clear ${storageName} using clear(), falling back to manual removal.`, clearError);
         }
       }
 
+      // Then iterate and remove EVERYTHING just to be absolutely sure,
+      // as clear() might be intercepted or only partially effective in some environments.
       try {
         const keysToRemove = [];
         const length = storage.length;
@@ -15331,7 +15350,7 @@
           }
         });
       } catch (iterateError) {
-        console.warn(`Failed to iterate ${storageName}`, iterateError);
+        console.warn(`Failed to iterate ${storageName} for strict cleanup`, iterateError);
       }
     };
 
@@ -15354,7 +15373,6 @@
         : 'cine_install_banner_dismissed',
     ];
 
-
     const ensureStoragePruned = (storage, storageName) => {
       if (!storage || typeof storage.length !== 'number' || typeof storage.key !== 'function') {
         return;
@@ -15370,7 +15388,10 @@
         if (
           key.startsWith('cameraPowerPlanner_') ||
           key.startsWith('cine_') ||
+          key.startsWith('cinePowerPlanner_') ||
+          key.startsWith('cinePowerPlanner') ||
           key.startsWith('cineRental') ||
+          key.startsWith('__cine') ||
           sessionCacheKeys.includes(key)
         ) {
           keysToRemove.push(key);
@@ -15386,6 +15407,7 @@
       });
     };
 
+    // Pruning is redundant but provides a second pass if clearAll fails
     ensureStoragePruned(safeStorage, 'safeLocalStorage');
     if (typeof localStorage !== 'undefined' && localStorage !== safeStorage) {
       ensureStoragePruned(localStorage, 'localStorage');
@@ -15395,7 +15417,6 @@
     }
 
     // Explicitly clear known keys and prefixes using the helper to ensure logging and safety
-    // This is redundant with clear() but ensures critical keys are hit regardless of iteration issues.
     if (typeof clearUiCacheStorageEntries === 'function') {
       try {
         clearUiCacheStorageEntries();
@@ -15410,7 +15431,9 @@
       SETUP_STORAGE_KEY,
       FEEDBACK_STORAGE_KEY,
       PROJECT_STORAGE_KEY,
+      PROJECT_STORAGE_REV_KEY,
       'cameraPowerPlanner_projects',
+      'cameraPowerPlanner_project_shards',
       FAVORITES_STORAGE_KEY,
       CONTACTS_STORAGE_KEY,
       AUTO_GEAR_RULES_STORAGE_KEY,
@@ -15425,6 +15448,7 @@
       getCustomFontStorageKeyName(),
       CUSTOM_LOGO_STORAGE_KEY,
       DEVICE_SCHEMA_CACHE_KEY,
+      LEGACY_SCHEMA_CACHE_KEY,
       OWN_GEAR_STORAGE_KEY,
       USER_PROFILE_STORAGE_KEY,
       DOCUMENTATION_TRACKER_STORAGE_KEY,
@@ -15439,28 +15463,34 @@
       'cameraPowerPlanner_v2_migration',
       'cameraPowerPlanner_sharded',
       'cameraPowerPlanner_forceLegacyBundle',
-      'cameraPowerPlanner_forceLegacyBundleRetry'
+      'cameraPowerPlanner_forceLegacyBundleRetry',
+      typeof GLOBAL_SCOPE !== 'undefined' && GLOBAL_SCOPE.TEMPERATURE_UNIT_STORAGE_KEY,
+      typeof GLOBAL_SCOPE !== 'undefined' && GLOBAL_SCOPE.FOCUS_SCALE_STORAGE_KEY,
+      typeof GLOBAL_SCOPE !== 'undefined' && GLOBAL_SCOPE.INSTALL_BANNER_DISMISSED_KEY,
+      'cine_install_banner_dismissed'
     ];
 
     explicitKeys.forEach(k => {
-      if (k) deleteFromStorage(safeStorage, k, msg);
+      if (k) {
+        deleteFromStorage(safeStorage, k, msg);
+        // Also explicitly delete potential backup variants
+        if (typeof safeStorage.removeItem === 'function') {
+          safeStorage.removeItem(`${k}${STORAGE_BACKUP_SUFFIX}`);
+          safeStorage.removeItem(`${k}${STORAGE_MIGRATION_BACKUP_SUFFIX}`);
+        }
+      }
     });
 
     if (typeof sessionStorage !== 'undefined') {
       deleteFromStorage(sessionStorage, SESSION_STATE_KEY, msg);
       deleteFromStorage(sessionStorage, '__cineLoggingHistory', msg);
       deleteFromStorage(sessionStorage, '__cineLoggingConfig', msg);
+      // Nuke everything in session storage too
+      try { sessionStorage.clear(); } catch (e) { void e; }
     }
 
-    // Void unused helpers to satisfy lint
-    void applyProjectEntryCompression;
-    void forceCompressAllProjectEntries;
-    void clearDerivedProjectCachesForQuota;
-    void removeOldestRenamedAutoBackupEntry;
-    void shouldDisableProjectCompressionDuringPersist;
-
     // Clear Service Worker Caches
-    if (typeof caches !== 'undefined') {
+    if (typeof caches !== 'undefined' && typeof caches.keys === 'function') {
       try {
         const cacheKeys = await caches.keys();
         await Promise.all(
@@ -15495,11 +15525,16 @@
     ];
     preferenceKeys.forEach((key) => {
       deleteFromStorage(safeStorage, key, msg, { disableBackup: true });
+      if (typeof safeStorage.removeItem === 'function') {
+        safeStorage.removeItem(`${key}${STORAGE_BACKUP_SUFFIX}`);
+      }
     });
 
     const onboardingStorageKeys = [
       'cameraPowerPlanner_onboardingTutorial',
       'cinePowerPlanner_onboardingTutorial',
+      'cameraPowerPlanner_onboardingComplete',
+      'cameraPowerPlanner_tourShown'
     ];
 
     const clearOnboardingTutorialState = (storage) => {
@@ -15509,6 +15544,9 @@
       for (let index = 0; index < onboardingStorageKeys.length; index += 1) {
         const key = onboardingStorageKeys[index];
         deleteFromStorage(storage, key, msg);
+        if (typeof storage.removeItem === 'function') {
+          storage.removeItem(`${key}${STORAGE_BACKUP_SUFFIX}`);
+        }
       }
     };
 
@@ -15547,6 +15585,9 @@
       if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.name === 'string') {
         GLOBAL_SCOPE.name = '';
       }
+      if (typeof window !== 'undefined' && typeof window.name === 'string') {
+        window.name = '';
+      }
     } catch (windowNameError) {
       console.warn('Unable to reset window.name during factory reset', windowNameError);
     }
@@ -15561,17 +15602,6 @@
       }
     } catch (swError) {
       console.warn('Failed to unregister service workers', swError);
-    }
-
-    try {
-      if (typeof caches !== 'undefined' && typeof caches.keys === 'function') {
-        const cacheKeys = await caches.keys();
-        for (const cacheKey of cacheKeys) {
-          await caches.delete(cacheKey);
-        }
-      }
-    } catch (cacheError) {
-      console.warn('Failed to clear cache storage', cacheError);
     }
 
     try {

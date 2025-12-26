@@ -6654,12 +6654,12 @@ body.dark-mode .help-callout {
 }
 
 .icon-glyph[data-icon-font='text'] {
-  font-family: 'Ubuntu', sans-serif;
+  font-family: var(--font-family);
   font-weight: var(--font-weight-medium);
 }
 
 .icon-glyph.icon-text {
-  font-family: 'Ubuntu', sans-serif;
+  font-family: var(--font-family);
   font-weight: var(--font-weight-medium);
 }
 
@@ -10364,7 +10364,7 @@ body.light-mode #topBar select:focus-visible {
 }
 
 #setupDiagram .node-icon[data-icon-font='text'] {
-  font-family: 'Ubuntu', system-ui, sans-serif;
+  font-family: var(--font-family);
   font-weight: var(--font-weight-medium);
 }
 

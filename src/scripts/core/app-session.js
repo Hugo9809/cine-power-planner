@@ -6526,11 +6526,17 @@ forEachTrackedSelect(getTrackedPowerSelectsWithSetup(), (sel) => {
 forEachTrackedSelect(motorSelects, (sel) => { if (sel) sel.addEventListener('change', saveCurrentSession); });
 forEachTrackedSelect(controllerSelects, (sel) => { if (sel) sel.addEventListener('change', saveCurrentSession); });
 if (setupNameInput) {
+  let setupNameInputDebounceTimer = null;
   const handleSetupNameInput = () => {
-    const typedName = setupNameInput.value ? setupNameInput.value.trim() : '';
-    const selectedName = setupSelect ? setupSelect.value : '';
-    const renameInProgress = Boolean(selectedName && typedName && typedName !== selectedName);
-    saveCurrentSession({ skipGearList: renameInProgress });
+    if (setupNameInputDebounceTimer) {
+      clearTimeout(setupNameInputDebounceTimer);
+    }
+    setupNameInputDebounceTimer = setTimeout(() => {
+      const typedName = setupNameInput.value ? setupNameInput.value.trim() : '';
+      const selectedName = setupSelect ? setupSelect.value : '';
+      const renameInProgress = Boolean(selectedName && typedName && typedName !== selectedName);
+      saveCurrentSession({ skipGearList: renameInProgress });
+    }, 500);
   };
   setupNameInput.addEventListener("input", handleSetupNameInput);
 }

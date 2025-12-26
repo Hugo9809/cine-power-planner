@@ -281,7 +281,7 @@ input:focus-visible+.slider {
     --status-success-text-color: #000000;
     --status-note-text-color: #000000;
     --connector-label-neutral-color: #000000;
-    --font-family: 'Ubuntu', sans-serif;
+    /* --font-family: 'Ubuntu', sans-serif; */
 }
 
 /* Ensure paper content ignores global dark mode styles */
