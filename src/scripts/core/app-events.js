@@ -4271,18 +4271,10 @@ if (typeof setTimeout === 'function') {
 updateQueuedBackupBannerFromVault();
 
 function showDeviceManagerSection() {
-  console.log('Safari Debug: showDeviceManagerSection called');
   const section = deviceManagerSection || document.getElementById('device-manager');
   const btn = toggleDeviceBtn || document.getElementById('toggleDeviceManager');
-  if (!section || !btn) {
-    console.warn('Safari Debug: showDeviceManagerSection - Missing section or button');
-    return;
-  }
-  if (!section.classList.contains('hidden')) {
-    console.log('Safari Debug: showDeviceManagerSection - Already visible, returning');
-    return;
-  }
-  console.log('Safari Debug: showDeviceManagerSection - Removing hidden class');
+  if (!section || !btn) return;
+  if (!section.classList.contains('hidden')) return;
   section.classList.remove('hidden');
   document.body.classList.add('device-manager-active');
   const { langTexts, fallbackTexts } = getEventsLanguageTexts();
@@ -4292,10 +4284,8 @@ function showDeviceManagerSection() {
   btn.setAttribute('title', hideLabel);
   btn.setAttribute('data-help', hideHelp);
   btn.setAttribute('aria-expanded', 'true');
-  console.log('Safari Debug: showDeviceManagerSection - Calling refreshDeviceListsSafe');
   refreshDeviceListsSafe();
   updateCalculations();
-  console.log('Safari Debug: showDeviceManagerSection - Complete');
 }
 
 function hideDeviceManagerSection() {
@@ -4315,21 +4305,12 @@ function hideDeviceManagerSection() {
 }
 
 function toggleDeviceManagerSection() {
-  console.log('Safari Debug: toggleDeviceManagerSection called');
   const section = deviceManagerSection || document.getElementById('device-manager');
   const btn = toggleDeviceBtn || document.getElementById('toggleDeviceManager');
-  console.log('Safari Debug: section=', section, 'btn=', btn);
-  if (!section || !btn) {
-    console.warn('Safari Debug: Missing section or button, returning');
-    return;
-  }
-  const isHidden = section.classList.contains('hidden');
-  console.log('Safari Debug: section.classList.contains("hidden")=', isHidden);
-  if (isHidden) {
-    console.log('Safari Debug: Calling showDeviceManagerSection');
+  if (!section || !btn) return;
+  if (section.classList.contains('hidden')) {
     showDeviceManagerSection();
   } else {
-    console.log('Safari Debug: Calling hideDeviceManagerSection');
     hideDeviceManagerSection();
   }
 }
@@ -4339,85 +4320,27 @@ function bindDeviceManagerToggleHandler() {
   if (bindDeviceManagerToggleHandler.bound) {
     return;
   }
-
-  // Try adding direct listener for Safari/iOS robustness
-  const directBtn = typeof document !== 'undefined' ? document.getElementById('toggleDeviceManager') : null;
-  console.log('Safari Debug: Attempting to attach direct listener. Button found:', directBtn);
-  if (directBtn && typeof directBtn.addEventListener === 'function') {
-    try {
-      directBtn.addEventListener('click', (event) => {
-        console.log('Safari Debug: DIRECT LISTENER FIRED!', event);
-        // Prevent double-toggle when it bubbles to document
-        if (event && typeof event.preventDefault === 'function') {
-          event.preventDefault();
-        }
-        toggleDeviceManagerSection();
-      });
-      console.log('Safari Debug: Direct listener successfully attached to toggleDeviceManager');
-    } catch (btnError) {
-      console.warn('Failed to attach direct click listener to toggleDeviceManager', btnError);
-    }
-  } else {
-    console.warn('Safari Debug: Could not attach direct listener - button not found or no addEventListener');
-  }
-
   bindDeviceManagerToggleHandler.bound = true;
+
   if (typeof document !== 'undefined' && document && typeof document.addEventListener === 'function') {
     document.addEventListener('click', (event) => {
       if (!event) {
         return;
       }
       const target = event.target;
-      if (!target) {
+      if (!target || typeof target.closest !== 'function') {
         return;
       }
-
-      // Robust element search for Safari
-      let button = null;
-      try {
-        if (typeof target.closest === 'function') {
-          button = target.closest('#toggleDeviceManager');
-        } else if (target.parentElement && typeof target.parentElement.closest === 'function') {
-          button = target.parentElement.closest('#toggleDeviceManager');
-        }
-      } catch (e) {
-        // Fallback for cases where target isn't an Element
-      }
-
+      const button = target.closest('#toggleDeviceManager');
       if (!button) {
         return;
       }
-
-      // If we already handled it via direct listener, some browsers might fire both.
-      // But toggleDeviceManagerSection is idempotent in its logic (toggles state), 
-      // however firing twice would just close it again.
-      // So we check if we were already handled.
-      if (event.defaultPrevented && directBtn && (target === directBtn || directBtn.contains(target))) {
-        // If already handled, ignore
-        return;
-      }
-
       toggleDeviceManagerSection();
     });
   }
 }
 
-// Defer binding until DOM is ready to ensure button exists
-if (typeof document !== 'undefined' && document) {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      console.log('Safari Debug: DOMContentLoaded - calling bindDeviceManagerToggleHandler');
-      bindDeviceManagerToggleHandler();
-    });
-  } else {
-    // DOM already ready, bind immediately
-    console.log('Safari Debug: DOM already ready - calling bindDeviceManagerToggleHandler immediately');
-    bindDeviceManagerToggleHandler();
-  }
-} else {
-  // Fallback for edge cases
-  bindDeviceManagerToggleHandler();
-}
+bindDeviceManagerToggleHandler();
 
 
 function getEventsLanguageTexts() {
