@@ -4320,6 +4320,20 @@ function bindDeviceManagerToggleHandler() {
   if (bindDeviceManagerToggleHandler.bound) {
     return;
   }
+
+  // Try adding direct listener for Safari/iOS robustness
+  const directBtn = typeof document !== 'undefined' ? document.getElementById('toggleDeviceManager') : null;
+  if (directBtn && typeof directBtn.addEventListener === 'function') {
+    try {
+      directBtn.addEventListener('click', (event) => {
+        // We don't stopPropagation here to avoid breaking tour listeners on document
+        toggleDeviceManagerSection();
+      });
+    } catch (btnError) {
+      console.warn('Failed to attach direct click listener to toggleDeviceManager', btnError);
+    }
+  }
+
   bindDeviceManagerToggleHandler.bound = true;
   if (typeof document !== 'undefined' && document && typeof document.addEventListener === 'function') {
     document.addEventListener('click', (event) => {
@@ -4327,13 +4341,35 @@ function bindDeviceManagerToggleHandler() {
         return;
       }
       const target = event.target;
-      if (!target || typeof target.closest !== 'function') {
+      if (!target) {
         return;
       }
-      const button = target.closest('#toggleDeviceManager');
+
+      // Robust element search for Safari
+      let button = null;
+      try {
+        if (typeof target.closest === 'function') {
+          button = target.closest('#toggleDeviceManager');
+        } else if (target.parentElement && typeof target.parentElement.closest === 'function') {
+          button = target.parentElement.closest('#toggleDeviceManager');
+        }
+      } catch (e) {
+        // Fallback for cases where target isn't an Element
+      }
+
       if (!button) {
         return;
       }
+
+      // If we already handled it via direct listener, some browsers might fire both.
+      // But toggleDeviceManagerSection is idempotent in its logic (toggles state), 
+      // however firing twice would just close it again.
+      // So we check if we were already handled.
+      if (event.defaultPrevented && directBtn && (target === directBtn || directBtn.contains(target))) {
+        // If already handled, ignore
+        return;
+      }
+
       toggleDeviceManagerSection();
     });
   }
@@ -4925,15 +4961,27 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
 
 // Handle "Edit" and "Delete" buttons in device lists (event delegation)
 addSafeEventListener('device-manager', "click", (event) => {
-  const button = event.target.closest('button');
+  if (!event || !event.target) return;
+
+  let button = null;
+  try {
+    if (typeof event.target.closest === 'function') {
+      button = event.target.closest('button');
+    } else if (event.target.parentElement && typeof event.target.parentElement.closest === 'function') {
+      button = event.target.parentElement.closest('button');
+    }
+  } catch (e) { /* ignore */ }
+
   if (!button) {
     return;
   }
 
   // Ensure the button is actually inside the section (redundant but safe)
-  if (event.currentTarget && !event.currentTarget.contains(button)) {
-    return;
-  }
+  try {
+    if (event.currentTarget && typeof event.currentTarget.contains === 'function' && !event.currentTarget.contains(button)) {
+      return;
+    }
+  } catch (e) { /* ignore */ }
 
   if (button.classList.contains("detail-toggle")) {
     toggleDeviceDetails(button);

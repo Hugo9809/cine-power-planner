@@ -13177,6 +13177,19 @@
       }
 
       storagesToPrune.forEach((storage) => {
+        // Force delete primary and backup keys directly first to ensure factory reset reliability
+        if (storage && typeof storage.removeItem === 'function') {
+          try {
+            storage.removeItem(PROJECT_STORAGE_KEY);
+            const backupSuffix = typeof STORAGE_BACKUP_SUFFIX === 'string' ? STORAGE_BACKUP_SUFFIX : '__backup';
+            storage.removeItem(`${PROJECT_STORAGE_KEY}${backupSuffix}`);
+            // Also remove hardcoded potential legacy/default backup key just in case
+            storage.removeItem('cameraPowerPlanner_project__backup');
+          } catch (e) {
+            console.warn(`[FactoryReset] Failed to force delete project keys`, e);
+          }
+        }
+
         deleteFromStorage(
           storage,
           PROJECT_STORAGE_KEY,

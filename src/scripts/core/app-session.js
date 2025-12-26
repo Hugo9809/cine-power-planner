@@ -4606,19 +4606,29 @@ function saveCurrentSession(options = {}) {
 
 function autoSaveCurrentSetup() {
   if (factoryResetInProgress) return;
-  if (!setupNameInput) return;
-  const name = setupNameInput.value.trim();
+
+  const setupNameInputRef = typeof setupNameInput !== 'undefined' ? setupNameInput : document.getElementById('setupName');
+  if (!setupNameInputRef) return;
+
+  const name = setupNameInputRef.value.trim();
   if (!name) {
     saveCurrentSession({ skipGearList: true });
     checkSetupChanged();
     return false;
   }
-  const selectedName = setupSelect ? setupSelect.value : '';
-  if (setupSelect && (!selectedName || name !== selectedName)) {
+
+  const setupSelectRef = typeof setupSelect !== 'undefined' ? setupSelect : document.getElementById('setupSelect');
+  const selectedName = setupSelectRef ? setupSelectRef.value : '';
+
+  // Prevent autosave if the name has changed (renaming) or if no project is selected.
+  // This avoids creating partial copies while typing, as autosave should only persist
+  // the currently loaded project's state.
+  if (!selectedName || name !== selectedName) {
     saveCurrentSession({ skipGearList: true });
     checkSetupChanged();
     return false;
   }
+
   const setups = getSetups();
   const existingSetup = setups && typeof setups === 'object' ? setups[name] : undefined;
   const existingSetupSignature = existingSetup ? stableStringify(existingSetup) : '';
@@ -4638,7 +4648,7 @@ function autoSaveCurrentSetup() {
   setups[name] = currentSetup;
   storeSetups(setups);
   populateSetupSelect();
-  if (setupSelect) setupSelect.value = name;
+  if (setupSelectRef) setupSelectRef.value = name;
   saveCurrentSession();
   storeLoadedSetupState(getCurrentSetupState());
   checkSetupChanged();
