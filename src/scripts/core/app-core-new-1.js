@@ -7801,20 +7801,30 @@ async function setLanguage(lang) {
   applyOwnGearLocalization(lang);
   // Setup manager labels and buttons
   const savedSetupsLabelElem = document.getElementById("savedSetupsLabel");
-  savedSetupsLabelElem.textContent = texts[lang].savedSetupsLabel;
-  savedSetupsLabelElem.setAttribute("data-help", texts[lang].setupSelectHelp);
+  if (savedSetupsLabelElem) {
+    savedSetupsLabelElem.textContent = texts[lang].savedSetupsLabel;
+    savedSetupsLabelElem.setAttribute("data-help", texts[lang].setupSelectHelp);
+  }
   const setupNameLabelElem = document.getElementById("setupNameLabel");
-  setupNameLabelElem.textContent = texts[lang].setupNameLabel;
-  setupNameLabelElem.setAttribute("data-help", texts[lang].setupNameHelp);
-  setButtonLabelWithIconBinding(deleteSetupBtn, texts[lang].deleteSetupBtn, ICON_GLYPHS.trash);
+  if (setupNameLabelElem) {
+    setupNameLabelElem.textContent = texts[lang].setupNameLabel;
+    setupNameLabelElem.setAttribute("data-help", texts[lang].setupNameHelp);
+  }
+  if (typeof deleteSetupBtn !== 'undefined' && deleteSetupBtn) {
+    setButtonLabelWithIconBinding(deleteSetupBtn, texts[lang].deleteSetupBtn, ICON_GLYPHS.trash);
+  }
   const sharedLinkLabelElem = document.getElementById("sharedLinkLabel");
-  sharedLinkLabelElem.textContent = texts[lang].sharedLinkLabel;
-  sharedLinkLabelElem.setAttribute("data-help", texts[lang].sharedLinkHelp);
-  setButtonLabelWithIconBinding(
-    applySharedLinkBtn,
-    texts[lang].loadSharedLinkBtn,
-    ICON_GLYPHS.fileImport
-  );
+  if (sharedLinkLabelElem) {
+    sharedLinkLabelElem.textContent = texts[lang].sharedLinkLabel;
+    sharedLinkLabelElem.setAttribute("data-help", texts[lang].sharedLinkHelp);
+  }
+  if (typeof applySharedLinkBtn !== 'undefined' && applySharedLinkBtn) {
+    setButtonLabelWithIconBinding(
+      applySharedLinkBtn,
+      texts[lang].loadSharedLinkBtn,
+      ICON_GLYPHS.fileImport
+    );
+  }
 
   // Descriptive hover help for setup management controls
   // Descriptive hover help for setup management controls
