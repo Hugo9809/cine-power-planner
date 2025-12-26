@@ -4918,14 +4918,15 @@ addSafeEventListener('device-manager', "click", (event) => {
       categorySelect.appendChild(opt);
     }
 
-    if (addDeviceBtn) {
-      addDeviceBtn.dataset.mode = "edit";
-      addDeviceBtn.dataset.originalName = name;
-      addDeviceBtn.dataset.originalCategory = categoryKey;
+    const safeAddDeviceBtn = addDeviceBtn;
+    if (safeAddDeviceBtn) {
+      safeAddDeviceBtn.dataset.mode = "edit";
+      safeAddDeviceBtn.dataset.originalName = name;
+      safeAddDeviceBtn.dataset.originalCategory = categoryKey;
       if (categoryKey === "accessories.cables" && subcategory) {
-        addDeviceBtn.dataset.originalSubcategory = subcategory;
+        safeAddDeviceBtn.dataset.originalSubcategory = subcategory;
       } else {
-        delete addDeviceBtn.dataset.originalSubcategory;
+        delete safeAddDeviceBtn.dataset.originalSubcategory;
       }
     }
 
@@ -4947,15 +4948,17 @@ addSafeEventListener('device-manager', "click", (event) => {
 
     populateDeviceForm(categoryKey, deviceData, subcategory);
     // Change button to "Update"
-    if (addDeviceBtn) {
-      setButtonLabelWithIconForEvents(addDeviceBtn, texts[currentLang].updateDeviceBtn, ICON_GLYPHS.save);
-      addDeviceBtn.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);
+    const safeAddDeviceBtnForEdit = addDeviceBtn;
+    if (safeAddDeviceBtnForEdit) {
+      setButtonLabelWithIconForEvents(safeAddDeviceBtnForEdit, texts[currentLang].updateDeviceBtn, ICON_GLYPHS.save);
+      safeAddDeviceBtnForEdit.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);
     }
 
-    if (cancelEditBtn) {
-      setButtonLabelWithIconForEvents(cancelEditBtn, texts[currentLang].cancelEditBtn, ICON_GLYPHS.circleX);
-      cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
-      showFormSection(cancelEditBtn);
+    const safeCancelEditBtn = cancelEditBtn;
+    if (safeCancelEditBtn) {
+      setButtonLabelWithIconForEvents(safeCancelEditBtn, texts[currentLang].cancelEditBtn, ICON_GLYPHS.circleX);
+      safeCancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
+      showFormSection(safeCancelEditBtn);
     }
     document.getElementById("addDeviceHeading").scrollIntoView({ behavior: "smooth", block: "start" });
   } else if (button.classList.contains("delete-btn")) {
@@ -5231,28 +5234,32 @@ addSafeEventListener('newCategory', "change", () => {
   }
   const cancelLabel = texts[currentLang].cancelEditBtn;
   if (wasEditing) {
-    if (addDeviceBtn) {
-      setButtonLabelWithIconForEvents(addDeviceBtn, texts[currentLang].updateDeviceBtn, ICON_GLYPHS.save);
-      addDeviceBtn.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);
+    const safeAddDeviceBtn = addDeviceBtn;
+    if (safeAddDeviceBtn) {
+      setButtonLabelWithIconForEvents(safeAddDeviceBtn, texts[currentLang].updateDeviceBtn, ICON_GLYPHS.save);
+      safeAddDeviceBtn.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);
     }
-    if (cancelEditBtn) {
-      setButtonLabelWithIconForEvents(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
-      cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
-      showFormSection(cancelEditBtn);
+    const safeCancelEditBtn = cancelEditBtn;
+    if (safeCancelEditBtn) {
+      setButtonLabelWithIconForEvents(safeCancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
+      safeCancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
+      showFormSection(safeCancelEditBtn);
     }
   } else {
-    if (addDeviceBtn) {
-      setButtonLabelWithIconForEvents(addDeviceBtn, texts[currentLang].addDeviceBtn, ICON_GLYPHS.add);
-      addDeviceBtn.setAttribute('data-help', texts[currentLang].addDeviceBtnHelp);
-      addDeviceBtn.dataset.mode = "add";
-      delete addDeviceBtn.dataset.originalName;
-      delete addDeviceBtn.dataset.originalSubcategory;
-      delete addDeviceBtn.dataset.originalCategory;
+    const safeAddDeviceBtn = addDeviceBtn;
+    if (safeAddDeviceBtn) {
+      setButtonLabelWithIconForEvents(safeAddDeviceBtn, texts[currentLang].addDeviceBtn, ICON_GLYPHS.add);
+      safeAddDeviceBtn.setAttribute('data-help', texts[currentLang].addDeviceBtnHelp);
+      safeAddDeviceBtn.dataset.mode = "add";
+      delete safeAddDeviceBtn.dataset.originalName;
+      delete safeAddDeviceBtn.dataset.originalSubcategory;
+      delete safeAddDeviceBtn.dataset.originalCategory;
     }
-    if (cancelEditBtn) {
-      setButtonLabelWithIconForEvents(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
-      cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
-      hideFormSection(cancelEditBtn);
+    const safeCancelEditBtn = cancelEditBtn;
+    if (safeCancelEditBtn) {
+      setButtonLabelWithIconForEvents(safeCancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
+      safeCancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
+      hideFormSection(safeCancelEditBtn);
     }
   }
 });
@@ -5266,16 +5273,18 @@ addSafeEventListener('newSubcategory', 'change', () => {
 });
 
 function resetDeviceForm() {
-  if (addDeviceBtn) {
-    addDeviceBtn.dataset.mode = "add";
-    delete addDeviceBtn.dataset.originalName;
-    delete addDeviceBtn.dataset.originalSubcategory;
-    delete addDeviceBtn.dataset.originalCategory;
+  const safeAddDeviceBtn = addDeviceBtn;
+  if (safeAddDeviceBtn) {
+    safeAddDeviceBtn.dataset.mode = "add";
+    delete safeAddDeviceBtn.dataset.originalName;
+    delete safeAddDeviceBtn.dataset.originalSubcategory;
+    delete safeAddDeviceBtn.dataset.originalCategory;
   }
-  if (cancelEditBtn) {
-    hideFormSection(cancelEditBtn);
-    setButtonLabelWithIconForEvents(cancelEditBtn, texts[currentLang].cancelEditBtn, ICON_GLYPHS.circleX);
-    cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
+  const safeCancelEditBtn = cancelEditBtn;
+  if (safeCancelEditBtn) {
+    hideFormSection(safeCancelEditBtn);
+    setButtonLabelWithIconForEvents(safeCancelEditBtn, texts[currentLang].cancelEditBtn, ICON_GLYPHS.circleX);
+    safeCancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
   }
   // Trigger change handler to reset fields and button text, guarding against
   // missing DOM elements in test environments.

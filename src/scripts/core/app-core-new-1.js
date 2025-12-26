@@ -7807,42 +7807,54 @@ async function setLanguage(lang) {
   );
 
   // Descriptive hover help for setup management controls
-  setupSelect.setAttribute("data-help", texts[lang].setupSelectHelp);
-  setupNameInput.setAttribute("data-help", texts[lang].setupNameHelp);
-
-  if (deleteSetupBtn) {
-    deleteSetupBtn.setAttribute("title", texts[lang].deleteSetupHelp);
-    deleteSetupBtn.setAttribute("aria-label", texts[lang].deleteSetupHelp);
-    deleteSetupBtn.setAttribute("data-help", texts[lang].deleteSetupHelp);
+  // Descriptive hover help for setup management controls
+  const safeSetupSelect = typeof setupSelect !== 'undefined' ? setupSelect : document.getElementById('setupSelect');
+  if (safeSetupSelect) {
+    safeSetupSelect.setAttribute("data-help", texts[lang].setupSelectHelp);
+  }
+  const safeSetupNameInput = typeof setupNameInput !== 'undefined' ? setupNameInput : document.getElementById('setupNameInput');
+  if (safeSetupNameInput) {
+    safeSetupNameInput.setAttribute("data-help", texts[lang].setupNameHelp);
   }
 
-  if (saveSetupBtn) {
-    saveSetupBtn.setAttribute("title", texts[lang].saveSetupHelp);
-    saveSetupBtn.setAttribute("aria-label", texts[lang].saveSetupHelp);
-    saveSetupBtn.setAttribute("data-help", texts[lang].saveSetupHelp);
+  const safeDeleteSetupBtn = deleteSetupBtn;
+  if (safeDeleteSetupBtn) {
+    safeDeleteSetupBtn.setAttribute("title", texts[lang].deleteSetupHelp);
+    safeDeleteSetupBtn.setAttribute("aria-label", texts[lang].deleteSetupHelp);
+    safeDeleteSetupBtn.setAttribute("data-help", texts[lang].deleteSetupHelp);
   }
 
-  if (generateOverviewBtn) {
-    generateOverviewBtn.setAttribute("title", texts[lang].generateOverviewBtn);
-    generateOverviewBtn.setAttribute("data-help", texts[lang].generateOverviewHelp);
+  const safeSaveSetupBtn = saveSetupBtn;
+  if (safeSaveSetupBtn) {
+    safeSaveSetupBtn.setAttribute("title", texts[lang].saveSetupHelp);
+    safeSaveSetupBtn.setAttribute("aria-label", texts[lang].saveSetupHelp);
+    safeSaveSetupBtn.setAttribute("data-help", texts[lang].saveSetupHelp);
   }
 
-  if (generateGearListBtn) {
-    generateGearListBtn.setAttribute("title", texts[lang].generateGearListBtn);
-    generateGearListBtn.setAttribute("data-help", texts[lang].generateGearListHelp);
+  const safeGenerateOverviewBtn = generateOverviewBtn;
+  if (safeGenerateOverviewBtn) {
+    safeGenerateOverviewBtn.setAttribute("title", texts[lang].generateOverviewBtn);
+    safeGenerateOverviewBtn.setAttribute("data-help", texts[lang].generateOverviewHelp);
+  }
+
+  const safeGenerateGearListBtn = generateGearListBtn;
+  if (safeGenerateGearListBtn) {
+    safeGenerateGearListBtn.setAttribute("title", texts[lang].generateGearListBtn);
+    safeGenerateGearListBtn.setAttribute("data-help", texts[lang].generateGearListHelp);
   }
 
   const deleteGearListHelp =
     texts[lang].deleteGearListBtnHelp || texts[lang].deleteGearListBtn;
-  if (deleteGearListProjectBtn) {
+  const safeDeleteGearListProjectBtn = deleteGearListProjectBtn;
+  if (safeDeleteGearListProjectBtn) {
     setButtonLabelWithIconBinding(
-      deleteGearListProjectBtn,
+      safeDeleteGearListProjectBtn,
       texts[lang].deleteGearListBtn,
       ICON_GLYPHS.trash
     );
-    deleteGearListProjectBtn.setAttribute("title", deleteGearListHelp);
-    deleteGearListProjectBtn.setAttribute("data-help", deleteGearListHelp);
-    deleteGearListProjectBtn.setAttribute("aria-label", deleteGearListHelp);
+    safeDeleteGearListProjectBtn.setAttribute("title", deleteGearListHelp);
+    safeDeleteGearListProjectBtn.setAttribute("data-help", deleteGearListHelp);
+    safeDeleteGearListProjectBtn.setAttribute("aria-label", deleteGearListHelp);
   }
 
   const editProjectBtnElem = document.getElementById("editProjectBtn");
