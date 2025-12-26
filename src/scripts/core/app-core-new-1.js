@@ -7816,15 +7816,21 @@ async function setLanguage(lang) {
     deleteSetupBtn.setAttribute("data-help", texts[lang].deleteSetupHelp);
   }
 
-  saveSetupBtn.setAttribute("title", texts[lang].saveSetupHelp);
-  saveSetupBtn.setAttribute("aria-label", texts[lang].saveSetupHelp);
-  saveSetupBtn.setAttribute("data-help", texts[lang].saveSetupHelp);
+  if (saveSetupBtn) {
+    saveSetupBtn.setAttribute("title", texts[lang].saveSetupHelp);
+    saveSetupBtn.setAttribute("aria-label", texts[lang].saveSetupHelp);
+    saveSetupBtn.setAttribute("data-help", texts[lang].saveSetupHelp);
+  }
 
-  generateOverviewBtn.setAttribute("title", texts[lang].generateOverviewBtn);
-  generateOverviewBtn.setAttribute("data-help", texts[lang].generateOverviewHelp);
+  if (generateOverviewBtn) {
+    generateOverviewBtn.setAttribute("title", texts[lang].generateOverviewBtn);
+    generateOverviewBtn.setAttribute("data-help", texts[lang].generateOverviewHelp);
+  }
 
-  generateGearListBtn.setAttribute("title", texts[lang].generateGearListBtn);
-  generateGearListBtn.setAttribute("data-help", texts[lang].generateGearListHelp);
+  if (generateGearListBtn) {
+    generateGearListBtn.setAttribute("title", texts[lang].generateGearListBtn);
+    generateGearListBtn.setAttribute("data-help", texts[lang].generateGearListHelp);
+  }
 
   const deleteGearListHelp =
     texts[lang].deleteGearListBtnHelp || texts[lang].deleteGearListBtn;
