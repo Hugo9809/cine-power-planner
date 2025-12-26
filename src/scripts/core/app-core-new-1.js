@@ -8495,40 +8495,52 @@ async function setLanguage(lang) {
   // Determine text for Add/Update button
   const addDeviceLabel = texts[lang].addDeviceBtn;
   const updateDeviceLabel = texts[lang].updateDeviceBtn;
-  if (addDeviceBtn.dataset.mode === "edit") {
-    setButtonLabelWithIconBinding(addDeviceBtn, updateDeviceLabel, ICON_GLYPHS.save);
-    addDeviceBtn.setAttribute('data-help', texts[lang].updateDeviceBtnHelp);
-  } else {
-    setButtonLabelWithIconBinding(addDeviceBtn, addDeviceLabel, ICON_GLYPHS.add);
-    addDeviceBtn.setAttribute('data-help', texts[lang].addDeviceBtnHelp);
+  if (typeof addDeviceBtn !== 'undefined' && addDeviceBtn) {
+    if (addDeviceBtn.dataset && addDeviceBtn.dataset.mode === "edit") {
+      setButtonLabelWithIconBinding(addDeviceBtn, updateDeviceLabel, ICON_GLYPHS.save);
+      addDeviceBtn.setAttribute('data-help', texts[lang].updateDeviceBtnHelp);
+    } else {
+      setButtonLabelWithIconBinding(addDeviceBtn, addDeviceLabel, ICON_GLYPHS.add);
+      addDeviceBtn.setAttribute('data-help', texts[lang].addDeviceBtnHelp);
+    }
   }
-  setButtonLabelWithIconBinding(cancelEditBtn, texts[lang].cancelEditBtn, ICON_GLYPHS.circleX);
-  cancelEditBtn.setAttribute('data-help', texts[lang].cancelEditBtnHelp);
-  setButtonLabelWithIconBinding(exportBtn, texts[lang].exportDataBtn, ICON_GLYPHS.fileExport);
-  exportBtn.setAttribute('data-help', texts[lang].exportDataBtnHelp);
-  setButtonLabelWithIconBinding(importDataBtn, texts[lang].importDataBtn, ICON_GLYPHS.fileImport);
-  importDataBtn.setAttribute('data-help', texts[lang].importDataBtnHelp);
+  if (typeof cancelEditBtn !== 'undefined' && cancelEditBtn) {
+    setButtonLabelWithIconBinding(cancelEditBtn, texts[lang].cancelEditBtn, ICON_GLYPHS.circleX);
+    cancelEditBtn.setAttribute('data-help', texts[lang].cancelEditBtnHelp);
+  }
+  if (typeof exportBtn !== 'undefined' && exportBtn) {
+    setButtonLabelWithIconBinding(exportBtn, texts[lang].exportDataBtn, ICON_GLYPHS.fileExport);
+    exportBtn.setAttribute('data-help', texts[lang].exportDataBtnHelp);
+  }
+  if (typeof importDataBtn !== 'undefined' && importDataBtn) {
+    setButtonLabelWithIconBinding(importDataBtn, texts[lang].importDataBtn, ICON_GLYPHS.fileImport);
+    importDataBtn.setAttribute('data-help', texts[lang].importDataBtnHelp);
+  }
   // Placeholders for inputs
-  setupNameInput.placeholder = texts[lang].setupNameLabel.replace(":", "");
-  newNameInput.placeholder = texts[lang].placeholder_deviceName;
-  newWattInput.placeholder = texts[lang].placeholder_watt;
-  newCapacityInput.placeholder = texts[lang].placeholder_capacity;
-  newPinAInput.placeholder = texts[lang].placeholder_pin;
-  newDtapAInput.placeholder = texts[lang].placeholder_dtap;
-  cameraVoltageInput.placeholder = texts[lang].placeholder_voltage;
-  monitorVoltageInput.placeholder = texts[lang].placeholder_voltage;
+  // Placeholders for inputs
+  if (typeof setupNameInput !== 'undefined' && setupNameInput) setupNameInput.placeholder = texts[lang].setupNameLabel.replace(":", "");
+  if (typeof newNameInput !== 'undefined' && newNameInput) newNameInput.placeholder = texts[lang].placeholder_deviceName;
+  if (typeof newWattInput !== 'undefined' && newWattInput) newWattInput.placeholder = texts[lang].placeholder_watt;
+  if (typeof newCapacityInput !== 'undefined' && newCapacityInput) newCapacityInput.placeholder = texts[lang].placeholder_capacity;
+  if (typeof newPinAInput !== 'undefined' && newPinAInput) newPinAInput.placeholder = texts[lang].placeholder_pin;
+  if (typeof newDtapAInput !== 'undefined' && newDtapAInput) newDtapAInput.placeholder = texts[lang].placeholder_dtap;
+  if (typeof cameraVoltageInput !== 'undefined' && cameraVoltageInput) cameraVoltageInput.placeholder = texts[lang].placeholder_voltage;
+  if (typeof monitorVoltageInput !== 'undefined' && monitorVoltageInput) monitorVoltageInput.placeholder = texts[lang].placeholder_voltage;
   updateDeviceManagerLocalization(lang);
   // Toggle device manager button text (depends on current visibility)
-  if (deviceManagerSection.classList.contains('hidden')) {
-    setButtonLabelWithIconBinding(toggleDeviceBtn, texts[lang].toggleDeviceManager, ICON_GLYPHS.gears);
-    toggleDeviceBtn.setAttribute("title", texts[lang].toggleDeviceManager);
-    toggleDeviceBtn.setAttribute("data-help", texts[lang].toggleDeviceManagerHelp);
-    toggleDeviceBtn.setAttribute("aria-expanded", "false");
-  } else {
-    setButtonLabelWithIconBinding(toggleDeviceBtn, texts[lang].hideDeviceManager, ICON_GLYPHS.minus);
-    toggleDeviceBtn.setAttribute("title", texts[lang].hideDeviceManager);
-    toggleDeviceBtn.setAttribute("data-help", texts[lang].hideDeviceManagerHelp);
-    toggleDeviceBtn.setAttribute("aria-expanded", "true");
+  // Toggle device manager button text (depends on current visibility)
+  if (typeof deviceManagerSection !== 'undefined' && deviceManagerSection && typeof toggleDeviceBtn !== 'undefined' && toggleDeviceBtn) {
+    if (deviceManagerSection.classList.contains('hidden')) {
+      setButtonLabelWithIconBinding(toggleDeviceBtn, texts[lang].toggleDeviceManager, ICON_GLYPHS.gears);
+      toggleDeviceBtn.setAttribute("title", texts[lang].toggleDeviceManager);
+      toggleDeviceBtn.setAttribute("data-help", texts[lang].toggleDeviceManagerHelp);
+      toggleDeviceBtn.setAttribute("aria-expanded", "false");
+    } else {
+      setButtonLabelWithIconBinding(toggleDeviceBtn, texts[lang].hideDeviceManager, ICON_GLYPHS.minus);
+      toggleDeviceBtn.setAttribute("title", texts[lang].hideDeviceManager);
+      toggleDeviceBtn.setAttribute("data-help", texts[lang].hideDeviceManagerHelp);
+      toggleDeviceBtn.setAttribute("aria-expanded", "true");
+    }
   }
   // Update newCategory select option texts
   if (newCategorySelect.options) {
