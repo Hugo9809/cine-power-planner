@@ -5140,21 +5140,21 @@ addSafeEventListener('newCategory', "change", () => {
 
     buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
   }
-  newWattInput.value = "";
-  newCapacityInput.value = "";
-  newPinAInput.value = "";
-  newDtapAInput.value = "";
-  cameraWattInput.value = "";
-  cameraVoltageInput.value = "";
-  cameraPortTypeInput.value = "";
-  monitorScreenSizeInput.value = "";
-  monitorBrightnessInput.value = "";
-  monitorWattInput.value = "";
-  monitorVoltageInput.value = "";
-  monitorPortTypeInput.value = "";
-  monitorWirelessTxInput.checked = false;
-  monitorLatencyInput.value = "";
-  monitorAudioOutputInput.value = "";
+  if (newWattInput) newWattInput.value = "";
+  if (newCapacityInput) newCapacityInput.value = "";
+  if (newPinAInput) newPinAInput.value = "";
+  if (newDtapAInput) newDtapAInput.value = "";
+  if (cameraWattInput) cameraWattInput.value = "";
+  if (cameraVoltageInput) cameraVoltageInput.value = "";
+  if (cameraPortTypeInput) cameraPortTypeInput.value = "";
+  if (monitorScreenSizeInput) monitorScreenSizeInput.value = "";
+  if (monitorBrightnessInput) monitorBrightnessInput.value = "";
+  if (monitorWattInput) monitorWattInput.value = "";
+  if (monitorVoltageInput) monitorVoltageInput.value = "";
+  if (monitorPortTypeInput) monitorPortTypeInput.value = "";
+  if (monitorWirelessTxInput) monitorWirelessTxInput.checked = false;
+  if (monitorLatencyInput) monitorLatencyInput.value = "";
+  if (monitorAudioOutputInput) monitorAudioOutputInput.value = "";
   if (typeof clearMonitorVideoInputs === 'function') {
     clearMonitorVideoInputs();
   } else if (typeof window !== 'undefined' && typeof window.clearMonitorVideoInputs === 'function') {
@@ -5165,13 +5165,13 @@ addSafeEventListener('newCategory', "change", () => {
   } else if (typeof window !== 'undefined' && typeof window.clearMonitorVideoOutputs === 'function') {
     window.clearMonitorVideoOutputs();
   }
-  viewfinderScreenSizeInput.value = "";
-  viewfinderBrightnessInput.value = "";
-  viewfinderWattInput.value = "";
-  viewfinderVoltageInput.value = "";
-  viewfinderPortTypeInput.value = "";
-  viewfinderWirelessTxInput.checked = false;
-  viewfinderLatencyInput.value = "";
+  if (viewfinderScreenSizeInput) viewfinderScreenSizeInput.value = "";
+  if (viewfinderBrightnessInput) viewfinderBrightnessInput.value = "";
+  if (viewfinderWattInput) viewfinderWattInput.value = "";
+  if (viewfinderVoltageInput) viewfinderVoltageInput.value = "";
+  if (viewfinderPortTypeInput) viewfinderPortTypeInput.value = "";
+  if (viewfinderWirelessTxInput) viewfinderWirelessTxInput.checked = false;
+  if (viewfinderLatencyInput) viewfinderLatencyInput.value = "";
   if (typeof clearViewfinderVideoInputs === 'function') {
     clearViewfinderVideoInputs();
   }
@@ -5195,24 +5195,24 @@ addSafeEventListener('newCategory', "change", () => {
   callEventsCoreFunction('clearVideoPowerInputs');
   clearVideoInputs();
   clearVideoOutputsIO();
-  videoFrequencyInput.value = "";
-  videoLatencyInput.value = "";
-  motorConnectorInput.value = "";
-  motorInternalInput.checked = false;
-  motorTorqueInput.value = "";
-  motorGearInput.value = "";
-  motorNotesInput.value = "";
-  controllerConnectorInput.value = "";
-  controllerPowerInput.value = "";
-  controllerBatteryInput.value = "";
-  controllerConnectivityInput.value = "";
-  controllerNotesInput.value = "";
-  distanceConnectionInput.value = "";
-  distanceMethodInput.value = "";
-  distanceRangeInput.value = "";
-  distanceAccuracyInput.value = "";
-  distanceOutputInput.value = "";
-  distanceNotesInput.value = "";
+  if (videoFrequencyInput) videoFrequencyInput.value = "";
+  if (videoLatencyInput) videoLatencyInput.value = "";
+  if (motorConnectorInput) motorConnectorInput.value = "";
+  if (motorInternalInput) motorInternalInput.checked = false;
+  if (motorTorqueInput) motorTorqueInput.value = "";
+  if (motorGearInput) motorGearInput.value = "";
+  if (motorNotesInput) motorNotesInput.value = "";
+  if (controllerConnectorInput) controllerConnectorInput.value = "";
+  if (controllerPowerInput) controllerPowerInput.value = "";
+  if (controllerBatteryInput) controllerBatteryInput.value = "";
+  if (controllerConnectivityInput) controllerConnectivityInput.value = "";
+  if (controllerNotesInput) controllerNotesInput.value = "";
+  if (distanceConnectionInput) distanceConnectionInput.value = "";
+  if (distanceMethodInput) distanceMethodInput.value = "";
+  if (distanceRangeInput) distanceRangeInput.value = "";
+  if (distanceAccuracyInput) distanceAccuracyInput.value = "";
+  if (distanceOutputInput) distanceOutputInput.value = "";
+  if (distanceNotesInput) distanceNotesInput.value = "";
   if (val !== 'accessories.cables') {
     buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
   }
