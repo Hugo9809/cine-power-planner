@@ -189,10 +189,9 @@ th {
   color: inherit;
   border: 1px solid var(--panel-border);
   border-radius: var(--border-radius-sm, 4px);
-  padding: 0.2em 0.55em;
+  padding: 0.05em 0.4em;
   line-height: 1.2;
   font-weight: var(--font-weight-medium);
-  min-height: 1.8em;
 }
 
 .gear-table .gear-select-value[data-gear-select-empty='true'] {

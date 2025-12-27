@@ -9831,62 +9831,62 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     // --- Lazy DOM Initialization ---
     // Initialize variables to null/empty to prevent reference errors before DOM is ready
-    var settingsLogoInput = null;
-    var settingsHighContrast = null;
-    var settingsReduceMotion = null;
-    var settingsRelaxedSpacing = null;
-    var backupSettings = null;
-    var restoreSettings = null;
-    var factoryResetButton = null;
-    var restoreSettingsInput = null;
-    var restoreRehearsalButton = null;
-    var restoreRehearsalSection = null;
-    var restoreRehearsalHeading = null;
-    var restoreRehearsalIntro = null;
-    var restoreRehearsalModeLabel = null;
-    var restoreRehearsalModeBackupText = null;
-    var restoreRehearsalModeProjectText = null;
-    var restoreRehearsalFileLabel = null;
-    var restoreRehearsalBrowse = null;
-    var restoreRehearsalFileName = null;
-    var restoreRehearsalStatus = null;
-    var restoreRehearsalRuleHeading = null;
-    var restoreRehearsalRuleIntro = null;
-    var restoreRehearsalRuleEmpty = null;
-    var restoreRehearsalProceedButton = null;
-    var restoreRehearsalAbortButton = null;
-    var restoreRehearsalTable = null;
-    var restoreRehearsalTableCaption = null;
-    var restoreRehearsalMetricHeader = null;
-    var restoreRehearsalLiveHeader = null;
-    var restoreRehearsalSandboxHeader = null;
-    var restoreRehearsalDifferenceHeader = null;
-    var restoreRehearsalCloseButton = null;
-    var projectBackupsHeading = null;
-    var projectBackupsDescription = null;
-    var settingsShowAutoBackups = null;
-    var backupDiffToggleButton = null;
-    var backupDiffSection = null;
-    var backupDiffHeading = null;
-    var backupDiffIntro = null;
-    var backupDiffPrimaryLabel = null;
-    var backupDiffSecondaryLabel = null;
-    var backupDiffPrimarySelect = null;
-    var backupDiffSecondarySelect = null;
-    var backupDiffEmptyState = null;
-    var backupDiffSummary = null;
-    var backupDiffList = null;
-    var backupDiffListContainer = null;
-    var backupDiffNotesLabel = null;
-    var backupDiffNotes = null;
-    var backupDiffExportButton = null;
-    var backupDiffCloseButton = null;
-    var aboutVersionElem = null;
-    var supportLink = null;
-    var settingsSave = null;
-    var settingsCancel = null;
-    var featureSearch = null;
-    var featureSearchDropdown = null;
+    settingsLogoInput = null;
+    settingsHighContrast = null;
+    settingsReduceMotion = null;
+    settingsRelaxedSpacing = null;
+    backupSettings = null;
+    restoreSettings = null;
+    factoryResetButton = null;
+    restoreSettingsInput = null;
+    restoreRehearsalButton = null;
+    restoreRehearsalSection = null;
+    restoreRehearsalHeading = null;
+    restoreRehearsalIntro = null;
+    restoreRehearsalModeLabel = null;
+    restoreRehearsalModeBackupText = null;
+    restoreRehearsalModeProjectText = null;
+    restoreRehearsalFileLabel = null;
+    restoreRehearsalBrowse = null;
+    restoreRehearsalFileName = null;
+    restoreRehearsalStatus = null;
+    restoreRehearsalRuleHeading = null;
+    restoreRehearsalRuleIntro = null;
+    restoreRehearsalRuleEmpty = null;
+    restoreRehearsalProceedButton = null;
+    restoreRehearsalAbortButton = null;
+    restoreRehearsalTable = null;
+    restoreRehearsalTableCaption = null;
+    restoreRehearsalMetricHeader = null;
+    restoreRehearsalLiveHeader = null;
+    restoreRehearsalSandboxHeader = null;
+    restoreRehearsalDifferenceHeader = null;
+    restoreRehearsalCloseButton = null;
+    projectBackupsHeading = null;
+    projectBackupsDescription = null;
+    settingsShowAutoBackups = null;
+    backupDiffToggleButton = null;
+    backupDiffSection = null;
+    backupDiffHeading = null;
+    backupDiffIntro = null;
+    backupDiffPrimaryLabel = null;
+    backupDiffSecondaryLabel = null;
+    backupDiffPrimarySelect = null;
+    backupDiffSecondarySelect = null;
+    backupDiffEmptyState = null;
+    backupDiffSummary = null;
+    backupDiffList = null;
+    backupDiffListContainer = null;
+    backupDiffNotesLabel = null;
+    backupDiffNotes = null;
+    backupDiffExportButton = null;
+    backupDiffCloseButton = null;
+    aboutVersionElem = null;
+    supportLink = null;
+    settingsSave = null;
+    settingsCancel = null;
+    featureSearch = null;
+    featureSearchDropdown = null;
 
     function initAppCorePart2DomReferences() {
       if (typeof document === 'undefined') return;
@@ -12069,17 +12069,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         void exposeError;
       }
     }
-    var runtimeFeedbackBtn = document.getElementById("runtimeFeedbackBtn");
-    var generateGearListBtn = document.getElementById("generateGearListBtn");
-    var deleteGearListProjectBtn = document.getElementById('deleteGearListProjectBtn');
-    var gearListOutput = document.getElementById("gearListOutput");
-    var projectRequirementsOutput = document.getElementById("projectRequirementsOutput");
+    runtimeFeedbackBtn = document.getElementById("runtimeFeedbackBtn");
+    generateGearListBtn = document.getElementById("generateGearListBtn");
+    deleteGearListProjectBtn = document.getElementById('deleteGearListProjectBtn');
+    gearListOutput = document.getElementById("gearListOutput");
+    projectRequirementsOutput = document.getElementById("projectRequirementsOutput");
 
     // Load accent color from localStorage
-    var DEFAULT_ACCENT_COLOR = '#001589';
-    var accentColor = DEFAULT_ACCENT_COLOR;
-    var prevAccentColor = accentColor;
-    var HIGH_CONTRAST_ACCENT_COLOR = '#ffffff';
+    DEFAULT_ACCENT_COLOR = '#001589';
+    accentColor = DEFAULT_ACCENT_COLOR;
+    prevAccentColor = accentColor;
+    HIGH_CONTRAST_ACCENT_COLOR = '#ffffff';
     const DEFAULT_ACCENT_NORMALIZED = DEFAULT_ACCENT_COLOR.toLowerCase();
 
     const normalizeAccentValue = value =>
@@ -13404,10 +13404,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     function ensureProjectRequirementButtons() {
+      console.log('DEBUG: ensureProjectRequirementButtons. projectRequirementsOutput:', !!projectRequirementsOutput, 'type:', typeof projectRequirementsOutput, 'isNode:', !!(projectRequirementsOutput && projectRequirementsOutput.nodeType));
       let container = null;
-      if (projectRequirementsOutput && !projectRequirementsOutput.classList.contains('hidden')) {
+      if (projectRequirementsOutput && projectRequirementsOutput.classList && !projectRequirementsOutput.classList.contains('hidden')) {
         container = projectRequirementsOutput;
-      } else if (gearListOutput && !gearListOutput.classList.contains('hidden')) {
+      } else if (gearListOutput && gearListOutput.classList && !gearListOutput.classList.contains('hidden')) {
         container = gearListOutput;
       }
       if (!container) {
@@ -13492,13 +13493,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         !gearListOutput.classList.contains('hidden') &&
         gearListOutput.innerHTML.trim() !== '';
       if (hasGear) {
-        generateGearListBtn.classList.add('hidden');
+        if (generateGearListBtn) generateGearListBtn.classList.add('hidden');
         if (deleteGearListProjectBtn) {
           deleteGearListProjectBtn.classList.remove('hidden');
         }
         ensureProjectRequirementButtons();
       } else {
-        generateGearListBtn.classList.remove('hidden');
+        if (generateGearListBtn) generateGearListBtn.classList.remove('hidden');
         if (deleteGearListProjectBtn) {
           deleteGearListProjectBtn.classList.add('hidden');
         }
@@ -14344,13 +14345,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     function displayGearAndRequirements(html) {
+      console.log('DEBUG: displayGearAndRequirements. gearListOutput:', !!gearListOutput, 'isNode:', !!(gearListOutput && gearListOutput.nodeType), 'projectRequirementsOutput:', !!projectRequirementsOutput, 'isNode:', !!(projectRequirementsOutput && projectRequirementsOutput.nodeType));
       const { projectHtml, gearHtml } = splitGearListHtml(html);
       const safeProjectHtml = sanitizeSharedHtml(projectHtml);
       const safeGearHtml = sanitizeSharedHtml(gearHtml);
       if (projectRequirementsOutput) {
         if (safeProjectHtml) {
           projectRequirementsOutput.innerHTML = safeProjectHtml;
-          projectRequirementsOutput.classList.remove('hidden');
+          if (projectRequirementsOutput.classList) projectRequirementsOutput.classList.remove('hidden');
           const requirementBoxes = Array.from(projectRequirementsOutput.querySelectorAll('.requirement-box'));
           requirementBoxes.forEach(box => {
             // Popup/Tooltip removal as per user request to prevent blocking buttons
@@ -14373,7 +14375,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           adjustGearListSelectWidths(projectRequirementsOutput);
         } else {
           projectRequirementsOutput.innerHTML = '';
-          projectRequirementsOutput.classList.add('hidden');
+          if (projectRequirementsOutput.classList) projectRequirementsOutput.classList.add('hidden');
         }
       }
       if (gearListOutput) {
@@ -14387,7 +14389,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           if (typeof ensureGearListCustomControls === 'function') {
             ensureGearListCustomControls(gearListOutput);
           }
-          gearListOutput.classList.remove('hidden');
+          if (gearListOutput.classList) gearListOutput.classList.remove('hidden');
           if (typeof enhanceGearListItems === 'function') {
             enhanceGearListItems(gearListOutput);
           }
@@ -14523,7 +14525,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           adjustGearListSelectWidths(gearListOutput);
         } else {
           gearListOutput.innerHTML = '';
-          gearListOutput.classList.add('hidden');
+          if (gearListOutput.classList) gearListOutput.classList.add('hidden');
         }
 
         if (typeof ensureGearListActions === 'function') {
@@ -14741,22 +14743,22 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       };
 
-      addIfChanged('camera', cameraSelect.value);
-      addIfChanged('monitor', monitorSelect.value);
-      addIfChanged('video', videoSelect.value);
-      addIfChanged('cage', cageSelect.value);
+      addIfChanged('camera', cameraSelect && cameraSelect.value);
+      addIfChanged('monitor', monitorSelect && monitorSelect.value);
+      addIfChanged('video', videoSelect && videoSelect.value);
+      addIfChanged('cage', cageSelect && cageSelect.value);
 
       if (Array.isArray(motorSelects)) {
-        addIfChanged('motors', motorSelects.map(sel => sel.value));
+        addIfChanged('motors', motorSelects.map(sel => sel && sel.value));
       }
       if (Array.isArray(controllerSelects)) {
-        addIfChanged('controllers', controllerSelects.map(sel => sel.value));
+        addIfChanged('controllers', controllerSelects.map(sel => sel && sel.value));
       }
 
-      addIfChanged('distance', distanceSelect.value);
-      addIfChanged('batteryPlate', normalizeBatteryPlateValue(batteryPlateSelect.value, batterySelect.value));
-      addIfChanged('battery', batterySelect.value);
-      addIfChanged('batteryHotswap', hotswapSelect.value);
+      addIfChanged('distance', distanceSelect && distanceSelect.value);
+      addIfChanged('batteryPlate', batteryPlateSelect && normalizeBatteryPlateValue(batteryPlateSelect.value, batterySelect && batterySelect.value));
+      addIfChanged('battery', batterySelect && batterySelect.value);
+      addIfChanged('batteryHotswap', hotswapSelect && hotswapSelect.value);
       addIfChanged('sliderBowl', info.sliderBowl);
       addIfChanged('easyrig', info.easyrig);
       const projectRules = getProjectScopedAutoGearRules();
@@ -14841,17 +14843,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       setButtonLabelWithIcon(saveSetupBtn, saveLabel);
     }
 
-    var projectDialog = document.getElementById("projectDialog");
-    var projectForm = document.getElementById("projectForm");
-    var filterSelectElem = document.getElementById('filter');
-    var filterDetailsStorage = document.getElementById('filterDetails');
-    var matteboxSelect = document.getElementById('mattebox');
-    var projectCancelBtn = document.getElementById("projectCancel");
-    var projectDialogCloseBtn = document.getElementById("projectDialogClose");
-    var feedbackDialog = document.getElementById("feedbackDialog");
-    var feedbackForm = document.getElementById("feedbackForm");
-    var feedbackCancelBtn = document.getElementById("fbCancel");
-    var feedbackUseLocationBtn = document.getElementById("fbUseLocationBtn");
+    projectDialog = document.getElementById("projectDialog");
+    projectForm = document.getElementById("projectForm");
+    filterSelectElem = document.getElementById('filter');
+    filterDetailsStorage = document.getElementById('filterDetails');
+    matteboxSelect = document.getElementById('mattebox');
+    projectCancelBtn = document.getElementById("projectCancel");
+    projectDialogCloseBtn = document.getElementById("projectDialogClose");
+    feedbackDialog = document.getElementById("feedbackDialog");
+    feedbackForm = document.getElementById("feedbackForm");
+    feedbackCancelBtn = document.getElementById("fbCancel");
+    feedbackUseLocationBtn = document.getElementById("fbUseLocationBtn");
     const feedbackSubmitBtn = document.getElementById("fbSubmit");
     if (feedbackCancelBtn) {
       const cancelLabel =
@@ -14875,13 +14877,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     var loadFeedbackSafe = typeof loadFeedback === 'function' ? loadFeedback : () => ({});
     var saveFeedbackSafe = typeof saveFeedback === 'function' ? saveFeedback : () => { };
-    var setupDiagramContainer = document.getElementById("diagramArea");
+    setupDiagramContainer = document.getElementById("diagramArea");
     const diagramLegend = document.getElementById("diagramLegend");
-    var downloadDiagramBtn = document.getElementById("downloadDiagram");
+    downloadDiagramBtn = document.getElementById("downloadDiagram");
     const zoomInBtn = document.getElementById("zoomIn");
     const zoomOutBtn = document.getElementById("zoomOut");
     const resetViewBtn = document.getElementById("resetView");
-    var gridSnapToggleBtn = document.getElementById("gridSnapToggle");
+    gridSnapToggleBtn = document.getElementById("gridSnapToggle");
     const diagramHint = document.getElementById("diagramHint");
 
     const getCurrentGridSnap = () => {
@@ -15086,7 +15088,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     // List filters for existing device categories
 
     // NEW SETUP MANAGEMENT DOM ELEMENTS
-    var generateOverviewBtn = document.getElementById('generateOverviewBtn');
+    generateOverviewBtn = document.getElementById('generateOverviewBtn');
 
     const videoOutputOptions = [
       '3G-SDI',
@@ -16229,6 +16231,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     function setFizConnectors(list) {
+      if (!fizConnectorContainer) return;
       fizConnectorContainer.innerHTML = '';
       const filtered = filterNoneEntries(list);
       if (filtered.length) {
@@ -16450,6 +16453,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     const setRecordingMediaLocal = list => {
+      if (!cameraMediaContainer) return;
       cameraMediaContainer.innerHTML = '';
       const filtered = filterNoneEntries(list);
       if (filtered.length) {
@@ -16502,6 +16506,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     setVideoPowerInputs([]);
 
     function updatePowerPortOptions() {
+      console.log('DEBUG: updatePowerPortOptions starting. cameraPortTypeInput:', !!(typeof cameraPortTypeInput !== 'undefined' && cameraPortTypeInput));
+      if (typeof cameraPortTypeInput === 'undefined' || !cameraPortTypeInput) return;
       powerPortOptions = getAllPowerPortTypes();
       const current = cameraPortTypeInput.value;
       cameraPortTypeInput.innerHTML = '';
@@ -16651,6 +16657,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     const setBatteryPlatesLocal = list => {
+      if (!batteryPlatesContainer) return;
       batteryPlatesContainer.innerHTML = '';
       const filtered = filterNoneEntries(list);
       if (filtered.length) {
@@ -16797,6 +16804,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     function setViewfinders(list) {
+      if (!viewfinderContainer) return;
       viewfinderContainer.innerHTML = '';
       const filtered = filterNoneEntries(list);
       if (filtered.length) {
@@ -16950,6 +16958,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     function setLensMounts(list) {
+      if (!lensMountContainer) return;
       lensMountContainer.innerHTML = '';
       const filtered = filterNoneEntries(list);
       if (filtered.length) {
@@ -17218,6 +17227,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     function setPowerDistribution(list) {
+      console.log('DEBUG: setPowerDistribution called. powerDistContainer:', !!(typeof powerDistContainer !== 'undefined' && powerDistContainer));
+      if (typeof powerDistContainer === 'undefined' || !powerDistContainer) return;
       powerDistContainer.innerHTML = '';
       const filtered = filterNoneEntries(list);
       if (filtered.length) {
@@ -17337,6 +17348,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     function setTimecodes(list) {
+      if (!timecodeContainer) return;
       timecodeContainer.innerHTML = '';
       const filtered = filterNoneEntries(list);
       if (filtered.length) {
@@ -17734,10 +17746,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!target) return;
 
       const monitors = devices.monitors || {};
+      const camSelect = typeof cameraSelect !== 'undefined' ? cameraSelect : (typeof document !== 'undefined' ? document.getElementById('cameraSelect') : null);
+      const currentCamera = camSelect ? camSelect.value : '';
 
       const filtered = Object.fromEntries(
         Object.entries(monitors)
-        // .filter(([, data]) => !(data.wirelessRX && !data.wirelessTx)) // Temporary disable filter
+          .filter(([name]) => {
+            if (name === "ARRI CCM-1") {
+              const compatibleCameras = ["Arri Alexa 35", "Arri Alexa 35 Xtreme", "Arri Alexa Mini LF"];
+              return compatibleCameras.includes(currentCamera);
+            }
+            return true;
+          })
       );
 
       populateSelect(target, filtered, true);
@@ -18209,6 +18229,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     if (cameraSelect) {
       cameraSelect.addEventListener('change', () => {
+        populateMonitorSelect();
         updateRecordingMediaOptions();
         if (typeof window.updateStorageRequirementTypeOptions === 'function') {
           window.updateStorageRequirementTypeOptions();
@@ -18263,29 +18284,37 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     // Set default selections for dropdowns
 
     // Kamera: Wenn Option „None“ existiert, dann setze sie – sonst erste Option
-    const noneCameraOption = Array.from(cameraSelect.options).find(opt => opt.value === "None");
-    if (noneCameraOption) {
-      cameraSelect.value = "None";
-    } else {
-      cameraSelect.selectedIndex = 0;
+    if (typeof cameraSelect !== 'undefined' && cameraSelect) {
+      const noneCameraOption = Array.from(cameraSelect.options).find(opt => opt.value === "None");
+      if (noneCameraOption) {
+        cameraSelect.value = "None";
+      } else {
+        cameraSelect.selectedIndex = 0;
+      }
     }
 
     // Für die anderen Dropdowns
     [monitorSelect, videoSelect, distanceSelect, batterySelect].forEach(sel => {
-      const noneOption = Array.from(sel.options).find(opt => opt.value === "None");
-      if (noneOption) {
-        sel.value = "None";
-      } else {
-        sel.selectedIndex = 0;
+      if (sel) {
+        const noneOption = Array.from(sel.options).find(opt => opt.value === "None");
+        if (noneOption) {
+          sel.value = "None";
+        } else {
+          sel.selectedIndex = 0;
+        }
       }
     });
 
     // FIZ Dropdowns
     if (Array.isArray(motorSelects)) {
-      motorSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
+      motorSelects.forEach(sel => {
+        if (sel && sel.options && sel.options.length) sel.value = "None";
+      });
     }
     if (Array.isArray(controllerSelects)) {
-      controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
+      controllerSelects.forEach(sel => {
+        if (sel && sel.options && sel.options.length) sel.value = "None";
+      });
     }
 
     // Calculation function delegates to cineResults module for power and runtime processing
@@ -19572,15 +19601,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     console.log('app-core-new-2.js: refreshDeviceLists complete');
 
     if (typeof module !== 'undefined' && module.exports) {
-      module.exports = {
+      Object.assign(module.exports, {
         normalizeAutoGearCameraWeightCondition,
         normalizeAutoGearWeightOperator,
         formatAutoGearCameraWeight,
         getAutoGearCameraWeightOperatorLabel,
-      };
+      });
     }
 
     if (typeof globalThis !== 'undefined') {
+      globalThis.deriveProjectInfo = deriveProjectInfo;
       globalThis.checkSetupChanged = checkSetupChanged;
       globalThis.updateCalculations = updateCalculations;
       globalThis.projectDialog = projectDialog;
@@ -19589,6 +19619,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       globalThis.renderSetupDiagram = renderSetupDiagram;
       globalThis.clearRecordingMedia = clearRecordingMedia;
       globalThis.setSliderBowlValue = setSliderBowlValue;
+      globalThis.setEasyrigValue = setEasyrigValue;
+      globalThis.clearLensMounts = clearLensMounts;
+      globalThis.getCurrentSetupState = getCurrentSetupState;
+      globalThis.getRecordingMedia = getRecordingMedia;
+      globalThis.getBatteryPlates = getBatteryPlates;
+      globalThis.getViewfinders = getViewfinders;
     } else if (typeof window !== 'undefined') {
       window.checkSetupChanged = checkSetupChanged;
       window.updateCalculations = updateCalculations;
@@ -19598,6 +19634,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       window.renderSetupDiagram = renderSetupDiagram;
       window.clearRecordingMedia = clearRecordingMedia;
       window.setSliderBowlValue = setSliderBowlValue;
+      window.setEasyrigValue = setEasyrigValue;
+      window.clearLensMounts = clearLensMounts;
+      window.getCurrentSetupState = getCurrentSetupState;
+      window.getRecordingMedia = getRecordingMedia;
+      window.getBatteryPlates = getBatteryPlates;
+      window.getViewfinders = getViewfinders;
     }
     console.log('app-core-new-2.js: corePart2Runtime complete');
   }

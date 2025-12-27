@@ -424,7 +424,7 @@ body.dark-mode .paper .info-box {
     background-color: var(--panel-bg);
     border: 1px solid var(--panel-border);
     border-radius: 4px;
-    padding: 0.2em 0.55em;
+    padding: 0.05em 0.4em;
     font-weight: 500;
 }
 

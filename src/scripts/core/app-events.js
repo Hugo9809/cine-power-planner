@@ -2577,11 +2577,15 @@ function resetSetupStateToDefaults(options = {}) {
 
     if (gearListOutput) {
       gearListOutput.innerHTML = '';
-      gearListOutput.classList.add('hidden');
+      if (gearListOutput.classList) {
+        gearListOutput.classList.add('hidden');
+      }
     }
     if (projectRequirementsOutput) {
       projectRequirementsOutput.innerHTML = '';
-      projectRequirementsOutput.classList.add('hidden');
+      if (projectRequirementsOutput.classList) {
+        projectRequirementsOutput.classList.add('hidden');
+      }
     }
 
     currentProjectInfo = null;

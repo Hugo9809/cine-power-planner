@@ -319,7 +319,26 @@
 
       if (detailDialog && (dialogChanged || !detailDialogSetupComplete)) {
         const handleBackdropClick = event => {
-          if (event && event.target === detailDialog) {
+          if (!event) return;
+          // Native dialog backdrop click detection for browsers that support it correctly
+          // When clicking ::backdrop, the target is the dialog, and with standard styling
+          // the dialog element usually covers the viewport or acts as the recipient of backdrop clicks.
+          // However, we also support checking bounding rect logic for absolute certainty.
+          const inDialog = event.target === detailDialog;
+          const surface = detailDialog.querySelector('.modal-surface');
+
+          // If clicking strictly on the dialog element (backdrop area for full-screen dialogs)
+          // AND not clicking inside the content surface.
+          if (inDialog && (!surface || !surface.contains(event.target))) {
+            closeDetailDialog();
+            return;
+          }
+
+          // Fallback mechanism: sometimes the dialog element itself is the target but
+          // technically the click is 'outside' if we consider the surface the only content.
+          if (!inDialog && surface && !surface.contains(event.target)) {
+            // This branch catches clicks on any intermediate containers if the structure changes
+            // or if the dialog has padding that isn't the 'surface'.
             closeDetailDialog();
           }
         };
@@ -497,34 +516,6 @@
       }
     }
 
-    function normalizeDiagramPositionsInput(positions) {
-      if (!positions || typeof positions !== 'object') {
-        return {};
-      }
-      const normalized = {};
-      Object.entries(positions).forEach(([id, value]) => {
-        if (!value || typeof value !== 'object') return;
-        const x = Number(value.x);
-        const y = Number(value.y);
-        if (!Number.isFinite(x) || !Number.isFinite(y)) return;
-        normalized[id] = { x, y };
-      });
-      return normalized;
-    }
-
-    function getDiagramManualPositions() {
-      return normalizeDiagramPositionsInput(manualPositions);
-    }
-
-    function setManualDiagramPositions(positions, options = {}) {
-      manualPositions = normalizeDiagramPositionsInput(positions);
-      if (options && options.render === false) {
-        return;
-      }
-      if (typeof renderSetupDiagram === 'function') {
-        renderSetupDiagram();
-      }
-    }
 
     const diagramCssLight = `
     .node-box{fill:var(--diagram-node-fill, #f0f0f0);stroke:none;}
@@ -620,502 +611,502 @@
       category_fiz_distance: DIAGRAM_DISTANCE_ICON,
     };
 
-    function renderSetupDiagram() {
-      const setupDiagramContainer = resolveSetupContainer();
-      if (!setupDiagramContainer) return;
 
-      const texts = resolveTexts();
-      const currentLang = resolveCurrentLang();
-      const devices = resolveDevices();
-      const cameraSelect = resolveCameraSelect();
-      const monitorSelect = resolveMonitorSelect();
-      const videoSelect = resolveVideoSelect();
-      const distanceSelect = resolveDistanceSelect();
-      const batterySelect = resolveBatterySelect();
-      const motorSelects = resolveMotorSelects();
-      const controllerSelects = resolveControllerSelects();
+    const setupDiagramContainer = resolveSetupContainer();
+    if (!setupDiagramContainer) return;
 
-      const defaultHeadingText = texts[currentLang]?.diagramDetailDefaultHeading
-        || texts.en?.diagramDetailDefaultHeading
-        || 'Diagram details';
-      const backLabelText = texts[currentLang]?.diagramDetailBackLabel
-        || texts.en?.diagramDetailBackLabel
-        || 'Back';
-      detailDialogDefaultHeading = defaultHeadingText;
-      detailDialogBackLabel = backLabelText;
-      ensureDetailDialogElements();
+    const texts = resolveTexts();
+    const currentLang = resolveCurrentLang();
+    const devices = resolveDevices();
+    const cameraSelect = resolveCameraSelect();
+    const monitorSelect = resolveMonitorSelect();
+    const videoSelect = resolveVideoSelect();
+    const distanceSelect = resolveDistanceSelect();
+    const batterySelect = resolveBatterySelect();
+    const motorSelects = resolveMotorSelects();
+    const controllerSelects = resolveControllerSelects();
 
-      const isTouchDevice = (navigator && Number.isFinite(navigator.maxTouchPoints) ? navigator.maxTouchPoints : 0) > 0;
-      void isTouchDevice;
+    const defaultHeadingText = texts[currentLang]?.diagramDetailDefaultHeading
+      || texts.en?.diagramDetailDefaultHeading
+      || 'Diagram details';
+    const backLabelText = texts[currentLang]?.diagramDetailBackLabel
+      || texts.en?.diagramDetailBackLabel
+      || 'Back';
+    detailDialogDefaultHeading = defaultHeadingText;
+    detailDialogBackLabel = backLabelText;
+    ensureDetailDialogElements();
 
-      const camName = cameraSelect ? cameraSelect.value : '';
-      const cam = devices.cameras ? devices.cameras[camName] : undefined;
-      const monitorName = monitorSelect ? monitorSelect.value : '';
-      const monitor = devices.monitors ? devices.monitors[monitorName] : undefined;
-      const videoName = videoSelect ? videoSelect.value : '';
-      const video = devices.video ? devices.video[videoName] : undefined;
-      const batteryName = batterySelect ? batterySelect.value : '';
+    const isTouchDevice = (navigator && Number.isFinite(navigator.maxTouchPoints) ? navigator.maxTouchPoints : 0) > 0;
+    void isTouchDevice;
 
-      const distanceName = distanceSelect ? distanceSelect.value : '';
+    const camName = cameraSelect ? cameraSelect.value : '';
+    const cam = devices.cameras ? devices.cameras[camName] : undefined;
+    const monitorName = monitorSelect ? monitorSelect.value : '';
+    const monitor = devices.monitors ? devices.monitors[monitorName] : undefined;
+    const videoName = videoSelect ? videoSelect.value : '';
+    const video = devices.video ? devices.video[videoName] : undefined;
+    const batteryName = batterySelect ? batterySelect.value : '';
 
-      let motors = motorSelects.map(sel => (sel ? sel.value : '')).filter(v => v && v !== 'None');
-      motors.sort((a, b) => motorPriority(a) - motorPriority(b));
-      const internalIdx = motors.findIndex(name => devices.fiz?.motors?.[name]?.internalController);
-      const hasInternalMotor = internalIdx !== -1;
-      if (hasInternalMotor && internalIdx > 0) {
-        const [m] = motors.splice(internalIdx, 1);
-        motors.unshift(m);
-      }
-      let controllers = controllerSelects.map(sel => (sel ? sel.value : '')).filter(v => v && v !== 'None');
-      controllers.sort((a, b) => controllerPriority(a) - controllerPriority(b));
+    const distanceName = distanceSelect ? distanceSelect.value : '';
 
-      const inlineControllers = controllers;
+    let motors = motorSelects.map(sel => (sel ? sel.value : '')).filter(v => v && v !== 'None');
+    motors.sort((a, b) => motorPriority(a) - motorPriority(b));
+    const internalIdx = motors.findIndex(name => devices.fiz?.motors?.[name]?.internalController);
+    const hasInternalMotor = internalIdx !== -1;
+    if (hasInternalMotor && internalIdx > 0) {
+      const [m] = motors.splice(internalIdx, 1);
+      motors.unshift(m);
+    }
+    let controllers = controllerSelects.map(sel => (sel ? sel.value : '')).filter(v => v && v !== 'None');
+    controllers.sort((a, b) => controllerPriority(a) - controllerPriority(b));
 
-      const nodes = [];
-      const pos = {};
-      const nodeMap = {};
-      const step = 300;
-      const VIDEO_LABEL_SPACING = 10;
-      const EDGE_LABEL_GAP = 12;
-      const EDGE_LABEL_VERTICAL_GAP = 8;
-      const EDGE_ROUTE_LABEL_GAP = 10;
-      const baseY = 220;
-      let x = 80;
+    const inlineControllers = controllers;
 
-      if (batteryName && batteryName !== 'None') {
-        let batteryLabel = batteryName;
-        const battMount = devices.batteries?.[batteryName]?.mount_type;
-        if (cam && battMount && cam.power?.batteryPlateSupport?.some(bp => bp.type === battMount && bp.mount === 'native')) {
-          batteryLabel += ` on native ${battMount} plate via Pins`;
-        }
-        pos.battery = { x, y: baseY, label: batteryLabel };
-        nodes.push('battery');
-        nodeMap.battery = { category: 'batteries', name: batteryName };
-        x += step;
-      }
+    const nodes = [];
+    const pos = {};
+    const nodeMap = {};
+    const step = 300;
+    const VIDEO_LABEL_SPACING = 10;
+    const EDGE_LABEL_GAP = 12;
+    const EDGE_LABEL_VERTICAL_GAP = 8;
+    const EDGE_ROUTE_LABEL_GAP = 10;
+    const baseY = 220;
+    let x = 80;
 
-      if (camName && camName !== 'None') {
-        pos.camera = { x, y: baseY, label: camName };
-        nodes.push('camera');
-        nodeMap.camera = { category: 'cameras', name: camName };
-        x += step;
-      }
-
-      const controllerIds = controllers.map((_, idx) => `controller${idx}`);
-      const motorIds = motors.map((_, idx) => `motor${idx}`);
-
-      const controllerNameMap = new Map();
-      controllerIds.forEach((id, idx) => {
-        controllerNameMap.set(id, inlineControllers[idx] || controllers[idx]);
-      });
-      const motorNameMap = new Map();
-      motorIds.forEach((id, idx) => {
-        motorNameMap.set(id, motors[idx]);
-      });
-
-      const hasMainCtrl = controllers.some(n => controllerPriority(n) === 0);
-      let useMotorFirst = (!hasMainCtrl && hasInternalMotor)
-        || (!controllerIds.length && motorIds.length && motorPriority(motors[0]) === 0);
-
-      const addNode = (id, category, label) => {
-        pos[id] = { x, y: baseY, label };
-        nodes.push(id);
-        nodeMap[id] = { category, name: label };
-        x += step;
-      };
-
-      if (useMotorFirst && motorIds.length) {
-        addNode(motorIds[0], 'fiz.motors', motors[0]);
-        controllerIds.forEach((id, idx) => {
-          addNode(id, 'fiz.controllers', inlineControllers[idx]);
-        });
-        motorIds.slice(1).forEach((id, idx) => {
-          addNode(id, 'fiz.motors', motors[idx + 1]);
-        });
-      } else {
-        controllerIds.forEach((id, idx) => {
-          addNode(id, 'fiz.controllers', inlineControllers[idx]);
-        });
-        motorIds.forEach((id, idx) => {
-          addNode(id, 'fiz.motors', motors[idx]);
-        });
-      }
-
-      if (monitorName && monitorName !== 'None') {
-        pos.monitor = { x: pos.camera ? pos.camera.x : 60, y: baseY - step, label: monitorName };
-        nodes.push('monitor');
-        nodeMap.monitor = { category: 'monitors', name: monitorName };
-      }
-      if (videoName && videoName !== 'None') {
-        pos.video = { x: pos.camera ? pos.camera.x : 60, y: baseY + step, label: videoName };
-        nodes.push('video');
-        nodeMap.video = { category: 'video', name: videoName };
-      }
-
-      let inlineDistance = false;
-      let dedicatedDistance = false;
-      if (distanceName && distanceName !== 'None') {
-        const attach = inlineControllers.length ? controllerIds[0] : motorIds[0];
-        if (attach) {
-          const arriDevices = [...inlineControllers, ...motors].some(n => isArri(n));
-          const hasDedicatedPort = inlineControllers.some(n => /RIA-1/i.test(n) || /UMC-4/i.test(n));
-          dedicatedDistance = hasDedicatedPort && arriDevices;
-          inlineDistance = arriDevices && !hasDedicatedPort && inlineControllers.length;
-          if (inlineDistance && motorIds.length) {
-            const nextId = motorIds[0];
-            pos.distance = { x: (pos[attach].x + pos[nextId].x) / 2, y: baseY - step, label: distanceName };
-          } else {
-            pos.distance = { x: pos[attach].x, y: baseY - step, label: distanceName };
-          }
-          nodes.push('distance');
-          nodeMap.distance = { category: 'fiz.distance', name: distanceName };
-        }
-      }
-
-      Object.keys(manualPositions).forEach(id => { if (!pos[id]) delete manualPositions[id]; });
-      Object.entries(pos).forEach(([id, p]) => {
-        if (manualPositions[id]) {
-          p.x = manualPositions[id].x;
-          p.y = manualPositions[id].y;
-        }
-      });
-
-      const DEFAULT_NODE_H = 120;
-      const DEFAULT_NODE_W = 120;
-      const nodeHeights = {};
-      const nodeWidths = {};
-      const diagramLabelFontSize = 'var(--font-size-diagram-label, 11px)';
-      const diagramTextFontSize = 'var(--font-size-diagram-text, 13px)';
-      const DIAGRAM_LABEL_LINE_HEIGHT = 13;
-      const DIAGRAM_ICON_TEXT_GAP = 8;
-      const DEFAULT_DIAGRAM_ICON_SIZE = 24;
-
-      function wrapLabel(text, maxLen = 16) {
-        if (!text) return [];
-        const str = String(text);
-        if (str.length <= maxLen) return [str];
-        const words = str.split(/\s+/);
-        const lines = [];
-        let current = '';
-        words.forEach(word => {
-          const tentative = current ? `${current} ${word}` : word;
-          if (tentative.length > maxLen && current) {
-            lines.push(current);
-            current = word;
-          } else {
-            current = tentative;
-          }
-        });
-        if (current) lines.push(current);
-        return lines;
-      }
-
-      nodes.forEach(id => {
-        const label = pos[id].label || id;
-        const lines = wrapLabel(label);
-        const hasIcon = diagramIcons[id] || id.startsWith('controller') || id.startsWith('motor');
-        nodeHeights[id] = Math.max(
-          DEFAULT_NODE_H,
-          lines.length * DIAGRAM_LABEL_LINE_HEIGHT + (hasIcon ? 30 : 20)
-        );
-        const longest = lines.reduce((m, l) => Math.max(m, l.length), 0);
-        nodeWidths[id] = Math.max(DEFAULT_NODE_W, longest * 9 + 20);
-      });
-      const NODE_W = Math.max(...Object.values(nodeWidths), DEFAULT_NODE_W);
-      const NODE_H = Math.max(...Object.values(nodeHeights), DEFAULT_NODE_H);
-      const getNodeHeight = id => nodeHeights[id] || NODE_H;
-
-      let viewWidth;
-
-      let chain = [];
-      const edges = [];
-      const usedConns = {};
-      const markUsed = (id, side) => { usedConns[`${id}|${side}`] = true; };
-      const isUsed = (id, side) => usedConns[`${id}|${side}`];
-      const connectorPos = (id, side) => {
-        const p = pos[id];
-        if (!p) return { x: 0, y: 0 };
-        const h = getNodeHeight(id);
-        if (side === 'top') return { x: p.x, y: p.y - h / 2 };
-        if (side === 'bottom') return { x: p.x, y: p.y + h / 2 };
-        if (side === 'bottom-left') return { x: p.x - NODE_W / 2 + NODE_W / 3, y: p.y + h / 2 };
-        if (side === 'bottom-right') return { x: p.x + NODE_W / 2 - NODE_W / 3, y: p.y + h / 2 };
-        if (side === 'left') return { x: p.x - NODE_W / 2, y: p.y };
-        if (side === 'right') return { x: p.x + NODE_W / 2, y: p.y };
-        return { x: p.x, y: p.y };
-      };
-      const connectorsFor = id => {
-        const h = getNodeHeight(id);
-        const base = [
-          { side: 'left', color: 'red' },
-          { side: 'right', color: 'red' },
-          { side: 'top', color: 'blue' },
-          { side: 'bottom', color: 'green' }
-        ];
-        if (h > NODE_H) {
-          base.push({ side: 'bottom-left', color: 'green' });
-          base.push({ side: 'bottom-right', color: 'green' });
-        }
-        return base;
-      };
-      const closestConnectorPair = (idA, idB, used) => {
-        const aConns = connectorsFor(idA);
-        const bConns = connectorsFor(idB);
-        let best = null;
-        let bestDist = Infinity;
-        aConns.forEach(ac => {
-          if (used[`${idA}|${ac.side}`]) return;
-          const ap = connectorPos(idA, ac.side);
-          bConns.forEach(bc => {
-            if (ac.color !== bc.color) return;
-            if (used[`${idB}|${bc.side}`]) return;
-            const bp = connectorPos(idB, bc.side);
-            const d = Math.hypot(ap.x - bp.x, ap.y - bp.y);
-            if (d < bestDist) {
-              bestDist = d;
-              best = { fromSide: ac.side, toSide: bc.side };
-            }
-          });
-        });
-        return best;
-      };
-      const pushEdge = (edge, type) => {
-        if (!edge.fromSide || !edge.toSide) {
-          const pair = closestConnectorPair(edge.from, edge.to, usedConns);
-          if (pair) {
-            if (!edge.fromSide) edge.fromSide = pair.fromSide;
-            if (!edge.toSide) edge.toSide = pair.toSide;
-          }
-        } else if (isUsed(edge.from, edge.fromSide) || isUsed(edge.to, edge.toSide)) {
-          return;
-        }
-        markUsed(edge.from, edge.fromSide);
-        markUsed(edge.to, edge.toSide);
-        edges.push({ ...edge, type });
-      };
+    if (batteryName && batteryName !== 'None') {
+      let batteryLabel = batteryName;
       const battMount = devices.batteries?.[batteryName]?.mount_type;
-      if (cam && batteryName && batteryName !== 'None') {
-        const plateType = getSelectedPlate();
-        const nativePlate = plateType && isSelectedPlateNative(camName);
-        const camPort = firstPowerInputType(cam);
-        const inLabel = camPort || plateType;
-        const label = nativePlate ? '' : formatConnLabel(battMount, inLabel);
-        pushEdge({ from: 'battery', to: 'camera', label, fromSide: 'right', toSide: 'left' }, 'power');
+      if (cam && battMount && cam.power?.batteryPlateSupport?.some(bp => bp.type === battMount && bp.mount === 'native')) {
+        batteryLabel += ` on native ${battMount} plate via Pins`;
       }
-      if (monitor && firstPowerInputType(monitor)) {
-        const mPort = firstPowerInputType(monitor);
-        if (batteryName && batteryName !== 'None') {
-          pushEdge({ from: 'battery', to: 'monitor', label: formatConnLabel(battMount, mPort), fromSide: 'top', toSide: 'left' }, 'power');
-        }
-      }
-      if (video && firstPowerInputType(video)) {
-        const pPort = firstPowerInputType(video);
-        if (batteryName && batteryName !== 'None') {
-          pushEdge({ from: 'battery', to: 'video', label: formatConnLabel(battMount, pPort), fromSide: 'bottom', toSide: 'left' }, 'power');
-        }
-      }
-      if (cam && cam.videoOutputs?.length) {
-        const camOut = cam.videoOutputs[0].type;
-        const monInObj = monitor && (monitor.video?.inputs?.[0] || monitor.videoInputs?.[0]);
-        const vidInObj = video && (video.videoInputs?.[0] || (video.video ? video.video.inputs[0] : null));
-        if (monitor && monInObj) {
-          const monIn = monInObj.portType || monInObj.type || monInObj;
-          pushEdge({ from: 'camera', to: 'monitor', label: connectionLabel(camOut, monIn), fromSide: 'top', toSide: 'bottom', labelSpacing: VIDEO_LABEL_SPACING }, 'video');
-        }
-        if (video && vidInObj) {
-          const vidIn = vidInObj.portType || vidInObj.type || vidInObj;
-          pushEdge({ from: 'camera', to: 'video', label: connectionLabel(camOut, vidIn), fromSide: 'bottom', toSide: 'top', labelSpacing: VIDEO_LABEL_SPACING }, 'video');
-        }
-      }
-      useMotorFirst = (!hasMainCtrl && hasInternalMotor)
-        || (!controllerIds.length && motorIds.length && motorPriority(motors[0]) === 0);
-      const distanceSelected = distanceName && distanceName !== 'None';
-      const distanceInChain = distanceSelected && !dedicatedDistance;
+      pos.battery = { x, y: baseY, label: batteryLabel };
+      nodes.push('battery');
+      nodeMap.battery = { category: 'batteries', name: batteryName };
+      x += step;
+    }
 
-      let firstController = false;
-      let firstMotor = false;
+    if (camName && camName !== 'None') {
+      pos.camera = { x, y: baseY, label: camName };
+      nodes.push('camera');
+      nodeMap.camera = { category: 'cameras', name: camName };
+      x += step;
+    }
 
-      if (useMotorFirst && motorIds.length) {
-        chain.push(motorIds[0]);
-        firstMotor = true;
-      } else if (controllerIds.length) {
-        chain.push(controllerIds[0]);
-        firstController = true;
-      } else if (motorIds.length) {
-        chain.push(motorIds[0]);
-        firstMotor = true;
-      }
+    const controllerIds = controllers.map((_, idx) => `controller${idx}`);
+    const motorIds = motors.map((_, idx) => `motor${idx}`);
 
-      if (distanceInChain) chain.push('distance');
+    const controllerNameMap = new Map();
+    controllerIds.forEach((id, idx) => {
+      controllerNameMap.set(id, inlineControllers[idx] || controllers[idx]);
+    });
+    const motorNameMap = new Map();
+    motorIds.forEach((id, idx) => {
+      motorNameMap.set(id, motors[idx]);
+    });
 
-      if (controllerIds.length) chain = chain.concat(controllerIds.slice(firstController ? 1 : 0));
-      if (motorIds.length) chain = chain.concat(motorIds.slice(firstMotor ? 1 : 0));
+    const hasMainCtrl = controllers.some(n => controllerPriority(n) === 0);
+    let useMotorFirst = (!hasMainCtrl && hasInternalMotor)
+      || (!controllerIds.length && motorIds.length && motorPriority(motors[0]) === 0);
 
-      if (pos.distance && !manualPositions.distance) {
-        const references = [];
-        const distanceIndex = chain.indexOf('distance');
-        if (distanceIndex !== -1) {
-          const prevId = distanceIndex > 0 ? chain[distanceIndex - 1] : null;
-          const nextId = distanceIndex < chain.length - 1 ? chain[distanceIndex + 1] : null;
-          if (prevId && pos[prevId]) references.push(pos[prevId]);
-          if (nextId && pos[nextId]) references.push(pos[nextId]);
-        }
+    const addNode = (id, category, label) => {
+      pos[id] = { x, y: baseY, label };
+      nodes.push(id);
+      nodeMap[id] = { category, name: label };
+      x += step;
+    };
 
-        if (references.length < 2) {
-          const fallbackIds = chain.filter(id => id !== 'distance').slice(0, 2);
-          fallbackIds.forEach(id => {
-            if (pos[id] && !references.includes(pos[id])) references.push(pos[id]);
-          });
-        }
-
-        if (references.length >= 2) {
-          pos.distance.x = (references[0].x + references[1].x) / 2;
-        } else if (references.length === 1) {
-          pos.distance.x = references[0].x;
-        }
-      }
-
-      if (cam && chain.length) {
-        let first = chain[0];
-        if (first === 'distance' && chain.length > 1 && (controllerIds.length || hasInternalMotor)) {
-          first = chain[1];
-        }
-        let firstName = null;
-        if (first.startsWith('controller')) {
-          firstName = controllerNameMap.get(first);
-        } else if (first.startsWith('motor')) {
-          firstName = motorNameMap.get(first);
-        }
-        const port = first === 'distance' ? 'LBUS' : controllerCamPort(firstName);
-        const camPort = cameraFizPort(camName, port, firstName);
-        pushEdge({ from: 'camera', to: first, label: formatConnLabel(camPort, port), noArrow: true }, 'fiz');
-      } else if (motorIds.length && cam) {
-        const camPort = cameraFizPort(camName, motorFizPort(motors[0]), motors[0]);
-        pushEdge({ from: 'camera', to: motorIds[0], label: formatConnLabel(camPort, motorFizPort(motors[0])), noArrow: true }, 'fiz');
-      }
-
-      for (let i = 0; i < chain.length - 1; i++) {
-        const a = chain[i];
-        const b = chain[i + 1];
-        let fromName = null; let toName = null;
-        if (a.startsWith('controller')) fromName = controllerNameMap.get(a);
-        else if (a.startsWith('motor')) fromName = motorNameMap.get(a);
-        if (b.startsWith('controller')) toName = controllerNameMap.get(b);
-        else if (b.startsWith('motor')) toName = motorNameMap.get(b);
-        pushEdge({ from: a, to: b, label: formatConnLabel(fizPort(fromName), fizPort(toName)), noArrow: true }, 'fiz');
-      }
-
-      if (dedicatedDistance && controllerIds.length && distanceSelected) {
-        const ctrlName = inlineControllers[0] || controllers[0];
-        const distPort = controllerDistancePort(ctrlName);
-        const portLabel = formatConnLabel(fizPort(ctrlName), distPort);
-        pushEdge({ from: controllerIds[0], to: 'distance', label: portLabel, noArrow: true, toSide: 'bottom-right' }, 'fiz');
-      }
-
-      const fizList = [];
+    if (useMotorFirst && motorIds.length) {
+      addNode(motorIds[0], 'fiz.motors', motors[0]);
       controllerIds.forEach((id, idx) => {
-        fizList.push({ id, name: inlineControllers[idx] || controllers[idx] });
+        addNode(id, 'fiz.controllers', inlineControllers[idx]);
+      });
+      motorIds.slice(1).forEach((id, idx) => {
+        addNode(id, 'fiz.motors', motors[idx + 1]);
+      });
+    } else {
+      controllerIds.forEach((id, idx) => {
+        addNode(id, 'fiz.controllers', inlineControllers[idx]);
       });
       motorIds.forEach((id, idx) => {
-        fizList.push({ id, name: motors[idx] });
+        addNode(id, 'fiz.motors', motors[idx]);
       });
+    }
 
-      const isMainCtrl = name => /RIA-1/i.test(name) || /UMC-4/i.test(name) || /cforce.*rf/i.test(name);
-      let powerTarget = null;
-      const main = fizList.find(d => isMainCtrl(d.name));
-      if (main) {
-        powerTarget = main;
-      } else {
-        powerTarget = fizList.find(d => fizNeedsPower(d.name));
-      }
+    if (monitorName && monitorName !== 'None') {
+      pos.monitor = { x: pos.camera ? pos.camera.x : 60, y: baseY - step, label: monitorName };
+      nodes.push('monitor');
+      nodeMap.monitor = { category: 'monitors', name: monitorName };
+    }
+    if (videoName && videoName !== 'None') {
+      pos.video = { x: pos.camera ? pos.camera.x : 60, y: baseY + step, label: videoName };
+      nodes.push('video');
+      nodeMap.video = { category: 'video', name: videoName };
+    }
 
-      if (powerTarget && fizNeedsPower(powerTarget.name)) {
-        const { id: fizId, name } = powerTarget;
-        const powerSrc = batteryName && batteryName !== 'None' ? 'battery' : null;
-        const label = formatConnLabel('D-Tap', fizPowerPort(name));
-        const skipBatt = isArri(camName) && isArriOrCmotion(name);
-        if (powerSrc && !skipBatt) {
-          pushEdge({
-            from: powerSrc,
-            to: fizId,
-            label,
-            fromSide: 'bottom-left',
-            toSide: 'bottom',
-            route: 'down-right-up'
-          }, 'power');
+    let inlineDistance = false;
+    let dedicatedDistance = false;
+    if (distanceName && distanceName !== 'None') {
+      const attach = inlineControllers.length ? controllerIds[0] : motorIds[0];
+      if (attach) {
+        const arriDevices = [...inlineControllers, ...motors].some(n => isArri(n));
+        const hasDedicatedPort = inlineControllers.some(n => /RIA-1/i.test(n) || /UMC-4/i.test(n));
+        dedicatedDistance = hasDedicatedPort && arriDevices;
+        inlineDistance = arriDevices && !hasDedicatedPort && inlineControllers.length;
+        if (inlineDistance && motorIds.length) {
+          const nextId = motorIds[0];
+          pos.distance = { x: (pos[attach].x + pos[nextId].x) / 2, y: baseY - step, label: distanceName };
+        } else {
+          pos.distance = { x: pos[attach].x, y: baseY - step, label: distanceName };
         }
+        nodes.push('distance');
+        nodeMap.distance = { category: 'fiz.distance', name: distanceName };
       }
-      if (nodes.length === 0) {
-        setupDiagramContainer.innerHTML = `<p class="diagram-placeholder">${texts[currentLang]?.setupDiagramPlaceholder || texts.en?.setupDiagramPlaceholder || ''}</p>`;
+    }
+
+    Object.keys(manualPositions).forEach(id => { if (!pos[id]) delete manualPositions[id]; });
+    Object.entries(pos).forEach(([id, p]) => {
+      if (manualPositions[id]) {
+        p.x = manualPositions[id].x;
+        p.y = manualPositions[id].y;
+      }
+    });
+
+    const DEFAULT_NODE_H = 120;
+    const DEFAULT_NODE_W = 120;
+    const nodeHeights = {};
+    const nodeWidths = {};
+    const diagramLabelFontSize = 'var(--font-size-diagram-label, 11px)';
+    const diagramTextFontSize = 'var(--font-size-diagram-text, 13px)';
+    const DIAGRAM_LABEL_LINE_HEIGHT = 13;
+    const DIAGRAM_ICON_TEXT_GAP = 8;
+    const DEFAULT_DIAGRAM_ICON_SIZE = 24;
+
+    function wrapLabel(text, maxLen = 16) {
+      if (!text) return [];
+      const str = String(text);
+      if (str.length <= maxLen) return [str];
+      const words = str.split(/\s+/);
+      const lines = [];
+      let current = '';
+      words.forEach(word => {
+        const tentative = current ? `${current} ${word}` : word;
+        if (tentative.length > maxLen && current) {
+          lines.push(current);
+          current = word;
+        } else {
+          current = tentative;
+        }
+      });
+      if (current) lines.push(current);
+      return lines;
+    }
+
+    nodes.forEach(id => {
+      const label = pos[id].label || id;
+      const lines = wrapLabel(label);
+      const hasIcon = diagramIcons[id] || id.startsWith('controller') || id.startsWith('motor');
+      nodeHeights[id] = Math.max(
+        DEFAULT_NODE_H,
+        lines.length * DIAGRAM_LABEL_LINE_HEIGHT + (hasIcon ? 30 : 20)
+      );
+      const longest = lines.reduce((m, l) => Math.max(m, l.length), 0);
+      nodeWidths[id] = Math.max(DEFAULT_NODE_W, longest * 9 + 20);
+    });
+    const NODE_W = Math.max(...Object.values(nodeWidths), DEFAULT_NODE_W);
+    const NODE_H = Math.max(...Object.values(nodeHeights), DEFAULT_NODE_H);
+    const getNodeHeight = id => nodeHeights[id] || NODE_H;
+
+    let viewWidth;
+
+    let chain = [];
+    const edges = [];
+    const usedConns = {};
+    const markUsed = (id, side) => { usedConns[`${id}|${side}`] = true; };
+    const isUsed = (id, side) => usedConns[`${id}|${side}`];
+    const connectorPos = (id, side) => {
+      const p = pos[id];
+      if (!p) return { x: 0, y: 0 };
+      const h = getNodeHeight(id);
+      if (side === 'top') return { x: p.x, y: p.y - h / 2 };
+      if (side === 'bottom') return { x: p.x, y: p.y + h / 2 };
+      if (side === 'bottom-left') return { x: p.x - NODE_W / 2 + NODE_W / 3, y: p.y + h / 2 };
+      if (side === 'bottom-right') return { x: p.x + NODE_W / 2 - NODE_W / 3, y: p.y + h / 2 };
+      if (side === 'left') return { x: p.x - NODE_W / 2, y: p.y };
+      if (side === 'right') return { x: p.x + NODE_W / 2, y: p.y };
+      return { x: p.x, y: p.y };
+    };
+    const connectorsFor = id => {
+      const h = getNodeHeight(id);
+      const base = [
+        { side: 'left', color: 'red' },
+        { side: 'right', color: 'red' },
+        { side: 'top', color: 'blue' },
+        { side: 'bottom', color: 'green' }
+      ];
+      if (h > NODE_H) {
+        base.push({ side: 'bottom-left', color: 'green' });
+        base.push({ side: 'bottom-right', color: 'green' });
+      }
+      return base;
+    };
+    const closestConnectorPair = (idA, idB, used) => {
+      const aConns = connectorsFor(idA);
+      const bConns = connectorsFor(idB);
+      let best = null;
+      let bestDist = Infinity;
+      aConns.forEach(ac => {
+        if (used[`${idA}|${ac.side}`]) return;
+        const ap = connectorPos(idA, ac.side);
+        bConns.forEach(bc => {
+          if (ac.color !== bc.color) return;
+          if (used[`${idB}|${bc.side}`]) return;
+          const bp = connectorPos(idB, bc.side);
+          const d = Math.hypot(ap.x - bp.x, ap.y - bp.y);
+          if (d < bestDist) {
+            bestDist = d;
+            best = { fromSide: ac.side, toSide: bc.side };
+          }
+        });
+      });
+      return best;
+    };
+    const pushEdge = (edge, type) => {
+      if (!edge.fromSide || !edge.toSide) {
+        const pair = closestConnectorPair(edge.from, edge.to, usedConns);
+        if (pair) {
+          if (!edge.fromSide) edge.fromSide = pair.fromSide;
+          if (!edge.toSide) edge.toSide = pair.toSide;
+        }
+      } else if (isUsed(edge.from, edge.fromSide) || isUsed(edge.to, edge.toSide)) {
         return;
       }
+      markUsed(edge.from, edge.fromSide);
+      markUsed(edge.to, edge.toSide);
+      edges.push({ ...edge, type });
+    };
+    const battMount = devices.batteries?.[batteryName]?.mount_type;
+    if (cam && batteryName && batteryName !== 'None') {
+      const plateType = getSelectedPlate();
+      const nativePlate = plateType && isSelectedPlateNative(camName);
+      const camPort = firstPowerInputType(cam);
+      const inLabel = camPort || plateType;
+      const label = nativePlate ? '' : formatConnLabel(battMount, inLabel);
+      pushEdge({ from: 'battery', to: 'camera', label, fromSide: 'right', toSide: 'left' }, 'power');
+    }
+    if (monitor && firstPowerInputType(monitor)) {
+      const mPort = firstPowerInputType(monitor);
+      if (batteryName && batteryName !== 'None') {
+        pushEdge({ from: 'battery', to: 'monitor', label: formatConnLabel(battMount, mPort), fromSide: 'top', toSide: 'left' }, 'power');
+      }
+    }
+    if (video && firstPowerInputType(video)) {
+      const pPort = firstPowerInputType(video);
+      if (batteryName && batteryName !== 'None') {
+        pushEdge({ from: 'battery', to: 'video', label: formatConnLabel(battMount, pPort), fromSide: 'bottom', toSide: 'left' }, 'power');
+      }
+    }
+    if (cam && cam.videoOutputs?.length) {
+      const camOut = cam.videoOutputs[0].type;
+      const monInObj = monitor && (monitor.video?.inputs?.[0] || monitor.videoInputs?.[0]);
+      const vidInObj = video && (video.videoInputs?.[0] || (video.video ? video.video.inputs[0] : null));
+      if (monitor && monInObj) {
+        const monIn = monInObj.portType || monInObj.type || monInObj;
+        pushEdge({ from: 'camera', to: 'monitor', label: connectionLabel(camOut, monIn), fromSide: 'top', toSide: 'bottom', labelSpacing: VIDEO_LABEL_SPACING }, 'video');
+      }
+      if (video && vidInObj) {
+        const vidIn = vidInObj.portType || vidInObj.type || vidInObj;
+        pushEdge({ from: 'camera', to: 'video', label: connectionLabel(camOut, vidIn), fromSide: 'bottom', toSide: 'top', labelSpacing: VIDEO_LABEL_SPACING }, 'video');
+      }
+    }
+    useMotorFirst = (!hasMainCtrl && hasInternalMotor)
+      || (!controllerIds.length && motorIds.length && motorPriority(motors[0]) === 0);
+    const distanceSelected = distanceName && distanceName !== 'None';
+    const distanceInChain = distanceSelected && !dedicatedDistance;
 
-      let xs = Object.values(pos).map(p => p.x);
-      let minX = Math.min(...xs);
-      let maxX = Math.max(...xs);
-      const contentWidth = maxX - minX;
-      const baseViewWidth = Math.max(500, contentWidth + NODE_W);
-      if (Object.keys(manualPositions).length === 0) {
-        const shiftX = baseViewWidth / 2 - (minX + maxX) / 2;
-        Object.values(pos).forEach(p => { p.x += shiftX; });
-        xs = Object.values(pos).map(p => p.x);
-        minX = Math.min(...xs);
-        maxX = Math.max(...xs);
+    let firstController = false;
+    let firstMotor = false;
+
+    if (useMotorFirst && motorIds.length) {
+      chain.push(motorIds[0]);
+      firstMotor = true;
+    } else if (controllerIds.length) {
+      chain.push(controllerIds[0]);
+      firstController = true;
+    } else if (motorIds.length) {
+      chain.push(motorIds[0]);
+      firstMotor = true;
+    }
+
+    if (distanceInChain) chain.push('distance');
+
+    if (controllerIds.length) chain = chain.concat(controllerIds.slice(firstController ? 1 : 0));
+    if (motorIds.length) chain = chain.concat(motorIds.slice(firstMotor ? 1 : 0));
+
+    if (pos.distance && !manualPositions.distance) {
+      const references = [];
+      const distanceIndex = chain.indexOf('distance');
+      if (distanceIndex !== -1) {
+        const prevId = distanceIndex > 0 ? chain[distanceIndex - 1] : null;
+        const nextId = distanceIndex < chain.length - 1 ? chain[distanceIndex + 1] : null;
+        if (prevId && pos[prevId]) references.push(pos[prevId]);
+        if (nextId && pos[nextId]) references.push(pos[nextId]);
       }
 
-      const ys = Object.values(pos).map(p => p.y);
-      const minY = Math.min(...ys);
-      const maxY = Math.max(...ys);
-      const HORIZONTAL_MARGIN = Math.max(40, NODE_W * 0.25);
-      const TOP_MARGIN = Math.max(40, NODE_H * 0.25);
-      const BOTTOM_MARGIN = Math.max(120, NODE_H * 0.4);
-      const minBoundX = minX - NODE_W / 2 - HORIZONTAL_MARGIN;
-      const maxBoundX = maxX + NODE_W / 2 + HORIZONTAL_MARGIN;
-      const minBoundY = minY - NODE_H / 2 - TOP_MARGIN;
-      const maxBoundY = maxY + NODE_H / 2 + BOTTOM_MARGIN;
-      const viewBoxX = Math.floor(Math.min(0, minBoundX));
-      const viewBoxY = Math.floor(minBoundY);
-      viewWidth = Math.max(baseViewWidth, Math.ceil(maxBoundX - viewBoxX));
-      const baseViewHeight = (maxY - minY) + NODE_H + TOP_MARGIN + BOTTOM_MARGIN;
-      const viewHeight = Math.max(Math.ceil(baseViewHeight), Math.ceil(maxBoundY - viewBoxY));
-
-      function computePath(fromId, toId, labelSpacing = 0, opts = {}) {
-        const labelLineCount = Math.max(0, opts.labelLineCount || 0);
-        const multilineOffset = labelLineCount > 1
-          ? (labelLineCount - 1) * DIAGRAM_LABEL_LINE_HEIGHT
-          : 0;
-        const from = connectorPos(fromId, opts.fromSide);
-        const to = connectorPos(toId, opts.toSide);
-        let path; let lx; let ly; let angle = 0;
-
-        if (opts.route === 'down-right-up') {
-          const bottomY = maxY + NODE_H;
-          path = `M ${from.x} ${from.y} V ${bottomY} H ${to.x} V ${to.y}`;
-          lx = (from.x + to.x) / 2;
-          ly = bottomY - EDGE_ROUTE_LABEL_GAP - labelSpacing - multilineOffset;
-        } else {
-          path = `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
-          const dx = to.x - from.x;
-          const dy = to.y - from.y;
-          angle = Math.atan2(dy, dx) * 180 / Math.PI;
-          const midX = (from.x + to.x) / 2;
-          const midY = (from.y + to.y) / 2;
-          const len = Math.hypot(dx, dy) || 1;
-          const baseGap = Math.abs(dx) < Math.abs(dy) ? EDGE_LABEL_VERTICAL_GAP : EDGE_LABEL_GAP;
-          const off = baseGap + labelSpacing + multilineOffset;
-          const perpX = (dy / len) * off;
-          const perpY = (-dx / len) * off;
-          lx = midX + perpX;
-          ly = midY + perpY;
-        }
-
-        return { path, labelX: lx, labelY: ly, angle };
+      if (references.length < 2) {
+        const fallbackIds = chain.filter(id => id !== 'distance').slice(0, 2);
+        fallbackIds.forEach(id => {
+          if (pos[id] && !references.includes(pos[id])) references.push(pos[id]);
+        });
       }
 
-      const EDGE_LABEL_WRAP = 18;
+      if (references.length >= 2) {
+        pos.distance.x = (references[0].x + references[1].x) / 2;
+      } else if (references.length === 1) {
+        pos.distance.x = references[0].x;
+      }
+    }
 
-      const css = getDiagramCss();
-      const defs = `
+    if (cam && chain.length) {
+      let first = chain[0];
+      if (first === 'distance' && chain.length > 1 && (controllerIds.length || hasInternalMotor)) {
+        first = chain[1];
+      }
+      let firstName = null;
+      if (first.startsWith('controller')) {
+        firstName = controllerNameMap.get(first);
+      } else if (first.startsWith('motor')) {
+        firstName = motorNameMap.get(first);
+      }
+      const port = first === 'distance' ? 'LBUS' : controllerCamPort(firstName);
+      const camPort = cameraFizPort(camName, port, firstName);
+      pushEdge({ from: 'camera', to: first, label: formatConnLabel(camPort, port), noArrow: true }, 'fiz');
+    } else if (motorIds.length && cam) {
+      const camPort = cameraFizPort(camName, motorFizPort(motors[0]), motors[0]);
+      pushEdge({ from: 'camera', to: motorIds[0], label: formatConnLabel(camPort, motorFizPort(motors[0])), noArrow: true }, 'fiz');
+    }
+
+    for (let i = 0; i < chain.length - 1; i++) {
+      const a = chain[i];
+      const b = chain[i + 1];
+      let fromName = null; let toName = null;
+      if (a.startsWith('controller')) fromName = controllerNameMap.get(a);
+      else if (a.startsWith('motor')) fromName = motorNameMap.get(a);
+      if (b.startsWith('controller')) toName = controllerNameMap.get(b);
+      else if (b.startsWith('motor')) toName = motorNameMap.get(b);
+      pushEdge({ from: a, to: b, label: formatConnLabel(fizPort(fromName), fizPort(toName)), noArrow: true }, 'fiz');
+    }
+
+    if (dedicatedDistance && controllerIds.length && distanceSelected) {
+      const ctrlName = inlineControllers[0] || controllers[0];
+      const distPort = controllerDistancePort(ctrlName);
+      const portLabel = formatConnLabel(fizPort(ctrlName), distPort);
+      pushEdge({ from: controllerIds[0], to: 'distance', label: portLabel, noArrow: true, toSide: 'bottom-right' }, 'fiz');
+    }
+
+    const fizList = [];
+    controllerIds.forEach((id, idx) => {
+      fizList.push({ id, name: inlineControllers[idx] || controllers[idx] });
+    });
+    motorIds.forEach((id, idx) => {
+      fizList.push({ id, name: motors[idx] });
+    });
+
+    const isMainCtrl = name => /RIA-1/i.test(name) || /UMC-4/i.test(name) || /cforce.*rf/i.test(name);
+    let powerTarget = null;
+    const main = fizList.find(d => isMainCtrl(d.name));
+    if (main) {
+      powerTarget = main;
+    } else {
+      powerTarget = fizList.find(d => fizNeedsPower(d.name));
+    }
+
+    if (powerTarget && fizNeedsPower(powerTarget.name)) {
+      const { id: fizId, name } = powerTarget;
+      const powerSrc = batteryName && batteryName !== 'None' ? 'battery' : null;
+      const label = formatConnLabel('D-Tap', fizPowerPort(name));
+      const skipBatt = isArri(camName) && isArriOrCmotion(name);
+      if (powerSrc && !skipBatt) {
+        pushEdge({
+          from: powerSrc,
+          to: fizId,
+          label,
+          fromSide: 'bottom-left',
+          toSide: 'bottom',
+          route: 'down-right-up'
+        }, 'power');
+      }
+    }
+    if (nodes.length === 0) {
+      setupDiagramContainer.innerHTML = `<p class="diagram-placeholder">${texts[currentLang]?.setupDiagramPlaceholder || texts.en?.setupDiagramPlaceholder || ''}</p>`;
+      return;
+    }
+
+    let xs = Object.values(pos).map(p => p.x);
+    let minX = Math.min(...xs);
+    let maxX = Math.max(...xs);
+    const contentWidth = maxX - minX;
+    const baseViewWidth = Math.max(500, contentWidth + NODE_W);
+    if (Object.keys(manualPositions).length === 0) {
+      const shiftX = baseViewWidth / 2 - (minX + maxX) / 2;
+      Object.values(pos).forEach(p => { p.x += shiftX; });
+      xs = Object.values(pos).map(p => p.x);
+      minX = Math.min(...xs);
+      maxX = Math.max(...xs);
+    }
+
+    const ys = Object.values(pos).map(p => p.y);
+    const minY = Math.min(...ys);
+    const maxY = Math.max(...ys);
+    const HORIZONTAL_MARGIN = Math.max(40, NODE_W * 0.25);
+    const TOP_MARGIN = Math.max(40, NODE_H * 0.25);
+    const BOTTOM_MARGIN = Math.max(120, NODE_H * 0.4);
+    const minBoundX = minX - NODE_W / 2 - HORIZONTAL_MARGIN;
+    const maxBoundX = maxX + NODE_W / 2 + HORIZONTAL_MARGIN;
+    const minBoundY = minY - NODE_H / 2 - TOP_MARGIN;
+    const maxBoundY = maxY + NODE_H / 2 + BOTTOM_MARGIN;
+    const viewBoxX = Math.floor(Math.min(0, minBoundX));
+    const viewBoxY = Math.floor(minBoundY);
+    viewWidth = Math.max(baseViewWidth, Math.ceil(maxBoundX - viewBoxX));
+    const baseViewHeight = (maxY - minY) + NODE_H + TOP_MARGIN + BOTTOM_MARGIN;
+    const viewHeight = Math.max(Math.ceil(baseViewHeight), Math.ceil(maxBoundY - viewBoxY));
+
+    function computePath(fromId, toId, labelSpacing = 0, opts = {}) {
+      const labelLineCount = Math.max(0, opts.labelLineCount || 0);
+      const multilineOffset = labelLineCount > 1
+        ? (labelLineCount - 1) * DIAGRAM_LABEL_LINE_HEIGHT
+        : 0;
+      const from = connectorPos(fromId, opts.fromSide);
+      const to = connectorPos(toId, opts.toSide);
+      let path; let lx; let ly; let angle = 0;
+
+      if (opts.route === 'down-right-up') {
+        const bottomY = maxY + NODE_H;
+        path = `M ${from.x} ${from.y} V ${bottomY} H ${to.x} V ${to.y}`;
+        lx = (from.x + to.x) / 2;
+        ly = bottomY - EDGE_ROUTE_LABEL_GAP - labelSpacing - multilineOffset;
+      } else {
+        path = `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
+        const dx = to.x - from.x;
+        const dy = to.y - from.y;
+        angle = Math.atan2(dy, dx) * 180 / Math.PI;
+        const midX = (from.x + to.x) / 2;
+        const midY = (from.y + to.y) / 2;
+        const len = Math.hypot(dx, dy) || 1;
+        const baseGap = Math.abs(dx) < Math.abs(dy) ? EDGE_LABEL_VERTICAL_GAP : EDGE_LABEL_GAP;
+        const off = baseGap + labelSpacing + multilineOffset;
+        const perpX = (dy / len) * off;
+        const perpY = (-dx / len) * off;
+        lx = midX + perpX;
+        ly = midY + perpY;
+      }
+
+      return { path, labelX: lx, labelY: ly, angle };
+    }
+
+    const EDGE_LABEL_WRAP = 18;
+
+    const css = getDiagramCss();
+    const defs = `
         <defs>
           <style>${css}</style>
           <linearGradient id="firstFizGrad" x1="0" y1="0" x2="0" y2="1">
@@ -1125,148 +1116,148 @@
         </defs>
       `;
 
-      let svg = `<svg viewBox="${viewBoxX} ${viewBoxY} ${viewWidth} ${viewHeight}" role="group" aria-labelledby="diagramDesc">${defs}`;
-      svg += '<g id="diagramRoot">';
+    let svg = `<svg viewBox="${viewBoxX} ${viewBoxY} ${viewWidth} ${viewHeight}" role="group" aria-labelledby="diagramDesc">${defs}`;
+    svg += '<g id="diagramRoot">';
 
-      nodes.forEach(id => {
-        const p = pos[id];
-        if (!p) return;
-        const h = getNodeHeight(id);
-        const nodeCls = id === 'motor0' ? 'diagram-node' : 'diagram-node';
-        const rectCls = id === 'motor0' ? 'node-box' : 'node-box';
-        svg += `<g class="${nodeCls}" data-node="${id}">`;
-        svg += `<rect class="${rectCls}" x="${p.x - NODE_W / 2}" y="${p.y - h / 2}" width="${NODE_W}" height="${h}" rx="4" ry="4" />`;
+    nodes.forEach(id => {
+      const p = pos[id];
+      if (!p) return;
+      const h = getNodeHeight(id);
+      const nodeCls = id === 'motor0' ? 'diagram-node' : 'diagram-node';
+      const rectCls = id === 'motor0' ? 'node-box' : 'node-box';
+      svg += `<g class="${nodeCls}" data-node="${id}">`;
+      svg += `<rect class="${rectCls}" x="${p.x - NODE_W / 2}" y="${p.y - h / 2}" width="${NODE_W}" height="${h}" rx="4" ry="4" />`;
 
-        const conns = connectorsFor(id);
-        conns.forEach(c => {
-          const { x: cx, y: cy } = connectorPos(id, c.side);
-          svg += `<circle class="conn ${c.color}" cx="${cx}" cy="${cy}" r="4" />`;
-        });
-
-        let icon = diagramIcons[id];
-        if (!icon) {
-          if (id.startsWith('motor')) {
-            icon = diagramIcons.motors;
-          } else if (id.startsWith('controller')) {
-            const name = (nodeMap[id]?.name || '').toLowerCase();
-            if (/handle|grip/.test(name)) icon = diagramIcons.handle;
-            else icon = diagramIcons.controllers;
-          } else if (id === 'distance') {
-            icon = diagramIcons.distance;
-          }
-        }
-
-        const lines = wrapLabel(p.label || id);
-        const resolvedIcon = icon ? resolveIconGlyph(icon) : null;
-        const hasIconGlyph = Boolean(resolvedIcon && (resolvedIcon.markup || resolvedIcon.char));
-        const iconSize = hasIconGlyph && Number.isFinite(resolvedIcon.size)
-          ? resolvedIcon.size
-          : DEFAULT_DIAGRAM_ICON_SIZE;
-        const iconHeight = hasIconGlyph ? iconSize : 0;
-        const textLineCount = lines.length;
-        const textHeight = textLineCount ? textLineCount * DIAGRAM_LABEL_LINE_HEIGHT : 0;
-        const iconGap = hasIconGlyph && textLineCount ? DIAGRAM_ICON_TEXT_GAP : 0;
-        const contentHeight = iconHeight + iconGap + textHeight;
-        const contentTop = p.y - contentHeight / 2;
-        const centerX = formatSvgCoordinate(p.x);
-
-        if (hasIconGlyph) {
-          const iconCenterY = contentTop + iconHeight / 2;
-          if (resolvedIcon.markup && positionSvgMarkup) {
-            const positioned = positionSvgMarkup(
-              ensureSvgHasAriaHidden(resolvedIcon.markup),
-              p.x,
-              iconCenterY,
-              iconSize
-            );
-            if (positioned && positioned.markup) {
-              const wrapperClasses = ['node-icon-svg'];
-              if (resolvedIcon.className) wrapperClasses.push(resolvedIcon.className);
-              svg += `<g class="${wrapperClasses.join(' ')}" transform="translate(${positioned.x}, ${positioned.y})">${positioned.markup}</g>`;
-            }
-          } else if (resolvedIcon.char) {
-            const fontAttr = resolvedIcon.font ? ` data-icon-font="${resolvedIcon.font}"` : '';
-            svg += `<text class="node-icon"${fontAttr} x="${centerX}" y="${formatSvgCoordinate(iconCenterY)}" text-anchor="middle" dominant-baseline="middle">${resolvedIcon.char}</text>`;
-          }
-        }
-
-        if (textLineCount) {
-          const textTop = contentTop + iconHeight + iconGap;
-          const textY = formatSvgCoordinate(textTop);
-          const fontSize = hasIconGlyph ? diagramLabelFontSize : diagramTextFontSize;
-          svg += `<text x="${centerX}" y="${textY}" text-anchor="middle" dominant-baseline="hanging" style="font-size: ${fontSize};">`;
-          lines.forEach((line, i) => {
-            const dyAttr = i === 0 ? '' : ` dy="${DIAGRAM_LABEL_LINE_HEIGHT}"`;
-            svg += `<tspan x="${centerX}"${dyAttr}>${line}</tspan>`;
-          });
-          svg += `</text>`;
-        }
-        svg += `</g>`;
+      const conns = connectorsFor(id);
+      conns.forEach(c => {
+        const { x: cx, y: cy } = connectorPos(id, c.side);
+        svg += `<circle class="conn ${c.color}" cx="${cx}" cy="${cy}" r="4" />`;
       });
 
-      edges.forEach(edge => {
-        const lines = edge.label ? wrapLabel(edge.label, EDGE_LABEL_WRAP) : [];
-        const { path, labelX, labelY, angle } = computePath(edge.from, edge.to, edge.labelSpacing, {
-          ...edge,
-          labelLineCount: lines.length,
+      let icon = diagramIcons[id];
+      if (!icon) {
+        if (id.startsWith('motor')) {
+          icon = diagramIcons.motors;
+        } else if (id.startsWith('controller')) {
+          const name = (nodeMap[id]?.name || '').toLowerCase();
+          if (/handle|grip/.test(name)) icon = diagramIcons.handle;
+          else icon = diagramIcons.controllers;
+        } else if (id === 'distance') {
+          icon = diagramIcons.distance;
+        }
+      }
+
+      const lines = wrapLabel(p.label || id);
+      const resolvedIcon = icon ? resolveIconGlyph(icon) : null;
+      const hasIconGlyph = Boolean(resolvedIcon && (resolvedIcon.markup || resolvedIcon.char));
+      const iconSize = hasIconGlyph && Number.isFinite(resolvedIcon.size)
+        ? resolvedIcon.size
+        : DEFAULT_DIAGRAM_ICON_SIZE;
+      const iconHeight = hasIconGlyph ? iconSize : 0;
+      const textLineCount = lines.length;
+      const textHeight = textLineCount ? textLineCount * DIAGRAM_LABEL_LINE_HEIGHT : 0;
+      const iconGap = hasIconGlyph && textLineCount ? DIAGRAM_ICON_TEXT_GAP : 0;
+      const contentHeight = iconHeight + iconGap + textHeight;
+      const contentTop = p.y - contentHeight / 2;
+      const centerX = formatSvgCoordinate(p.x);
+
+      if (hasIconGlyph) {
+        const iconCenterY = contentTop + iconHeight / 2;
+        if (resolvedIcon.markup && positionSvgMarkup) {
+          const positioned = positionSvgMarkup(
+            ensureSvgHasAriaHidden(resolvedIcon.markup),
+            p.x,
+            iconCenterY,
+            iconSize
+          );
+          if (positioned && positioned.markup) {
+            const wrapperClasses = ['node-icon-svg'];
+            if (resolvedIcon.className) wrapperClasses.push(resolvedIcon.className);
+            svg += `<g class="${wrapperClasses.join(' ')}" transform="translate(${positioned.x}, ${positioned.y})">${positioned.markup}</g>`;
+          }
+        } else if (resolvedIcon.char) {
+          const fontAttr = resolvedIcon.font ? ` data-icon-font="${resolvedIcon.font}"` : '';
+          svg += `<text class="node-icon"${fontAttr} x="${centerX}" y="${formatSvgCoordinate(iconCenterY)}" text-anchor="middle" dominant-baseline="middle">${resolvedIcon.char}</text>`;
+        }
+      }
+
+      if (textLineCount) {
+        const textTop = contentTop + iconHeight + iconGap;
+        const textY = formatSvgCoordinate(textTop);
+        const fontSize = hasIconGlyph ? diagramLabelFontSize : diagramTextFontSize;
+        svg += `<text x="${centerX}" y="${textY}" text-anchor="middle" dominant-baseline="hanging" style="font-size: ${fontSize};">`;
+        lines.forEach((line, i) => {
+          const dyAttr = i === 0 ? '' : ` dy="${DIAGRAM_LABEL_LINE_HEIGHT}"`;
+          svg += `<tspan x="${centerX}"${dyAttr}>${line}</tspan>`;
         });
-        svg += `<path class="edge-path ${edge.type}" d="${path}" />`;
-        if (lines.length) {
-          const transform = Math.abs(angle) > 90
-            ? `rotate(${angle + 180} ${labelX} ${labelY})`
-            : `rotate(${angle} ${labelX} ${labelY})`;
-          const labelXCoord = formatSvgCoordinate(labelX);
-          const labelYCoord = formatSvgCoordinate(labelY);
-          svg += `<text class="edge-label" x="${labelXCoord}" y="${labelYCoord}" transform="${transform}" text-anchor="middle">`;
-          lines.forEach((line, idx) => {
-            const dyAttr = idx === 0 ? '' : ` dy="${DIAGRAM_LABEL_LINE_HEIGHT}"`;
-            svg += `<tspan x="${labelXCoord}"${dyAttr}>${line}</tspan>`;
-          });
-          svg += '</text>';
-        }
+        svg += `</text>`;
+      }
+      svg += `</g>`;
+    });
+
+    edges.forEach(edge => {
+      const lines = edge.label ? wrapLabel(edge.label, EDGE_LABEL_WRAP) : [];
+      const { path, labelX, labelY, angle } = computePath(edge.from, edge.to, edge.labelSpacing, {
+        ...edge,
+        labelLineCount: lines.length,
       });
-
-      svg += '</g></svg>';
-
-      let popup = document ? document.getElementById('diagramPopup') : null;
-      if (!popup && document) {
-        popup = document.createElement('div');
-        popup.id = 'diagramPopup';
+      svg += `<path class="edge-path ${edge.type}" d="${path}" />`;
+      if (lines.length) {
+        const transform = Math.abs(angle) > 90
+          ? `rotate(${angle + 180} ${labelX} ${labelY})`
+          : `rotate(${angle} ${labelX} ${labelY})`;
+        const labelXCoord = formatSvgCoordinate(labelX);
+        const labelYCoord = formatSvgCoordinate(labelY);
+        svg += `<text class="edge-label" x="${labelXCoord}" y="${labelYCoord}" transform="${transform}" text-anchor="middle">`;
+        lines.forEach((line, idx) => {
+          const dyAttr = idx === 0 ? '' : ` dy="${DIAGRAM_LABEL_LINE_HEIGHT}"`;
+          svg += `<tspan x="${labelXCoord}"${dyAttr}>${line}</tspan>`;
+        });
+        svg += '</text>';
       }
-      if (popup) {
-        popup.className = 'diagram-popup';
-        popup.setAttribute('role', 'dialog');
-        popup.setAttribute('aria-modal', 'false');
-        if (!popup.hasAttribute('tabindex')) {
-          popup.tabIndex = -1;
-        }
-      }
-      setupDiagramContainer.innerHTML = '';
-      setupDiagramContainer.insertAdjacentHTML('beforeend', svg);
-      if (popup) setupDiagramContainer.appendChild(popup);
+    });
 
-      const popupEntries = {};
-      const safeSummaryFn = getSafeGenerateConnectorSummary();
-      Object.entries(nodeMap).forEach(([nodeId, meta]) => {
-        const label = pos[nodeId]?.label || meta?.name || nodeId;
-        const safeLabel = escapeHtml(label);
-        const className = popupClassForCategory(meta?.category);
-        let summaryHtml = '';
-        if (typeof safeSummaryFn === 'function') {
-          const deviceInfo = resolveDeviceInfo(devices, meta?.category, meta?.name);
-          if (deviceInfo) {
-            try {
-              summaryHtml = safeSummaryFn(deviceInfo) || '';
-            } catch (summaryError) {
-              void summaryError;
-            }
+    svg += '</g></svg>';
+
+    let popup = document ? document.getElementById('diagramPopup') : null;
+    if (!popup && document) {
+      popup = document.createElement('div');
+      popup.id = 'diagramPopup';
+    }
+    if (popup) {
+      popup.className = 'diagram-popup';
+      popup.setAttribute('role', 'dialog');
+      popup.setAttribute('aria-modal', 'false');
+      if (!popup.hasAttribute('tabindex')) {
+        popup.tabIndex = -1;
+      }
+    }
+    setupDiagramContainer.innerHTML = '';
+    setupDiagramContainer.insertAdjacentHTML('beforeend', svg);
+    if (popup) setupDiagramContainer.appendChild(popup);
+
+    const popupEntries = {};
+    const safeSummaryFn = getSafeGenerateConnectorSummary();
+    Object.entries(nodeMap).forEach(([nodeId, meta]) => {
+      const label = pos[nodeId]?.label || meta?.name || nodeId;
+      const safeLabel = escapeHtml(label);
+      const className = popupClassForCategory(meta?.category);
+      let summaryHtml = '';
+      if (typeof safeSummaryFn === 'function') {
+        const deviceInfo = resolveDeviceInfo(devices, meta?.category, meta?.name);
+        if (deviceInfo) {
+          try {
+            summaryHtml = safeSummaryFn(deviceInfo) || '';
+          } catch (summaryError) {
+            void summaryError;
           }
         }
-        const safeBackLabel = escapeHtml(detailDialogBackLabel || 'Back');
-        const headingId = buildPopupHeadingId(nodeId);
-        const safeHeadingId = escapeHtml(headingId);
-        const bodyHtml = summaryHtml || `<p class="diagram-popup__fallback">${safeLabel}</p>`;
-        const content = `
+      }
+      const safeBackLabel = escapeHtml(detailDialogBackLabel || 'Back');
+      const headingId = buildPopupHeadingId(nodeId);
+      const safeHeadingId = escapeHtml(headingId);
+      const bodyHtml = summaryHtml || `<p class="diagram-popup__fallback">${safeLabel}</p>`;
+      const content = `
           <div class="diagram-popup__layout">
             <header class="diagram-popup__header">
               <button
@@ -1285,35 +1276,70 @@
             </div>
           </div>
         `;
-        popupEntries[nodeId] = {
-          className,
-          content,
-          label: safeLabel,
-          headingId,
-        };
-      });
+      popupEntries[nodeId] = {
+        className,
+        content,
+        label: safeLabel,
+        headingId,
+      };
+    });
 
-      lastPopupEntries = popupEntries;
+    lastPopupEntries = popupEntries;
 
-      const svgEl = setupDiagramContainer.querySelector('svg');
-      if (!svgEl) return;
+    const svgEl = setupDiagramContainer.querySelector('svg');
+    if (!svgEl) return;
 
-      const measureEl = resolveDiagramHint();
-      if (measureEl) {
-        const containerRect = setupDiagramContainer.getBoundingClientRect();
-        const parentRect = setupDiagramContainer.parentElement?.getBoundingClientRect();
-        const containerWidth = containerRect?.width || setupDiagramContainer.clientWidth || 0;
-        if (parentRect && containerWidth && containerWidth > parentRect.width * 0.95) {
-          setupDiagramContainer.dataset.initialScale = String(Math.max(0.5, parentRect.width / containerWidth * 0.95));
-        } else {
-          delete setupDiagramContainer.dataset.initialScale;
-        }
+    const measureEl = resolveDiagramHint();
+    if (measureEl) {
+      const containerRect = setupDiagramContainer.getBoundingClientRect();
+      const parentRect = setupDiagramContainer.parentElement?.getBoundingClientRect();
+      const containerWidth = containerRect?.width || setupDiagramContainer.clientWidth || 0;
+      if (parentRect && containerWidth && containerWidth > parentRect.width * 0.95) {
+        setupDiagramContainer.dataset.initialScale = String(Math.max(0.5, parentRect.width / containerWidth * 0.95));
+      } else {
+        delete setupDiagramContainer.dataset.initialScale;
       }
+    }
 
-      lastDiagramPositions = Object.fromEntries(Object.entries(pos));
+    lastDiagramPositions = Object.fromEntries(Object.entries(pos));
 
-      enableDiagramInteractions();
-      updateDiagramLegend();
+    enableDiagramInteractions();
+    updateDiagramLegend();
+
+
+    function normalizeDiagramPositionsInput(positions) {
+      if (!positions || typeof positions !== 'object') {
+        return {};
+      }
+      const normalized = {};
+      Object.entries(positions).forEach(([id, value]) => {
+        if (!value || typeof value !== 'object') return;
+        const x = Number(value.x);
+        const y = Number(value.y);
+        if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+        normalized[id] = { x, y };
+      });
+      return normalized;
+    }
+
+    function getDiagramManualPositions() {
+      return normalizeDiagramPositionsInput(manualPositions);
+    }
+
+    function setManualDiagramPositions(positions, options = {}) {
+      manualPositions = normalizeDiagramPositionsInput(positions);
+      if (options && options.render === false) {
+        return;
+      }
+      /*
+      try {
+        if (typeof renderSetupDiagram === 'function') {
+          // renderSetupDiagram();
+        }
+      } catch (e) {
+        void e;
+      }
+      */
     }
 
     function enableDiagramInteractions() {
@@ -1463,7 +1489,7 @@
         scale = INITIAL_SCALE;
         apply();
         manualPositions = {};
-        renderSetupDiagram();
+        // try { renderSetupDiagram(); } catch (e) { void e; }
         if (scheduleProjectAutoSave) scheduleProjectAutoSave();
         else if (saveCurrentSession) saveCurrentSession();
         if (checkSetupChanged) checkSetupChanged();
@@ -1616,7 +1642,7 @@
         dragStartPosition = null;
         dragActive = false;
         dragMovedDuringInteraction = false;
-        renderSetupDiagram();
+        // try { renderSetupDiagram(); } catch (e) { void e; }
         if (scheduleProjectAutoSave) scheduleProjectAutoSave();
         else if (saveCurrentSession) saveCurrentSession();
         if (checkSetupChanged) checkSetupChanged();
@@ -2062,7 +2088,6 @@
     }
 
     return {
-      renderSetupDiagram,
       enableDiagramInteractions,
       updateDiagramLegend,
       getDiagramManualPositions,

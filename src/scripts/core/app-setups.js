@@ -30,6 +30,23 @@ function escapeHtmlFallback(str) {
 // uninitialized binding while the module wires up shared helpers.
 var escapeHtml = escapeHtmlFallback;
 
+const deriveProjectInfo = (function resolveDeriveProjectInfo() {
+  if (typeof globalThis !== 'undefined' && typeof globalThis.deriveProjectInfo === 'function') {
+    return globalThis.deriveProjectInfo;
+  }
+  if (typeof window !== 'undefined' && typeof window.deriveProjectInfo === 'function') {
+    return window.deriveProjectInfo;
+  }
+  if (typeof global !== 'undefined' && typeof global.deriveProjectInfo === 'function') {
+    return global.deriveProjectInfo;
+  }
+  return function fallbackDeriveProjectInfo(info) {
+    // Fallback if core not loaded? Return basic info or throw?
+    // Returning input as placeholder.
+    return info || {};
+  };
+})();
+
 const normalizeVideoDistributionOptionValueForSetups = (function resolveNormalizeVideoDistributionOptionValue() {
   if (typeof require === 'function') {
     try {
@@ -5666,6 +5683,16 @@ function suggestArriFizCables() {
 }
 
 function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
+
+  const safeVal = (sel) => (sel && typeof sel.value !== 'undefined' ? sel.value : '');
+  const camVal = safeVal(cameraSelect);
+  const monVal = safeVal(monitorSelect);
+  const vidVal = safeVal(videoSelect);
+  const battVal = safeVal(batterySelect);
+  const cageVal = safeVal(cageSelect);
+  const distVal = safeVal(distanceSelect);
+
+
   const cameraSupport = [];
   const misc = [];
   const monitoringSupport = [];
@@ -5675,18 +5702,18 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
   const acc = devices.accessories || {};
   const excludedCables = new Set(['D-Tap to LEMO 2-pin', 'HDMI Cable']);
 
-  if (batterySelect.value) {
-    const mount = (devices && devices.batteries && devices.batteries[batterySelect.value])?.mount_type;
+  if (battVal) {
+    const mount = (devices && devices.batteries && devices.batteries[battVal])?.mount_type;
     if (acc.powerPlates) {
       for (const [name, plate] of Object.entries(acc.powerPlates)) {
-        if ((!plate.mount || plate.mount === mount) && (!plate.compatible || plate.compatible.includes(cameraSelect.value))) {
+        if ((!plate.mount || plate.mount === mount) && (!plate.compatible || plate.compatible.includes(camVal))) {
           cameraSupport.push(name);
         }
       }
     }
     if (acc.chargers) {
       let camCount = parseInt(batteryCountElem?.textContent || '', 10);
-      if (!Number.isFinite(camCount)) camCount = batterySelect.value ? 1 : 0;
+      if (!Number.isFinite(camCount)) camCount = battVal ? 1 : 0;
       let monCount = 0;
       if (Array.isArray(videoDistPrefs)) {
         const handheldCount = videoDistPrefs.filter(v => /Monitor(?: \d+")? handheld$/.test(v)).length;
@@ -5727,13 +5754,15 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
     }
   }
 
-  if (cameraSelect.value && acc.cages) {
-    if (!cageSelect.value || cageSelect.value === 'None') {
+
+  if (camVal && acc.cages) {
+    if (!cageVal || cageVal === 'None') {
       for (const [name, cage] of Object.entries(acc.cages)) {
-        if (!cage.compatible || cage.compatible.includes(cameraSelect.value)) cameraSupport.push(name);
+        if (!cage.compatible || cage.compatible.includes(camVal)) cameraSupport.push(name);
       }
     }
   }
+
 
   const powerCableDb = acc.cables?.power || {};
   const gatherPower = (data, target = misc, includeExcluded = false) => {
@@ -5746,9 +5775,10 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
       }
     });
   };
-  gatherPower(devices.cameras[cameraSelect.value]);
-  gatherPower(devices.video[videoSelect.value]);
-  const onboardMonitor = devices.monitors[monitorSelect.value];
+  if (camVal && devices.cameras) gatherPower(devices.cameras[camVal]);
+  if (vidVal && devices.video) gatherPower(devices.video[vidVal]);
+  const onboardMonitor = (monVal && devices.monitors) ? devices.monitors[monVal] : null;
+
   if (onboardMonitor) {
     const monitorLabel = 'Onboard monitor';
     const powerType = onboardMonitor?.power?.input?.type;
@@ -5761,9 +5791,11 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
         `D-Tap to Lemo-2-pin Cable 0,5m (${monitorLabel})`
       );
     }
-    const cameraData = devices.cameras[cameraSelect.value];
-    const camVideo = (cameraData?.videoOutputs || []).map(v => v.type?.toUpperCase());
-    const monVideo = (onboardMonitor.videoInputs || []).map(v => v.type?.toUpperCase());
+    const cameraData = (camVal && devices.cameras) ? devices.cameras[camVal] : null;
+
+    const camVideo = (cameraData?.videoOutputs || []).map(v => v?.type?.toUpperCase());
+    const monVideo = (onboardMonitor.videoInputs || []).map(v => v?.type?.toUpperCase());
+
     const hasSDI = camVideo.some(t => t && t.includes('SDI')) && monVideo.some(t => t && t.includes('SDI'));
     const hasHDMI = camVideo.includes('HDMI') && monVideo.includes('HDMI');
     if (hasSDI) {
@@ -5779,20 +5811,30 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
     }
     rigging.push(`ULCS Arm mit 3/8" und 1/4" double (${monitorLabel})`);
   }
-  if (videoSelect.value) {
-    const rxName = videoSelect.value.replace(/ TX\b/, ' RX');
+
+
+  if (vidVal) {
+    const rxName = vidVal.replace(/ TX\b/, ' RX');
     if (devices.wirelessReceivers && devices.wirelessReceivers[rxName]) {
       gatherPower(devices.wirelessReceivers[rxName]);
     }
   }
-  if (devices.fiz && devices.fiz.motors) {
-    motorSelects.forEach(sel => gatherPower(devices.fiz.motors[sel.value]));
+  if (devices.fiz && devices.fiz.motors && Array.isArray(motorSelects)) {
+    motorSelects.forEach(sel => {
+      const v = safeVal(sel);
+      if (v) gatherPower(devices.fiz.motors[v]);
+    });
   }
-  if (devices.fiz && devices.fiz.controllers) {
-    controllerSelects.forEach(sel => gatherPower(devices.fiz.controllers[sel.value]));
+
+  if (devices.fiz && devices.fiz.controllers && Array.isArray(controllerSelects)) {
+    controllerSelects.forEach(sel => {
+      const v = safeVal(sel);
+      if (v) gatherPower(devices.fiz.controllers[v]);
+    });
   }
-  if (devices.fiz && devices.fiz.distance) {
-    gatherPower(devices.fiz.distance[distanceSelect.value]);
+
+  if (devices.fiz && devices.fiz.distance && distVal) {
+    gatherPower(devices.fiz.distance[distVal]);
   }
 
   const fizCableDb = acc.cables?.fiz || {};
@@ -5834,12 +5876,12 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
     return false;
   };
   const motorEntries = motorSelects
-    .map(sel => sel.value)
+    .map(sel => safeVal(sel))
     .filter(v => v && v !== 'None')
     .map(name => ({ name, data: devices.fiz?.motors?.[name] }))
     .filter(entry => entry.data);
   const controllerEntries = controllerSelects
-    .map(sel => sel.value)
+    .map(sel => safeVal(sel))
     .filter(v => v && v !== 'None')
     .map(name => ({ name, data: devices.fiz?.controllers?.[name] }))
     .filter(entry => entry.data);
@@ -11705,22 +11747,27 @@ function applyCustomItemsState(state) {
 }
 
 function gearListGenerateHtmlImpl(info = {}) {
-  const getText = sel => sel && sel.options && sel.selectedIndex >= 0
-    ? sel.options[sel.selectedIndex].text.trim()
-    : '';
+  console.log('DEBUG: gearListGenerateHtmlImpl starting. cameraSelect:', !!cameraSelect, 'monitorSelect:', !!monitorSelect, 'motorSelects type:', typeof motorSelects, 'isArray:', Array.isArray(motorSelects));
+  const getText = sel => {
+    if (!sel || !sel.options || typeof sel.selectedIndex !== 'number' || sel.selectedIndex < 0) return '';
+    const opt = sel.options[sel.selectedIndex];
+    if (!opt) return '';
+    const text = typeof opt.text === 'string' ? opt.text : (typeof opt.textContent === 'string' ? opt.textContent : '');
+    return text.trim();
+  };
   const selectedNames = {
-    camera: cameraSelect && cameraSelect.value && cameraSelect.value !== 'None' ? getText(cameraSelect) : '',
-    monitor: monitorSelect && monitorSelect.value && monitorSelect.value !== 'None' ? getText(monitorSelect) : '',
-    video: videoSelect && videoSelect.value && videoSelect.value !== 'None' ? getText(videoSelect) : '',
+    camera: cameraSelect && typeof cameraSelect.value !== 'undefined' && cameraSelect.value && cameraSelect.value !== 'None' ? getText(cameraSelect) : '',
+    monitor: monitorSelect && typeof monitorSelect.value !== 'undefined' && monitorSelect.value && monitorSelect.value !== 'None' ? getText(monitorSelect) : '',
+    video: videoSelect && typeof videoSelect.value !== 'undefined' && videoSelect.value && videoSelect.value !== 'None' ? getText(videoSelect) : '',
     motors: motorSelects
-      .map(sel => sel && sel.value && sel.value !== 'None' ? getText(sel) : '')
+      .map(sel => sel && typeof sel.value !== 'undefined' && sel.value && sel.value !== 'None' ? getText(sel) : '')
       .filter(Boolean),
     controllers: controllerSelects
-      .map(sel => sel && sel.value && sel.value !== 'None' ? getText(sel) : '')
+      .map(sel => sel && typeof sel.value !== 'undefined' && sel.value && sel.value !== 'None' ? getText(sel) : '')
       .filter(Boolean),
-    distance: distanceSelect && distanceSelect.value && distanceSelect.value !== 'None' ? getText(distanceSelect) : '',
-    cage: cageSelect && cageSelect.value && cageSelect.value !== 'None' ? getText(cageSelect) : '',
-    battery: batterySelect && batterySelect.value && batterySelect.value !== 'None' ? getText(batterySelect) : ''
+    distance: distanceSelect && typeof distanceSelect.value !== 'undefined' && distanceSelect.value && distanceSelect.value !== 'None' ? getText(distanceSelect) : '',
+    cage: cageSelect && typeof cageSelect.value !== 'undefined' && cageSelect.value && cageSelect.value !== 'None' ? getText(cageSelect) : '',
+    battery: batterySelect && typeof batterySelect.value !== 'undefined' && batterySelect.value && batterySelect.value !== 'None' ? getText(batterySelect) : ''
   };
   const cameraLinkTexts = getGearItemEditTexts();
   const defaultCameraLinkLabelTemplate = cameraLinkTexts.cameraLinkDefaultLabel || 'Camera %s';
@@ -14521,7 +14568,9 @@ function normalizeRequirementNodeValue(node) {
 
 function collectProjectInfoFromRequirementsGrid() {
   if (!projectRequirementsOutput) return null;
-  const boxes = Array.from(projectRequirementsOutput.querySelectorAll('.requirement-box'));
+  const boxes = (projectRequirementsOutput && typeof projectRequirementsOutput.querySelectorAll === 'function')
+    ? Array.from(projectRequirementsOutput.querySelectorAll('.requirement-box'))
+    : [];
   if (!boxes.length) {
     return null;
   }
@@ -14758,6 +14807,7 @@ function saveCurrentGearList() {
     : null;
   const requirementsVisible = Boolean(
     projectRequirementsOutput
+    && typeof projectRequirementsOutput.querySelector === 'function'
     && projectRequirementsOutput.querySelector('.requirement-box')
   );
   let pendingProjectInfo = deriveProjectInfo(info);

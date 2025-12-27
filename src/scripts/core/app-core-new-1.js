@@ -3,7 +3,7 @@
     if (!window.ensureSvgHasAriaHidden) window.ensureSvgHasAriaHidden = function (m) { return m; };
   }
 })();
-const global = typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : {}));
+const globalShim = typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : {}));
 /*
  * Cine Power Planner runtime split (part 1 of 2).
  *
@@ -6233,11 +6233,11 @@ function formatCurrentValue(value) {
 
 function checkFizCompatibility() {
   const brands = new Set();
-  motorSelects.forEach(sel => { const b = detectBrand(sel.value); if (b) brands.add(b); });
-  controllerSelects.forEach(sel => { const b = detectBrand(sel.value); if (b) brands.add(b); });
-  const distB = detectBrand(distanceSelect.value);
+  motorSelects.forEach(sel => { const b = detectBrand(sel && sel.value); if (b) brands.add(b); });
+  controllerSelects.forEach(sel => { const b = detectBrand(sel && sel.value); if (b) brands.add(b); });
+  const distB = detectBrand(distanceSelect && distanceSelect.value);
   if (distB) brands.add(distB);
-  const cameraBrand = detectBrand(cameraSelect.value);
+  const cameraBrand = detectBrand(cameraSelect && cameraSelect.value);
 
   const compatElem = document.getElementById('compatWarning');
   if (!compatElem) return;
@@ -6275,11 +6275,11 @@ function checkFizController() {
   const compatElem = document.getElementById('compatWarning');
   if (!compatElem) return;
 
-  const motors = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None');
+  const motors = motorSelects.map(sel => sel && sel.value).filter(v => v && v !== 'None');
   if (!motors.length) return;
 
-  const controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None');
-  const camName = cameraSelect.value;
+  const controllers = controllerSelects.map(sel => sel && sel.value).filter(v => v && v !== 'None');
+  const camName = cameraSelect && cameraSelect.value;
   const cam = (devices.cameras || {})[camName];
 
   const isAmira = /Arri Amira/i.test(camName);
@@ -7259,8 +7259,8 @@ async function setLanguage(lang) {
   document.documentElement.lang = lang;
   // Document title and main heading share the same text
   document.title = translationSource[lang].appTitle;
-  document.getElementById("mainTitle").textContent = translationSource[lang].appTitle;
-  document.getElementById("tagline").textContent = translationSource[lang].tagline;
+  if (document.getElementById("mainTitle")) document.getElementById("mainTitle").textContent = translationSource[lang].appTitle;
+  if (document.getElementById("tagline")) document.getElementById("tagline").textContent = translationSource[lang].tagline;
   const doc = typeof document !== "undefined" ? document : null;
   const runtimeScope = getCoreGlobalObject();
   const attemptRefreshDeviceLists = () => {
@@ -17417,6 +17417,7 @@ var lensFocusScaleSelect = document.getElementById("lensFocusScaleUnit");
 const powerDistContainer = document.getElementById("powerDistContainer");
 const videoOutputsContainer = document.getElementById("videoOutputsContainer");
 const fizConnectorContainer = document.getElementById("fizConnectorContainer");
+console.log('DEBUG: fizConnectorContainer resolved:', !!fizConnectorContainer);
 var viewfinderContainer = document.getElementById("viewfinderContainer");
 const timecodeContainer = document.getElementById("timecodeContainer");
 var batteryFieldsDiv = document.getElementById("batteryFields");

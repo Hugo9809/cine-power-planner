@@ -39,8 +39,8 @@
           "kNumber",
           "lengthM",
           "notes",
-          "provenance",
           "orientation",
+          "provenance",
           "to",
           "type",
           "useCase"
@@ -58,7 +58,8 @@
         "attributes": [
           "lengthM",
           "notes",
-          "type"
+          "type",
+          "weight_g"
         ]
       }
     },
@@ -98,7 +99,18 @@
     },
     "carts": {
       "attributes": [
-        "brand"
+        "accessories",
+        "brand",
+        "brandAccessories",
+        "config",
+        "dimensionsCm",
+        "kits",
+        "model",
+        "notes",
+        "payloadCapacityKg",
+        "series",
+        "weightKg",
+        "wheelConfig"
       ]
     },
     "chargers": {
@@ -147,22 +159,6 @@
         "weight_g"
       ]
     },
-    "carts": {
-      "attributes": [
-        "brand",
-        "series",
-        "model",
-        "dimensionsCm",
-        "weightKg",
-        "payloadCapacityKg",
-        "wheelConfig",
-        "config",
-        "notes",
-        "accessories",
-        "kits",
-        "brandAccessories"
-      ]
-    },
     "matteboxes": {
       "attributes": [
         "brand",
@@ -176,7 +172,8 @@
         "stages",
         "topFlag",
         "traySize",
-        "type"
+        "type",
+        "weight_g"
       ]
     },
     "media": {
@@ -186,19 +183,22 @@
         "capacityTb",
         "interface",
         "kNumber",
-        "model"
+        "model",
+        "notes",
+        "sourceUrl"
       ]
     },
     "cardReaders": {
       "attributes": [
         "brand",
-        "model",
-        "kNumber",
-        "supportedMedia",
-        "interface",
-        "slots",
         "busPowered",
-        "notes"
+        "interface",
+        "kNumber",
+        "model",
+        "notes",
+        "powerDrawWatts",
+        "slots",
+        "supportedMedia"
       ]
     },
     "powerPlates": {
@@ -210,13 +210,14 @@
     },
     "rigging": {
       "attributes": [
-        "brand"
+        "brand",
+        "weight_g"
       ]
     },
     "sliders": {
       "attributes": [
-        "brand",
         "bowlMount",
+        "brand",
         "dimensionsCm",
         "driveType",
         "features",
@@ -234,26 +235,27 @@
       "attributes": [
         "bowlSizeMm",
         "brand",
-        "material"
+        "material",
+        "weightKg"
       ]
     },
     "tripods": {
       "attributes": [
-        "brand",
-        "model",
-        "material",
-        "stages",
-        "bowlSizeMm",
         "bowlMount",
-        "payloadKg",
-        "heightRangeCm",
-        "weightKg",
-        "spreader",
-        "features",
+        "bowlSizeMm",
+        "brand",
         "dimensionsCm",
-        "sizeClass",
+        "features",
+        "heightRangeCm",
+        "material",
+        "model",
         "notes",
-        "sourceUrl"
+        "payloadKg",
+        "sizeClass",
+        "sourceUrl",
+        "spreader",
+        "stages",
+        "weightKg"
       ]
     },
     "videoAssist": {
@@ -269,25 +271,31 @@
       "dtapA",
       "mount_type",
       "pinA",
-      "weight_g"
+      "voltage",
+      "weight_g",
+      "weight_notes"
     ]
   },
   "batteryHotswaps": {
     "attributes": [
       "capacity",
       "mount_type",
-      "pinA"
+      "notes",
+      "pinA",
+      "weight_g"
     ]
   },
   "cameras": {
     "attributes": [
       "fizConnectors",
+      "frameRates",
       "lensMount",
+      "notes",
       "power",
       "powerDrawWatts",
-      "frameRates",
       "recordingCodecs",
       "recordingMedia",
+      "requiredImageCircleMm",
       "resolutions",
       "sensorModes",
       "timecode",
@@ -361,6 +369,5468 @@
         "size",
         "type"
       ]
+    },
+    "Arri Alexa Mini LF": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Arri Alexa Mini": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Arri Alexa 35": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Arri Alexa 35 Xtreme": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Arri Amira": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Sony Venice 2": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type",
+          "version"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Sony Venice": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type",
+          "version"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Sony Burano": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Sony FX3": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type",
+          "version"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Sony FX6": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type",
+          "version"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Sony FX9": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Sony FS7 II": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Canon C70": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Canon C80": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type",
+          "version"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Canon C300 Mk III": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Canon C400": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type",
+          "version"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Canon C500 Mk II": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Canon EOS C700 FF": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Blackmagic BMPCC 4K": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type",
+          "version"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Blackmagic BMPCC 6K G2": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type",
+          "version"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Blackmagic BMPCC 6K": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type",
+          "version"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Blackmagic Pocket Cinema Camera 6K Pro": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Blackmagic URSA 12K": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "count",
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Blackmagic URSA Cine": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Blackmagic URSA Cine 17K 65": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Blackmagic PYXIS 6K": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type",
+          "version"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Blackmagic PYXIS 12K": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type",
+          "version"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "RED Komodo 6k": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "RED Komodo X": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Red V-Raptor XL 8K VV": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Red V-RAPTOR® X XL 8K VV": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Red V-RAPTOR® XL 8K S35": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Red V-RAPTOR® X XL 8K S35": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Red V-Raptor 8k S35": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Red V-Raptor X 8k S35": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Red V-Raptor 8k VV": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Red V-Raptor X 8k VV": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "RED Scarlet-W (Dragon Sensor)": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "RED Epic-W (Helium 8K S35)": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "RED Weapon (Helium 8K S35/VV)": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "RED Epic Dragon (6K)": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "RED Scarlet Dragon (5K)": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "RED Epic (Mysterium-X Sensor)": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "RED Scarlet (Mysterium-X Sensor)": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Panasonic Lumix S5 II": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type",
+          "version"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Panasonic Lumix GH6": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type",
+          "version"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Sony A7S III": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type",
+          "version"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "FUJIFILM GFX ETERNA 55": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Fujifilm GFX100 II": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Fujifilm X-H2": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Fujifilm X-T5": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Fujifilm X-S20": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Fujifilm X-T4": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Fujifilm X-T3": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Fujifilm GFX100S II": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Freefly Wave": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Freefly Ember S5K": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Phantom Flex4K": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Phantom VEO 4K": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Nikon Z9": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Nikon Z8": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Panasonic Lumix S1H": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Panasonic Lumix GH7": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Blackmagic URSA Mini Pro 4": {
+      "6K G2": {
+        "power": {
+          "batteryPlateSupport": {
+            "attributes": [
+              "mount",
+              "notes",
+              "type"
+            ]
+          },
+          "powerDistributionOutputs": {
+            "attributes": [
+              "current",
+              "notes",
+              "type",
+              "voltage",
+              "wattage"
+            ]
+          }
+        },
+        "videoOutputs": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        },
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        },
+        "recordingMedia": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        },
+        "viewfinder": {
+          "attributes": [
+            "connector",
+            "notes",
+            "resolution",
+            "type"
+          ]
+        },
+        "lensMount": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "timecode": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      }
+    },
+    "Nikon RED ZR": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "RED Raven": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "RED Ranger Monstro 8K VV": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "RED Ranger Gemini 5K S35": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "RED Ranger Helium 8K S35": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "RED ONE MX": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Leica SL3-S": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Panasonic Lumix S1R II": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Canon EOS R6 Mark III": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Canon EOS R50 V": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Canon PowerShot V1": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Canon EOS C50": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Nikon Z5 II": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Sony RX1R III": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Fujifilm GFX100RF": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Fujifilm X-E5": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Z CAM E2-M4": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Z CAM E2-F8": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "RED V-RAPTOR XE": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Fujifilm X-H2S": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type",
+          "version"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "DJI Ronin 4D 6K": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type",
+          "version"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Sony FX30": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type",
+          "version"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Panasonic Lumix BS1H": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Sony ZV-E1": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type",
+          "version"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Fujifilm X-M5": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Canon EOS R5 Mark II": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type",
+          "version"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Canon EOS R1": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type",
+          "version"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "size",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Sony PXW-FS7": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Canon C200": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Panasonic AU-EVA1": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Panasonic VariCam LT": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "RED V-RAPTOR 8K VV": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "RED V-RAPTOR [X] 8K VV": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "RED V-RAPTOR 8K S35": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Blackmagic Cinema Camera 6K": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Canon EOS R5 C": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Blackmagic URSA Broadcast G2": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Kinefinity MAVO Edge 6K": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Z CAM E2-F6": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type",
+          "version"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Z CAM E2-F6 Pro / Mark II": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type",
+          "version"
+        ]
+      },
+      "fizConnectors": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "viewfinder": {
+        "attributes": [
+          "connector",
+          "notes",
+          "resolution",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "timecode": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "RED DSMC2 MONSTRO 8K VV": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "RED DSMC2 HELIUM 8K S35": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "RED DSMC2 GEMINI 5K S35": {
+      "power": {
+        "batteryPlateSupport": {
+          "attributes": [
+            "mount",
+            "notes",
+            "type"
+          ]
+        },
+        "powerDistributionOutputs": {
+          "attributes": [
+            "current",
+            "notes",
+            "type",
+            "voltage",
+            "wattage"
+          ]
+        }
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "lensMount": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Insta360 Titan": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Insta360 Pro 2": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Insta360 ONE RS 1-Inch 360": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Kandao Obsidian Pro": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      },
+      "recordingMedia": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
     }
   },
   "directorMonitors": {
@@ -368,13 +5838,13 @@
       "brand",
       "brightnessNits",
       "model",
+      "notes",
       "power",
       "powerDrawWatts",
       "screenSizeInches",
       "videoInputs",
       "videoOutputs",
-      "wirelessTx",
-      "notes"
+      "wirelessTx"
     ],
     "power": {
       "input": {
@@ -396,6 +5866,298 @@
         "notes",
         "type"
       ]
+    },
+    "Director Monitor 17\" (SmallHD/FSI)": {
+      "videoInputs": {
+        "attributes": [
+          "type"
+        ]
+      },
+      "videoOutputs": {
+        "attributes": [
+          "type"
+        ]
+      }
+    },
+    "Director Monitor 13\" (SmallHD/FSI)": {
+      "videoInputs": {
+        "attributes": [
+          "type"
+        ]
+      },
+      "videoOutputs": {
+        "attributes": [
+          "type"
+        ]
+      }
+    },
+    "Atomos Sumo 19SE": {
+      "videoInputs": {
+        "attributes": [
+          "type"
+        ]
+      },
+      "videoOutputs": {
+        "attributes": [
+          "type"
+        ]
+      }
+    },
+    "SmallHD Cine 24\" 4K High-Bright Monitor": {
+      "videoInputs": {
+        "attributes": [
+          "type"
+        ]
+      },
+      "videoOutputs": {
+        "attributes": [
+          "type"
+        ]
+      }
+    },
+    "Sony PVM-A170 17\" OLED": {
+      "videoInputs": {
+        "attributes": [
+          "type"
+        ]
+      },
+      "videoOutputs": {
+        "attributes": [
+          "type"
+        ]
+      }
+    },
+    "SmallHD 1303 HDR": {
+      "power": {
+        "input": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "videoInputs": {
+        "attributes": [
+          "type"
+        ]
+      },
+      "videoOutputs": {
+        "attributes": [
+          "type"
+        ]
+      }
+    },
+    "SmallHD Cine 13 UHD 4K": {
+      "power": {
+        "input": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "videoInputs": {
+        "attributes": [
+          "type"
+        ]
+      },
+      "videoOutputs": {
+        "attributes": [
+          "type"
+        ]
+      }
+    },
+    "SEETEC P133-9HSD": {
+      "power": {
+        "input": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "videoInputs": {
+        "attributes": [
+          "type"
+        ]
+      },
+      "videoOutputs": {
+        "attributes": [
+          "type"
+        ]
+      }
+    },
+    "SWIT BM-U175": {
+      "power": {
+        "input": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "videoInputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "SWIT S-1173F": {
+      "power": {
+        "input": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "videoInputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "SWIT K15": {
+      "power": {
+        "input": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "videoInputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "SWIT K21": {
+      "power": {
+        "input": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "videoInputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Sony PVM-X1800": {
+      "videoInputs": {
+        "attributes": [
+          "type"
+        ]
+      }
+    },
+    "Sony LMD-A170": {
+      "power": {
+        "input": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "videoInputs": {
+        "attributes": [
+          "type"
+        ]
+      }
+    },
+    "Sony PVM-4300": {
+      "videoInputs": {
+        "attributes": [
+          "type"
+        ]
+      }
+    },
+    "Flanders Scientific DM242": {
+      "videoInputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Flanders Scientific DM170": {
+      "videoInputs": {
+        "attributes": [
+          "type"
+        ]
+      }
+    },
+    "Flanders Scientific XMP270": {
+      "power": {
+        "input": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "videoInputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      },
+      "videoOutputs": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "Tarion BM120-4KS": {
+      "power": {
+        "input": {
+          "attributes": [
+            "type",
+            "voltageRange"
+          ]
+        }
+      },
+      "videoInputs": {
+        "attributes": [
+          "type"
+        ]
+      },
+      "videoOutputs": {
+        "attributes": [
+          "type"
+        ]
+      }
     }
   },
   "filterOptions": {
@@ -410,8 +6172,122 @@
         "internalController",
         "notes",
         "powerDrawWatts",
-        "powerSource"
-      ]
+        "powerSource",
+        "weight_g"
+      ],
+      "Arri OCU-1": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "Arri UMC-4": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "Preston MDR-3": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Preston MDR-4": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Teradek RT MDR": {
+        "X": {
+          "fizConnectors": {
+            "attributes": [
+              "type"
+            ]
+          }
+        }
+      },
+      "Arri RIA-1": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Arri NIA-1": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "Arri Master Grip (single unit)": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Tilta Nucleus-M Hand Grip (single)": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Tilta Nucleus-M II Handle (single)": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "DJI Focus Pro Handle": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Preston MDR4": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Redrock microRemote Basestation": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Cmotion compact LCS receiver": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Teradek RT Motion CTRL": {
+        "3 Controller": {
+          "fizConnectors": {
+            "attributes": [
+              "notes",
+              "type"
+            ]
+          }
+        }
+      }
     },
     "distance": {
       "attributes": [
@@ -423,7 +6299,49 @@
         "notes",
         "outputDisplay",
         "powerDrawWatts"
-      ]
+      ],
+      "UDM-1 + LCube": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "Focusbug Cine RT + LCube": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "Preston Light Ranger 2 (LR2) Main Sensor": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "Teradek TOF": {
+        "1 Range Finder Module": {
+          "fizConnectors": {
+            "attributes": [
+              "notes",
+              "type"
+            ]
+          }
+        }
+      },
+      "DJI LiDAR Range Finder": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      }
     },
     "handUnits": {
       "attributes": [
@@ -433,8 +6351,192 @@
         "internalController",
         "notes",
         "powerDrawWatts",
-        "powerSource"
-      ]
+        "powerSource",
+        "weight_g"
+      ],
+      "Arri Hi-5": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "Arri SXU-1": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "Arri WCU-4": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "Tilta Nucleus-M FIZ Hand Unit": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "Tilta Nucleus-M II FIZ Hand Unit": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "Tilta Nucleus Nano Hand Wheel Controller": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "Tilta Nucleus Nano II Hand Controller": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "Preston Hand Unit 4 (HU4)": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "cmotion cPRO hand unit": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "Chrosziel MagNum Hand Unit (MN-100R)": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "Teradek RT CTRL": {
+        "1": {
+          "fizConnectors": {
+            "attributes": [
+              "notes",
+              "type"
+            ]
+          }
+        },
+        "3": {
+          "fizConnectors": {
+            "attributes": [
+              "notes",
+              "type"
+            ]
+          }
+        }
+      },
+      "DJI Focus Hand Unit": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "DJI Focus Pro Hand Unit": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "DJI RS Focus Wheel (2022)": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "Hedén YMER-3 Hand Control": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "Freefly Pilot Pro Hand Controller": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "Redrock microRemote Hand Controller": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "SmallRig MagicFIZ Wireless Handgrip": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "Preston HU3 Hand Unit": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Arri ZMU-4 (body only, wired)": {
+        "fizConnectors": {
+          "attributes": [
+            "notes",
+            "type"
+          ]
+        }
+      },
+      "Cmotion cPRO ONE": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Tilta Nucleus M II Hand Unit": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      }
     },
     "motors": {
       "attributes": [
@@ -443,8 +6545,194 @@
         "internalController",
         "notes",
         "powerDrawWatts",
-        "torqueNm"
-      ]
+        "torqueNm",
+        "weight_g"
+      ],
+      "Tilta Nucleus M": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Tilta Nucleus M II": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Tilta Nucleus Nano (Original)": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Tilta Nucleus Nano II": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Arri Cforce Mini": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Arri Cforce Plus": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Arri CLM-3": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Arri CLM-4 (K2": {
+        "72114": {
+          "0)": {
+            "fizConnectors": {
+              "attributes": [
+                "type"
+              ]
+            }
+          }
+        }
+      },
+      "Arri CLM-5 (K2": {
+        "0006361)": {
+          "fizConnectors": {
+            "attributes": [
+              "type"
+            ]
+          }
+        }
+      },
+      "Arri cforce mini RF (KK": {
+        "0040345)": {
+          "fizConnectors": {
+            "attributes": [
+              "type"
+            ]
+          }
+        }
+      },
+      "Teradek RT Motion FIZ (MOTR": {
+        "S)": {
+          "fizConnectors": {
+            "attributes": [
+              "type"
+            ]
+          }
+        }
+      },
+      "Preston DM1X": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Preston DM2": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Preston DM2X": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Preston DM-A": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Preston DM-C": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Chrosziel CDM-100 Digital": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Chrosziel CDM-M (Universal Zoom Servo Drive)": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "DJI Focus (Original)": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "DJI RS Focus (2022)": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "DJI Focus Pro Motor": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Cmotion cPRO": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "SmallRig Wireless Follow Focus": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "Redrock MicroRemote Torque": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      },
+      "PD Movie Live Air 3 Smart Motor": {
+        "fizConnectors": {
+          "attributes": [
+            "type"
+          ]
+        }
+      }
     }
   },
   "iosVideo": {
@@ -473,6 +6761,7 @@
   },
   "lenses": {
     "attributes": [
+      "anamorphicSqueeze",
       "brand",
       "clampOn",
       "frontDiameterMm",
@@ -481,11 +6770,14 @@
       "lensType",
       "minFocusMeters",
       "mount",
+      "mountOptions",
       "needsLensSupport",
       "notes",
       "rodLengthCm",
       "rodStandard",
+      "squeeze",
       "tStop",
+      "tStopRange",
       "weight_g"
     ]
   },
@@ -497,7 +6789,178 @@
       "interface",
       "kNumber",
       "model"
-    ]
+    ],
+    "codex": {
+      "attributes": [
+        "brand",
+        "capacityGB",
+        "model",
+        "notes",
+        "type",
+        "weight_g"
+      ]
+    },
+    "cfexpressTypeB": {
+      "attributes": [
+        "brand",
+        "capacityGB",
+        "model",
+        "notes",
+        "type"
+      ]
+    },
+    "cfexpressTypeA": {
+      "attributes": [
+        "brand",
+        "capacityGB",
+        "model",
+        "notes",
+        "type"
+      ]
+    },
+    "cfast2": {
+      "attributes": [
+        "brand",
+        "capacityGB",
+        "model",
+        "notes",
+        "type"
+      ]
+    },
+    "axs": {
+      "attributes": [
+        "brand",
+        "capacityGB",
+        "model",
+        "notes",
+        "type"
+      ]
+    },
+    "sd": {
+      "attributes": [
+        "brand",
+        "capacityGB",
+        "model",
+        "notes",
+        "type"
+      ]
+    },
+    "redMiniMag": {
+      "attributes": [
+        "brand",
+        "capacityGB",
+        "model",
+        "notes",
+        "type"
+      ]
+    },
+    "redMag18": {
+      "attributes": [
+        "brand",
+        "capacityGB",
+        "model",
+        "type"
+      ]
+    },
+    "xqd": {
+      "attributes": [
+        "brand",
+        "capacityGB",
+        "model",
+        "notes",
+        "type"
+      ]
+    },
+    "expressP2": {
+      "attributes": [
+        "brand",
+        "capacityGB",
+        "model",
+        "notes",
+        "type"
+      ]
+    },
+    "sdUhsI": {
+      "attributes": [
+        "brand",
+        "capacityGB",
+        "model",
+        "notes",
+        "type"
+      ]
+    },
+    "kinemag": {
+      "attributes": [
+        "brand",
+        "capacityGB",
+        "model",
+        "notes",
+        "type"
+      ]
+    },
+    "djiProSsd": {
+      "attributes": [
+        "brand",
+        "capacityGB",
+        "model",
+        "notes",
+        "type"
+      ]
+    },
+    "compactFlash": {
+      "attributes": [
+        "brand",
+        "capacityGB",
+        "model",
+        "notes",
+        "type"
+      ]
+    },
+    "redDrive": {
+      "attributes": [
+        "brand",
+        "capacityGB",
+        "model",
+        "notes",
+        "type"
+      ]
+    },
+    "microSd": {
+      "attributes": [
+        "brand",
+        "capacityGB",
+        "model",
+        "notes",
+        "type"
+      ]
+    },
+    "m2Nvme": {
+      "attributes": [
+        "brand",
+        "capacityGB",
+        "model",
+        "notes",
+        "type"
+      ]
+    },
+    "blackmagicMediaModule": {
+      "attributes": [
+        "brand",
+        "capacityGB",
+        "model",
+        "notes",
+        "type"
+      ]
+    },
+    "cinemag": {
+      "attributes": [
+        "brand",
+        "capacityGB",
+        "model",
+        "notes",
+        "type"
+      ]
+    }
   },
   "monitors": {
     "attributes": [
@@ -507,11 +6970,13 @@
       "bluetooth",
       "brightnessNits",
       "latencyMs",
+      "notes",
       "power",
       "powerDrawWatts",
       "screenSizeInches",
       "videoInputs",
       "videoOutputs",
+      "weight_g",
       "wireless",
       "wirelessRX",
       "wirelessTx"
@@ -554,6 +7019,359 @@
       "attributes": [
         "portType"
       ]
+    },
+    "SmallHD Ultra 7": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "SmallHD Ultra 7 Bolt 6 TX": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "SmallHD Ultra 7 Bolt 6 RX": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "SmallHD Cine 7": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "SmallHD Cine 7 Bolt 4K TX": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "SmallHD Cine 7 Bolt 4K RX": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "SmallHD Indie 7": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "Atomos Sumo 19SE": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "ARRI CCM-1": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "SmallHD Indie 7 Bolt 4K TX": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "SmallHD Indie 7 Bolt 4K RX": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "SmallHD Focus 7": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "SmallHD Ultra 5": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "SmallHD Ultra 5 Bolt 6 TX": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "SmallHD Ultra 5 Bolt 6 RX": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "SmallHD 1303 HDR": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "SmallHD Cine 5": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "SmallHD Cine 5 Bolt 6 TX": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "SmallHD Cine 5 Bolt 6 RX": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "SmallHD Indie 5": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "SmallHD Focus 5": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "Hollyland Pyro 7 (RX/TX)": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "Hollyland Pyro 5 (RX/TX)": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "Hollyland Mars M1 Enhanced (RX/TX)": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "Portkeys BM5 III": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "Portkeys LH5H": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "Portkeys BM7 II DS": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "Portkeys PT5 II": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "Atomos Ninja V": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "Atomos Ninja V+": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "Atomos Shinobi 5": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "Atomos Shinobi 7": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "Atomos Shogun 7": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "Feelworld FW568": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "Feelworld F6 Plus": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "Andycine A6 Pro": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "Lilliput A7S": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "TVLogic F-5A 5\" Onboard": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "TVLogic VFM-058W": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "SmallHD 703 UltraBright": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "TV Logic F7HS": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "TVLogic F-7H mkII": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "None": {
+      "power": {
+        "attributes": [
+          "notes",
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "Atomos Shogun Connect": {
+      "power": {
+        "attributes": [
+          "type",
+          "voltageRange"
+        ]
+      }
     }
   },
   "video": {
@@ -563,7 +7381,8 @@
       "power",
       "powerDrawWatts",
       "videoInputs",
-      "videoOutputs"
+      "videoOutputs",
+      "weight_g"
     ],
     "power": {
       "input": {
@@ -599,7 +7418,8 @@
       "isPersonalGear",
       "kNumber",
       "listOfOrigin",
-      "model"
+      "model",
+      "powerDrawWatts"
     ]
   },
   "wirelessReceivers": {
@@ -609,7 +7429,8 @@
       "power",
       "powerDrawWatts",
       "videoInputs",
-      "videoOutputs"
+      "videoOutputs",
+      "weight_g"
     ],
     "power": {
       "batteryPlateSupport": {
@@ -631,5 +7452,93 @@
         "type"
       ]
     }
+  },
+  "carts": {
+    "attributes": [
+      "accessories",
+      "brand",
+      "brandAccessories",
+      "config",
+      "dimensionsCm",
+      "kits",
+      "model",
+      "notes",
+      "payloadCapacityKg",
+      "series",
+      "weightKg",
+      "wheelConfig"
+    ]
+  },
+  "gearList": {
+    "media": {
+      "attributes": [
+        "brand",
+        "capacityGb",
+        "capacityTb",
+        "interface",
+        "model",
+        "supportedMedia"
+      ]
+    }
+  },
+  "audio": {
+    "attributes": [
+      "brand",
+      "inputs",
+      "notes",
+      "phantomPower",
+      "powerDrawWatts",
+      "powerOptions",
+      "resolution",
+      "type",
+      "verified_source",
+      "weight_g"
+    ]
+  },
+  "lights": {
+    "attributes": [
+      "brand",
+      "length",
+      "mount",
+      "notes",
+      "powerDrawWatts",
+      "powerOptions",
+      "type",
+      "verified_source",
+      "weight_g"
+    ]
+  },
+  "gimbals": {
+    "attributes": [
+      "brand",
+      "notes",
+      "payload_kg",
+      "powerDrawWatts",
+      "powerOptions",
+      "verified_source",
+      "weight_g"
+    ]
+  },
+  "drones": {
+    "attributes": [
+      "brand",
+      "notes",
+      "powerDrawWatts",
+      "powerOptions",
+      "type",
+      "verified_source",
+      "weight_g"
+    ]
+  },
+  "actionCameras": {
+    "attributes": [
+      "brand",
+      "notes",
+      "powerDrawWatts",
+      "powerOptions",
+      "type",
+      "verified_source",
+      "weight_g"
+    ]
   }
 }

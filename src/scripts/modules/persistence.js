@@ -1193,6 +1193,6 @@
   }
 
   if (typeof module !== 'undefined' && module && module.exports) {
-    module.exports = persistenceAPI;
+    Object.assign(module.exports, persistenceAPI);
   }
 })();

@@ -183,10 +183,26 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     '\n  }\n' +
     '})';
   const wrapper = vm.runInThisContext(wrapperSource, { filename: __filename });
-  const globalScope =
-    (typeof globalThis !== 'undefined' && globalThis)
-    || (typeof global !== 'undefined' && global)
-    || this;
+
+  let globalScope;
+  try {
+    if (typeof globalThis !== 'undefined') {
+      globalScope = globalThis;
+    }
+  } catch (e) { void e; }
+
+  if (!globalScope) {
+    try {
+      if (typeof global !== 'undefined') {
+        globalScope = global;
+      }
+    } catch (e) { void e; }
+  }
+
+  if (!globalScope) {
+    globalScope = this || {};
+  }
+
   console.log('script.js: Executing wrapper with', parts.length, 'parts');
   console.log('script.js: app-session.js index:', parts.indexOf('app-session.js'));
 

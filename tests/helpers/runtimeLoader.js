@@ -132,9 +132,15 @@ function loadRuntime(targetScope, options) {
   }
 
   const rawExports = require(resolvedScriptPath);
+  if (!isRuntimeObject(rawExports)) {
+    // rawExports might be a module that contains the runtime, not the runtime itself.
+    // This is handled by normalizeRuntimeExports.
+  }
+
   const runtime = normalizeRuntimeExports(rawExports);
 
   if (!isRuntimeObject(runtime)) {
+
     // Just return what we found/global fallback, or throw?
     // The original threw.
     if (getGlobalRuntimeFallback()) {

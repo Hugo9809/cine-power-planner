@@ -30,6 +30,8 @@
     process.env &&
     (process.env.JEST_WORKER_ID || process.env.CINE_FORCE_STORAGE_REINIT);
 
+  const FACTORY_RESET_LOCK_KEY = 'cine_factory_reset_lock';
+
   if (GLOBAL_SCOPE && GLOBAL_SCOPE.__cineStorageInitialized) {
     if (FORCE_STORAGE_REINITIALIZE) {
       try {
@@ -70,11 +72,26 @@
           if (event && event.data === 'factory-reset') {
             if (GLOBAL_SCOPE) {
               GLOBAL_SCOPE.__cameraPowerPlannerFactoryResetting = true;
+              try {
+                if (typeof sessionStorage !== 'undefined') {
+                  sessionStorage.setItem(FACTORY_RESET_LOCK_KEY, 'true');
+                }
+                if (typeof localStorage !== 'undefined') {
+                  localStorage.setItem(FACTORY_RESET_LOCK_KEY, 'true');
+                }
+              } catch (lockError) {
+                void lockError;
+              }
               // Clear session storage locally before reload to ensure it doesn't survive
               // since page reload alone might preserve it in some browsers.
               if (typeof sessionStorage !== 'undefined' && typeof sessionStorage.clear === 'function') {
                 try {
+                  // We must preserve the lock key if we just set it
+                  const lockValue = sessionStorage.getItem(FACTORY_RESET_LOCK_KEY);
                   sessionStorage.clear();
+                  if (lockValue) {
+                    sessionStorage.setItem(FACTORY_RESET_LOCK_KEY, lockValue);
+                  }
                 } catch (e) {
                   void e;
                 }
@@ -96,6 +113,18 @@
 
   if (GLOBAL_SCOPE) {
     try {
+      // Clear any lingering factory reset lock on initialization
+      const scopeList = [
+        typeof window !== 'undefined' ? window : null,
+        typeof sessionStorage !== 'undefined' ? sessionStorage : null,
+        typeof localStorage !== 'undefined' ? localStorage : null
+      ];
+      scopeList.forEach(s => {
+        if (s && typeof s.removeItem === 'function') {
+          try { s.removeItem(FACTORY_RESET_LOCK_KEY); } catch (e) { void e; }
+        }
+      });
+
       Object.defineProperty(GLOBAL_SCOPE, '__cineStorageInitialized', {
         configurable: true,
         writable: true,
@@ -451,6 +480,17 @@
       if (scope && scope !== GLOBAL_SCOPE && readFlag(scope)) {
         return true;
       }
+    }
+
+    try {
+      if (
+        (typeof sessionStorage !== 'undefined' && sessionStorage.getItem(FACTORY_RESET_LOCK_KEY)) ||
+        (typeof localStorage !== 'undefined' && localStorage.getItem(FACTORY_RESET_LOCK_KEY))
+      ) {
+        return true;
+      }
+    } catch (storageError) {
+      void storageError;
     }
 
     return false;
@@ -1978,7 +2018,7 @@
   var AUTO_BACKUP_SNAPSHOT_VERSION = 1;
   var AUTO_BACKUP_PAYLOAD_COMPRESSION_FLAG = '__cineAutoBackupCompressedPayload';
   var AUTO_BACKUP_CYCLE_PLACEHOLDER = '__cineCircular__';
-  var PROJECT_ACTIVITY_WINDOW_MS = 30 * 60 * 1000;
+
   var projectActivityTimestamps = new Map();
   var forcedCompressedProjectKeys = typeof Set === 'function' ? new Set() : null;
   var AUTO_BACKUP_PAYLOAD_COMPRESSION_MIN_LENGTH = 2048;
@@ -4302,53 +4342,9 @@
     }
   }
 
-  function getProjectActivityTimestamp(name) {
-    if (
-      !projectActivityTimestamps
-      || typeof projectActivityTimestamps.get !== 'function'
-      || typeof name !== 'string'
-    ) {
-      return null;
-    }
 
-    if (projectActivityTimestamps.has(name)) {
-      const direct = projectActivityTimestamps.get(name);
-      if (Number.isFinite(direct)) {
-        return direct;
-      }
-    }
 
-    const normalized = normalizeProjectStorageKey(name);
-    if (normalized && projectActivityTimestamps.has(normalized)) {
-      const normalizedTimestamp = projectActivityTimestamps.get(normalized);
-      if (Number.isFinite(normalizedTimestamp)) {
-        return normalizedTimestamp;
-      }
-    }
 
-    return null;
-  }
-
-  function pruneProjectActivityCache(validKeys) {
-    if (!projectActivityTimestamps || typeof projectActivityTimestamps.forEach !== 'function') {
-      return;
-    }
-
-    projectActivityTimestamps.forEach((timestamp, key) => {
-      const normalized = normalizeProjectStorageKey(key);
-      const hasKey = validKeys && typeof validKeys.has === 'function'
-        ? validKeys.has(key) || (normalized && validKeys.has(normalized))
-        : true;
-      if (!hasKey) {
-        projectActivityTimestamps.delete(key);
-        return;
-      }
-
-      if (!Number.isFinite(timestamp) || timestamp < 0) {
-        projectActivityTimestamps.delete(key);
-      }
-    });
-  }
 
   function normalizeForcedProjectCompressionKey(name) {
     if (typeof name !== 'string') {
@@ -4378,62 +4374,9 @@
     return false;
   }
 
-  function registerForcedProjectCompressionKey(name) {
-    if (!forcedCompressedProjectKeys || typeof forcedCompressedProjectKeys.add !== 'function') {
-      clearActiveProjectCompressionHold(name);
-      if (projectActivityTimestamps && typeof projectActivityTimestamps.delete === 'function') {
-        projectActivityTimestamps.delete(name);
-      }
-      return;
-    }
 
-    const normalized = normalizeForcedProjectCompressionKey(name);
-    if (!normalized) {
-      return;
-    }
 
-    try {
-      forcedCompressedProjectKeys.add(normalized);
-    } catch (error) {
-      void error;
-    }
 
-    if (projectActivityTimestamps && typeof projectActivityTimestamps.delete === 'function') {
-      projectActivityTimestamps.delete(name);
-      if (normalized !== name) {
-        projectActivityTimestamps.delete(normalized);
-      }
-    }
-
-    clearActiveProjectCompressionHold(normalized);
-  }
-
-  function purgeForcedProjectCompressionKeys(validKeys) {
-    if (!forcedCompressedProjectKeys || typeof forcedCompressedProjectKeys.forEach !== 'function') {
-      return;
-    }
-
-    const validSet = validKeys && typeof validKeys.has === 'function' ? validKeys : null;
-
-    forcedCompressedProjectKeys.forEach((key) => {
-      if (!key) {
-        try {
-          forcedCompressedProjectKeys.delete(key);
-        } catch (error) {
-          void error;
-        }
-        return;
-      }
-
-      if (validSet && !validSet.has(key)) {
-        try {
-          forcedCompressedProjectKeys.delete(key);
-        } catch (error) {
-          void error;
-        }
-      }
-    });
-  }
 
   function ensureProjectEntryUncompressed(value, contextName) {
     const restored = restoreCompressedProjectEntry(value, contextName);
@@ -4455,211 +4398,9 @@
     return container;
   }
 
-  function ensureProjectEntryCompressed(value, contextName) {
-    if (typeof value === 'string') {
-      const decoded = decodeCompressedJsonStorageValue(value);
-      if (decoded.success) {
-        return value;
-      }
 
-      if (!value) {
-        return value;
-      }
 
-      try {
-        JSON.parse(value);
-      } catch (nonJsonStringError) {
-        void nonJsonStringError;
-        return value;
-      }
 
-      const candidate = createCompressedJsonStorageCandidate(value);
-      if (candidate && typeof candidate.serialized === 'string' && candidate.serialized) {
-        return candidate.serialized;
-      }
-      return value;
-    }
-
-    if (value === null || value === undefined || typeof value !== 'object') {
-      return value;
-    }
-
-    let serialized;
-    try {
-      serialized = JSON.stringify(value);
-    } catch (serializationError) {
-      console.warn(
-        'Unable to serialize project entry before compression',
-        contextName || 'project entry',
-        serializationError,
-      );
-      return value;
-    }
-
-    if (typeof serialized !== 'string' || !serialized) {
-      return value;
-    }
-
-    const candidate = createCompressedJsonStorageCandidate(serialized);
-    if (candidate && typeof candidate.serialized === 'string' && candidate.serialized) {
-      return candidate.serialized;
-    }
-
-    return value;
-  }
-
-  function applyProjectEntryCompression(container) {
-    if (!isPlainObject(container)) {
-      return container;
-    }
-
-    const keys = Object.keys(container);
-    const now = Date.now();
-    const threshold = now - PROJECT_ACTIVITY_WINDOW_MS;
-    const validKeys = new Set(keys);
-    const activeCompressionHoldKey = ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED
-      ? ACTIVE_PROJECT_COMPRESSION_HOLD_KEY
-      : '';
-
-    pruneProjectActivityCache(validKeys);
-
-    keys.forEach((key) => {
-      const normalizedKey = normalizeProjectStorageKey(key);
-      const forcedCompressionLocked = isForcedProjectCompressionLocked(normalizedKey || key);
-      const isActiveHold = !forcedCompressionLocked
-        && activeCompressionHoldKey
-        && normalizedKey === activeCompressionHoldKey;
-      const timestamp = getProjectActivityTimestamp(key);
-      const keepUncompressed = !forcedCompressionLocked
-        && (isActiveHold || (Number.isFinite(timestamp) && timestamp >= threshold));
-      if (keepUncompressed) {
-        container[key] = ensureProjectEntryUncompressed(container[key], key);
-        if (isActiveHold && Number.isFinite(now)) {
-          markProjectActivity(normalizedKey || key, now);
-        }
-      } else {
-        container[key] = ensureProjectEntryCompressed(container[key], key);
-      }
-    });
-
-    return container;
-  }
-
-  function forceCompressAllProjectEntries(container, options = {}) {
-    if (!isPlainObject(container)) {
-      return { changed: false, keys: [] };
-    }
-
-    const context = options || {};
-    const compressedKeys = [];
-    const now = Date.now();
-    const threshold = Number.isFinite(now) ? now - PROJECT_ACTIVITY_WINDOW_MS : Number.NEGATIVE_INFINITY;
-    const activeCompressionHoldKey = ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED
-      ? ACTIVE_PROJECT_COMPRESSION_HOLD_KEY
-      : '';
-    const normalizedValidKeys = new Set();
-
-    Object.keys(container).forEach((key) => {
-      const normalizedKey = normalizeProjectStorageKey(key);
-      if (normalizedKey) {
-        normalizedValidKeys.add(normalizedKey);
-      }
-      const isActiveHold = activeCompressionHoldKey
-        && normalizedKey === activeCompressionHoldKey;
-      const timestamp = getProjectActivityTimestamp(key);
-      const withinActivityWindow = Number.isFinite(timestamp) && timestamp >= threshold;
-      const forcedCompressionLocked = isForcedProjectCompressionLocked(normalizedKey || key);
-      if ((isActiveHold || withinActivityWindow) && !forcedCompressionLocked) {
-        const currentValue = container[key];
-        const uncompressedValue = ensureProjectEntryUncompressed(currentValue, key);
-        if (uncompressedValue !== currentValue) {
-          container[key] = uncompressedValue;
-        }
-        if (isActiveHold && Number.isFinite(now)) {
-          markProjectActivity(normalizedKey || key, now);
-        }
-        return;
-      }
-
-      const currentValue = container[key];
-      const compressedValue = ensureProjectEntryCompressed(currentValue, key);
-      if (compressedValue !== currentValue) {
-        container[key] = compressedValue;
-        compressedKeys.push(key);
-        registerForcedProjectCompressionKey(normalizedKey || key);
-      }
-    });
-
-    purgeForcedProjectCompressionKeys(normalizedValidKeys);
-
-    if (
-      compressedKeys.length
-      && typeof console !== 'undefined'
-      && typeof console.warn === 'function'
-    ) {
-      const reason = typeof context.reason === 'string' ? context.reason : 'quota-recovery';
-      console.warn(
-        `Forced compression for ${compressedKeys.length} project entr${compressedKeys.length === 1 ? 'y' : 'ies'} while recovering storage quota.`,
-        { keys: compressedKeys, reason },
-      );
-    }
-
-    return { changed: compressedKeys.length > 0, keys: compressedKeys };
-  }
-
-  function clearDerivedProjectCachesForQuota(storage) {
-    const target = storage && typeof storage.removeItem === 'function'
-      ? storage
-      : getSafeLocalStorage();
-
-    if (!target || typeof target.removeItem !== 'function') {
-      return { cleared: false, keys: [] };
-    }
-
-    const cacheKeys = [DEVICE_SCHEMA_CACHE_KEY, LEGACY_SCHEMA_CACHE_KEY]
-      .filter((key) => typeof key === 'string' && key);
-    const removalCandidates = [];
-
-    cacheKeys.forEach((key) => {
-      getStorageKeyVariants(key).forEach((variant) => {
-        if (typeof variant === 'string' && variant) {
-          removalCandidates.push(variant);
-          if (typeof STORAGE_BACKUP_SUFFIX === 'string' && STORAGE_BACKUP_SUFFIX) {
-            removalCandidates.push(`${variant}${STORAGE_BACKUP_SUFFIX}`);
-          }
-        }
-      });
-    });
-
-    const removedKeys = [];
-    removalCandidates.forEach((key) => {
-      try {
-        const existing = target.getItem(key);
-        if (existing !== null && existing !== undefined) {
-          target.removeItem(key);
-          removedKeys.push(key);
-        }
-      } catch (error) {
-        console.warn(
-          'Unable to clear derived planner cache entry while recovering storage quota.',
-          { key, error },
-        );
-      }
-    });
-
-    if (
-      removedKeys.length
-      && typeof console !== 'undefined'
-      && typeof console.warn === 'function'
-    ) {
-      console.warn(
-        `Cleared ${removedKeys.length} derived planner cache entr${removedKeys.length === 1 ? 'y' : 'ies'} to free storage before saving projects.`,
-        removedKeys,
-      );
-    }
-
-    return { cleared: removedKeys.length > 0, keys: removedKeys };
-  }
 
   function registerActiveSetupStorageSkipKeys(skipSet) {
     if (!skipSet || typeof skipSet.add !== 'function') {
@@ -7225,45 +6966,7 @@
     return null;
   }
 
-  function removeOldestRenamedAutoBackupEntry(container) {
-    if (!isPlainObject(container)) {
-      return null;
-    }
 
-    const removeFromEntries = (entries) => {
-      if (!Array.isArray(entries) || entries.length === 0) {
-        return null;
-      }
-
-      for (let index = 0; index < entries.length; index += 1) {
-        const entry = entries[index];
-        if (!entry || typeof entry.key !== 'string') {
-          continue;
-        }
-
-        if (Object.prototype.hasOwnProperty.call(container, entry.key)) {
-          delete container[entry.key];
-          return entry.key;
-        }
-      }
-
-      return null;
-    };
-
-    const autoBackups = collectAutoBackupEntries(container, STORAGE_AUTO_BACKUP_NAME_PREFIX);
-    const oldestAutoBackupKey = removeFromEntries(autoBackups);
-    if (oldestAutoBackupKey) {
-      return oldestAutoBackupKey;
-    }
-
-    const deletionBackups = collectAutoBackupEntries(container, STORAGE_AUTO_BACKUP_DELETION_PREFIX);
-    const oldestDeletionBackupKey = removeFromEntries(deletionBackups);
-    if (oldestDeletionBackupKey) {
-      return oldestDeletionBackupKey;
-    }
-
-    return null;
-  }
 
   function describeAutoGearBackupEntry(entry) {
     if (!entry || typeof entry !== 'object') {
@@ -12300,9 +12003,7 @@
     return true;
   }
 
-  function shouldDisableProjectCompressionDuringPersist() {
-    return ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED;
-  }
+
 
   function resolveProjectKey(projects, lookup, name, options = {}) {
     if (!projects || typeof projects !== "object") {
@@ -15224,6 +14925,8 @@
       if (typeof global !== 'undefined') global.__cameraPowerPlannerFactoryResetting = true;
       if (typeof window !== 'undefined') window.__cameraPowerPlannerFactoryResetting = true;
       if (GLOBAL_SCOPE) GLOBAL_SCOPE.__cameraPowerPlannerFactoryResetting = true;
+      if (typeof sessionStorage !== 'undefined') sessionStorage.setItem(FACTORY_RESET_LOCK_KEY, 'true');
+      if (typeof localStorage !== 'undefined') localStorage.setItem(FACTORY_RESET_LOCK_KEY, 'true');
     } catch (e) {
       void e;
     }
@@ -15364,6 +15067,7 @@
         }
 
         keysToRemove.forEach((key) => {
+          if (key === FACTORY_RESET_LOCK_KEY) return;
           try {
             storage.removeItem(key);
           } catch (removeError) {
@@ -15413,9 +15117,12 @@
           key.startsWith('cinePowerPlanner') ||
           key.startsWith('cineRental') ||
           key.startsWith('__cine') ||
+          key.startsWith('cine_') || // Includes FACTORY_RESET_LOCK_KEY, handled via explicit check
           sessionCacheKeys.includes(key)
         ) {
-          keysToRemove.push(key);
+          if (key !== FACTORY_RESET_LOCK_KEY) {
+            keysToRemove.push(key);
+          }
         }
       }
 
@@ -15512,7 +15219,12 @@
       deleteFromStorage(sessionStorage, '__cineLoggingHistory', msg);
       deleteFromStorage(sessionStorage, '__cineLoggingConfig', msg);
       // Nuke everything in session storage too
-      try { sessionStorage.clear(); } catch (e) { void e; }
+      try {
+        // Preserve lock if present
+        const lock = sessionStorage.getItem(FACTORY_RESET_LOCK_KEY);
+        sessionStorage.clear();
+        if (lock) sessionStorage.setItem(FACTORY_RESET_LOCK_KEY, lock);
+      } catch (e) { void e; }
     }
 
     // Clear Service Worker Caches

@@ -2033,11 +2033,7 @@
     ownGearAccess: createOwnGearOpenRequirement(),
     ownGearAddDevice: createOwnGearItemRequirement(),
     projectRequirementsAccess: createProjectRequirementsAccessRequirement(),
-    projectRequirementsBrief: createFieldCompletionRequirement(
-      '#productionCompany',
-      value => typeof value === 'string' && value.trim().length > 0,
-      ['input', 'change'],
-    ),
+
     projectRequirementsCrew: createProjectCrewRequirement(),
     projectRequirementsLogistics: createProjectLogisticsRequirement(),
     generateGearAndRequirements: createProjectDialogSubmitRequirement(),

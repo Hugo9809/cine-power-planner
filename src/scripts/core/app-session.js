@@ -4,6 +4,7 @@ console.log('app-session.js: Starting execution');
     if (typeof window.batteryPlateSelect === "undefined") window.batteryPlateSelect = document.getElementById("batteryPlateSelect");
   }
 })();
+var currentProjectInfo = null;
 // --- SESSION STATE HANDLING ---
 /* global cineFeaturesConnectionDiagram, shareSetupBtn, saveSessionState, loadSessionState,
           CORE_GLOBAL_SCOPE, resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY,
@@ -4629,7 +4630,17 @@ function autoSaveCurrentSetup() {
     return false;
   }
 
+  // Prevent auto-creation of new projects during typing strings that accidentally match
+  // a transient selection state. Auto-save should only UPDATE existing projects.
+  // Creation is handled by explicit save actions.
   const setups = getSetups();
+  if (!setups || typeof setups !== 'object' || !Object.prototype.hasOwnProperty.call(setups, name)) {
+    saveCurrentSession({ skipGearList: true });
+    checkSetupChanged();
+    return false;
+  }
+
+  // const setups = getSetups(); // Already retrieved above
   const existingSetup = setups && typeof setups === 'object' ? setups[name] : undefined;
   const existingSetupSignature = existingSetup ? stableStringify(existingSetup) : '';
   const currentSetup = { ...getCurrentSetupState() };
@@ -11223,7 +11234,7 @@ function createSettingsBackup(notify = true, timestamp = new Date()) {
   return result ? result.fileName : null;
 }
 
-if (backupSettings) {
+if (typeof backupSettings !== 'undefined' && backupSettings) {
   backupSettings.addEventListener('click', createSettingsBackup);
 }
 const storageBackupNowControl = typeof document !== 'undefined'
@@ -20642,7 +20653,12 @@ if (typeof module !== "undefined" && module.exports) {
     setLanguage: applySetLanguage,
     applySetLanguage,
     safeGetCurrentProjectName,
-    updateCalculations,
+    updateCalculations: function (...args) {
+      if (typeof globalThis !== 'undefined' && typeof globalThis.updateCalculations === 'function') {
+        return globalThis.updateCalculations(...args);
+      }
+      return undefined;
+    },
     setBatteryPlates,
     getBatteryPlates,
     setRecordingMedia,
@@ -20659,9 +20675,8 @@ if (typeof module !== "undefined" && module.exports) {
     applySharedSetup,
     updateBatteryPlateVisibility,
     updateBatteryOptions,
-    renderSetupDiagram,
-    enableDiagramInteractions,
-    updateDiagramLegend,
+
+
     cameraFizPort,
     controllerCamPort,
     controllerDistancePort,
@@ -20676,56 +20691,46 @@ if (typeof module !== "undefined" && module.exports) {
     normalizeViewfinderType,
     normalizePowerPortType,
 
-    getCurrentSetupKey,
-    renderFeedbackTable,
-    saveCurrentGearList,
-    getPowerSelectionSnapshot,
-    applyStoredPowerSelection,
-    getGearListSelectors,
-    applyGearListSelectors,
+
+
     setSelectValue,
     autoSaveCurrentSetup,
     saveCurrentSession,
+    saveCurrentGearList: function (...args) {
+      if (typeof globalThis !== 'undefined' && typeof globalThis.saveCurrentGearList === 'function') {
+        return globalThis.saveCurrentGearList(...args);
+      }
+      return undefined;
+    },
+    crewRoles: typeof globalThis !== 'undefined' && Array.isArray(globalThis.crewRoles) ? globalThis.crewRoles : [],
+    setSliderBowlValue: function (...args) {
+      if (typeof globalThis !== 'undefined' && typeof globalThis.setSliderBowlValue === 'function') {
+        return globalThis.setSliderBowlValue(...args);
+      }
+      return undefined;
+    },
+    setEasyrigValue: function (...args) {
+      if (typeof globalThis !== 'undefined' && typeof globalThis.setEasyrigValue === 'function') {
+        return globalThis.setEasyrigValue(...args);
+      }
+      return undefined;
+    },
     restoreSessionState,
-    displayGearAndRequirements,
-    deleteCurrentGearList,
-    ensureGearListActions,
-    bindGearListEasyrigListener,
-    populateSelect,
-    populateLensDropdown,
-    populateCameraPropertyDropdown,
-    populateRecordingResolutionDropdown,
-    populateSlowMotionRecordingResolutionDropdown,
-    populateFrameRateDropdown,
-    populateSlowMotionFrameRateDropdown,
-    populateSensorModeDropdown,
-    populateSlowMotionSensorModeDropdown,
-    populateCodecDropdown,
-    updateRequiredScenariosSummary,
-    getRequiredScenarioOptionEntries,
-    updateMonitoringConfigurationOptions,
-    updateViewfinderExtensionVisibility,
+
     scenarioIcons,
-    collectProjectFormData,
-    populateProjectForm,
+
     renderFilterDetails,
     collectFilterSelections,
     parseFilterTokens,
     applyFilterSelectionsToGearList,
-    setCurrentProjectInfo,
-    getCurrentProjectInfo,
-    crewRoles,
-    formatFullBackupFilename,
-    computeGearListCount,
-    autoBackup,
+
+
     createSettingsBackup,
     buildSettingsBackupPackage,
     captureStorageSnapshot,
     sanitizeBackupPayload,
     extractBackupSections,
-    searchKey,
-    searchTokens,
-    findBestSearchMatch,
+
     runFeatureSearch,
     computeSetupDiff,
     __versionCompareInternals: {
@@ -20747,8 +20752,7 @@ if (typeof module !== "undefined" && module.exports) {
         typeof globalThis !== 'undefined' && globalThis.featureSearchDropdown
           ? globalThis.featureSearchDropdown
           : null,
-      restoreFeatureSearchDefaults,
-      updateFeatureSearchSuggestions,
+
     },
     __customFontInternals: {
       addFromData: (name, dataUrl, options) => addCustomFontFromData(name, dataUrl, options),
@@ -20785,30 +20789,10 @@ if (typeof module !== "undefined" && module.exports) {
       applySessionMountVoltagePreferences,
       cloneMountVoltageDefaultsForSession,
     },
-    collectAutoGearCatalogNames,
-    buildDefaultVideoDistributionAutoGearRules,
-    applyAutoGearRulesToTableHtml,
-    exportAutoGearRules,
-    importAutoGearRulesFromData,
-    createAutoGearBackup,
-    restoreAutoGearBackup,
-    getAutoGearRules,
-    syncAutoGearRulesFromStorage,
-    parseDeviceDatabaseImport,
-    countDeviceDatabaseEntries,
-    sanitizeShareFilename,
-    ensureJsonExtension,
-    getDefaultShareFilename,
-    promptForSharedFilename,
-    downloadSharedProject,
-    confirmAutoGearSelection,
-    handleRestoreRehearsalProceed,
-    handleRestoreRehearsalAbort,
-    configureSharedImportOptions,
-    resolveSharedImportMode,
+
     resetPlannerStateAfterFactoryReset,
     __autoGearInternals: {
-      buildDefaultVideoDistributionAutoGearRules,
+
       buildVideoDistributionAutoRules: (function () {
         if (typeof buildVideoDistributionAutoRules !== 'undefined') {
           return buildVideoDistributionAutoRules;
@@ -20824,12 +20808,12 @@ if (typeof module !== "undefined" && module.exports) {
         }
         return undefined;
       })(),
-      buildAutoGearRulesFromBaseInfo,
-      seedAutoGearRulesFromCurrentProject,
-      clearAutoGearDefaultsSeeded,
+
     },
   };
-  module.exports = SESSION_API;
+  if (typeof module !== 'undefined' && module.exports) {
+    Object.assign(module.exports, SESSION_API);
+  }
 }
 
 (function () {
