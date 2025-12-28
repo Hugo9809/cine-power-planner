@@ -11701,8 +11701,7 @@ const tripodSpreaderLabel = document.getElementById("tripodSpreaderLabel");
 const projectSubmitBtn = document.getElementById("projectSubmit");
 var crewContainer = document.getElementById("crewContainer");
 const addPersonBtn = document.getElementById("addPersonBtn");
-console.log('DEBUG: addPersonBtn found:', !!addPersonBtn);
-console.log('DEBUG: crewContainer found:', !!crewContainer);
+
 var prepContainer = document.getElementById("prepContainer");
 const addPrepBtn = document.getElementById("addPrepBtn");
 var shootContainer = document.getElementById("shootContainer");
@@ -14038,6 +14037,11 @@ function initializeContactsModule() {
 }
 
 function createCrewRow(data = {}) {
+  if (!crewContainer) {
+    if (typeof document !== 'undefined') {
+      crewContainer = document.getElementById("crewContainer");
+    }
+  }
   if (!crewContainer) return;
   const row = document.createElement('div');
   row.className = 'person-row';
@@ -14054,9 +14058,9 @@ function createCrewRow(data = {}) {
   const rowDirection = localResolveDocumentDirection(rowLanguage);
   localApplyLocaleMetadata(row, rowLanguage, rowDirection);
 
-  const fallbackProjectForm = texts.en?.projectForm || {};
-  const projectFormTexts = texts[currentLang]?.projectForm || fallbackProjectForm;
-  const roleLabels = texts[currentLang]?.crewRoles || texts.en?.crewRoles || {};
+  const fallbackProjectForm = (typeof texts !== 'undefined' && texts?.en?.projectForm) || {};
+  const projectFormTexts = (typeof texts !== 'undefined' && texts?.[currentLang]?.projectForm) || fallbackProjectForm;
+  const roleLabels = (typeof texts !== 'undefined' && (texts?.[currentLang]?.crewRoles || texts?.en?.crewRoles)) || {};
 
   const crewRoleLabelText = projectFormTexts.crewRoleLabel || fallbackProjectForm.crewRoleLabel || 'Crew role';
   const crewNameLabelText = projectFormTexts.crewNameLabel || fallbackProjectForm.crewNameLabel || 'Crew member name';

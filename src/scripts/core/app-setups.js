@@ -5684,13 +5684,21 @@ function suggestArriFizCables() {
 
 function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
 
+  const getEl = (id, ref) => ref || (typeof document !== 'undefined' ? document.getElementById(id) : null);
+  const _cameraSelect = getEl('cameraSelect', typeof cameraSelect !== 'undefined' ? cameraSelect : null);
+  const _monitorSelect = getEl('monitorSelect', typeof monitorSelect !== 'undefined' ? monitorSelect : null);
+  const _videoSelect = getEl('videoSelect', typeof videoSelect !== 'undefined' ? videoSelect : null);
+  const _batterySelect = getEl('batterySelect', typeof batterySelect !== 'undefined' ? batterySelect : null);
+  const _cageSelect = getEl('cageSelect', typeof cageSelect !== 'undefined' ? cageSelect : null);
+  const _distanceSelect = getEl('distanceSelect', typeof distanceSelect !== 'undefined' ? distanceSelect : null);
+
   const safeVal = (sel) => (sel && typeof sel.value !== 'undefined' ? sel.value : '');
-  const camVal = safeVal(cameraSelect);
-  const monVal = safeVal(monitorSelect);
-  const vidVal = safeVal(videoSelect);
-  const battVal = safeVal(batterySelect);
-  const cageVal = safeVal(cageSelect);
-  const distVal = safeVal(distanceSelect);
+  const camVal = safeVal(_cameraSelect);
+  const monVal = safeVal(_monitorSelect);
+  const vidVal = safeVal(_videoSelect);
+  const battVal = safeVal(_batterySelect);
+  const cageVal = safeVal(_cageSelect);
+  const distVal = safeVal(_distanceSelect);
 
 
   const cameraSupport = [];
@@ -11747,7 +11755,14 @@ function applyCustomItemsState(state) {
 }
 
 function gearListGenerateHtmlImpl(info = {}) {
-  console.log('DEBUG: gearListGenerateHtmlImpl starting. cameraSelect:', !!cameraSelect, 'monitorSelect:', !!monitorSelect, 'motorSelects type:', typeof motorSelects, 'isArray:', Array.isArray(motorSelects));
+  const getEl = (id, ref) => ref || (typeof document !== 'undefined' ? document.getElementById(id) : null);
+  const _cameraSelect = getEl('cameraSelect', typeof cameraSelect !== 'undefined' ? cameraSelect : null);
+  const _monitorSelect = getEl('monitorSelect', typeof monitorSelect !== 'undefined' ? monitorSelect : null);
+  const _videoSelect = getEl('videoSelect', typeof videoSelect !== 'undefined' ? videoSelect : null);
+  const _distanceSelect = getEl('distanceSelect', typeof distanceSelect !== 'undefined' ? distanceSelect : null);
+  const _cageSelect = getEl('cageSelect', typeof cageSelect !== 'undefined' ? cageSelect : null);
+  const _batterySelect = getEl('batterySelect', typeof batterySelect !== 'undefined' ? batterySelect : null);
+
   const getText = sel => {
     if (!sel || !sel.options || typeof sel.selectedIndex !== 'number' || sel.selectedIndex < 0) return '';
     const opt = sel.options[sel.selectedIndex];
@@ -11756,18 +11771,18 @@ function gearListGenerateHtmlImpl(info = {}) {
     return text.trim();
   };
   const selectedNames = {
-    camera: cameraSelect && typeof cameraSelect.value !== 'undefined' && cameraSelect.value && cameraSelect.value !== 'None' ? getText(cameraSelect) : '',
-    monitor: monitorSelect && typeof monitorSelect.value !== 'undefined' && monitorSelect.value && monitorSelect.value !== 'None' ? getText(monitorSelect) : '',
-    video: videoSelect && typeof videoSelect.value !== 'undefined' && videoSelect.value && videoSelect.value !== 'None' ? getText(videoSelect) : '',
-    motors: motorSelects
+    camera: _cameraSelect && typeof _cameraSelect.value !== 'undefined' && _cameraSelect.value && _cameraSelect.value !== 'None' ? getText(_cameraSelect) : '',
+    monitor: _monitorSelect && typeof _monitorSelect.value !== 'undefined' && _monitorSelect.value && _monitorSelect.value !== 'None' ? getText(_monitorSelect) : '',
+    video: _videoSelect && typeof _videoSelect.value !== 'undefined' && _videoSelect.value && _videoSelect.value !== 'None' ? getText(_videoSelect) : '',
+    motors: (typeof motorSelects !== 'undefined' && Array.isArray(motorSelects) ? motorSelects : [])
       .map(sel => sel && typeof sel.value !== 'undefined' && sel.value && sel.value !== 'None' ? getText(sel) : '')
       .filter(Boolean),
-    controllers: controllerSelects
+    controllers: (typeof controllerSelects !== 'undefined' && Array.isArray(controllerSelects) ? controllerSelects : [])
       .map(sel => sel && typeof sel.value !== 'undefined' && sel.value && sel.value !== 'None' ? getText(sel) : '')
       .filter(Boolean),
-    distance: distanceSelect && typeof distanceSelect.value !== 'undefined' && distanceSelect.value && distanceSelect.value !== 'None' ? getText(distanceSelect) : '',
-    cage: cageSelect && typeof cageSelect.value !== 'undefined' && cageSelect.value && cageSelect.value !== 'None' ? getText(cageSelect) : '',
-    battery: batterySelect && typeof batterySelect.value !== 'undefined' && batterySelect.value && batterySelect.value !== 'None' ? getText(batterySelect) : ''
+    distance: _distanceSelect && typeof _distanceSelect.value !== 'undefined' && _distanceSelect.value && _distanceSelect.value !== 'None' ? getText(_distanceSelect) : '',
+    cage: _cageSelect && typeof _cageSelect.value !== 'undefined' && _cageSelect.value && _cageSelect.value !== 'None' ? getText(_cageSelect) : '',
+    battery: _batterySelect && typeof _batterySelect.value !== 'undefined' && _batterySelect.value && _batterySelect.value !== 'None' ? getText(_batterySelect) : ''
   };
   const cameraLinkTexts = getGearItemEditTexts();
   const defaultCameraLinkLabelTemplate = cameraLinkTexts.cameraLinkDefaultLabel || 'Camera %s';

@@ -112,24 +112,7 @@ describe('project autosave', () => {
     setupNameInput.dispatchEvent(new Event('input'));
 
     const addPersonBtn = document.getElementById('addPersonBtn');
-    console.log('DEBUG TEST: addPersonBtn loaded.', {
-      disabled: addPersonBtn.disabled,
-      isConnected: addPersonBtn.isConnected,
-      type: addPersonBtn.type
-    });
-    addPersonBtn.addEventListener('click', () => console.log('DEBUG TEST: Manual click listener fired'));
-
-    // Try dispatchEvent
     addPersonBtn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
-
-    // Sanity check: creating a new button
-    const testBtn = document.createElement('button');
-    document.body.appendChild(testBtn);
-    testBtn.onclick = () => console.log('DEBUG TEST: Sanity button clicked INSIDE ONCLICK');
-    testBtn.click();
-    testBtn.dispatchEvent(new Event('click', { bubbles: true }));
-
-    console.log('DEBUG TEST: addPersonBtn parent:', addPersonBtn.parentNode ? addPersonBtn.parentNode.tagName : 'none');
 
     const nameInput = document.querySelector('.person-row .person-name');
     expect(nameInput).not.toBeNull();
