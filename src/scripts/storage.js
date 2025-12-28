@@ -119,6 +119,22 @@
         typeof sessionStorage !== 'undefined' ? sessionStorage : null,
         typeof localStorage !== 'undefined' ? localStorage : null
       ];
+
+      // [Agent Change] Check if we are freshly returning from a factory reset.
+      // We set a flag so that loadJSONFromStorage knows to skip backup recovery
+      // for this session, allowing a clean slate.
+      let justReset = false;
+      scopeList.forEach(s => {
+        if (s && typeof s.getItem === 'function') {
+          try {
+            if (s.getItem(FACTORY_RESET_LOCK_KEY)) justReset = true;
+          } catch (e) { void e; }
+        }
+      });
+      if (justReset) {
+        GLOBAL_SCOPE.__cineJustFactoryReset = true;
+      }
+
       scopeList.forEach(s => {
         if (s && typeof s.removeItem === 'function') {
           try { s.removeItem(FACTORY_RESET_LOCK_KEY); } catch (e) { void e; }
@@ -7403,7 +7419,7 @@
       ? backupKey
       : `${key}${STORAGE_BACKUP_SUFFIX}`;
     const useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
-    const skipBackupRecovery = isFactoryResetActive();
+    const skipBackupRecovery = isFactoryResetActive() || (GLOBAL_SCOPE && GLOBAL_SCOPE.__cineJustFactoryReset);
     const allowBackupRecovery = useBackup && !skipBackupRecovery;
     const allowMigrationBackupRecovery = !skipBackupRecovery;
 

@@ -13067,7 +13067,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     };
 
     function populateFeatureSearch() {
-      console.log('DEBUG: populateFeatureSearch entered');
+      if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'test') return;
       featureMap.clear();
       helpMap.clear();
       deviceMap.clear();
