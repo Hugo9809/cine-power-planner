@@ -14038,7 +14038,6 @@ function initializeContactsModule() {
 }
 
 function createCrewRow(data = {}) {
-  console.log('DEBUG: createCrewRow called', { crewContainer: !!crewContainer });
   if (!crewContainer) return;
   const row = document.createElement('div');
   row.className = 'person-row';
@@ -14929,9 +14928,7 @@ function updateStorageRequirementTranslations(projectFormTexts, fallbackProjectF
 }
 
 if (addPersonBtn) {
-  console.log('DEBUG: Attaching click listener to addPersonBtn');
   addPersonBtn.addEventListener('click', () => {
-    console.log('DEBUG: addPersonBtn clicked');
     createCrewRow();
   });
 }

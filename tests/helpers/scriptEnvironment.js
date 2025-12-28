@@ -282,7 +282,11 @@ function setupScriptEnvironment(options = {}) {
         delete window.CORE_BOOT_QUEUE;
         delete window.CORE_BOOT_QUEUE_KEY;
         delete window.cineCoreRuntimeModuleLoader;
+        delete window.__cineCorePart1Initialized;
+        delete window.__cineCorePart2Initialized;
       }
+      delete global.__cineCorePart1Initialized;
+      delete global.__cineCorePart2Initialized;
     } catch (runtimeCleanupError) {
       void runtimeCleanupError;
     }
