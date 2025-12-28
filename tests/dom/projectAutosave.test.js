@@ -4,6 +4,7 @@ const { setupScriptEnvironment } = require('../helpers/scriptEnvironment');
 
 describe('project autosave', () => {
   beforeEach(() => {
+    jest.resetModules();
     jest.useFakeTimers();
     localStorage.clear();
   });
