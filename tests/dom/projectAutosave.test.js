@@ -122,6 +122,8 @@ describe('project autosave', () => {
       addPersonBtn.click();
     }
 
+
+
     const nameInput = document.querySelector('.person-row .person-name');
     expect(nameInput).not.toBeNull();
     nameInput.value = 'Jamie';

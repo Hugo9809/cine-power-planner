@@ -14117,7 +14117,11 @@ function createCrewRow(data = {}) {
     localApplyLocaleMetadata(opt, rowLanguage, rowDirection);
     roleSel.appendChild(opt);
   }
-  if (data.role) roleSel.value = data.role;
+  if (data.role) {
+    roleSel.value = data.role;
+  } else if (roleSel.options.length > 0) {
+    roleSel.selectedIndex = 0;
+  }
 
   const nameInput = document.createElement('input');
   nameInput.type = 'text';
