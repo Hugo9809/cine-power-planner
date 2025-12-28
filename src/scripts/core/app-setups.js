@@ -6041,7 +6041,7 @@ function collectProjectFormData() {
 
   const people = Array.from(crewContainer?.querySelectorAll('.person-row') || [])
     .map(row => {
-      const roleValue = row.querySelector('select')?.value;
+      const roleValue = row.querySelector('.person-role-select')?.value;
       const nameInput = row.querySelector('.person-name');
       const phoneInput = row.querySelector('.person-phone');
       const emailInput = row.querySelector('.person-email');

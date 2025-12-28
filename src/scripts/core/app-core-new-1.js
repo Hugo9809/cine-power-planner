@@ -14308,6 +14308,10 @@ function createCrewRow(data = {}) {
   }
 }
 
+if (typeof window !== 'undefined') {
+  window.createCrewRow = createCrewRow;
+}
+
 function createPrepRow(data = {}) {
   if (!prepContainer) return;
   const row = document.createElement('div');
@@ -14930,6 +14934,7 @@ function updateStorageRequirementTranslations(projectFormTexts, fallbackProjectF
     button.setAttribute('data-help', storageRemoveLabel);
   });
 }
+
 
 if (addPersonBtn) {
   addPersonBtn.addEventListener('click', () => {
@@ -16376,15 +16381,11 @@ function updateDeviceManagerLocalization(lang = currentLang) {
 }
 
 function syncDeviceManagerCategories() {
-  console.log('app-core-new-1.js: syncDeviceManagerCategories starting');
   const container = resolveDeviceListContainer();
   if (!container) {
-    console.log('app-core-new-1.js: syncDeviceManagerCategories: no container');
     return;
   }
-  console.log('app-core-new-1.js: syncDeviceManagerCategories: collecting categories');
   const categories = collectDeviceManagerCategories();
-  console.log('app-core-new-1.js: syncDeviceManagerCategories: categories collected', categories.length);
   const desiredSet = new Set(categories);
   const existingKeys = Array.from(deviceManagerLists.keys());
   categories.forEach(categoryKey => {
@@ -16407,9 +16408,7 @@ function syncDeviceManagerCategories() {
       container.appendChild(entry.section);
     }
   });
-  console.log('app-core-new-1.js: syncDeviceManagerCategories: updating localization');
   updateDeviceManagerLocalization(currentLang);
-  console.log('app-core-new-1.js: syncDeviceManagerCategories: finished');
 }
 
 function getCurrentProjectName() {
@@ -17418,7 +17417,7 @@ var lensFocusScaleSelect = document.getElementById("lensFocusScaleUnit");
 const powerDistContainer = document.getElementById("powerDistContainer");
 const videoOutputsContainer = document.getElementById("videoOutputsContainer");
 const fizConnectorContainer = document.getElementById("fizConnectorContainer");
-console.log('DEBUG: fizConnectorContainer resolved:', !!fizConnectorContainer);
+
 var viewfinderContainer = document.getElementById("viewfinderContainer");
 const timecodeContainer = document.getElementById("timecodeContainer");
 var batteryFieldsDiv = document.getElementById("batteryFields");

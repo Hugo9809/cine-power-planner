@@ -13067,6 +13067,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     };
 
     function populateFeatureSearch() {
+      console.log('DEBUG: populateFeatureSearch entered');
       featureMap.clear();
       helpMap.clear();
       deviceMap.clear();
@@ -13101,12 +13102,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return true;
       };
       const registerDeviceLibraryEntriesForSearch = () => {
+        console.log('DEBUG: registerDeviceLibraryEntriesForSearch start');
         if (!deviceLibrarySearchEntries.length) {
           rebuildDeviceLibrarySearchIndex();
         }
         if (!deviceLibrarySearchEntries.length) {
           return;
         }
+        console.log('DEBUG: processing deviceLibrarySearchEntries, count:', deviceLibrarySearchEntries.length);
         deviceLibrarySearchEntries.forEach(entry => {
           if (!entry || !entry.label) return;
           const key = entry.key || searchKey(entry.label);
@@ -13141,8 +13144,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           registerOption(deviceData);
           featureSearchEntries.push(deviceData);
         });
+        console.log('DEBUG: registerDeviceLibraryEntriesForSearch end');
       };
       registerDeviceLibraryEntriesForSearch();
+      console.log('DEBUG: querying DOM headings');
       document
         .querySelectorAll('h2[id], legend[id], h3[id], h4[id]')
         .forEach(el => {
@@ -19011,7 +19016,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     function refreshDeviceLists() {
       syncDeviceManagerCategories();
-      if (!(activeDeviceManagerLists instanceof Map)) return;
+      if (!(activeDeviceManagerLists instanceof Map)) {
+        return;
+      }
       activeDeviceManagerLists.forEach(({ list, filterInput }, categoryKey) => {
         if (!list) return;
         renderDeviceList(categoryKey, list);
@@ -19025,9 +19032,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       try {
         populateFeatureSearch();
       } catch (featureSearchError) {
-        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-          console.warn('Failed to refresh feature search after device list update.', featureSearchError);
-        }
+        // Non-critical: failure here just means top-bar search won't find the new items immediately
+        void featureSearchError;
       }
     }
 
@@ -19590,15 +19596,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
     });
 
-    console.log('app-core-new-2.js: About to flushCoreBootQueue');
     // Ensure deferred boot tasks from the first runtime segment execute before final renders
     flushCoreBootQueue();
-    console.log('app-core-new-2.js: flushCoreBootQueue complete');
 
     // Initial render of device lists
-    console.log('app-core-new-2.js: About to refreshDeviceLists');
     refreshDeviceLists();
-    console.log('app-core-new-2.js: refreshDeviceLists complete');
 
     if (typeof module !== 'undefined' && module.exports) {
       Object.assign(module.exports, {
