@@ -454,6 +454,51 @@ function reloadActiveProjectFromStorage(options = {}) {
     return false;
   }
 
+  // [Bug Fix] Prevent unnecessary reloading if the stored project data is identical
+  // to the current session state. This avoids destroying DOM elements (and focus)
+  // in populateProjectForm(), which can trigger blur events that cause infinite
+  // autosave loops during typing.
+  if (
+    typeof getCurrentSetupState === 'function' &&
+    typeof stableStringify === 'function'
+  ) {
+    try {
+      const currentSetup = { ...getCurrentSetupState() };
+
+      // Mirror the logic in autoSaveCurrentSetup to ensure consistent comparison
+      const gearListHtml = typeof getCurrentGearListHtml === 'function'
+        ? getCurrentGearListHtml()
+        : '';
+
+      if (gearListHtml) {
+        currentSetup.gearList = gearListHtml;
+      }
+
+      if (typeof getDiagramManualPositions === 'function') {
+        const diagramPositions = getDiagramManualPositions();
+        if (diagramPositions && Object.keys(diagramPositions).length) {
+          currentSetup.diagramPositions = diagramPositions;
+        } else if (Object.prototype.hasOwnProperty.call(currentSetup, 'diagramPositions')) {
+          delete currentSetup.diagramPositions;
+        }
+      }
+
+      // Ensure consistent field ordering for stringification
+      const currentSig = stableStringify(currentSetup);
+      const storedSig = stableStringify(storedProject);
+
+      if (currentSig === storedSig) {
+        // console.log('DEBUG: Skipping project reload - content matches current state');
+        return true;
+      }
+    } catch (comparisonError) {
+      // If comparison fails, fall through to normal reload logic
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Project reload optimization check failed', comparisonError);
+      }
+    }
+  }
+
   if (storedProject.powerSelection && typeof applyStoredPowerSelection === 'function') {
     applyStoredPowerSelection(storedProject.powerSelection, { preferExisting: false });
   }
