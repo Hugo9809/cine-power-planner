@@ -96,7 +96,7 @@ describe('project autosave', () => {
     env.cleanup();
   });
 
-  test.only('autosaves partially filled crew entries', () => {
+  test('autosaves partially filled crew entries', () => {
     const env = setupScriptEnvironment({
       globals: {
         saveSessionState: jest.fn(),

@@ -15,8 +15,8 @@ try {
         typeof originalDateNow === 'function'
           ? originalDateNow
           : function safeDateNow() {
-              return Number(new Date());
-            },
+            return Number(new Date());
+          },
     });
   }
 } catch (error) {
@@ -149,17 +149,17 @@ if (typeof window !== 'undefined') {
     window.open = jest.fn(() => {
       const doc = window.document?.implementation?.createHTMLDocument('Manual download')
         || {
-          open: () => {},
-          write: () => {},
-          close: () => {},
-          body: null,
-        };
+        open: () => { },
+        write: () => { },
+        close: () => { },
+        body: null,
+      };
 
       return {
         closed: false,
         document: doc,
-        close: () => {},
-        focus: () => {},
+        close: () => { },
+        focus: () => { },
       };
     });
   }
@@ -255,6 +255,20 @@ if (typeof window !== 'undefined') {
     }
 
     global.Blob = SimpleBlob;
+  }
+
+  if (typeof global.BroadcastChannel !== 'function') {
+    class MockBroadcastChannel {
+      constructor(name) {
+        this.name = name;
+        this.onmessage = null;
+      }
+      postMessage() { }
+      close() { }
+      addEventListener() { }
+      removeEventListener() { }
+    }
+    global.BroadcastChannel = MockBroadcastChannel;
   }
 }
 
