@@ -2854,7 +2854,7 @@
         ['controller1Select', 'controller2Select', 'controller3Select', 'controller4Select'],
         'controllerSelects'
       );
-      console.log('DEBUG: updateCalculations elements. cameraSelect:', !!cameraSelect, 'batterySelect:', !!batterySelect, 'motorSelects length:', motorSelects.length);
+
 
       var resultsPlainSummaryTarget = resolveElementFromOptions(
         opts,

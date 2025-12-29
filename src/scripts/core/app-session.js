@@ -424,160 +424,164 @@ function resolveActiveProjectStorageKey() {
 }
 
 function reloadActiveProjectFromStorage(options = {}) {
-  console.log('DEBUG: reloadActiveProjectFromStorage called. Stack:', new Error().stack);
   if (factoryResetInProgress || restoringSession) {
     return false;
   }
-  if (typeof isProjectPersistenceSuspended === 'function' && isProjectPersistenceSuspended()) {
-    return false;
-  }
-  if (typeof loadProject !== 'function') {
-    return false;
-  }
-
-  const storageKey = resolveActiveProjectStorageKey();
-  if (!storageKey) {
-    return false;
-  }
-
-  let storedProject = null;
+  const wasProjectAutoSaving = isProjectAutoSaving;
+  isProjectAutoSaving = true;
   try {
-    storedProject = loadProject(storageKey);
-  } catch (projectLoadError) {
-    if (!options.silent && typeof console !== 'undefined' && typeof console.warn === 'function') {
-      console.warn('Failed to reload project from storage after external update', projectLoadError);
+    if (typeof isProjectPersistenceSuspended === 'function' && isProjectPersistenceSuspended()) {
+      return false;
     }
-    return false;
-  }
+    if (typeof loadProject !== 'function') {
+      return false;
+    }
 
-  if (!storedProject || typeof storedProject !== 'object') {
-    return false;
-  }
+    const storageKey = resolveActiveProjectStorageKey();
+    if (!storageKey) {
+      return false;
+    }
 
-  // [Bug Fix] Prevent unnecessary reloading if the stored project data is identical
-  // to the current session state. This avoids destroying DOM elements (and focus)
-  // in populateProjectForm(), which can trigger blur events that cause infinite
-  // autosave loops during typing.
-  if (
-    typeof getCurrentSetupState === 'function' &&
-    typeof stableStringify === 'function'
-  ) {
+    let storedProject = null;
     try {
-      const currentSetup = { ...getCurrentSetupState() };
-
-      // Mirror the logic in autoSaveCurrentSetup to ensure consistent comparison
-      const gearListHtml = typeof getCurrentGearListHtml === 'function'
-        ? getCurrentGearListHtml()
-        : '';
-
-      if (gearListHtml) {
-        currentSetup.gearList = gearListHtml;
+      storedProject = loadProject(storageKey);
+    } catch (projectLoadError) {
+      if (!options.silent && typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Failed to reload project from storage after external update', projectLoadError);
       }
+      return false;
+    }
 
-      if (typeof getDiagramManualPositions === 'function') {
-        const diagramPositions = getDiagramManualPositions();
-        if (diagramPositions && Object.keys(diagramPositions).length) {
-          currentSetup.diagramPositions = diagramPositions;
-        } else if (Object.prototype.hasOwnProperty.call(currentSetup, 'diagramPositions')) {
-          delete currentSetup.diagramPositions;
+    if (!storedProject || typeof storedProject !== 'object') {
+      return false;
+    }
+
+    // [Bug Fix] Prevent unnecessary reloading if the stored project data is identical
+    // to the current session state. This avoids destroying DOM elements (and focus)
+    // in populateProjectForm(), which can trigger blur events that cause infinite
+    // autosave loops during typing.
+    if (
+      typeof getCurrentSetupState === 'function' &&
+      typeof stableStringify === 'function'
+    ) {
+      try {
+        const currentSetup = { ...getCurrentSetupState() };
+
+        // Mirror the logic in autoSaveCurrentSetup to ensure consistent comparison
+        const gearListHtml = typeof getCurrentGearListHtml === 'function'
+          ? getCurrentGearListHtml()
+          : '';
+
+        if (gearListHtml) {
+          currentSetup.gearList = gearListHtml;
+        }
+
+        if (typeof getDiagramManualPositions === 'function') {
+          const diagramPositions = getDiagramManualPositions();
+          if (diagramPositions && Object.keys(diagramPositions).length) {
+            currentSetup.diagramPositions = diagramPositions;
+          } else if (Object.prototype.hasOwnProperty.call(currentSetup, 'diagramPositions')) {
+            delete currentSetup.diagramPositions;
+          }
+        }
+
+        // Ensure consistent field ordering for stringification
+        const currentSig = stableStringify(currentSetup);
+        const storedSig = stableStringify(storedProject);
+
+        if (currentSig === storedSig) {
+          return true;
+        }
+      } catch (comparisonError) {
+        // If comparison fails, fall through to normal reload logic
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Project reload optimization check failed', comparisonError);
         }
       }
+    }
 
-      // Ensure consistent field ordering for stringification
-      const currentSig = stableStringify(currentSetup);
-      const storedSig = stableStringify(storedProject);
+    if (storedProject.powerSelection && typeof applyStoredPowerSelection === 'function') {
+      applyStoredPowerSelection(storedProject.powerSelection, { preferExisting: false });
+    }
+    updateBatteryOptions();
 
-      if (currentSig === storedSig) {
-        // console.log('DEBUG: Skipping project reload - content matches current state');
-        return true;
+    currentProjectInfo = storedProject.projectInfo || null;
+    if (projectForm) {
+      populateProjectForm(currentProjectInfo || {});
+    }
+
+    if (typeof setManualDiagramPositions === 'function') {
+      const normalizedDiagram = storedProject.diagramPositions && typeof normalizeDiagramPositionsInput === 'function'
+        ? normalizeDiagramPositionsInput(storedProject.diagramPositions)
+        : {};
+      setManualDiagramPositions(normalizedDiagram || {}, { render: false });
+    }
+
+    if (storedProject.autoGearRules && storedProject.autoGearRules.length) {
+      if (typeof useProjectAutoGearRules === 'function') {
+        useProjectAutoGearRules(storedProject.autoGearRules);
       }
-    } catch (comparisonError) {
-      // If comparison fails, fall through to normal reload logic
-      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('Project reload optimization check failed', comparisonError);
+    } else if (typeof clearProjectAutoGearRules === 'function') {
+      clearProjectAutoGearRules();
+    }
+
+    const regenerateGearList = (info) => callSessionCoreFunction(
+      'generateGearListHtml',
+      [info || {}],
+      { defaultValue: '' },
+    ) || '';
+    const storedHtml = typeof storedProject.gearList === 'string' ? storedProject.gearList : '';
+    const html = storedHtml || regenerateGearList(currentProjectInfo || {});
+
+    if (typeof displayGearAndRequirements === 'function') {
+      displayGearAndRequirements(html);
+    }
+
+    if (gearListOutput) {
+      if (html) {
+        ensureGearListActions();
+        bindGearListCageListener();
+        bindGearListEasyrigListener();
+        bindGearListSliderBowlListener();
+        bindGearListEyeLeatherListener();
+        bindGearListProGaffTapeListener();
+        bindGearListDirectorMonitorListener();
       }
-    }
-  }
-
-  if (storedProject.powerSelection && typeof applyStoredPowerSelection === 'function') {
-    applyStoredPowerSelection(storedProject.powerSelection, { preferExisting: false });
-  }
-  updateBatteryOptions();
-
-  currentProjectInfo = storedProject.projectInfo || null;
-  if (projectForm) {
-    populateProjectForm(currentProjectInfo || {});
-  }
-
-  if (typeof setManualDiagramPositions === 'function') {
-    const normalizedDiagram = storedProject.diagramPositions && typeof normalizeDiagramPositionsInput === 'function'
-      ? normalizeDiagramPositionsInput(storedProject.diagramPositions)
-      : {};
-    setManualDiagramPositions(normalizedDiagram || {}, { render: false });
-  }
-
-  if (storedProject.autoGearRules && storedProject.autoGearRules.length) {
-    if (typeof useProjectAutoGearRules === 'function') {
-      useProjectAutoGearRules(storedProject.autoGearRules);
-    }
-  } else if (typeof clearProjectAutoGearRules === 'function') {
-    clearProjectAutoGearRules();
-  }
-
-  const regenerateGearList = (info) => callSessionCoreFunction(
-    'generateGearListHtml',
-    [info || {}],
-    { defaultValue: '' },
-  ) || '';
-  const storedHtml = typeof storedProject.gearList === 'string' ? storedProject.gearList : '';
-  const html = storedHtml || regenerateGearList(currentProjectInfo || {});
-
-  if (typeof displayGearAndRequirements === 'function') {
-    displayGearAndRequirements(html);
-  }
-
-  if (gearListOutput) {
-    if (html) {
-      ensureGearListActions();
-      bindGearListCageListener();
-      bindGearListEasyrigListener();
-      bindGearListSliderBowlListener();
-      bindGearListEyeLeatherListener();
-      bindGearListProGaffTapeListener();
-      bindGearListDirectorMonitorListener();
-    }
-    if (
-      typeof applyGearListSelectors === 'function'
-      && storedProject.gearSelectors
-      && Object.keys(storedProject.gearSelectors).length
-    ) {
-      applyGearListSelectors(storedProject.gearSelectors);
-    }
-    if (typeof updateGearListButtonVisibility === 'function') {
-      updateGearListButtonVisibility();
-    }
-  }
-
-  if (typeof populateSetupSelect === 'function') {
-    try {
-      populateSetupSelect();
-    } catch (populateError) {
-      if (!options.silent && typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('Failed to refresh setup selector after external project update', populateError);
+      if (
+        typeof applyGearListSelectors === 'function'
+        && storedProject.gearSelectors
+        && Object.keys(storedProject.gearSelectors).length
+      ) {
+        applyGearListSelectors(storedProject.gearSelectors);
+      }
+      if (typeof updateGearListButtonVisibility === 'function') {
+        updateGearListButtonVisibility();
       }
     }
-  }
 
-  if (typeof markProjectFormDataDirty === 'function') {
-    markProjectFormDataDirty();
+    if (typeof populateSetupSelect === 'function') {
+      try {
+        populateSetupSelect();
+      } catch (populateError) {
+        if (!options.silent && typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Failed to refresh setup selector after external project update', populateError);
+        }
+      }
+    }
+
+    if (typeof markProjectFormDataDirty === 'function') {
+      markProjectFormDataDirty();
+    }
+    if (typeof storeLoadedSetupStateSafe === 'function' && typeof getCurrentSetupState === 'function') {
+      storeLoadedSetupStateSafe(getCurrentSetupState());
+    }
+    if (typeof checkSetupChanged === 'function') {
+      checkSetupChanged();
+    }
+    return true;
+  } finally {
+    isProjectAutoSaving = wasProjectAutoSaving;
   }
-  if (typeof storeLoadedSetupStateSafe === 'function' && typeof getCurrentSetupState === 'function') {
-    storeLoadedSetupStateSafe(getCurrentSetupState());
-  }
-  if (typeof checkSetupChanged === 'function') {
-    checkSetupChanged();
-  }
-  return true;
 }
 
 function scheduleProjectStorageSync(options = {}) {
@@ -615,6 +619,7 @@ if (typeof window !== 'undefined' && window && typeof window.addEventListener ==
       return;
     }
     const nextRevision = normalizeProjectStorageRevisionValue(event.newValue);
+    console.log('DEBUG: storage event. isProjectAutoSaving:', isProjectAutoSaving, 'nextRevision:', nextRevision);
     if (isProjectAutoSaving) {
       if (nextRevision !== null) {
         lastKnownProjectStorageRevision = nextRevision;
@@ -4615,6 +4620,7 @@ function handleRestoreRehearsalAbort() {
 
 function saveCurrentSession(options = {}) {
   if (restoringSession || factoryResetInProgress) return;
+  if (typeof window !== 'undefined' && window.cineSuppressAutosave) return;
   if (typeof isProjectPersistenceSuspended === 'function' && isProjectPersistenceSuspended()) {
     return;
   }
@@ -4799,6 +4805,7 @@ function getProjectAutoSaveDelay() {
 }
 
 function runProjectAutoSave() {
+  console.log('DEBUG: runProjectAutoSave START. isProjectAutoSaving:', isProjectAutoSaving);
   isProjectAutoSaving = true;
   try {
     if (factoryResetInProgress) {
@@ -4922,6 +4929,12 @@ function runProjectAutoSave() {
 }
 
 function scheduleProjectAutoSave(immediateOrOptions = false) {
+  if (isProjectAutoSaving) {
+    return;
+  }
+  if (typeof window !== 'undefined' && window.cineSuppressAutosave) {
+    return;
+  }
   let immediate = false;
   let overrides;
   if (typeof immediateOrOptions === 'object' && immediateOrOptions !== null) {
@@ -5151,7 +5164,10 @@ if (projectFormRefSession) {
     }
   };
 
-  const queueProjectAutoSave = () => {
+  const queueProjectAutoSave = (event) => {
+    if (typeof window !== 'undefined' && window.cineSuppressAutosave) {
+      return;
+    }
     noteProjectFormDirty();
     scheduleProjectAutoSave();
   };

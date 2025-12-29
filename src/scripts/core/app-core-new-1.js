@@ -13305,6 +13305,9 @@ function updateRowLinkedBadge(row) {
 }
 
 function handleCrewRowManualChange(row, immediate = true) {
+  if (typeof window !== 'undefined' && window.cineSuppressAutosave) {
+    return;
+  }
   if (!row || row.dataset.syncingContact === '1') return;
   const wasLinked = Boolean(row.dataset.contactId);
   if (wasLinked) {

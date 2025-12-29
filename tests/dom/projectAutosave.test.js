@@ -162,6 +162,7 @@ describe('project autosave', () => {
   });
 
   test('saves pending project edits when switching setups without waiting for autosave timer', () => {
+    console.log('DEBUG: Starting test 3: saves pending project edits...');
     const env = setupScriptEnvironment({
       globals: {
         saveSessionState: jest.fn(),
