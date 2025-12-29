@@ -527,39 +527,58 @@ textarea {
 
 #offlineIndicator {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  background: var(--offline-indicator-bg);
-  color: var(--offline-indicator-text);
-  text-align: center;
-  padding: 10px 16px;
-  z-index: 1000;
-  border-bottom: 1px solid var(--offline-indicator-border);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  font-size: calc(var(--font-size-base) * var(--font-scale-xs));
-  font-weight: var(--font-weight-medium);
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: rgba(28, 28, 30, 0.85); /* Dark surface with transparency */
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 2rem;
+  z-index: 10000;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  font-size: 0.9rem;
+  pointer-events: none;
+  opacity: 0;
+}
+
+#offlineIndicator::before {
+  content: "\F26F"; /* Warning icon from EssentialIconsV2 */
+  font-family: 'EssentialIconsV2';
+  font-size: 1.2rem;
+  color: #ffcc00; /* Amber warning color */
+}
+
+#offlineIndicator:not([hidden]) {
+  display: flex !important;
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
 }
 
 #offlineIndicator[hidden] {
   display: none !important;
 }
 
+/* Remove top bar margin shifts as the indicator is now floating */
 #offlineIndicator:not([hidden])~#topBar {
-  margin-top: var(--install-banner-offset, 0px);
-  --top-bar-offset: var(--install-banner-offset, 0px);
+  margin-top: var(--top-bar-offset, 0px);
 }
 
 #offlineIndicator:not([hidden])~#sideMenu {
-  top: var(--install-banner-offset, 0px);
-  height: calc(100% - var(--install-banner-offset, 0px));
+  top: 0;
+  height: 100%;
 }
 
 #offlineIndicator:not([hidden])~#menuOverlay {
-  top: var(--install-banner-offset, 0px);
-  height: calc(100% - var(--install-banner-offset, 0px));
+  top: 0;
+  height: 100%;
 }
 
 #installPromptBanner {

@@ -6460,7 +6460,7 @@ function populateProjectForm(info = {}) {
         ? info.people.map(person => (person && typeof person === 'object' ? { ...person } : {}))
         : [];
 
-      if (profile && typeof profile === 'object') {
+      if (typeof profile !== 'undefined' && profile && typeof profile === 'object') {
         const profileName = typeof profile.name === 'string' ? profile.name.trim() : '';
         // ... (profile logic)
       }
@@ -16194,5 +16194,7 @@ if (typeof globalThis !== 'undefined') {
   globalThis.saveCurrentGearList = saveCurrentGearList;
   globalThis.doesProjectNameExist = doesProjectNameExist;
   globalThis.resolveProjectStorageNameCollision = resolveProjectStorageNameCollision;
+  globalThis.collectProjectFormData = collectProjectFormData;
+  globalThis.populateProjectForm = populateProjectForm;
 }
 console.log('app-setups.js: Execution complete');

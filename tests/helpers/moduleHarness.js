@@ -21,6 +21,49 @@ function setupModuleHarness() {
 
   const { architecture, helpers: architectureHelpers, pendingQueueKey } = loadModuleArchitectureStack();
 
+  const originalGlobals = {
+    window: global.window,
+    document: global.document,
+    navigator: global.navigator,
+    history: global.history,
+    location: global.location,
+  };
+
+  if (!global.window) {
+    global.window = {
+      location: {
+        href: 'https://example.test/',
+        origin: 'https://example.test',
+        pathname: '/',
+        search: '',
+        hash: '',
+      },
+      history: {
+        state: null,
+        replaceState: jest.fn(),
+      },
+      navigator: {
+        onLine: true,
+        serviceWorker: {
+          register: jest.fn(() => Promise.resolve()),
+          getRegistrations: jest.fn(() => Promise.resolve([])),
+        },
+      },
+      document: {
+        readyState: 'complete',
+        getElementById: jest.fn(() => null),
+      },
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+      get setTimeout() { return global.setTimeout; },
+      get clearTimeout() { return global.clearTimeout; },
+    };
+    global.document = global.window.document;
+    global.navigator = global.window.navigator;
+    global.history = global.window.history;
+    global.location = global.window.location;
+  }
+
   const recordedModules = new Map();
   const pendingWaiters = new Map();
 
@@ -272,6 +315,15 @@ function setupModuleHarness() {
       delete global.cineModuleGlobals;
       pendingWaiters.clear();
       recordedModules.clear();
+
+      Object.keys(originalGlobals).forEach((key) => {
+        if (originalGlobals[key] === undefined) {
+          delete global[key];
+        } else {
+          global[key] = originalGlobals[key];
+        }
+      });
+
       jest.resetModules();
     },
   };
@@ -280,4 +332,3 @@ function setupModuleHarness() {
 module.exports = {
   setupModuleHarness,
 };
-

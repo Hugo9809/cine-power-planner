@@ -17,10 +17,13 @@ describe('project autosave', () => {
   test('sanity check jsdom behavior', () => {
     // Manually load runtime to check side effects
     const { loadRuntime } = require('../helpers/runtimeLoader');
+    global.__SKIP_RUNTIME_GUARD__ = true;
     try {
       loadRuntime(null, { disableFreeze: true });
     } catch (e) {
       console.log('DEBUG: loadRuntime failed (expected during bisection):', e.stack);
+    } finally {
+      delete global.__SKIP_RUNTIME_GUARD__;
     }
 
     const btn = document.createElement('button');

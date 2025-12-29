@@ -258,13 +258,17 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   // ensureModule('core/app-core-new-1.js'); // The suspect
 
   let runtimeGuardModule = null;
-  try {
-    runtimeGuardModule =
-      (globalScope && globalScope.cineRuntimeGuard)
-      || require('./modules/runtime-guard.js');
-  } catch (runtimeGuardLoadError) {
-    void runtimeGuardLoadError;
-    runtimeGuardModule = globalScope && globalScope.cineRuntimeGuard ? globalScope.cineRuntimeGuard : null;
+  const skipGuard = (typeof global !== 'undefined' && global.__SKIP_RUNTIME_GUARD__) ||
+    (typeof globalThis !== 'undefined' && globalThis.__SKIP_RUNTIME_GUARD__);
+  if (!skipGuard) {
+    try {
+      runtimeGuardModule =
+        (globalScope && globalScope.cineRuntimeGuard)
+        || require('./modules/runtime-guard.js');
+    } catch (runtimeGuardLoadError) {
+      void runtimeGuardLoadError;
+      runtimeGuardModule = globalScope && globalScope.cineRuntimeGuard ? globalScope.cineRuntimeGuard : null;
+    }
   }
 
   const runtimeGuard =
@@ -477,15 +481,18 @@ const GLOBAL_RUNTIME_SCOPE =
   || null;
 
 let runtimeGuardModule = null;
+const skipGuard = (GLOBAL_RUNTIME_SCOPE && GLOBAL_RUNTIME_SCOPE.__SKIP_RUNTIME_GUARD__);
 
-if (GLOBAL_RUNTIME_SCOPE && GLOBAL_RUNTIME_SCOPE.cineRuntimeGuard) {
-  runtimeGuardModule = GLOBAL_RUNTIME_SCOPE.cineRuntimeGuard;
-} else if (typeof require === 'function') {
-  try {
-    runtimeGuardModule = require('./modules/runtime-guard.js');
-  } catch (runtimeGuardRequireError) {
-    void runtimeGuardRequireError;
-    runtimeGuardModule = null;
+if (!skipGuard) {
+  if (GLOBAL_RUNTIME_SCOPE && GLOBAL_RUNTIME_SCOPE.cineRuntimeGuard) {
+    runtimeGuardModule = GLOBAL_RUNTIME_SCOPE.cineRuntimeGuard;
+  } else if (typeof require === 'function') {
+    try {
+      runtimeGuardModule = require('./modules/runtime-guard.js');
+    } catch (runtimeGuardRequireError) {
+      void runtimeGuardRequireError;
+      runtimeGuardModule = null;
+    }
   }
 }
 

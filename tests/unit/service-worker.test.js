@@ -234,7 +234,7 @@ describe('service worker configuration', () => {
   test('caches runtime JavaScript dependencies for offline usage', () => {
     expect(ASSETS).toEqual(
       expect.arrayContaining([
-        './src/scripts/globalthis-polyfill.js',
+        './src/scripts/shims/globalthis-polyfill.js',
         './src/scripts/globals-bootstrap.js',
         './src/scripts/modern-support-check.js',
         './src/scripts/modern-support-check.mjs',
@@ -254,7 +254,7 @@ describe('service worker configuration', () => {
       expect.arrayContaining([
         './legacy/scripts/loader.js',
         './legacy/scripts/script.js',
-        './legacy/scripts/auto-gear-monitoring.js',
+        './legacy/scripts/auto-gear/monitoring.js',
         './legacy/scripts/autosave-overlay.js',
         './legacy/scripts/modules/registry.js',
         './legacy/scripts/modern-support-check.js',

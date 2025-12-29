@@ -163,7 +163,23 @@ function loadRuntime(targetScope, options) {
   }
 
   delete require.cache[resolvedScriptPath];
-  return runtime;
+  delete require.cache[resolvedScriptPath];
+
+  // Wrap runtime in a proxy to fallback to global scope for legacy functions
+  // that might not be directly attached to the frozen runtime object.
+  const proxiedRuntime = new Proxy(runtime, {
+    get: (target, prop) => {
+      if (prop in target) {
+        return target[prop];
+      }
+      if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE[prop] !== 'undefined') {
+        return GLOBAL_SCOPE[prop];
+      }
+      return undefined;
+    }
+  });
+
+  return proxiedRuntime;
 }
 
 module.exports = {

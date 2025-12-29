@@ -16593,7 +16593,11 @@ function populateCategoryOptions() {
 
     // Trigger change event to initialize the form fields for the default selection
     if (newCategorySelect && typeof newCategorySelect.dispatchEvent === 'function') {
-      newCategorySelect.dispatchEvent(new Event('change'));
+      try {
+        newCategorySelect.dispatchEvent(new Event('change'));
+      } catch (dispatchError) {
+        console.warn('Failed to dispatch change event in populateCategoryOptions', dispatchError);
+      }
     }
   }
 
@@ -17924,28 +17928,22 @@ function createSchemaField(category, attr, value) {
 }
 
 function getSchemaAttributesForCategory(category) {
-  console.log('[getSchemaAttributesForCategory] deviceSchema:', deviceSchema ? Object.keys(deviceSchema) : 'null');
   if (!deviceSchema) return [];
   const parts = category.split('.');
   let node = deviceSchema;
-  console.log('[getSchemaAttributesForCategory] Looking up category:', category, 'parts:', parts);
   for (const p of parts) {
     node = node && node[p];
-    console.log('[getSchemaAttributesForCategory] After part', p, 'node:', node ? (node.attributes ? 'has attributes' : Object.keys(node)) : 'null');
     if (!node) return [];
   }
-  console.log('[getSchemaAttributesForCategory] Final node.attributes:', node.attributes);
   return Array.isArray(node.attributes) ? node.attributes : [];
 }
 
 function getCombinedCategoryAttributes(category, data = {}, exclude = []) {
-  console.log('[getCombinedCategoryAttributes] Called with:', { category, exclude, deviceSchemaExists: !!deviceSchema });
   const seen = new Set();
   const attrs = [];
   const skip = (attr) => !attr || exclude.includes(attr) || seen.has(attr);
 
   const schemaAttrs = getSchemaAttributesForCategory(category);
-  console.log('[getCombinedCategoryAttributes] Schema attributes for', category, ':', schemaAttrs);
 
   for (const attr of schemaAttrs) {
     if (skip(attr)) continue;
@@ -17961,7 +17959,6 @@ function getCombinedCategoryAttributes(category, data = {}, exclude = []) {
     }
   }
 
-  console.log('[getCombinedCategoryAttributes] Final attributes:', attrs);
   return attrs;
 }
 
@@ -17975,25 +17972,21 @@ function clearDynamicFields() {
 }
 
 function buildDynamicFields(category, data = {}, exclude = []) {
-  console.log('[buildDynamicFields] Called with:', { category, data, exclude, deviceSchemaExists: !!deviceSchema });
   if (typeof dynamicFieldsDiv === 'undefined' || !dynamicFieldsDiv) {
     if (typeof document !== 'undefined') {
       window.dynamicFieldsDiv = document.getElementById('dynamicFields');
     }
     if (!dynamicFieldsDiv) {
-      console.warn('[buildDynamicFields] dynamicFieldsDiv not found');
       return;
     }
   }
   const attrs = getCombinedCategoryAttributes(category, data, exclude);
-  console.log('[buildDynamicFields] Got attributes:', attrs);
   dynamicFieldsDiv.innerHTML = '';
   if (!attrs.length) {
     dynamicFieldsDiv.hidden = true;
     if (dynamicFieldsDiv.dataset) {
       delete dynamicFieldsDiv.dataset.attrs;
     }
-    console.log('[buildDynamicFields] No attributes to display');
     return;
   }
   dynamicFieldsDiv.hidden = false;

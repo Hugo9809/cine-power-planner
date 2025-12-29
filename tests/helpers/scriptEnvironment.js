@@ -226,7 +226,8 @@ function setupScriptEnvironment(options = {}) {
     saveFavorites: jest.fn(),
     unifyDevices: jest.fn(),
     fixPowerInput: jest.fn(),
-    ensureList: jest.fn()
+    ensureList: jest.fn(),
+    __SKIP_RUNTIME_GUARD__: true
   };
 
   if (options.devices) {

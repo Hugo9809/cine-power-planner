@@ -5,9 +5,20 @@
   "display": "standalone",
   "background_color": "#1a1a1a",
   "theme_color": "#1a1a1a",
+  "description": "Plan your camera setup, calculate power consumption, create gear lists automatically and export rental-ready PDFs. Free and fully offline.",
+  "categories": [
+    "utilities",
+    "productivity",
+    "photo",
+    "video"
+  ],
+  "orientation": "any",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
   "icons": [
     {
-      "src": "src/icons/Icon Bluenew.svg",
+      "src": "src/icons/Icon%20Bluenew.svg",
       "sizes": "any",
       "type": "image/svg+xml"
     },

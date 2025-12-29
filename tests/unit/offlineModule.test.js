@@ -1068,6 +1068,33 @@ describe('cineOffline module', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
+  test('updateOfflineUi shows/hides the indicator based on connectivity state', () => {
+    const indicator = {
+      setAttribute: jest.fn(),
+      removeAttribute: jest.fn(),
+    };
+
+    // Use the global document from harness
+    global.document.getElementById = jest.fn((id) => {
+      if (id === 'offlineIndicator') {
+        return indicator;
+      }
+      return null;
+    });
+
+    // Reset internal state if needed
+    internal.emitConnectivityState({ status: 'online', source: 'test' });
+    expect(indicator.setAttribute).toHaveBeenCalledWith('hidden', '');
+
+    indicator.setAttribute.mockClear();
+
+    internal.emitConnectivityState({ status: 'offline', source: 'test' });
+    expect(indicator.removeAttribute).toHaveBeenCalledWith('hidden');
+
+    internal.emitConnectivityState({ status: 'online', source: 'test' });
+    expect(indicator.setAttribute).toHaveBeenCalledWith('hidden', '');
+  });
+
 });
 
 

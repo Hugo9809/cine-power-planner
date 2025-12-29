@@ -423,6 +423,28 @@
     return freezeConnectivityState(next);
   }
 
+  function updateOfflineUi(state) {
+    if (typeof document === 'undefined' || !document) {
+      return;
+    }
+
+    const indicator = document.getElementById('offlineIndicator');
+    if (!indicator) {
+      return;
+    }
+
+    if (state.status === 'offline') {
+      if (typeof indicator.removeAttribute === 'function') {
+        indicator.removeAttribute('hidden');
+      }
+      // If we have a reason, we could display it, but keeping it simple for now
+    } else {
+      if (typeof indicator.setAttribute === 'function') {
+        indicator.setAttribute('hidden', '');
+      }
+    }
+  }
+
   function emitConnectivityState(update) {
     if (!update || typeof update !== 'object') {
       return connectivityState;
@@ -439,11 +461,13 @@
     ) {
       connectivityState = nextState;
       assignGlobalConnectivityState(nextState);
+      updateOfflineUi(nextState);
       return connectivityState;
     }
 
     connectivityState = nextState;
     assignGlobalConnectivityState(nextState);
+    updateOfflineUi(nextState);
     notifyConnectivityListeners(nextState);
     broadcastConnectivityState(nextState);
     return connectivityState;
@@ -4141,6 +4165,26 @@
     return finalizePendingRegistration(waitForLoad);
   }
 
+  function initConnectivityListeners(win) {
+    const targetWindow = win || resolveWindow();
+    if (!targetWindow || typeof targetWindow.addEventListener !== 'function') {
+      return;
+    }
+
+    targetWindow.addEventListener('online', () => {
+      emitConnectivityState({ status: 'online', source: 'navigator' });
+    });
+
+    targetWindow.addEventListener('offline', () => {
+      emitConnectivityState({ status: 'offline', source: 'navigator' });
+    });
+
+    // Initialize with current state
+    if (typeof targetWindow.navigator !== 'undefined' && targetWindow.navigator.onLine === false) {
+      emitConnectivityState({ status: 'offline', source: 'navigator-init' });
+    }
+  }
+
   const offlineAPI = {
     registerServiceWorker,
     reloadApp,
@@ -4158,10 +4202,14 @@
       cleanupForceReloadArtifacts,
       coerceForceReloadUrlDescriptor,
       scheduleReloadWarmup,
+      initConnectivityListeners,
+      updateOfflineUi,
+      emitConnectivityState,
     },
   };
 
   cleanupForceReloadArtifacts();
+  initConnectivityListeners();
 
   freezeDeep(offlineAPI);
 

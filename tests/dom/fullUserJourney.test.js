@@ -99,6 +99,11 @@ describe('full user journey regression', () => {
 
     window.confirm = jest.fn(() => true);
     window.alert = jest.fn();
+    window.cineShowConfirmDialog = jest.fn((options) => {
+      if (options && typeof options.onConfirm === 'function') {
+        options.onConfirm();
+      }
+    });
 
     const { utils } = env;
 

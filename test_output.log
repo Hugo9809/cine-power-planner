@@ -14174,3 +14174,31 @@ Service worker asset manifest is up to date.
       at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
       at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:241:17)
 
+  console.log
+    DEBUG: displayGearAndRequirements stack: Error: 
+        at displayGearAndRequirements (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:118687:63)
+        at resetSetupStateToDefaults (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:126656:9)
+        at Proxy.<anonymous> (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:126893:3)
+        at Proxy.callTheUserObjectsOperation (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
+        at innerInvokeEventListeners (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
+        at invokeEventListeners (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+        at HTMLSelectElementImpl._dispatch (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+        at HTMLSelectElementImpl.dispatchEvent (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+        at Proxy.dispatchEvent (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+        at Object.dispatchEvent (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:260:17)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)
+
+      at Proxy.runtimeGuardLoadError (src/scripts/script.js:266:10)
+
