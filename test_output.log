@@ -11205,3 +11205,252 @@ Service worker asset manifest is up to date.
 
       at Proxy.runtimeGuardLoadError (src/scripts/script.js:266:10)
 
+  console.log
+    [newCategory change] Category change event fired
+
+      at Proxy.runtimeGuardLoadError (src/scripts/script.js:266:10)
+
+  console.log
+    [newCategory change] Inferred type: generic for value: ""
+
+      at Proxy.runtimeGuardLoadError (src/scripts/script.js:266:10)
+
+  console.error
+    [cine] [global] 2025-12-29T08:19:35.414Z Global error captured {
+      message: 'The child can not be found in the parent.',
+      filename: 'http://localhost/',
+      lineno: null,
+      colno: null,
+      error: {
+        name: 'NotFoundError',
+        message: 'The child can not be found in the parent.',
+        stack: 'NotFoundError: The child can not be found in the parent.',
+        code: 8
+      }
+    } {
+      origin: {
+        source: 'generated',
+        stack: 'Error: Global error captured\n' +
+          '    at logInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:45242:20)\n' +
+          '    at handleGlobalError (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:45565:5)\n' +
+          '    at callTheUserObjectsOperation (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)\n' +
+          '    at innerInvokeEventListeners (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)\n' +
+          '    at invokeEventListeners (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)\n' +
+          '    at EventTargetImpl._dispatch (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:217:9)\n' +
+          '    at reportAnError (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:35:12)\n' +
+          '    at reportException (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:62:19)\n' +
+          '    at innerInvokeEventListeners (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)\n' +
+          '    at invokeEventListeners (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)\n' +
+          '    at HTMLSelectElementImpl._dispatch (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)\n' +
+          '    at HTMLSelectElementImpl.dispatchEvent (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)\n' +
+          '    at Proxy.dispatchEvent (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)\n' +
+          '    at populateCategoryOptions (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:99780:25)\n' +
+          '    at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:99809:1\n' +
+          '    at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:226:11)\n' +
+          '    at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)\n' +
+          '    at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)\n' +
+          '    at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)\n' +
+          '    at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)\n' +
+          '    at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)\n' +
+          '    at loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:251:13)\n' +
+          '    at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)\n' +
+          '    at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)\n' +
+          '    at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:249:8)\n' +
+          '    at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:241:17)\n' +
+          '    at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)\n' +
+          '    at new Promise (<anonymous>)\n' +
+          '    at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)\n' +
+          '    at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)\n' +
+          '    at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)\n' +
+          '    at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7\n' +
+          '    at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)\n' +
+          '    at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)\n' +
+          '    at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)\n' +
+          '    at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)\n' +
+          '    at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)\n' +
+          '    at runTestInternal (/Users/luc',
+        truncated: true,
+        frames: [
+          'Error: Global error captured',
+          'at logInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:45242:20)',
+          'at handleGlobalError (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:45565:5)',
+          'at callTheUserObjectsOperation (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)',
+          'at innerInvokeEventListeners (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)',
+          'at invokeEventListeners (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)',
+          'at EventTargetImpl._dispatch (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:217:9)',
+          'at reportAnError (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:35:12)',
+          'at reportException (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:62:19)',
+          'at innerInvokeEventListeners (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)',
+          'at invokeEventListeners (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)',
+          'at HTMLSelectElementImpl._dispatch (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)',
+          'at HTMLSelectElementImpl.dispatchEvent (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)',
+          'at Proxy.dispatchEvent (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)',
+          'at populateCategoryOptions (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:99780:25)',
+          'at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:99809:1',
+          'at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:226:11)',
+          'at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)',
+          'at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)',
+          'at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)',
+          'at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)',
+          'at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)',
+          'at loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:251:13)',
+          'at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)',
+          'at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)',
+          'at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:249:8)',
+          'at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:241:17)',
+          'at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)',
+          'at new Promise (<anonymous>)',
+          'at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)',
+          'at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)',
+          'at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)',
+          'at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7',
+          'at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)',
+          'at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)',
+          'at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)',
+          'at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)',
+          'at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)',
+          'at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)',
+          'at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7)'
+        ]
+      }
+    }
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at Proxy.originalFn (tests/setup/jest.setup.js:63:12)
+      at Proxy.runtimeGuardLoadError (src/scripts/script.js:266:10)
+      at invokeConsoleMethod (src/scripts/script.js:44663:17)
+      at logInternal (src/scripts/script.js:45297:7)
+      at handleGlobalError (src/scripts/script.js:45565:5)
+      at callTheUserObjectsOperation (node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
+      at innerInvokeEventListeners (node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
+      at invokeEventListeners (node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+      at EventTargetImpl._dispatch (node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:217:9)
+      at reportAnError (node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:35:12)
+      at reportException (node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:62:19)
+      at innerInvokeEventListeners (node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+      at invokeEventListeners (node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+      at HTMLSelectElementImpl._dispatch (node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+      at HTMLSelectElementImpl.dispatchEvent (node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+      at Proxy.dispatchEvent (node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+      at populateCategoryOptions (src/scripts/script.js:99780:25)
+      at src/scripts/script.js:99809:1
+      at Object.call (src/scripts/script.js:226:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:241:17)
+
+  console.error
+    Error: Uncaught [NotFoundError: The child can not be found in the parent.]
+        at reportException (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+        at innerInvokeEventListeners (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+        at invokeEventListeners (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+        at HTMLSelectElementImpl._dispatch (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+        at HTMLSelectElementImpl.dispatchEvent (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+        at Proxy.dispatchEvent (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+        at populateCategoryOptions (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:99780:25)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:99809:1
+        at Object.call (/Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/script.js:226:11)
+        at Runtime._execModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1268:24)
+        at Runtime._loadModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:944:12)
+        at Runtime.requireModule (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:832:12)
+        at Runtime.requireModuleOrMock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:964:21)
+        at require (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/runtimeLoader.js:134:22)
+        at loadRuntime (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:251:13)
+        at Runtime.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:986:7)
+        at Object.isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runtime/build/index.js:1705:12)
+        at isolateModules (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/helpers/scriptEnvironment.js:249:8)
+        at Object.setupScriptEnvironment (/Users/lucazanner/Documents/GitHub/cine-power-planner/tests/dom/projectAutosave.test.js:241:17)
+        at Promise.finally.completed (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)
+        at _callCircusTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)
+        at _runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:947:3)
+        at /Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:849:7
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:862:11)
+        at _runTestsForDescribeBlock (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:857:11)
+        at run (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:761:3)
+        at runAndTransformResultsToJestFormat (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)
+        at jestAdapter (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-circus/build/runner.js:101:19)
+        at runTestInternal (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:275:16)
+        at runTest (/Users/lucazanner/Documents/GitHub/cine-power-planner/node_modules/jest-runner/build/index.js:343:7) {
+      detail: DOMException {},
+      type: 'unhandled exception'
+    }
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as error] (tests/setup/jest.setup.js:63:12)
+      at VirtualConsole.<anonymous> (node_modules/@jest/environment-jsdom-abstract/build/index.js:87:23)
+      at reportException (node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:70:28)
+      at innerInvokeEventListeners (node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+      at invokeEventListeners (node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+      at HTMLSelectElementImpl._dispatch (node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+      at HTMLSelectElementImpl.dispatchEvent (node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+      at Proxy.dispatchEvent (node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+      at populateCategoryOptions (src/scripts/script.js:99780:25)
+      at src/scripts/script.js:99809:1
+      at Object.call (src/scripts/script.js:226:11)
+      at require (tests/helpers/runtimeLoader.js:134:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:251:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:249:8)
+      at Object.setupScriptEnvironment (tests/dom/projectAutosave.test.js:241:17)
+
+  console.log
+    app-core-new-2.js: corePart2Runtime starting
+
+      at Proxy.runtimeGuardLoadError (src/scripts/script.js:266:10)
+
+  console.log
+    app-core-new-2.js: CORE_SHARED_LOCAL resolved
+
+      at Proxy.runtimeGuardLoadError (src/scripts/script.js:266:10)
+
+  console.log
+    app-core-new-2.js: collectAutoGearSelectedValues resolved
+
+      at Proxy.runtimeGuardLoadError (src/scripts/script.js:266:10)
+
+  console.log
+    app-core-new-2.js: CORE_RUNTIME_FALLBACKS resolved
+
+      at Proxy.runtimeGuardLoadError (src/scripts/script.js:266:10)
+
+  console.log
+    app-core-new-2.js: CORE_RUNTIME_UI_BRIDGE resolved
+
+      at Proxy.runtimeGuardLoadError (src/scripts/script.js:266:10)
+
+  console.log
+    app-core-new-2.js: autoGearHelpers resolved
+
+      at Proxy.runtimeGuardLoadError (src/scripts/script.js:266:10)
+
+  console.log
+    DEBUG: updatePowerPortOptions starting. cameraPortTypeInput: true
+
+      at Proxy.runtimeGuardLoadError (src/scripts/script.js:266:10)
+
+  console.log
+    DEBUG: setPowerDistribution called. powerDistContainer: true
+
+      at Proxy.runtimeGuardLoadError (src/scripts/script.js:266:10)
+
+  console.log
+    app-core-new-2.js: corePart2Runtime complete
+
+      at Proxy.runtimeGuardLoadError (src/scripts/script.js:266:10)
+

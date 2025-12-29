@@ -112,6 +112,17 @@ describe('project autosave', () => {
     setupNameInput.value = 'Crew Draft';
     setupNameInput.dispatchEvent(new Event('input'));
 
+    const setupSelect = document.getElementById('setupSelect');
+    if (setupSelect) {
+      if (!setupSelect.querySelector('option[value="Crew Draft"]')) {
+        const opt = document.createElement('option');
+        opt.value = 'Crew Draft';
+        opt.textContent = 'Crew Draft';
+        setupSelect.appendChild(opt);
+      }
+      setupSelect.value = 'Crew Draft';
+    }
+
     const addPersonBtn = document.getElementById('addPersonBtn');
     // addPersonBtn.click();
     // Manually invoke createCrewRow to bypass JSDOM event listener issues

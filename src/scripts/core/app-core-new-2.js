@@ -13394,6 +13394,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const fallbackTexts = texts.en || {};
       const editLabel = langTexts.editProjectBtn || fallbackTexts.editProjectBtn || 'Edit Project requirements';
       const extraLabel = langTexts.addExtraGearBtn || fallbackTexts.addExtraGearBtn || 'Add temporary extra gear';
+      const editBtn = document.getElementById('editProjectBtn');
       if (editBtn) {
         if (editBtn.textContent !== editLabel) editBtn.textContent = editLabel;
         const currentTitle = editBtn.getAttribute('title');

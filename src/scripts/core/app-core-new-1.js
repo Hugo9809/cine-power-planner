@@ -13304,7 +13304,7 @@ function updateRowLinkedBadge(row) {
   badge.hidden = true;
 }
 
-function handleCrewRowManualChange(row) {
+function handleCrewRowManualChange(row, immediate = true) {
   if (!row || row.dataset.syncingContact === '1') return;
   const wasLinked = Boolean(row.dataset.contactId);
   if (wasLinked) {
@@ -13315,7 +13315,7 @@ function handleCrewRowManualChange(row) {
   if (typeof markProjectFormDataDirty === 'function') {
     markProjectFormDataDirty();
   }
-  scheduleProjectAutoSave(true);
+  scheduleProjectAutoSave(immediate);
 }
 
 
@@ -14281,14 +14281,18 @@ function createCrewRow(data = {}) {
     avatarFileInput.value = '';
   });
 
-  roleSel.addEventListener('change', () => handleCrewRowManualChange(row));
+  roleSel.addEventListener('change', () => handleCrewRowManualChange(row, true));
   nameInput.addEventListener('input', () => {
     refreshRowAvatarInitial(row);
-    handleCrewRowManualChange(row);
+    handleCrewRowManualChange(row, false);
   });
-  phoneInput.addEventListener('input', () => handleCrewRowManualChange(row));
-  emailInput.addEventListener('input', () => handleCrewRowManualChange(row));
-  websiteInput.addEventListener('input', () => handleCrewRowManualChange(row));
+  nameInput.addEventListener('blur', () => handleCrewRowManualChange(row, true));
+  phoneInput.addEventListener('input', () => handleCrewRowManualChange(row, false));
+  phoneInput.addEventListener('blur', () => handleCrewRowManualChange(row, true));
+  emailInput.addEventListener('input', () => handleCrewRowManualChange(row, false));
+  emailInput.addEventListener('blur', () => handleCrewRowManualChange(row, true));
+  websiteInput.addEventListener('input', () => handleCrewRowManualChange(row, false));
+  websiteInput.addEventListener('blur', () => handleCrewRowManualChange(row, true));
 
   contactSelect.addEventListener('change', () => {
     const selectedId = contactSelect.value;
