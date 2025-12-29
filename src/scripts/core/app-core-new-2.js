@@ -13102,14 +13102,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return true;
       };
       const registerDeviceLibraryEntriesForSearch = () => {
-        console.log('DEBUG: registerDeviceLibraryEntriesForSearch start');
+
         if (!deviceLibrarySearchEntries.length) {
           rebuildDeviceLibrarySearchIndex();
         }
         if (!deviceLibrarySearchEntries.length) {
           return;
         }
-        console.log('DEBUG: processing deviceLibrarySearchEntries, count:', deviceLibrarySearchEntries.length);
+
         deviceLibrarySearchEntries.forEach(entry => {
           if (!entry || !entry.label) return;
           const key = entry.key || searchKey(entry.label);
@@ -13144,10 +13144,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           registerOption(deviceData);
           featureSearchEntries.push(deviceData);
         });
-        console.log('DEBUG: registerDeviceLibraryEntriesForSearch end');
+
       };
       registerDeviceLibraryEntriesForSearch();
-      console.log('DEBUG: querying DOM headings');
+
       document
         .querySelectorAll('h2[id], legend[id], h3[id], h4[id]')
         .forEach(el => {
