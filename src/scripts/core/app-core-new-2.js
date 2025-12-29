@@ -13394,22 +13394,24 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const fallbackTexts = texts.en || {};
       const editLabel = langTexts.editProjectBtn || fallbackTexts.editProjectBtn || 'Edit Project requirements';
       const extraLabel = langTexts.addExtraGearBtn || fallbackTexts.addExtraGearBtn || 'Add temporary extra gear';
-      const editBtn = document.getElementById('editProjectBtn');
       if (editBtn) {
-        editBtn.textContent = editLabel;
-        editBtn.setAttribute('title', editLabel);
-        editBtn.setAttribute('data-help', editLabel);
+        if (editBtn.textContent !== editLabel) editBtn.textContent = editLabel;
+        const currentTitle = editBtn.getAttribute('title');
+        if (currentTitle !== editLabel) editBtn.setAttribute('title', editLabel);
+        const currentHelp = editBtn.getAttribute('data-help');
+        if (currentHelp !== editLabel) editBtn.setAttribute('data-help', editLabel);
       }
       const extraBtn = document.getElementById('addExtraGearBtn');
       if (extraBtn) {
-        extraBtn.textContent = extraLabel;
-        extraBtn.setAttribute('title', extraLabel);
-        extraBtn.setAttribute('data-help', extraLabel);
+        if (extraBtn.textContent !== extraLabel) extraBtn.textContent = extraLabel;
+        const currentTitle = extraBtn.getAttribute('title');
+        if (currentTitle !== extraLabel) extraBtn.setAttribute('title', extraLabel);
+        const currentHelp = extraBtn.getAttribute('data-help');
+        if (currentHelp !== extraLabel) extraBtn.setAttribute('data-help', extraLabel);
       }
     }
 
     function ensureProjectRequirementButtons() {
-      console.log('DEBUG: ensureProjectRequirementButtons. projectRequirementsOutput:', !!projectRequirementsOutput, 'type:', typeof projectRequirementsOutput, 'isNode:', !!(projectRequirementsOutput && projectRequirementsOutput.nodeType));
       let container = null;
       if (projectRequirementsOutput && projectRequirementsOutput.classList && !projectRequirementsOutput.classList.contains('hidden')) {
         container = projectRequirementsOutput;
@@ -13487,8 +13489,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       } else if (btn.parentElement === container && extraBtn.parentElement !== container) {
         btn.insertAdjacentElement('afterend', extraBtn);
       }
-      btn.type = 'button';
-      extraBtn.type = 'button';
+      if (btn.type !== 'button') btn.type = 'button';
+      if (extraBtn.type !== 'button') extraBtn.type = 'button';
       setProjectRequirementButtonsText();
     }
 
@@ -14350,187 +14352,198 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     function displayGearAndRequirements(html) {
-      console.log('DEBUG: displayGearAndRequirements. gearListOutput:', !!gearListOutput, 'isNode:', !!(gearListOutput && gearListOutput.nodeType), 'projectRequirementsOutput:', !!projectRequirementsOutput, 'isNode:', !!(projectRequirementsOutput && projectRequirementsOutput.nodeType));
       const { projectHtml, gearHtml } = splitGearListHtml(html);
       const safeProjectHtml = sanitizeSharedHtml(projectHtml);
       const safeGearHtml = sanitizeSharedHtml(gearHtml);
       if (projectRequirementsOutput) {
         if (safeProjectHtml) {
-          projectRequirementsOutput.innerHTML = safeProjectHtml;
-          if (projectRequirementsOutput.classList) projectRequirementsOutput.classList.remove('hidden');
-          const requirementBoxes = Array.from(projectRequirementsOutput.querySelectorAll('.requirement-box'));
-          requirementBoxes.forEach(box => {
-            // Popup/Tooltip removal as per user request to prevent blocking buttons
-            box.removeAttribute('title');
-            box.removeAttribute('data-help');
+          if (projectRequirementsOutput._lastRendered !== safeProjectHtml) {
+            projectRequirementsOutput.innerHTML = safeProjectHtml;
+            projectRequirementsOutput._lastRendered = safeProjectHtml;
+            if (projectRequirementsOutput.classList) projectRequirementsOutput.classList.remove('hidden');
+            const requirementBoxes = Array.from(projectRequirementsOutput.querySelectorAll('.requirement-box'));
+            requirementBoxes.forEach(box => {
+              // Popup/Tooltip removal as per user request to prevent blocking buttons
+              box.removeAttribute('title');
+              box.removeAttribute('data-help');
 
-            if (!box.hasAttribute('tabindex')) {
-              box.setAttribute('tabindex', '0');
-            }
-            if (!box.hasAttribute('role')) {
-              box.setAttribute('role', 'group');
-            }
+              if (!box.hasAttribute('tabindex')) {
+                box.setAttribute('tabindex', '0');
+              }
+              if (!box.hasAttribute('role')) {
+                box.setAttribute('role', 'group');
+              }
 
-            box.addEventListener('keydown', handleRequirementBoxKeydown);
-            box.querySelectorAll('.req-label, .req-value').forEach(el => {
-              el.removeAttribute('title');
-              el.removeAttribute('data-help');
+              box.addEventListener('keydown', handleRequirementBoxKeydown);
+              box.querySelectorAll('.req-label, .req-value').forEach(el => {
+                el.removeAttribute('title');
+                el.removeAttribute('data-help');
+              });
             });
-          });
-          adjustGearListSelectWidths(projectRequirementsOutput);
+            adjustGearListSelectWidths(projectRequirementsOutput);
+          }
         } else {
-          projectRequirementsOutput.innerHTML = '';
-          if (projectRequirementsOutput.classList) projectRequirementsOutput.classList.add('hidden');
+          if (projectRequirementsOutput._lastRendered !== '') {
+            projectRequirementsOutput.innerHTML = '';
+            projectRequirementsOutput._lastRendered = '';
+            if (projectRequirementsOutput.classList) projectRequirementsOutput.classList.add('hidden');
+          }
         }
       }
       if (gearListOutput) {
         if (safeGearHtml) {
-          gearListOutput.innerHTML = safeGearHtml;
-          const gearTable = gearListOutput.querySelector('.gear-table')
-            || gearListOutput.querySelector('table');
-          if (gearTable) {
-            mergeDuplicateGearTableCategories(gearTable);
-          }
-          if (typeof ensureGearListCustomControls === 'function') {
-            ensureGearListCustomControls(gearListOutput);
-          }
-          if (gearListOutput.classList) gearListOutput.classList.remove('hidden');
-          if (typeof enhanceGearListItems === 'function') {
-            enhanceGearListItems(gearListOutput);
-          }
-          applyFilterSelectionsToGearList();
-          renderFilterDetails();
-          const findDevice = name => {
-            if (typeof name !== 'string' || !name.trim()) {
-              return { info: null, category: '', categoryPath: [] };
+          if (gearListOutput._lastRendered !== safeGearHtml) {
+            gearListOutput.innerHTML = safeGearHtml;
+            gearListOutput._lastRendered = safeGearHtml;
+            const gearTable = gearListOutput.querySelector('.gear-table')
+              || gearListOutput.querySelector('table');
+            if (gearTable) {
+              mergeDuplicateGearTableCategories(gearTable);
             }
-            const visited = new Set();
-            const search = (node, path) => {
-              if (!isPlainObjectValue(node) || visited.has(node)) return null;
-              visited.add(node);
-              if (
-                Object.prototype.hasOwnProperty.call(node, name) &&
-                isPlainObjectValue(node[name])
-              ) {
-                return { info: node[name], categoryPath: path };
+            if (typeof ensureGearListCustomControls === 'function') {
+              ensureGearListCustomControls(gearListOutput);
+            }
+            if (gearListOutput.classList) gearListOutput.classList.remove('hidden');
+            if (typeof enhanceGearListItems === 'function') {
+              enhanceGearListItems(gearListOutput);
+            }
+            applyFilterSelectionsToGearList();
+            renderFilterDetails();
+            const findDevice = name => {
+              if (typeof name !== 'string' || !name.trim()) {
+                return { info: null, category: '', categoryPath: [] };
               }
-              for (const [key, value] of Object.entries(node)) {
-                if (!isPlainObjectValue(value)) continue;
-                const result = search(value, path.concat(key));
-                if (result) return result;
-              }
-              return null;
-            };
-            const result = search(devices, []);
-            if (result) {
-              return {
-                info: result.info,
-                category: formatDeviceCategoryPath(result.categoryPath),
-                categoryPath: result.categoryPath
+              const visited = new Set();
+              const search = (node, path) => {
+                if (!isPlainObjectValue(node) || visited.has(node)) return null;
+                visited.add(node);
+                if (
+                  Object.prototype.hasOwnProperty.call(node, name) &&
+                  isPlainObjectValue(node[name])
+                ) {
+                  return { info: node[name], categoryPath: path };
+                }
+                for (const [key, value] of Object.entries(node)) {
+                  if (!isPlainObjectValue(value)) continue;
+                  const result = search(value, path.concat(key));
+                  if (result) return result;
+                }
+                return null;
               };
-            }
-            return { info: null, category: '', categoryPath: [] };
-          };
+              const result = search(devices, []);
+              if (result) {
+                return {
+                  info: result.info,
+                  category: formatDeviceCategoryPath(result.categoryPath),
+                  categoryPath: result.categoryPath
+                };
+              }
+              return { info: null, category: '', categoryPath: [] };
+            };
 
-          const buildGearItemHelp = ({
-            name,
-            countText,
-            deviceInfo,
-            libraryCategory,
-            tableCategory
-          }) => {
-            const parts = [];
-            const label = `${countText || ''}${name}`.trim();
-            if (label) parts.push(label);
-            const meta = getGearTableCategoryMeta(tableCategory);
-            const categoryParts = [];
-            if (tableCategory) categoryParts.push(`Gear list section: ${tableCategory}`);
-            if (meta.summary) categoryParts.push(meta.summary);
-            if (meta.logic) categoryParts.push(`Logic: ${meta.logic}`);
-            if (!tableCategory && !categoryParts.length) {
-              const fallback = getGearTableCategoryMeta('');
-              if (fallback.summary) categoryParts.push(fallback.summary);
-              if (fallback.logic) categoryParts.push(`Logic: ${fallback.logic}`);
-            }
-            if (categoryParts.length) parts.push(categoryParts.join(' – '));
-            if (libraryCategory) parts.push(`Device library category: ${libraryCategory}`);
-            if (deviceInfo) {
-              let summary = generateSafeConnectorSummary(deviceInfo);
-              summary = summary
-                ? (function stripTags(s) {
-                  let prev;
-                  do {
-                    prev = s;
-                    s = s.replace(/<[^>]+>/g, '');
-                  } while (s !== prev);
-                  return s.replace(/\s+/g, ' ').trim();
-                })(summary)
-                : '';
-              if (deviceInfo.notes)
-                summary = summary ? `${summary}; Notes: ${deviceInfo.notes}` : deviceInfo.notes;
-              if (summary) parts.push(summary);
-            }
-            return parts.join(' – ');
-          };
-
-          gearListOutput.querySelectorAll('tbody.category-group').forEach(group => {
-            const headingCell = group.querySelector('.category-row td');
-            if (!headingCell) return;
-            const tableCategory = headingCell.textContent.trim();
-            group.setAttribute('data-gear-table-category', tableCategory);
-            const helpText = buildGearTableCategoryHelp(tableCategory);
-            headingCell.setAttribute('title', helpText);
-            headingCell.setAttribute('data-help', helpText);
-          });
-
-          gearListOutput.querySelectorAll('.gear-item').forEach(span => {
-            const name = span.getAttribute('data-gear-name') || span.textContent.trim();
-            const { info, category } = findDevice(name);
-            const countMatch = span.textContent.trim().match(/^(\d+)x\s+/);
-            const count = countMatch ? `${countMatch[1]}x ` : '';
-            const tableCategory = span
-              .closest('tbody.category-group')
-              ?.getAttribute('data-gear-table-category');
-            const desc = buildGearItemHelp({
+            const buildGearItemHelp = ({
               name,
-              countText: count,
-              deviceInfo: info,
-              libraryCategory: category,
-              tableCategory: tableCategory || ''
+              countText,
+              deviceInfo,
+              libraryCategory,
+              tableCategory
+            }) => {
+              const parts = [];
+              const label = `${countText || ''}${name}`.trim();
+              if (label) parts.push(label);
+              const meta = getGearTableCategoryMeta(tableCategory);
+              const categoryParts = [];
+              if (tableCategory) categoryParts.push(`Gear list section: ${tableCategory}`);
+              if (meta.summary) categoryParts.push(meta.summary);
+              if (meta.logic) categoryParts.push(`Logic: ${meta.logic}`);
+              if (!tableCategory && !categoryParts.length) {
+                const fallback = getGearTableCategoryMeta('');
+                if (fallback.summary) categoryParts.push(fallback.summary);
+                if (fallback.logic) categoryParts.push(`Logic: ${fallback.logic}`);
+              }
+              if (categoryParts.length) parts.push(categoryParts.join(' – '));
+              if (libraryCategory) parts.push(`Device library category: ${libraryCategory}`);
+              if (deviceInfo) {
+                let summary = generateSafeConnectorSummary(deviceInfo);
+                summary = summary
+                  ? (function stripTags(s) {
+                    let prev;
+                    do {
+                      prev = s;
+                      s = s.replace(/<[^>]+>/g, '');
+                    } while (s !== prev);
+                    return s.replace(/\s+/g, ' ').trim();
+                  })(summary)
+                  : '';
+                if (deviceInfo.notes)
+                  summary = summary ? `${summary}; Notes: ${deviceInfo.notes}` : deviceInfo.notes;
+                if (summary) parts.push(summary);
+              }
+              return parts.join(' – ');
+            };
+
+            gearListOutput.querySelectorAll('tbody.category-group').forEach(group => {
+              const headingCell = group.querySelector('.category-row td');
+              if (!headingCell) return;
+              const tableCategory = headingCell.textContent.trim();
+              group.setAttribute('data-gear-table-category', tableCategory);
+              const helpText = buildGearTableCategoryHelp(tableCategory);
+              headingCell.setAttribute('title', helpText);
+              headingCell.setAttribute('data-help', helpText);
             });
-            span.setAttribute('title', desc);
-            span.setAttribute('data-help', desc);
-            span.querySelectorAll('select').forEach(sel => {
+
+            gearListOutput.querySelectorAll('.gear-item').forEach(span => {
+              const name = span.getAttribute('data-gear-name') || span.textContent.trim();
+              const { info, category } = findDevice(name);
+              const countMatch = span.textContent.trim().match(/^(\d+)x\s+/);
+              const count = countMatch ? `${countMatch[1]}x ` : '';
+              const tableCategory = span
+                .closest('tbody.category-group')
+                ?.getAttribute('data-gear-table-category');
+              const desc = buildGearItemHelp({
+                name,
+                countText: count,
+                deviceInfo: info,
+                libraryCategory: category,
+                tableCategory: tableCategory || ''
+              });
+              span.setAttribute('title', desc);
+              span.setAttribute('data-help', desc);
+              span.querySelectorAll('select').forEach(sel => {
+                sel.setAttribute('title', desc);
+                sel.setAttribute('data-help', desc);
+                initFavoritableSelect(sel);
+              });
+            });
+
+            // Standalone selects (not wrapped in .gear-item) still need descriptive help
+            gearListOutput.querySelectorAll('select').forEach(sel => {
+              if (sel.getAttribute('data-help')) return;
+              const selected = sel.selectedOptions && sel.selectedOptions[0];
+              const name = selected ? selected.textContent.trim() : sel.value;
+              const { info, category } = findDevice(name);
+              const tableCategory = sel
+                .closest('tbody.category-group')
+                ?.getAttribute('data-gear-table-category');
+              const desc = buildGearItemHelp({
+                name,
+                countText: '1x ',
+                deviceInfo: info,
+                libraryCategory: category,
+                tableCategory: tableCategory || ''
+              });
               sel.setAttribute('title', desc);
               sel.setAttribute('data-help', desc);
               initFavoritableSelect(sel);
             });
-          });
-
-          // Standalone selects (not wrapped in .gear-item) still need descriptive help
-          gearListOutput.querySelectorAll('select').forEach(sel => {
-            if (sel.getAttribute('data-help')) return;
-            const selected = sel.selectedOptions && sel.selectedOptions[0];
-            const name = selected ? selected.textContent.trim() : sel.value;
-            const { info, category } = findDevice(name);
-            const tableCategory = sel
-              .closest('tbody.category-group')
-              ?.getAttribute('data-gear-table-category');
-            const desc = buildGearItemHelp({
-              name,
-              countText: '1x ',
-              deviceInfo: info,
-              libraryCategory: category,
-              tableCategory: tableCategory || ''
-            });
-            sel.setAttribute('title', desc);
-            sel.setAttribute('data-help', desc);
-            initFavoritableSelect(sel);
-          });
-          adjustGearListSelectWidths(gearListOutput);
+            adjustGearListSelectWidths(gearListOutput);
+          }
         } else {
-          gearListOutput.innerHTML = '';
-          if (gearListOutput.classList) gearListOutput.classList.add('hidden');
+          if (gearListOutput._lastRendered !== '') {
+            gearListOutput.innerHTML = '';
+            gearListOutput._lastRendered = '';
+            if (gearListOutput.classList) gearListOutput.classList.add('hidden');
+          }
         }
 
         if (typeof ensureGearListActions === 'function') {

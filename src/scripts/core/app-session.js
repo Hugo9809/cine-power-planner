@@ -104,6 +104,7 @@ let deviceMap = new Map();
 let helpMap = new Map();
 let featureSearchEntries = [];
 let featureSearchDefaultOptions = [];
+let isProjectAutoSaving = false;
 
 // Determine which global scope we can use for deep cloning. The order mirrors
 // the environments the planner needs to support: main window first, followed by
@@ -423,6 +424,7 @@ function resolveActiveProjectStorageKey() {
 }
 
 function reloadActiveProjectFromStorage(options = {}) {
+  console.log('DEBUG: reloadActiveProjectFromStorage called. Stack:', new Error().stack);
   if (factoryResetInProgress || restoringSession) {
     return false;
   }
@@ -568,6 +570,12 @@ if (typeof window !== 'undefined' && window && typeof window.addEventListener ==
       return;
     }
     const nextRevision = normalizeProjectStorageRevisionValue(event.newValue);
+    if (isProjectAutoSaving) {
+      if (nextRevision !== null) {
+        lastKnownProjectStorageRevision = nextRevision;
+      }
+      return;
+    }
     if (nextRevision !== null && nextRevision === lastKnownProjectStorageRevision) {
       return;
     }
@@ -4746,120 +4754,125 @@ function getProjectAutoSaveDelay() {
 }
 
 function runProjectAutoSave() {
-  if (factoryResetInProgress) {
-    if (projectAutoSaveTimer) {
-      clearTimeout(projectAutoSaveTimer);
+  isProjectAutoSaving = true;
+  try {
+    if (factoryResetInProgress) {
+      if (projectAutoSaveTimer) {
+        clearTimeout(projectAutoSaveTimer);
+        projectAutoSaveTimer = null;
+      }
+      clearProjectAutoSaveOverrides();
+      return;
+    }
+
+    if (restoringSession) {
       projectAutoSaveTimer = null;
+      if (projectAutoSavePendingWhileRestoring !== 'immediate') {
+        projectAutoSavePendingWhileRestoring = projectAutoSavePendingWhileRestoring || 'queued';
+      }
+      return;
     }
-    clearProjectAutoSaveOverrides();
-    return;
-  }
 
-  if (restoringSession) {
     projectAutoSaveTimer = null;
-    if (projectAutoSavePendingWhileRestoring !== 'immediate') {
-      projectAutoSavePendingWhileRestoring = projectAutoSavePendingWhileRestoring || 'queued';
-    }
-    return;
-  }
+    projectAutoSavePendingWhileRestoring = null;
 
-  projectAutoSaveTimer = null;
-  projectAutoSavePendingWhileRestoring = null;
+    const pendingRequestContext = projectAutoSaveLastRequestContext;
+    projectAutoSaveLastRequestContext = null;
 
-  const pendingRequestContext = projectAutoSaveLastRequestContext;
-  projectAutoSaveLastRequestContext = null;
+    let encounteredError = false;
 
-  let encounteredError = false;
-
-  const guard = (fn, context, onSuccess) => {
-    if (typeof fn !== 'function') {
-      return { ok: true, result: undefined };
-    }
-    try {
-      const result = fn();
-      if (typeof onSuccess === 'function') {
-        try {
-          onSuccess(result);
-        } catch (callbackError) {
-          console.warn('Auto backup mutation observer callback failed', callbackError);
+    const guard = (fn, context, onSuccess) => {
+      if (typeof fn !== 'function') {
+        return { ok: true, result: undefined };
+      }
+      try {
+        const result = fn();
+        if (typeof onSuccess === 'function') {
+          try {
+            onSuccess(result);
+          } catch (callbackError) {
+            console.warn('Auto backup mutation observer callback failed', callbackError);
+          }
         }
+        return { ok: true, result };
+      } catch (error) {
+        encounteredError = true;
+        console.error(`Project autosave failed while ${context}.`, error);
+        return { ok: false, result: undefined };
       }
-      return { ok: true, result };
-    } catch (error) {
-      encounteredError = true;
-      console.error(`Project autosave failed while ${context}.`, error);
-      return { ok: false, result: undefined };
-    }
-  };
+    };
 
-  let setupMutationDetected = false;
-  let gearListMutationDetected = false;
+    let setupMutationDetected = false;
+    let gearListMutationDetected = false;
 
-  const hasSetupName = Boolean(
-    setupNameInput
-    && typeof setupNameInput.value === 'string'
-    && setupNameInput.value.trim(),
-  );
-
-  if (!hasSetupName) {
-    guard(() => saveCurrentSession(), 'saving the current session state');
-  }
-
-  const setupSaveResult = guard(
-    autoSaveCurrentSetup,
-    'saving the current setup',
-    (result) => {
-      if (result === true) {
-        setupMutationDetected = true;
-      }
-    },
-  );
-  if (!setupSaveResult.ok) {
-    guard(
-      () => saveCurrentSession({ skipGearList: true }),
-      'saving the current session state as a fallback',
+    const hasSetupName = Boolean(
+      setupNameInput
+      && typeof setupNameInput.value === 'string'
+      && setupNameInput.value.trim(),
     );
-  }
 
-  guard(
-    saveCurrentGearList,
-    'saving the gear list',
-    (result) => {
-      if (result === true) {
-        gearListMutationDetected = true;
-      }
-    },
-  );
-
-  if (encounteredError) {
-    if (projectAutoSaveFailureCount < PROJECT_AUTOSAVE_MAX_RETRIES) {
-      projectAutoSaveFailureCount += 1;
-      scheduleProjectAutoSave();
-    } else if (projectAutoSaveFailureCount === PROJECT_AUTOSAVE_MAX_RETRIES) {
-      console.warn('Project autosave retries have been paused after repeated failures.');
+    if (!hasSetupName) {
+      guard(() => saveCurrentSession(), 'saving the current session state');
     }
-    clearProjectAutoSaveOverrides();
-    return;
-  }
 
-  projectAutoSaveFailureCount = 0;
-  clearProjectAutoSaveOverrides();
-
-  if (!encounteredError && (setupMutationDetected || gearListMutationDetected)) {
-    const contextNow = Date.now();
-    const requestTimestamp = pendingRequestContext && typeof pendingRequestContext.requestedAt === 'number'
-      && Number.isFinite(pendingRequestContext.requestedAt)
-      ? pendingRequestContext.requestedAt
-      : contextNow;
-    notifyAutoBackupChange({
-      commit: true,
-      context: {
-        immediate: Boolean(pendingRequestContext && pendingRequestContext.immediate),
-        overrides: Boolean(pendingRequestContext && pendingRequestContext.overrides),
-        requestedAt: requestTimestamp,
-        completedAt: contextNow,
+    const setupSaveResult = guard(
+      autoSaveCurrentSetup,
+      'saving the current setup',
+      (result) => {
+        if (result === true) {
+          setupMutationDetected = true;
+        }
       },
-    });
+    );
+    if (!setupSaveResult.ok) {
+      guard(
+        () => saveCurrentSession({ skipGearList: true }),
+        'saving the current session state as a fallback',
+      );
+    }
+
+    guard(
+      saveCurrentGearList,
+      'saving the gear list',
+      (result) => {
+        if (result === true) {
+          gearListMutationDetected = true;
+        }
+      },
+    );
+
+    if (encounteredError) {
+      if (projectAutoSaveFailureCount < PROJECT_AUTOSAVE_MAX_RETRIES) {
+        projectAutoSaveFailureCount += 1;
+        scheduleProjectAutoSave();
+      } else if (projectAutoSaveFailureCount === PROJECT_AUTOSAVE_MAX_RETRIES) {
+        console.warn('Project autosave retries have been paused after repeated failures.');
+      }
+      clearProjectAutoSaveOverrides();
+      return;
+    }
+
+    projectAutoSaveFailureCount = 0;
+    clearProjectAutoSaveOverrides();
+
+    if (!encounteredError && (setupMutationDetected || gearListMutationDetected)) {
+      const contextNow = Date.now();
+      const requestTimestamp = pendingRequestContext && typeof pendingRequestContext.requestedAt === 'number'
+        && Number.isFinite(pendingRequestContext.requestedAt)
+        ? pendingRequestContext.requestedAt
+        : contextNow;
+      notifyAutoBackupChange({
+        commit: true,
+        context: {
+          immediate: Boolean(pendingRequestContext && pendingRequestContext.immediate),
+          overrides: Boolean(pendingRequestContext && pendingRequestContext.overrides),
+          requestedAt: requestTimestamp,
+          completedAt: contextNow,
+        },
+      });
+    }
+  } finally {
+    isProjectAutoSaving = false;
   }
 }
 
