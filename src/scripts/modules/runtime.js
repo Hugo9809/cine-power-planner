@@ -59,6 +59,8 @@
     return null;
   }
 
+
+
   const RUNTIME_ENVIRONMENT_HELPERS = resolveRuntimeEnvironmentHelpers();
 
   function invokeEnvironmentHelper(helperName, args, fallback) {
@@ -337,16 +339,16 @@
   const detectGlobalScope =
     MODULE_SYSTEM && typeof MODULE_SYSTEM.detectGlobalScope === 'function'
       ? function detectWithSystem() {
-          try {
-            const detected = MODULE_SYSTEM.detectGlobalScope();
-            if (detected) {
-              return detected;
-            }
-          } catch (error) {
-            void error;
+        try {
+          const detected = MODULE_SYSTEM.detectGlobalScope();
+          if (detected) {
+            return detected;
           }
-          return detectWithContext();
+        } catch (error) {
+          void error;
         }
+        return detectWithContext();
+      }
       : detectWithContext;
 
   const PRIMARY_SCOPE =
@@ -1243,7 +1245,7 @@
       }
 
       try {
-      fallbackFreezeDeep(child, tracker);
+        fallbackFreezeDeep(child, tracker);
       } catch (childError) {
         void childError;
       }
@@ -1742,20 +1744,20 @@
 
     const hasConnection = typeof registry.has === 'function'
       ? function hasViaRegistry(name) {
-          try {
-            return registry.has(name);
-          } catch (error) {
-            errors.push({
-              type: 'has',
-              module: name,
-              message: error && typeof error.message === 'string' ? error.message : null,
-            });
-            return moduleNames.indexOf(name) !== -1;
-          }
-        }
-      : function hasViaList(name) {
+        try {
+          return registry.has(name);
+        } catch (error) {
+          errors.push({
+            type: 'has',
+            module: name,
+            message: error && typeof error.message === 'string' ? error.message : null,
+          });
           return moduleNames.indexOf(name) !== -1;
-        };
+        }
+      }
+      : function hasViaList(name) {
+        return moduleNames.indexOf(name) !== -1;
+      };
 
     for (let index = 0; index < moduleNames.length; index += 1) {
       const name = moduleNames[index];

@@ -280,7 +280,7 @@
 
 @media (max-width: 600px) {
   :root {
-    --page-padding: var(--spacing-sm);
+    --page-padding: var(--spacing-lg);
     --button-size: 44px;
     --button-padding-block: var(--spacing-xs);
     --button-padding-inline: calc(var(--spacing-lg) + var(--spacing-xs));
@@ -530,7 +530,8 @@ textarea {
   bottom: 2rem;
   left: 50%;
   transform: translateX(-50%) translateY(100px);
-  background: rgba(28, 28, 30, 0.85); /* Dark surface with transparency */
+  background: rgba(28, 28, 30, 0.85);
+  /* Dark surface with transparency */
   backdrop-filter: blur(12px) saturate(180%);
   -webkit-backdrop-filter: blur(12px) saturate(180%);
   color: #fff;
@@ -550,10 +551,12 @@ textarea {
 }
 
 #offlineIndicator::before {
-  content: "\F26F"; /* Warning icon from EssentialIconsV2 */
+  content: "\F26F";
+  /* Warning icon from EssentialIconsV2 */
   font-family: 'EssentialIconsV2';
   font-size: 1.2rem;
-  color: #ffcc00; /* Amber warning color */
+  color: #ffcc00;
+  /* Amber warning color */
 }
 
 #offlineIndicator:not([hidden]) {
@@ -1153,6 +1156,10 @@ main.legal-content {
   flex: 1;
   min-width: 0;
   /* allow shrinking inside flex container */
+}
+
+.form-row textarea {
+  resize: vertical;
 }
 
 .input-with-datalist {
@@ -3533,6 +3540,13 @@ html.install-banner-visible .app-modal[open] {
   border: 2px solid var(--accent-color);
   border-radius: var(--border-radius);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  /* Ensure it fits within the app-modal padding */
+  max-width: 100%;
+  overflow: hidden;
+  /* Prevent border radius clipping issues */
 }
 
 .modal-header {
@@ -3542,6 +3556,8 @@ html.install-banner-visible .app-modal[open] {
   padding: clamp(1rem, 2.5vw, 1.5rem);
   padding-bottom: clamp(0.85rem, 2.1vw, 1.2rem);
   border-bottom: 1px solid color-mix(in srgb, var(--panel-border) 75%, transparent);
+  flex-shrink: 0;
+  /* Keep header fixed height */
 }
 
 .modal-header-main {
@@ -3589,6 +3605,9 @@ html.install-banner-visible .app-modal[open] {
   gap: clamp(0.9rem, 2.2vw, 1.35rem);
   padding-top: clamp(1rem, 2.5vw, 1.5rem);
   padding-inline: clamp(1rem, 2.5vw, 1.5rem);
+  overflow-y: auto;
+  /* Enable internal scrolling */
+  overscroll-behavior: contain;
 }
 
 .modal-section {
@@ -5651,6 +5670,25 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
   display: block;
 }
 
+@media (max-width: 600px) {
+  #diagramArea {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    display: block;
+    /* Ensure block formatting context */
+  }
+
+  #diagramArea>svg,
+  #diagramArea>canvas {
+    min-width: 500px;
+    /* Force minimum width to maintain legibility */
+    width: auto;
+    /* Allow it to grow beyond 100% of container */
+    max-width: none;
+    /* Remove constraint so it can scroll */
+  }
+}
+
 .auto-gear-item-actions {
   display: inline-flex;
   align-items: center;
@@ -6692,6 +6730,25 @@ body.dark-mode .help-callout {
   display: block;
 }
 
+@media (max-width: 600px) {
+  #diagramArea {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    display: block;
+    /* Ensure block formatting context */
+  }
+
+  #diagramArea>svg,
+  #diagramArea>canvas {
+    min-width: 500px;
+    /* Force minimum width to maintain legibility */
+    width: auto;
+    /* Allow it to grow beyond 100% of container */
+    max-width: none;
+    /* Remove constraint so it can scroll */
+  }
+}
+
 .icon-glyph.icon-svg:not(.pink-mode-icon) svg {
   stroke: currentColor;
   fill: none;
@@ -7390,8 +7447,46 @@ textarea:disabled {
   display: block;
 }
 
+@media (max-width: 600px) {
+  #diagramArea {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    display: block;
+    /* Ensure block formatting context */
+  }
+
+  #diagramArea>svg,
+  #diagramArea>canvas {
+    min-width: 500px;
+    /* Force minimum width to maintain legibility */
+    width: auto;
+    /* Allow it to grow beyond 100% of container */
+    max-width: none;
+    /* Remove constraint so it can scroll */
+  }
+}
+
 .onboarding-overlay.active {
   display: block;
+}
+
+@media (max-width: 600px) {
+  #diagramArea {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    display: block;
+    /* Ensure block formatting context */
+  }
+
+  #diagramArea>svg,
+  #diagramArea>canvas {
+    min-width: 500px;
+    /* Force minimum width to maintain legibility */
+    width: auto;
+    /* Allow it to grow beyond 100% of container */
+    max-width: none;
+    /* Remove constraint so it can scroll */
+  }
 }
 
 .onboarding-overlay::backdrop {
@@ -9085,6 +9180,13 @@ input[type="file"]:disabled::-webkit-file-upload-button {
   z-index: 100;
 }
 
+@media (max-width: 600px) {
+  #topBar {
+    padding: 5px 10px;
+    gap: 8px;
+  }
+}
+
 #topBar h1 {
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xxl));
   margin: 0;
@@ -9129,6 +9231,25 @@ body.pink-mode #topBar #logo .logo-default {
 
 body.pink-mode #topBar #logo .logo-pink {
   display: block;
+}
+
+@media (max-width: 600px) {
+  #diagramArea {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    display: block;
+    /* Ensure block formatting context */
+  }
+
+  #diagramArea>svg,
+  #diagramArea>canvas {
+    min-width: 500px;
+    /* Force minimum width to maintain legibility */
+    width: auto;
+    /* Allow it to grow beyond 100% of container */
+    max-width: none;
+    /* Remove constraint so it can scroll */
+  }
 }
 
 #topBar .feature-search {
@@ -9568,7 +9689,7 @@ body.light-mode #topBar select:focus-visible {
 
 .hero-metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: var(--spacing-md);
   margin-top: var(--spacing-md);
   padding-top: var(--spacing-md);
@@ -9672,6 +9793,25 @@ body.light-mode #topBar select:focus-visible {
   width: 100%;
   max-width: 100%;
   display: block;
+}
+
+@media (max-width: 600px) {
+  #diagramArea {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    display: block;
+    /* Ensure block formatting context */
+  }
+
+  #diagramArea>svg,
+  #diagramArea>canvas {
+    min-width: 500px;
+    /* Force minimum width to maintain legibility */
+    width: auto;
+    /* Allow it to grow beyond 100% of container */
+    max-width: none;
+    /* Remove constraint so it can scroll */
+  }
 }
 
 #diagramArea .diagram-placeholder {
@@ -10509,12 +10649,16 @@ body:not(.light-mode) #temperatureNote th {
   transform: translateY(-2px);
 }
 
+/* Battery Table Container */
 .battery-table-container {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .battery-comparison-section table {
   width: 100%;
+  min-width: 600px;
+  /* Force horizontal scroll on small screens */
   border-collapse: collapse;
   margin-top: 5px;
 }
@@ -11800,6 +11944,25 @@ body.high-contrast .project-field-hint {
   max-width: 100%;
   max-height: 100%;
   display: block;
+}
+
+@media (max-width: 600px) {
+  #diagramArea {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    display: block;
+    /* Ensure block formatting context */
+  }
+
+  #diagramArea>svg,
+  #diagramArea>canvas {
+    min-width: 500px;
+    /* Force minimum width to maintain legibility */
+    width: auto;
+    /* Allow it to grow beyond 100% of container */
+    max-width: none;
+    /* Remove constraint so it can scroll */
+  }
 }
 
 .requirement-box .req-label {

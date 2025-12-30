@@ -157,7 +157,15 @@ function resolveSessionRuntimeFunction(name) {
   try { enqueue(typeof self !== 'undefined' ? self : null); } catch { /* noop */ }
   try { enqueue(typeof global !== 'undefined' ? global : null); } catch { /* noop */ }
 
+  let iterationCount = 0;
   for (let index = 0; index < candidates.length; index += 1) {
+    iterationCount++;
+    if (iterationCount > 1000) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('resolveSessionRuntimeFunction: exceeded max iterations', name);
+      }
+      break;
+    }
     const scope = candidates[index];
     if (!scope) {
       continue;
@@ -1301,7 +1309,15 @@ function resolveKnownAppVersion(explicitVersion) {
     'buildInfo',
   ];
 
+  let iterationCount = 0;
   while (queue.length) {
+    iterationCount++;
+    if (iterationCount > 1000) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('resolveKnownAppVersion: exceeded max iterations');
+      }
+      break;
+    }
     const candidate = queue.shift();
     if (!candidate) {
       continue;
@@ -4620,11 +4636,15 @@ function handleRestoreRehearsalAbort() {
 
 function saveCurrentSession(options = {}) {
   if (restoringSession || factoryResetInProgress) return;
+
+
   if (typeof window !== 'undefined' && window.cineSuppressAutosave) return;
   if (typeof isProjectPersistenceSuspended === 'function' && isProjectPersistenceSuspended()) {
     return;
   }
   const info = projectForm ? collectProjectFormData() : {};
+
+
   info.sliderBowl = getSessionCoreValue('getSliderBowlValue');
   info.easyrig = getSessionCoreValue('getEasyrigValue');
   currentProjectInfo = deriveSessionProjectInfo(info);
@@ -4657,6 +4677,8 @@ function saveCurrentSession(options = {}) {
     }
   }
   storeSession(state);
+
+
   // Persist the current gear list and project requirements alongside the
   // session so they survive reloads without requiring a manual save action.
   if (!options.skipGearList) {
@@ -4664,8 +4686,13 @@ function saveCurrentSession(options = {}) {
   }
 }
 
+
 function autoSaveCurrentSetup() {
+  console.log('DEBUG: autoSaveCurrentSetup ENTERED');
   if (factoryResetInProgress) return;
+
+
+
 
   const setupNameInputRef = typeof setupNameInput !== 'undefined' ? setupNameInput : document.getElementById('setupName');
   if (!setupNameInputRef) return;
@@ -4697,7 +4724,9 @@ function autoSaveCurrentSetup() {
     saveCurrentSession({ skipGearList: true });
     checkSetupChanged();
     return false;
+
   }
+
 
   // const setups = getSetups(); // Already retrieved above
   const existingSetup = setups && typeof setups === 'object' ? setups[name] : undefined;
@@ -4716,12 +4745,18 @@ function autoSaveCurrentSetup() {
     }
   }
   setups[name] = currentSetup;
+  console.log('DEBUG: calling storeSetups');
   storeSetups(setups);
+  console.log('DEBUG: calling populateSetupSelect');
   populateSetupSelect();
+  console.log('DEBUG: populateSetupSelect returned');
+
   if (setupSelectRef) setupSelectRef.value = name;
   saveCurrentSession();
   storeLoadedSetupState(getCurrentSetupState());
   checkSetupChanged();
+
+
   const updatedSignature = stableStringify(currentSetup);
   return existingSetupSignature !== updatedSignature;
 }
@@ -4739,7 +4774,10 @@ let projectAutoSaveOverrides = null;
 let projectAutoSaveLastRequestContext = null;
 
 function notifyAutoBackupChange(details) {
+  // console.log('DEBUG: notifyAutoBackupChange ENTERED');
   try {
+
+
     const scope = typeof globalThis !== 'undefined'
       ? globalThis
       : (typeof window !== 'undefined'
@@ -4757,7 +4795,10 @@ function notifyAutoBackupChange(details) {
 }
 
 function setProjectAutoSaveOverrides(overrides) {
+  // console.log('DEBUG: setProjectAutoSaveOverrides ENTERED');
   if (!overrides || typeof overrides !== 'object') {
+
+
     projectAutoSaveOverrides = null;
     return;
   }
@@ -4805,6 +4846,7 @@ function getProjectAutoSaveDelay() {
 }
 
 function runProjectAutoSave() {
+  console.log('DEBUG: runProjectAutoSave ENTERED');
 
   isProjectAutoSaving = true;
   try {
@@ -4930,6 +4972,8 @@ function runProjectAutoSave() {
 
 function scheduleProjectAutoSave(immediateOrOptions = false) {
   if (isProjectAutoSaving) {
+
+
     return;
   }
   if (typeof window !== 'undefined' && window.cineSuppressAutosave) {
@@ -4952,6 +4996,8 @@ function scheduleProjectAutoSave(immediateOrOptions = false) {
   }
 
   if (factoryResetInProgress) {
+
+
     if (projectAutoSaveTimer) {
       clearTimeout(projectAutoSaveTimer);
       projectAutoSaveTimer = null;
@@ -4985,7 +5031,9 @@ function scheduleProjectAutoSave(immediateOrOptions = false) {
       clearTimeout(projectAutoSaveTimer);
       projectAutoSaveTimer = null;
     }
+    console.log('DEBUG: scheduleProjectAutoSave calling runProjectAutoSave');
     runProjectAutoSave();
+    console.log('DEBUG: scheduleProjectAutoSave executed runProjectAutoSave');
     return;
   }
   if (projectAutoSaveTimer) {
@@ -5001,6 +5049,9 @@ function scheduleProjectAutoSave(immediateOrOptions = false) {
     projectAutoSaveTimer.unref();
   }
 }
+
+
+
 
 var projectFormRefSession = (typeof projectForm !== 'undefined' && projectForm)
   ? projectForm
@@ -10001,6 +10052,9 @@ function buildArrayKeyIndex(array, keyName) {
   });
   return { map, order };
 }
+
+
+
 
 function formatDiffListIndex(part) {
   if (typeof part !== 'string') {
@@ -15006,6 +15060,9 @@ function createReloadFallback(win, delayMs = 4500) {
     }
   };
 
+
+
+
   try {
     timerId = schedule(run, delayMs);
   } catch (scheduleError) {
@@ -18525,6 +18582,7 @@ function updateRequiredScenariosSummary() {
 }
 
 function initApp() {
+  console.log('DEBUG: initApp ENTERED');
   try {
     ensureCriticalStorageBackupsFn();
   } catch (criticalGuardError) {
@@ -21081,3 +21139,4 @@ function handleMountVoltageInputChange() {
   const values = collectMountVoltageFormValues();
   applySessionMountVoltagePreferences(values, { persist: true, triggerUpdate: true });
 }
+console.log('app-session.js: Execution complete');

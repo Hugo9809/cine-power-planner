@@ -441,6 +441,48 @@ th {
   .lens-info-grid {
     grid-template-columns: 1fr;
   }
+
+  /* Gear Table Mobile Adaptations */
+  .gear-table,
+  .gear-table tbody,
+  .gear-table tr,
+  .gear-table td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .gear-table td {
+    padding: 10px 0;
+    border: none;
+    border-bottom: 1px solid var(--divider-color);
+    background: transparent;
+  }
+
+  .gear-table .category-row td {
+    margin-top: 20px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid var(--accent-color);
+    border-top: none;
+    font-size: calc(var(--font-size-base) * 1.1);
+    background: transparent;
+  }
+
+  /* Adjust gear item layout for mobile */
+  .gear-table .gear-item {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .gear-table .gear-item .gear-rental-toggle {
+    margin-left: 0;
+    /* Align with content, or keep auto if we want it right */
+    flex-grow: 1;
+    text-align: right;
+    justify-content: flex-end;
+  }
 }
 
 .category-icon {

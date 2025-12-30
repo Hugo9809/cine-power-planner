@@ -6013,6 +6013,8 @@ function sanitizeCrewAvatarValue(value) {
 
 function collectProjectFormData() {
   // console.log('collectProjectFormData called. Dirty:', projectFormDataCacheDirty, 'Cache exists:', !!projectFormDataCache);
+
+
   if (!projectForm) return {};
 
   if (!projectFormDataCacheDirty && projectFormDataCache) {
@@ -14685,6 +14687,7 @@ function applyPendingProjectNameCollisionResolution(options = {}) {
 
 function resolveProjectStorageNameCollision(baseName) {
   const trimmed = typeof baseName === 'string' ? baseName.trim() : '';
+  console.log('DEBUG: resolveProjectStorageNameCollision ENTERED with:', trimmed);
   if (!trimmed) {
     return { name: trimmed, changed: false };
   }
@@ -14727,11 +14730,20 @@ function resolveProjectStorageNameCollision(baseName) {
   let candidate = `${baseNamePart} (${nextSuffix})`;
   let normalizedCandidateWithSuffix = candidate.trim().toLowerCase();
 
+  console.log('DEBUG: resolveProjectStorageNameCollision starting loop for:', candidate);
+  let totalIterations = 0;
   while (normalizedExisting.has(normalizedCandidateWithSuffix)) {
+    totalIterations++;
+    console.log('DEBUG: resolveProjectStorageNameCollision iteration:', totalIterations, 'Candidate:', normalizedCandidateWithSuffix);
+    if (totalIterations > 100) {
+      console.error('DEBUG: resolveProjectStorageNameCollision INFINITE LOOP DETECTED for:', baseNamePart);
+      break;
+    }
     nextSuffix += 1;
     candidate = `${baseNamePart} (${nextSuffix})`;
     normalizedCandidateWithSuffix = candidate.trim().toLowerCase();
   }
+  console.log('DEBUG: resolveProjectStorageNameCollision returning:', candidate);
   return { name: candidate, changed: true };
 }
 
@@ -14760,10 +14772,12 @@ function doesProjectNameExist(name) {
 const sessionCreatedProjects = new Set();
 
 function saveCurrentGearList() {
-  if (factoryResetInProgress) return;
-  if (isProjectPersistenceSuspended()) return;
-  if (typeof restoringSession !== 'undefined' && restoringSession) return;
+  console.log('DEBUG: saveCurrentGearList ENTERED');
+  if (factoryResetInProgress) { console.log('DEBUG: saveCurrentGearList EXIT: factoryResetInProgress'); return; }
+  if (isProjectPersistenceSuspended()) { console.log('DEBUG: saveCurrentGearList EXIT: isProjectPersistenceSuspended'); return; }
+  if (typeof restoringSession !== 'undefined' && restoringSession) { console.log('DEBUG: saveCurrentGearList EXIT: restoringSession'); return; }
 
+  console.log('DEBUG: saveCurrentGearList: collecting form data...');
   const html = gearListGetCurrentHtmlImpl({ forPersistence: true });
   const normalizedHtml = typeof html === 'string' ? html.trim() : '';
   const gearListGenerated = Boolean(normalizedHtml);
@@ -14849,6 +14863,8 @@ function saveCurrentGearList() {
   let effectiveStorageKey = renameInProgress
     ? (selectedStorageKey || projectStorageKey)
     : projectStorageKey;
+
+  console.log('DEBUG: saveCurrentGearList: effectiveStorageKey:', effectiveStorageKey);
 
   const shouldDelayCollisionResolution = Boolean(
     typedNameHasTrailingWhitespace
@@ -14959,6 +14975,8 @@ function saveCurrentGearList() {
     }
 
     saveProject(effectiveStorageKey, payload, { skipOverwriteBackup: true });
+
+
     sessionCreatedProjects.add(effectiveStorageKey);
   }
 
@@ -15068,6 +15086,7 @@ function saveCurrentGearList() {
       storeSetups(setups);
     }
   }
+  console.log('DEBUG: saveCurrentGearList EXIT: Success');
   return changed;
 }
 

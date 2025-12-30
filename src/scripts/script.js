@@ -82,6 +82,8 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'core/app-session.js',
     'modules/persistence.js',
     'modules/runtime.js',
+
+
     // 'script.js' is THIS file, we do not include it recursively.
   ];
   let appVersion = '0.0.0';
@@ -224,6 +226,8 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   }
 
   wrapper.call(globalScope, module.exports, require, module, __filename, __dirname, globalScope);
+  console.log('DEBUG: script.js wrapper execution finished');
+
 
   const ensureModule = relativePath => {
     const resolvedPath = path.join(__dirname, relativePath);
@@ -265,6 +269,8 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
       runtimeGuardModule =
         (globalScope && globalScope.cineRuntimeGuard)
         || require('./modules/runtime-guard.js');
+      console.log('DEBUG: script.js runtime-guard loaded');
+
     } catch (runtimeGuardLoadError) {
       void runtimeGuardLoadError;
       runtimeGuardModule = globalScope && globalScope.cineRuntimeGuard ? globalScope.cineRuntimeGuard : null;

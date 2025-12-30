@@ -1004,6 +1004,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         })()
         : null);
 
+
+
+
     const AUTO_GEAR_CREW_HELPERS =
       AUTO_GEAR_CREW_OPTION_NAMESPACE &&
         typeof AUTO_GEAR_CREW_OPTION_NAMESPACE.createAutoGearCrewOptionHelpers === 'function'
@@ -2997,7 +3000,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         items: conflictItems,
       };
 
+
+
       let addItems = 0;
+
       let addQuantity = 0;
       let removeItems = 0;
       let removeQuantity = 0;
@@ -4997,7 +5003,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     function closeAutoGearEditor() {
       if (!autoGearEditor) return;
+
+
       autoGearEditor.hidden = true;
+
       autoGearEditor.setAttribute('aria-hidden', 'true');
       if (autoGearAddRuleBtn) {
         autoGearAddRuleBtn.setAttribute('aria-expanded', 'false');
@@ -7998,6 +8007,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           return;
         }
 
+
+
         if (!isPlainObjectValue(entry)) {
           return;
         }
@@ -9997,7 +10008,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (typeof window !== 'undefined' && window.localStorage) {
           return window.localStorage;
         }
+
+
         if (typeof globalThis !== 'undefined' && globalThis.localStorage) {
+
           return globalThis.localStorage;
         }
       } catch (err) {
@@ -13067,6 +13081,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     };
 
     function populateFeatureSearch() {
+      console.log('DEBUG: populateFeatureSearch ENTERED, NODE_ENV:', typeof process !== 'undefined' ? process.env.NODE_ENV : 'undefined');
       if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'test') return;
       featureMap.clear();
       helpMap.clear();
@@ -19668,3 +19683,5 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
   }
 
 }
+console.log('DEBUG: app-core-new-2.js FILE END');
+

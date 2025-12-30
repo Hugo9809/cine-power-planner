@@ -11,6 +11,8 @@
 // editing the helpers below.
 (function initializeStorageModule() {
   const GLOBAL_SCOPE =
+
+
     typeof globalThis !== 'undefined'
       ? globalThis
       : typeof window !== 'undefined'
@@ -12721,6 +12723,8 @@
 
   function saveProject(name, project, options = {}) {
     if (!isPlainObject(project)) return;
+
+
     const normalized = normalizeProject(project);
     if (!normalized) {
       if (typeof console !== 'undefined' && typeof console.warn === 'function') {
@@ -17349,3 +17353,5 @@
   }
 
 })();
+
+

@@ -1,5 +1,8 @@
 const { setupScriptEnvironment } = require('../helpers/scriptEnvironment');
 
+console.log('DEBUG: projectAutosave.test.js loaded');
+
+
 
 
 describe('project autosave', () => {
@@ -39,6 +42,8 @@ describe('project autosave', () => {
   });
 
   test('persists project data to localStorage when form changes', () => {
+    console.log('DEBUG: Starting test 2: persists project data...');
+
     const env = setupScriptEnvironment({
       globals: {
         // saveSessionState, saveSetups, and others will be provided by storage.js
@@ -100,6 +105,9 @@ describe('project autosave', () => {
   });
 
   test('autosaves partially filled crew entries', () => {
+    console.log('DEBUG: Starting test 3: autosaves partially filled crew entries...');
+
+
     const env = setupScriptEnvironment({
       globals: {
         saveSessionState: jest.fn(),
@@ -165,7 +173,8 @@ describe('project autosave', () => {
   });
 
   test('saves pending project edits when switching setups without waiting for autosave timer', () => {
-    console.log('DEBUG: Starting test 3: saves pending project edits...');
+    console.log('DEBUG: Starting test 4: saves pending project edits...');
+
     const env = setupScriptEnvironment({
       globals: {
         saveSessionState: jest.fn(),
@@ -177,10 +186,13 @@ describe('project autosave', () => {
       },
       disableFreeze: true
     });
+    console.log('DEBUG: Test 4 setupScriptEnvironment finished');
 
     require('../../src/scripts/storage.js');
+    console.log('DEBUG: Test 4 storage.js loaded');
 
     const setupSelect = document.getElementById('setupSelect');
+
     expect(setupSelect).not.toBeNull();
 
     setupSelect.value = 'Project One';
@@ -231,6 +243,8 @@ describe('project autosave', () => {
   });
 
   test('does not overwrite other project requirements when typing a different project name', () => {
+    console.log('DEBUG: Starting test 5: does not overwrite other project requirements...');
+
     const storedProjects = {
       'Project 1': {
         gearList: '<div>Project 1 Gear</div>',
@@ -263,24 +277,39 @@ describe('project autosave', () => {
       disableFreeze: true
     });
 
+
+    console.log('DEBUG: Test 5 setupScriptEnvironment finished');
+
     require('../../src/scripts/storage.js');
+    console.log('DEBUG: Test 5 storage.js loaded');
+
 
     if (typeof window.saveProject === 'function') {
       window.saveProject('Project 1', storedProjects['Project 1']);
       window.saveProject('Project 2', storedProjects['Project 2']);
+      console.log('DEBUG: Test 5 initial projects saved');
     }
+
 
     const setupSelect = document.getElementById('setupSelect');
     setupSelect.value = 'Project 1';
     setupSelect.dispatchEvent(new Event('change'));
+    console.log('DEBUG: Test 5 setupSelect change dispatched');
+
 
     const setupNameInput = document.getElementById('setupName');
     setupNameInput.value = 'Project 2';
     setupNameInput.dispatchEvent(new Event('input', { bubbles: true }));
+    console.log('DEBUG: Test 5 setupNameInput input dispatched');
+
+
+    expect(setupSelect.value).toBe('Project 1');
 
     expect(setupSelect.value).toBe('Project 1');
 
     env.utils.saveCurrentGearList();
+    console.log('DEBUG: Test 5 saveCurrentGearList call finished');
+
 
     const projects = typeof window.loadProject === 'function' ? window.loadProject() : {};
     const projectTwoCompany = projects['Project 2']?.projectInfo?.productionCompany;
@@ -305,6 +334,8 @@ describe('project autosave', () => {
   });
 
   test('blank project entries remain empty when editing another project', () => {
+    console.log('DEBUG: Starting test 6: blank project entries remain empty...');
+
     const storedProjects = {
       'Project 1': {
         gearList: '<div>Project 1 Gear</div>',
@@ -372,6 +403,8 @@ describe('project autosave', () => {
   });
 
   test('switching to a new setup keeps previously saved requirements intact', () => {
+    console.log('DEBUG: Starting test 7: switching to a new setup keeps requirements intact...');
+
     const requirementHtml = [
       '<section id="projectRequirementsOutput" class="project-requirements-section">',
       '  <div class="requirements-grid">',
@@ -446,4 +479,6 @@ describe('project autosave', () => {
 
     env.cleanup();
   });
+
+
 });

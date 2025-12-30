@@ -147,7 +147,9 @@ function applyTranslations() {
 }
 
 function setupScriptEnvironment(options = {}) {
+  console.log('DEBUG: setupScriptEnvironment ENTERED');
   const doc = resolveDocument();
+
   if (!doc || !doc.body) {
     throw new Error('setupScriptEnvironment requires a DOM with a document.body.');
   }
@@ -207,7 +209,50 @@ function setupScriptEnvironment(options = {}) {
     window.prompt = function (msg) { console.log('window.prompt:', msg); return ''; };
   }
 
+  // Track event listeners to prevent zombies
+  const addedListeners = [];
+  let originalAddEventListener = null;
+  let originalRemoveEventListener = null;
+  if (typeof window !== 'undefined') {
+    originalAddEventListener = window.addEventListener;
+    originalRemoveEventListener = window.removeEventListener;
+
+    window.addEventListener = (type, listener, options) => {
+      addedListeners.push({ type, listener, options });
+      return originalAddEventListener.call(window, type, listener, options);
+    };
+
+    window.removeEventListener = (type, listener, options) => {
+      // Remove from tracking if present
+      const index = addedListeners.findIndex(l => l.type === type && l.listener === listener);
+      if (index !== -1) {
+        addedListeners.splice(index, 1);
+      }
+      return originalRemoveEventListener.call(window, type, listener, options);
+    };
+  }
+
+
+  if (typeof localStorage !== 'undefined') {
+    const originalGetItem = localStorage.getItem.bind(localStorage);
+    const originalSetItem = localStorage.setItem.bind(localStorage);
+    const originalRemoveItem = localStorage.removeItem.bind(localStorage);
+    localStorage.getItem = (key) => {
+      // console.log('localStorage.getItem:', key);
+      return originalGetItem(key);
+    };
+    localStorage.setItem = (key, value) => {
+      console.log('localStorage.setItem:', key, typeof value === 'string' ? value.substring(0, 50) + '...' : value);
+      originalSetItem(key, value);
+    };
+    localStorage.removeItem = (key) => {
+      console.log('localStorage.removeItem:', key);
+      originalRemoveItem(key);
+    };
+  }
+
   if (options.injectHtml === false) {
+
     doc.body.innerHTML = '';
   } else {
     doc.body.innerHTML = getHtmlBody();
@@ -255,6 +300,25 @@ function setupScriptEnvironment(options = {}) {
   restoreReadyState(readyStateDescriptor);
 
   const cleanup = () => {
+    // Remove tracked event listeners
+    if (originalRemoveEventListener && addedListeners.length > 0) {
+      // Reverse order for safety
+      for (let i = addedListeners.length - 1; i >= 0; i--) {
+        const { type, listener, options } = addedListeners[i];
+        try {
+          originalRemoveEventListener.call(window, type, listener, options);
+        } catch (e) { /* ignore */ }
+      }
+    }
+    // Restore original methods
+    if (originalAddEventListener) window.addEventListener = originalAddEventListener;
+    if (originalRemoveEventListener) window.removeEventListener = originalRemoveEventListener;
+
+    // Clear localStorage
+    if (typeof localStorage !== 'undefined') {
+      localStorage.clear();
+    }
+
     for (const key of appliedKeys) {
       delete global[key];
     }
@@ -306,6 +370,7 @@ function setupScriptEnvironment(options = {}) {
       Object.getOwnPropertyDescriptor = originalGetOwnPropertyDescriptor;
     }
   };
+
 
   return { utils, cleanup, globals: globalStubs };
 }

@@ -1,5 +1,7 @@
 /* global getSchemaAttributesForCategory */
 // --- EVENT LISTENERS ---
+console.log('DEBUG: app-events.js START');
+
 /* global CORE_GLOBAL_SCOPE, updateCageSelectOptions, updateGlobalDevicesReference, scheduleProjectAutoSave,
           ensureAutoBackupsFromProjects, getDiagramManualPositions,
           setManualDiagramPositions, normalizeDiagramPositionsInput,
@@ -2679,7 +2681,11 @@ function finalizeSetupSelection(nextSetupName) {
 const setupSelectTarget = getSetupSelectElement();
 
 addSafeEventListener('setupSelect', "change", (event) => {
+  console.log('DEBUG: setupSelect change listener ENTERED');
   const setupName = event.target.value;
+
+
+
   const rawTypedName =
     setupNameInput && typeof setupNameInput.value === 'string'
       ? setupNameInput.value
@@ -2698,6 +2704,8 @@ addSafeEventListener('setupSelect', "change", (event) => {
   const normalizedTargetSelection = normalizeProjectName(setupName);
 
   let autoSaveFlushed = false;
+
+
   if (typeof scheduleProjectAutoSave === 'function') {
     try {
       const normalizeForOverride = typeof normalizeSetupName === 'function'
@@ -2724,15 +2732,24 @@ addSafeEventListener('setupSelect', "change", (event) => {
           ),
         },
       };
+      console.log('DEBUG: calling scheduleProjectAutoSave (immediate)');
       scheduleProjectAutoSave({ immediate: true, overrides });
+      console.log('DEBUG: scheduleProjectAutoSave returned');
       autoSaveFlushed = true;
+
     } catch (error) {
       console.warn('Failed to flush project autosave before switching setups', error);
     }
+
+
   }
 
   if (!autoSaveFlushed) {
+
+    // console.log('DEBUG: autoSaveFlushed is FALSE / entered fallback block');
     try {
+
+
       if (typeof saveCurrentSession === 'function') {
         saveCurrentSession();
       }
@@ -2744,7 +2761,11 @@ addSafeEventListener('setupSelect', "change", (event) => {
     }
   }
 
+  // console.log('DEBUG: setupSelect change: saveProject check');
   if (typeof saveProject === 'function') {
+
+
+
     const info = projectForm ? collectProjectFormData() : {};
     if (info) {
       info.sliderBowl = getEventsCoreValue('getSliderBowlValue');
@@ -2789,6 +2810,8 @@ addSafeEventListener('setupSelect', "change", (event) => {
     }
     saveProject(previousKey, previousPayload, { skipOverwriteBackup: true });
   }
+
+
 
   if (
     typeof autoBackup === 'function'
