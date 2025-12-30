@@ -16549,7 +16549,11 @@ function populateCategoryOptions() {
     newCategorySelect = document.getElementById('newCategory');
   }
   if (!newCategorySelect) return;
-  newCategorySelect.innerHTML = '';
+  if (newCategorySelect.options) {
+    newCategorySelect.options.length = 0;
+  } else {
+    newCategorySelect.innerHTML = '';
+  }
   const addOpt = (val) => {
     const opt = document.createElement('option');
     opt.value = val;
@@ -16594,7 +16598,7 @@ function populateCategoryOptions() {
     // Trigger change event to initialize the form fields for the default selection
     if (newCategorySelect && typeof newCategorySelect.dispatchEvent === 'function') {
       try {
-        newCategorySelect.dispatchEvent(new Event('change'));
+        newCategorySelect.dispatchEvent(new Event('change', { bubbles: true }));
       } catch (dispatchError) {
         console.warn('Failed to dispatch change event in populateCategoryOptions', dispatchError);
       }
@@ -17387,16 +17391,29 @@ function hideFormSection(section) {
 }
 const addDeviceForm = wattFieldDiv ? wattFieldDiv.parentNode : null;
 function placeWattField(category, data) {
-  if (!wattFieldDiv || !addDeviceForm) return;
+  // Use locally resolved elements to avoid stale references from previous tests
+  const form = document.getElementById("addDeviceForm");
+  const watt = document.getElementById("wattField");
+  const video = document.getElementById("videoFields");
+  const camera = document.getElementById("cameraFields");
+
+  if (!watt || !form) return;
+
   const isVideoLike =
     category === "video" ||
     category === "wirelessReceivers" ||
     category === "iosVideo";
 
-  if (isVideoLike && typeof videoFieldsDiv !== 'undefined' && videoFieldsDiv) {
-    addDeviceForm.insertBefore(wattFieldDiv, videoFieldsDiv);
-  } else {
-    addDeviceForm.insertBefore(wattFieldDiv, cameraFieldsDiv);
+  try {
+    if (isVideoLike && video && video.parentNode === form) {
+      form.insertBefore(watt, video);
+    } else if (camera && camera.parentNode === form) {
+      form.insertBefore(watt, camera);
+    } else {
+      form.appendChild(watt);
+    }
+  } catch (err) {
+    console.warn('placeWattField failed to insert element safely', err);
   }
 }
 

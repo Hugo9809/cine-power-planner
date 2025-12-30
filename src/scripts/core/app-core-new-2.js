@@ -16525,7 +16525,6 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     setVideoPowerInputs([]);
 
     function updatePowerPortOptions() {
-      console.log('DEBUG: updatePowerPortOptions starting. cameraPortTypeInput:', !!(typeof cameraPortTypeInput !== 'undefined' && cameraPortTypeInput));
       if (typeof cameraPortTypeInput === 'undefined' || !cameraPortTypeInput) return;
       powerPortOptions = getAllPowerPortTypes();
       const current = cameraPortTypeInput.value;
@@ -17246,7 +17245,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     function setPowerDistribution(list) {
-      console.log('DEBUG: setPowerDistribution called. powerDistContainer:', !!(typeof powerDistContainer !== 'undefined' && powerDistContainer));
+
       if (typeof powerDistContainer === 'undefined' || !powerDistContainer) return;
       powerDistContainer.innerHTML = '';
       const filtered = filterNoneEntries(list);

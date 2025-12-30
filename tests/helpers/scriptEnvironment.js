@@ -292,6 +292,12 @@ function setupScriptEnvironment(options = {}) {
       void runtimeCleanupError;
     }
     jest.clearAllMocks();
+    if (typeof jest.clearAllTimers === 'function') {
+      jest.clearAllTimers();
+    }
+    if (typeof jest.restoreAllMocks === 'function') {
+      jest.restoreAllMocks();
+    }
     doc.body.innerHTML = '';
     if (freezeOverrideEnabled) {
       Object.freeze = originalFreeze;

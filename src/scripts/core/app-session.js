@@ -619,7 +619,7 @@ if (typeof window !== 'undefined' && window && typeof window.addEventListener ==
       return;
     }
     const nextRevision = normalizeProjectStorageRevisionValue(event.newValue);
-    console.log('DEBUG: storage event. isProjectAutoSaving:', isProjectAutoSaving, 'nextRevision:', nextRevision);
+
     if (isProjectAutoSaving) {
       if (nextRevision !== null) {
         lastKnownProjectStorageRevision = nextRevision;
@@ -4805,7 +4805,7 @@ function getProjectAutoSaveDelay() {
 }
 
 function runProjectAutoSave() {
-  console.log('DEBUG: runProjectAutoSave START. isProjectAutoSaving:', isProjectAutoSaving);
+
   isProjectAutoSaving = true;
   try {
     if (factoryResetInProgress) {

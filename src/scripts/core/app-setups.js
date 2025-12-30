@@ -6576,7 +6576,7 @@ function populateProjectForm(info = {}) {
     if (typeof window !== 'undefined') {
       setTimeout(() => {
         window.cineSuppressAutosave = false;
-        console.log('DEBUG: populateProjectForm async reset. cineSuppressAutosave=false');
+
       }, 500);
     }
   }
