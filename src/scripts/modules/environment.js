@@ -15,6 +15,18 @@
     return {};
   }
 
+  /**
+   * DEEP DIVE: The Universal Scope Abstraction
+   *
+   * This module is the cornerstone of the "Run Anywhere" philosophy.
+   * It provides a normalized API to interact with the host environment, whether it's:
+   * 1. A Modern Browser (window/globalThis)
+   * 2. A Web Worker (self)
+   * 3. A Node.js Process (global/process) - used for testing and server-side operations.
+   *
+   * It abstracts away the differences in global object access, creating a consistent
+   * surface area for all other modules to attach to.
+   */
   const LOCAL_SCOPE = fallbackDetectPrimaryScope();
 
   function resolveArchitecture(scope) {
@@ -71,27 +83,27 @@
   const collectCandidateScopes =
     ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function'
       ? function (primary) {
-          return ARCHITECTURE.collectCandidateScopes(primary || PRIMARY_SCOPE);
-        }
+        return ARCHITECTURE.collectCandidateScopes(primary || PRIMARY_SCOPE);
+      }
       : function (primary) {
-          return fallbackCollectCandidateScopes(primary || PRIMARY_SCOPE);
-        };
+        return fallbackCollectCandidateScopes(primary || PRIMARY_SCOPE);
+      };
 
   const tryRequire =
     ARCHITECTURE && typeof ARCHITECTURE.tryRequire === 'function'
       ? ARCHITECTURE.tryRequire
       : function (modulePath) {
-          if (typeof require !== 'function') {
-            return null;
-          }
+        if (typeof require !== 'function') {
+          return null;
+        }
 
-          try {
-            return require(modulePath);
-          } catch (error) {
-            void error;
-            return null;
-          }
-        };
+        try {
+          return require(modulePath);
+        } catch (error) {
+          void error;
+          return null;
+        }
+      };
 
   let resolvedModuleBase;
   let hasResolvedModuleBase = false;

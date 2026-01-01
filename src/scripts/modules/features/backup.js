@@ -147,6 +147,17 @@
   const BACKUP_STORAGE_KEY_PREFIXES = ['cameraPowerPlanner_', 'cinePowerPlanner_'];
 
   const BACKUP_VAULT_DB_NAME = 'cinePowerPlannerBackupVault';
+  /*
+   * DEEP DIVE: The "Backup Vault" Architecture
+   *
+   * User data is precious. The Backup Vault implements a multi-tiered redundancy system:
+   * 1. IndexedDB ("Safe Local Storage"): The primary, high-capacity storage for backups.
+   * 2. LocalStorage: A fallback for metadata if IndexedDB is unavailable.
+   * 3. Memory: A final, ephemeral fallback if disk storage is completely blocked.
+   *
+   * This architecture ensures that "Save" operations almost never fail, even in hostile environments
+   * (e.g., incognito mode with strict blocking).
+   */
   const BACKUP_VAULT_STORE_NAME = 'queuedBackups';
   const BACKUP_VAULT_DB_VERSION = 1;
   const BACKUP_VAULT_FALLBACK_STORAGE_KEY = 'cineBackupVaultFallbackRecords';

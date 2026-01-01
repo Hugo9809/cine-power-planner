@@ -86,6 +86,19 @@
     return value;
   }
 
+  /**
+   * DEEP DIVE: Structured Clone Resolution
+   *
+   * Secure, deep copying of complex objects (Sets, Maps, etc.) is vital for logging
+   * state without mutations affecting the live app.
+   *
+   * Strategy:
+   * 1. Try Native `structuredClone`.
+   * 2. Try Node.js `util.structuredClone` (if running in tests).
+   * 3. Fallback to `JSON.parse(JSON.stringify(x))` (lossy but safe).
+   *
+   * This singleton pattern ensures we only pay the resolution cost once at startup.
+   */
   const LOGGING_DEEP_CLONE = (function resolveLoggingDeepClone() {
     const scope = fallbackDetectGlobalScope();
     if (scope && typeof scope.__cineDeepClone === 'function') {
@@ -786,6 +799,16 @@
     ? Symbol.for('cineLoggingConsoleProxyInstalled')
     : '__cineLoggingConsoleProxyInstalled__';
 
+  /**
+   * DEEP DIVE: Console Proxying
+   *
+   * Why do we proxy `console` methods?
+   * 1. Centralized Control: Users can "silence" logs via settings without code changes.
+   * 2. Log Levels: We implement standard levels (DEBUG, INFO, WARN, ERROR) over the raw console.
+   * 3. Remote Telemetry (Future): Allows hooking into logs to send them to a server/service.
+   *
+   * Safety First: We capture the *original* console functions first so we never create infinite loops.
+   */
   const ORIGINAL_CONSOLE_FUNCTIONS = (function captureOriginalConsoleFunctions() {
     const store = Object.create(null);
     if (typeof console === 'undefined' || !console) {

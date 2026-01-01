@@ -32,6 +32,23 @@
      * @returns {(value: string) => string} Wrapped function with memoisation and
      *   empty-string fallback for falsy inputs.
      */
+    /**
+     * Memoize a normalisation function for repeated lookups.
+     *
+     * The provided function receives both the original trimmed string and a
+     * lowercase key. Results are cached to avoid recomputing normalisations for
+     * the same input.
+     *
+     * DEEP DIVE: Performance Optimization
+     * Normalization runs on every startup and every import.
+     * By memoizing these string transformations, we turn an O(n) operation into O(1)
+     * for common values, significantly speeding up large dataset processing.
+     *
+     * @param {(value: string, key: string) => string} fn - Function that performs
+     *   normalisation.
+     * @returns {(value: string) => string} Wrapped function with memoisation and
+     *   empty-string fallback for falsy inputs.
+     */
     function memoizeNormalization(fn) {
         const cache = new Map();
         return value => {
@@ -248,6 +265,17 @@
 
     // Normalize various camera properties so downstream logic works with
     // consistent structures and value formats.
+    /**
+     * DEEP DIVE: The "Unify" Strategy
+     * This function is the single source of truth for device data structure.
+     * It iteratively cleanses every category of device to ensure:
+     * 1. Compatibility: Legacy fields (e.g. `powerInput` string) are converted to modern arrays.
+     * 2. Consistency: Connector names are canonicalized (e.g., "Lemo 4" -> "LEMO 4-pin").
+     * 3. Safety: Missing critical fields (like arrays) are instantiated as empty defaults.
+     *
+     * It uses a "dirty flag" path (`hasNormalizedDevicesMarker`) to avoid reprocessing
+     * already clean data, critical for startup performance.
+     */
     function unifyDevices(devicesData, options) {
         if (!devicesData || typeof devicesData !== 'object') return devicesData;
         const force = Boolean(options && options.force);

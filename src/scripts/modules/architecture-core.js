@@ -97,13 +97,13 @@
   const detectGlobalScope =
     SCOPE_UTILS && typeof SCOPE_UTILS.detectGlobalScope === 'function'
       ? function detectWithUtils() {
-          try {
-            return SCOPE_UTILS.detectGlobalScope();
-          } catch (error) {
-            void error;
-          }
-          return baseDetectGlobalScope();
+        try {
+          return SCOPE_UTILS.detectGlobalScope();
+        } catch (error) {
+          void error;
         }
+        return baseDetectGlobalScope();
+      }
       : baseDetectGlobalScope;
 
   const tryRequire =
@@ -187,9 +187,9 @@
 
     const collector = createScopeCollector
       ? createScopeCollector({
-          detectGlobalScope: detectFn,
-          additionalScopes: Array.isArray(extras) ? extras : undefined,
-        })
+        detectGlobalScope: detectFn,
+        additionalScopes: Array.isArray(extras) ? extras : undefined,
+      })
       : null;
 
     if (collector) {
@@ -397,8 +397,8 @@
       options && typeof options.collectCandidateScopes === 'function'
         ? options.collectCandidateScopes
         : function collect() {
-            return collectCandidateScopesImpl(null, detectGlobalScope, []);
-          };
+          return collectCandidateScopesImpl(null, detectGlobalScope, []);
+        };
 
     try {
       const required = tryRequireFn('./helpers/immutability-builtins.js');
@@ -561,6 +561,15 @@
     };
   }
 
+  /**
+   * Core Architecture Factory
+   *
+   * Creates the foundational services used to bootstrap the application.
+   * This design uses a "Factory Pattern" to allow for testable instances of the core
+   * logic that don't pollute the global scope during unit tests.
+   *
+   * @param {object} options - Configuration overrides (e.g. custom primaryScope for testing).
+   */
   function createCore(options) {
     const settings = options || {};
 
@@ -602,21 +611,29 @@
       return detectPrimaryScope();
     }
 
+    /**
+     * Scope Probing Logic
+     *
+     * The `collectCandidateScopes` function is crucial for the "islands of automation" architecture.
+     * It gathers ALL potential global contexts (window, self, globalThis, etc.) where modules might have been
+     * attached. This ensures that even if different parts of the app are bundled separately (e.g. webpack vs. legacy scripts),
+     * they can still discover each other's services via these shared scopes.
+     */
     const additionalScopes = Array.isArray(settings.additionalScopes)
       ? settings.additionalScopes.filter(function isObjectLike(value) {
-          return value && (typeof value === 'object' || typeof value === 'function');
-        })
+        return value && (typeof value === 'object' || typeof value === 'function');
+      })
       : [];
 
     const tryRequireFn = typeof settings.tryRequire === 'function'
       ? function tryRequireWithOverride(modulePath) {
-          try {
-            return settings.tryRequire(modulePath);
-          } catch (error) {
-            void error;
-          }
-          return tryRequire(modulePath);
+        try {
+          return settings.tryRequire(modulePath);
+        } catch (error) {
+          void error;
         }
+        return tryRequire(modulePath);
+      }
       : tryRequire;
 
     const pendingQueueKey =

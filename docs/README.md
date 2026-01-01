@@ -59,6 +59,8 @@ services, and no dependencies beyond this repository.
 - [Runtime Refactor Status](dev/runtime-refactor-status.md)
 - [Missing Devices Research](dev/missing_devices_research.md)
 - Architecture references:
+  - [Codebase Overview](dev/codebase-overview.md)
+  - [Firebase Studio Architecture](dev/firebase-architecture.md)
   - [Module Registry](dev/architecture/module-registry.md)
   - [App Core Modules](dev/architecture/app-core-modules.md)
 - Reviews & snapshots:

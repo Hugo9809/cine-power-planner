@@ -1,3 +1,28 @@
+/**
+ * @fileoverview CORE WIRING HARNESS: Global Scope Bootstrap
+ * 
+ * DEEP DIVE: The "Resilient Scope" Pattern
+ * 
+ * This file is the "Glue" that allows the application to run successfully in:
+ * 1. Modern Browsers (Modules)
+ * 2. Legacy Browsers (Transpiled ES5)
+ * 3. Node.js (Unit Tests)
+ * 4. Web Workers
+ * 
+ * PROBLEM:
+ * In a mixed environment (Legacy/Modern), scripts may load out of order,
+ * or the global object (`window` vs `self` vs `global`) may vary.
+ * 
+ * SOLUTION:
+ * This script runs immediately and ensures that critical global state variables:
+ * 1. Exist (initially null or default).
+ * 2. Are type-safe (strings are strings, arrays are arrays).
+ * 3. Persist across module reloads (using `ensure*` checks).
+ * 
+ * By defining `ensureString`, `ensureFunction`, etc., we guarantee that
+ * later modules can simply assign `autoGearBaseRules = [...]` without crashing.
+ */
+
 function __cineIsArray(value) {
   if (typeof Array !== 'undefined' && typeof Array.isArray === 'function') {
     return Array.isArray(value);
@@ -955,10 +980,10 @@ function __cineNormalizeTemperatureScenarios(candidate) {
         "try { this.TEMPERATURE_SCENARIOS = value; } catch (assignError) { void assignError; } return this && this.TEMPERATURE_SCENARIOS;",
       ).call(
         (typeof globalThis !== 'undefined' && globalThis)
-          || (typeof window !== 'undefined' && window)
-          || (typeof self !== 'undefined' && self)
-          || (typeof global !== 'undefined' && global)
-          || null,
+        || (typeof window !== 'undefined' && window)
+        || (typeof self !== 'undefined' && self)
+        || (typeof global !== 'undefined' && global)
+        || null,
         resolved,
       );
     }

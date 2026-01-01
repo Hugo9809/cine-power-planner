@@ -11,6 +11,9 @@ updates. Prioritise persistence, offline behaviour and documentation accuracy.
 | `npm run lint` | Ensure scripts adhere to ESLint rules that enforce defensive coding patterns when run standalone. | Pay attention to storage and persistence warnings. |
 | `npm run generate:sw-assets` | Rebuild the service worker asset manifest and confirm the generated list matches `service-worker-assets.js`. | Run after touching cached assets, icons, data files or runtime modules. |
 
+> [!TIP]
+> See [tests/README.md](../../tests/README.md) for an explanation of the 4-tier testing strategy and the fuzzy-matching test runner.
+
 ## Manual rehearsals
 
 - Complete the [Operations Checklist](operations-checklist.md).

@@ -12,14 +12,16 @@ without phoning home.
 
 ## Data Protection Promise
 
-- **Local-only storage.** Projects, gear lists, runtime feedback, exports, and
+- **Local-only by default.** Projects, gear lists, runtime feedback, exports, and
   backups live on your machine; the planner does not depend on external
   services.
+- **Optional Cloud Sync.** Connect to Firebase Studio to seamlessly sync projects
+  across devices without sacrificing local ownership.
 - **Layered safety nets.** Save, autosave, share, import, backup, and restore
   workflows always create safety snapshots so recovery is possible before any
   data is promoted.
-- **Offline by design.** All icons, fonts, Uicons, and helper scripts are stored
-  in this repo, so offline usage never degrades usability or data protection.
+- **Offline by design.** All core features including icons, fonts, and helper scripts
+  are stored in this repo, so offline usage never degrades usability or data protection.
 
 ## Start here (short drill)
 
@@ -58,6 +60,7 @@ workflow so each routine is documented once.
   requirements, then export bundles or backups without risking data loss.
 - **Offline-first operation.** Every asset ships with the repo, so autosave,
   backup, restore, share, and help stay fully functional without a network.
+- **Firebase Studio Integration.** Optionally sync your projects to the cloud for real-time collaboration and multi-device access.
 - **Restore compatibility summaries.** Every restore lists missing sections and
   keeps a pre-restore safety backup so crews can verify changes before
   promotion.

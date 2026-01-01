@@ -24,6 +24,20 @@
     return {};
   }
 
+  /**
+   * DEEP DIVE: Persistence Layer vs Storage Layer
+   *
+   * It is crucial to distinguish `persistence.js` from `storage.js`:
+   *
+   * 1. storage.js (The "Driver"):
+   *    - Handles raw I/O (localStorage.getItem, JSON.parse).
+   *    - Doesn't know *when* or *why* to save, only *how*.
+   *
+   * 2. persistence.js (The "Manager"):
+   *    - Defines the POLICY (Auto-save on change? Throttle saves? Retry on failure?).
+   *    - Orchestrates the flow between the application state and the storage driver.
+   *    - Handles cross-cutting concerns like migration triggers and error boundaries.
+   */
   const FALLBACK_SCOPE = detectGlobalScope();
 
   /**
@@ -31,6 +45,17 @@
    * We first try `require` so Node based tests gain the same behaviour as the
    * browser bundles. Each lookup is wrapped in a try/catch because persistence
    * must never throw and risk breaking autosave flows.
+   */
+  /**
+   * DEEP DIVE: The "Linker" Pattern
+   *
+   * The persistence module uses a soft dependency injection pattern called "Linking".
+   * instead of hard imports.
+   *
+   * Why?
+   * - It allows `persistence.js` to be loaded *before* the rest of the app in the HTML head.
+   * - If the full app (Bundle A) crashes, this module (Bundle B) can still operate
+   *   in "Safe Mode" to preserve data or show a recovery UI.
    */
   function resolveModuleLinker(scope) {
     if (typeof require === 'function') {

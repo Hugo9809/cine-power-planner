@@ -296,6 +296,22 @@
 
 
 
+  /**
+   * Register a Module
+   *
+   * Publishes a module API to the central registry, making it available to `get()` callers.
+   *
+   * Mechanisms:
+   * 1. NORMALIZATION: "My Module " becomes "My Module".
+   * 2. IMMUTABILITY: By default, the API object is Deep Frozen to prevent other modules from accidentally mutating it.
+   * 3. CONFLICT CHECK: Throws if a module with the same name exists (unless `replace: true` is specified), ensuring consistency.
+   * 4. METADATA: Stores descriptive metadata (category, description, connections) separately from the runtime logic.
+   *
+   * @param {string} name - Unique identifier for the module.
+   * @param {object} moduleApi - The public interface of the module.
+   * @param {object} [options] - Configuration (freeze, replace, description, etc).
+   * @returns {object} - The (potentially frozen) module API.
+   */
   function register(name, moduleApi, options = {}) {
     const normalizedName = normalizeName(name);
 
@@ -333,6 +349,17 @@
     return descriptor;
   }
 
+  /**
+   * Retrieve a Registered Module
+   *
+   * This is the primary lookup method for inter-module dependencies.
+   * - It normalizes names to prevent case/whitespace confusing bugs.
+   * - It is O(1) via a hash map lookup (`moduleMap`).
+   * - Ideally, consumers should cache the result if used in a hot loop, though the lookup itself is fast.
+   *
+   * @param {string} name - The name of the module to retrieve.
+   * @returns {object|null} - The module API object if found, or null.
+   */
   function get(name) {
     const normalizedName = normalizeName(name);
     return Object.prototype.hasOwnProperty.call(moduleMap, normalizedName)

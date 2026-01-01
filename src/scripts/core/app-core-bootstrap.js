@@ -7,6 +7,20 @@
  * Redundancy removed in Phase 5 Refactor.
  */
 
+/*
+ * DEEP DIVE: The Core Wiring Harness
+ *
+ * This file may look like simple boilerplate, but it serves a critical architectural purpose:
+ * **Environment Agnostic Wiring**.
+ *
+ * It uses `resolveCoreSupportModule` to dynamically locate the actual implementation of core systems
+ * (Bootstrap, Localization) depending on whether we are running in:
+ * 1. The Main Browser Window (bundled)
+ * 2. A Web Worker (standalone)
+ * 3. A Node.js Test Environment (mocked/polyfilled)
+ *
+ * This separation allows the Core logic to stay pure while this "harness" handles the plumbing.
+ */
 const APP_CORE_BOOTSTRAP_TOOLS = resolveCoreSupportModule(
   'cineCoreAppCoreBootstrap',
   './modules/app-core/bootstrap.js'

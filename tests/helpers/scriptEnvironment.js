@@ -323,7 +323,7 @@ function setupScriptEnvironment(options = {}) {
         } else if (target === doc && originalDocRem) {
           originalDocRem.call(doc, type, listener, options);
         }
-      } catch (e) { /* ignore */ }
+      } catch (_e) { void _e; /* ignore */ }
     }
 
     // Restore original methods

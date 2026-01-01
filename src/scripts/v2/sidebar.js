@@ -93,6 +93,7 @@
         row1.className = 'v2-controls-row-1';
         injectLanguageSelector(row1); // Language Dropdown first
         injectThemeControls(row1);    // Theme Buttons
+        injectDatabaseToggle(row1);   // Database Manager Toggle
         injectHardRefresh(row1);      // Refresh Button
 
         // Assemble (single row)
@@ -110,7 +111,22 @@
 
     /**
      * [Fix 1.8] STRICT V1 Search Proxy
-     * Directly mirrors events to the legacy input without interference.
+     *
+     * DEEP DIVE: The "Legacy Proxy" Pattern
+     *
+     * The V2 Search Bar is a "dumb" UI component. It does NOT contain search logic itself.
+     * Instead, it acts as a remote control for the invisible Legacy Search Input (#featureSearch).
+     *
+     * Why?
+     * The legacy app uses a complex `fuse.js` implementation tightly coupled to the DOM of the
+     * hidden V1 table. Rewriting that logic immediately would risk breaking the core tool.
+     *
+     * Mechanism:
+     * 1. EVENT MIRRORING: Typing in V2 -> triggers 'input' event on V1 input.
+     * 2. KEY FORWARDING: Arrow keys in V2 -> dispatched to V1 to navigate the dropdown results.
+     * 3. FOCUS SYNC: Focusing V2 -> Focuses V1 (to trigger the library dropdown).
+     *
+     * This allows us to ship a modern UI *today* without rewriting the search engine *yesterday*.
      */
     function setupLegacySearchProxy() {
         const input = document.getElementById(SEARCH_INPUT_ID);
@@ -169,7 +185,7 @@
 
     function injectSearchInput(container) {
         // Find insert point: After Controls
-        const controls = container.querySelector('.v2-sidebar-controls-container');
+        // const controls = container.querySelector('.v2-sidebar-controls-container');
 
         // Check if already exists
         if (container.querySelector(`.${SEARCH_CONTAINER_CLASS}`)) return;
@@ -245,7 +261,17 @@
 
     /**
      * [Fix 1.8] Navigation Logic
-     * Handles Active/Archive filtering and Auto Backups visibility
+     *
+     * DEEP DIVE: Navigation State Management
+     *
+     * This section handles the visual state of the sidebar to match the application routing.
+     *
+     * KEY CONCEPTS:
+     * 1. URL SYNC: On load, it checks `window.location.hash` and highlights the matching link.
+     * 2. EXCLUSIVITY: Only one link can be '.active' at a time.
+     * 3. FEATURE FLAGS:
+     *    - 'Auto Backups' is hidden unless `cineAutoRecover` is true in options.
+     *    - This prevents feature pollution for users who haven't opted into unstable recoveries.
      */
     function initNavigationLogic() {
         // Toggle Auto Backups link based on settings
@@ -346,6 +372,40 @@
                 legacyBtn.click();
             } else {
                 window.location.reload(true);
+            }
+        });
+
+        container.appendChild(btn);
+    }
+
+    function injectDatabaseToggle(container) {
+        if (container.querySelector('#v2DatabaseToggle')) return;
+
+        const btn = document.createElement('button');
+        btn.className = 'v2-tool-btn';
+        btn.id = 'v2DatabaseToggle';
+        btn.title = 'Manage Device Database';
+        btn.setAttribute('aria-label', 'Manage Device Database');
+        // Database/Server icon (Stack)
+        btn.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M4 6c0 1.66 3.58 3 8 3s8-1.34 8-3-3.58-3-8-3-8 1.34-8 3z" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M4 18c0 1.66 3.58 3 8 3s8-1.34 8-3" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M4 6v12" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M20 6v12" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        `;
+
+        btn.addEventListener('click', () => {
+            // Trigger legacy toggle function
+            if (typeof global.toggleDeviceManagerSection === 'function') {
+                global.toggleDeviceManagerSection();
+            } else {
+                console.warn('[V2] toggleDeviceManagerSection not found on global scope');
+                // Fallback: try clicking the hidden legacy button
+                const legacyBtn = document.getElementById('toggleDeviceManager');
+                if (legacyBtn) legacyBtn.click();
             }
         });
 

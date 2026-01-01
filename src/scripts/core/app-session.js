@@ -98,6 +98,7 @@ if (typeof globalThis !== 'undefined' && hotswapSelect && typeof globalThis.hots
   globalThis.hotswapSelect = hotswapSelect;
 }
 
+// --- SESSION STATE & EVENT BUS CONFIGURATION ---
 let actionMap = new Map();
 let featureMap = new Map();
 let deviceMap = new Map();
@@ -106,9 +107,21 @@ let featureSearchEntries = [];
 let featureSearchDefaultOptions = [];
 let isProjectAutoSaving = false;
 
-// Determine which global scope we can use for deep cloning. The order mirrors
-// the environments the planner needs to support: main window first, followed by
-// worker-like contexts and finally Node during testing.
+/**
+ * DEEP DIVE: Session Scope Resolution
+ *
+ * This function determines the "global" context for the current executing environment.
+ * It is critical for the "Islands of Automation" architecture because it allows the session
+ * state to anchor itself to whatever global object is available (Window in browsers,
+ * Self in workers, or Global in Node/Tests).
+ *
+ * Why order matters:
+ * 1. CORE_GLOBAL_SCOPE: Explicit override for testing or strict sandboxing.
+ * 2. globalThis: Modern standard.
+ * 3. window: Traditional browser.
+ * 4. self: Service Workers.
+ * 5. global: Node.js.
+ */
 function getSessionCloneScope() {
   if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
     return CORE_GLOBAL_SCOPE;
@@ -117,6 +130,7 @@ function getSessionCloneScope() {
   if (typeof globalThis !== 'undefined') {
     return globalThis;
   }
+  // ...
 
   if (typeof window !== 'undefined') {
     return window;
@@ -369,6 +383,22 @@ function normalizeProjectStorageRevisionValue(value) {
   return null;
 }
 
+/**
+ * DEEP DIVE: Project Storage Revision Sync
+ *
+ * This section implements a "Cross-Tab Synchronization" mechanism.
+ *
+ * Problem:
+ * If a user has the app open in two tabs (Tab A and Tab B), and saves a project in Tab A,
+ * Tab B's local state is now stale. If the user then edits in Tab B, they might overwrite Tab A's work.
+ *
+ * Solution:
+ * 1. We track a `project_rev` (Revision ID) in localStorage.
+ * 2. Whenever a save occurs (in any tab), this Revision ID is incremented.
+ * 3. We listen to the `storage` event (triggered by other tabs).
+ * 4. If the Revision ID changes, we detect that our in-memory state is stale.
+ * 5. We trigger `reloadActiveProjectFromStorage` to pull the latest disk state into the current tab.
+ */
 function resolveProjectStorageRevisionKeyName() {
   const resolver = resolveSessionRuntimeFunction('getProjectStorageRevisionKeyName');
   if (typeof resolver === 'function') {
@@ -431,6 +461,20 @@ function resolveActiveProjectStorageKey() {
   return '';
 }
 
+/**
+ * DEEP DIVE: Project Reload & Hydration
+ *
+ * This function handles the critical task of reloading the "Active Project" from disk
+ * into the running application state (DOM + Memory).
+ *
+ * Key behaviors:
+ * 1. Checks constraints: Won't reload if a 'Factory Reset' is in progress or persistence is suspended.
+ * 2. Identity Check: Resolves WHICH project key is active (from URL, Dropdown, or fallback).
+ * 3. Data Load: Fetches the raw JSON model.
+ * 4. OPTIMIZATION: Computes a `stableStringify` hash of the current state vs. the disk state.
+ *    - If they match, it skips the reload entirely to prevent DOM thrashing and focus loss.
+ * 5. Hydration: If they differ, it strictly re-applies all sub-systems (Batteries, Diagram, Gear List).
+ */
 function reloadActiveProjectFromStorage(options = {}) {
   if (factoryResetInProgress || restoringSession) {
     return false;

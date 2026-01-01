@@ -6,6 +6,22 @@ const ROOT_DIR = path.resolve(__dirname, '..');
 const JEST_BIN = path.join(ROOT_DIR, 'node_modules', 'jest', 'bin', 'jest.js');
 const UNIT_TEST_DIR = path.join(ROOT_DIR, 'tests', 'unit');
 
+/**
+ * DEEP DIVE: Custom Test Runner Logic
+ * 
+ * This script wraps Jest to provide a "Fuzzy Matching" developer experience.
+ * Instead of typing full paths like `npm run test:unit tests/unit/storage.test.js`,
+ * you can type `npm run test:unit storage`.
+ * 
+ * HOW IT WORKS:
+ * 1. It scans the `tests/unit` directory.
+ * 2. It resolves arguments:
+ *    - If exact path matches: use it.
+ *    - If exact matches (minus .test.js): use it.
+ *    - If substring matches (e.g. "stor"): use it.
+ * 3. It spawns the Jest process with strict memory limits (`--max-old-space-size=1024`)
+ *    to emulate resource-constrained CI/device environments.
+ */
 function statSafe(candidate) {
   try {
     return fs.statSync(candidate);

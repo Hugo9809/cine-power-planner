@@ -25,15 +25,15 @@ implementations if needed.
 
 | Token | Provides | Notes |
 | --- | --- | --- |
-| `architecture.environment` | Safe access to `window`, `globalThis`, workers and Node-style globals. | Never mutate the returned references. |
-| `architecture.logging` | Structured console logging with offline history buffers consumed by verification logs. | Records only the last 50 entries to keep bundles lean. |
-| `architecture.persistence` | Redundant save/autosave/backup helpers that wrap `storage.js`. | All user data writes must flow through this token. |
-| `architecture.localization` | Translation catalogues, locale fallbacks and runtime text helpers. | Loads all strings from local JSON assets. |
-| `architecture.offline` | Service worker handshake, cache verification drills and bundle checksum utilities. | Works even when the service worker is unavailable. |
-| `architecture.results` | Runtime estimator functions and rig diff helpers. | Uses schema constraints defined in `docs/dev/schema-inventory.md`. |
-| `architecture.help` | Help centre topics, documentation anchors and translation metadata. | Mirrors the docs folder so offline manuals stay in sync. |
-| `architecture.settings` | Appearance toggles, input defaults and autosave cadence configuration. | Persists values via the persistence token. |
-| `architecture.features.autoGearRules` | Automatic gear rule builder, validation logic and rehearsal checkpoints. | Stores redundant mirrors before applying changes. |
+| `cineModuleImmutability` | Deep freeze helpers that prevent accidental mutations of registered APIs. | Core infrastructure—loaded very early. |
+| `cineModuleArchitectureHelpers` | Utility functions for module creation, normalization, and dependency resolution. | Used by other architecture modules. |
+| `cineModuleArchitectureKernel` | The "kernel" that boots the module registry and wires low-level primitives. | Loaded before other modules. |
+| `cineEnvironmentBridge` | Safe access to `window`, `globalThis`, workers and Node-style globals. | Never mutate the returned references. |
+| `cinePersistence` | Redundant save/autosave/backup helpers that wrap `storage.js`. | All user data writes must flow through this token. |
+| `cineOffline` | Service worker handshake, cache verification drills and bundle checksum utilities. | Works even when the service worker is unavailable. |
+| `cineRuntime` | Error boundaries, crash protection, and runtime guard logic. | Wraps critical operations to prevent data loss. |
+| `cineUi` | UI helpers, modal management, and DOM utilities. | Coordinate with View Manager for V2. |
+| `autoGearRulesApi` | Automatic gear rule builder, validation logic and rehearsal checkpoints. | Stores redundant mirrors before applying changes. |
 
 > **Tip:** Add new tokens only after updating the [Documentation Coverage
 > Matrix](../documentation-coverage-matrix.md) so help, training and translation

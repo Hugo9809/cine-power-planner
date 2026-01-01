@@ -23,7 +23,7 @@
     // =====================
     // STATE
     // =====================
-    let colorIndex = 0;
+    // let colorIndex = 0;
     let currentFilter = {
         query: '',
         type: 'active' // 'active' | 'archived'
@@ -36,11 +36,12 @@
     /**
      * Get the next color in the palette
      */
-    function getNextColor() {
-        const color = TILE_COLORS[colorIndex % TILE_COLORS.length];
-        colorIndex++;
-        return color;
-    }
+    // Unused helper - keeping for future color cycling if needed
+    // function getNextColor() {
+    //     const color = TILE_COLORS[colorIndex % TILE_COLORS.length];
+    //     colorIndex++;
+    //     return color;
+    // }
 
     /**
      * Escape HTML to prevent XSS
@@ -67,7 +68,8 @@
                 day: 'numeric',
                 year: 'numeric'
             });
-        } catch (e) {
+        } catch (_e) {
+            void _e;
             return '';
         }
     }
@@ -132,7 +134,8 @@
                     };
                 }
             }
-        } catch (e) {
+        } catch (_e) {
+            void _e;
             // Ignore errors
         }
         return { lastModified: null, color: null, icon: null };
@@ -256,6 +259,22 @@
 
     /**
      * Render the project grid
+     *
+     * Core Rendering Logic:
+     * 1. Clears the existing grid container.
+     * 2. Retrieves the list of projects (from legacy storage or shim).
+     * 3. Applies current filters (Search Query).
+     * 4. Renders the appropriate state:
+     *    - GLOBAL EMPTY STATE: If no projects exist at all.
+     *    - NO RESULTS STATE: If projects exist but the search query matches nothing.
+     *    - PROJECT GRID: Renders a tile for each matching project.
+     * 5. Appends the "New Project" tile at the end (unless searching).
+     * 6. Re-binds all click/keyboard events to the new DOM elements.
+     *
+     * Triggered by:
+     * - Initial Load
+     * - 'v2:viewchange' event (when switching to the Projects view)
+     * - 'v2:search' event (real-time filtering from the Sidebar)
      */
     function renderProjectGrid() {
         const container = document.getElementById(GRID_CONTAINER_ID);
@@ -348,6 +367,8 @@
 
     /**
      * Bind Search Events
+     * Listens for the custom 'v2:search' event dispatched by the Sidebar's search input.
+     * This decouples the Sidebar component from the Dashboard component.
      */
     function bindSearchEvents() {
         window.addEventListener('v2:search', (e) => {
@@ -362,6 +383,7 @@
     function bindTileEvents(container) {
         // Click on tile (open project)
         container.querySelectorAll('.v2-project-tile').forEach(tile => {
+            // Left Click
             tile.addEventListener('click', (e) => {
                 // Don't trigger if clicking on delete button
                 if (e.target.closest('[data-action="delete"]')) return;
@@ -369,6 +391,15 @@
                 const projectName = tile.dataset.project;
                 if (projectName) {
                     openProject(projectName);
+                }
+            });
+
+            // Right Click (Context Menu)
+            tile.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                const projectName = tile.dataset.project;
+                if (projectName) {
+                    showContextMenu(e, projectName);
                 }
             });
 
@@ -403,6 +434,70 @@
                 }
             });
         }
+    }
+
+    /**
+     * Show Context Menu
+     */
+    function showContextMenu(e, projectName) {
+        // Close existing
+        closeContextMenu();
+
+        const menu = document.createElement('div');
+        menu.className = 'v2-context-menu';
+        menu.innerHTML = `
+            <button class="v2-context-menu-item" data-action="open">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                Open Project
+            </button>
+             <div style="height: 1px; background: var(--v2-border-default); margin: 4px 0;"></div>
+            <button class="v2-context-menu-item danger" data-action="delete">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                </svg>
+                Delete Project
+            </button>
+        `;
+
+        // Position
+        menu.style.left = `${e.clientX}px`;
+        menu.style.top = `${e.clientY}px`;
+
+        // Bind Actions
+        menu.querySelector('[data-action="open"]').addEventListener('click', () => {
+            openProject(projectName);
+            closeContextMenu();
+        });
+
+        menu.querySelector('[data-action="delete"]').addEventListener('click', () => {
+            deleteProject(projectName);
+            closeContextMenu();
+        });
+
+        document.body.appendChild(menu);
+
+        // Adjust constraints (keep onscreen)
+        const rect = menu.getBoundingClientRect();
+        if (rect.right > window.innerWidth) menu.style.left = `${window.innerWidth - rect.width - 10}px`;
+        if (rect.bottom > window.innerHeight) menu.style.top = `${window.innerHeight - rect.height - 10}px`;
+
+        // Bind Close
+        setTimeout(() => {
+            document.addEventListener('click', closeContextMenu, { once: true });
+            document.addEventListener('contextmenu', closeContextMenu, { once: true });
+        }, 0);
+    }
+
+    /**
+     * Close Context Menu
+     */
+    function closeContextMenu() {
+        const existing = document.querySelector('.v2-context-menu');
+        if (existing) existing.remove();
+        document.removeEventListener('click', closeContextMenu);
     }
 
     /**

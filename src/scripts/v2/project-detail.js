@@ -124,11 +124,31 @@
   // =====================
 
   /**
+   * Create the project detail view container if it doesn't exist
+   */
+  function createViewContainer() {
+    if (document.getElementById(VIEW_ID)) return document.getElementById(VIEW_ID);
+
+    const view = document.createElement('section');
+    view.id = VIEW_ID;
+    view.className = 'app-view';
+    // Initially hidden
+
+    const v2Main = document.querySelector('.v2-main');
+    if (v2Main) {
+      v2Main.appendChild(view);
+    }
+    return view;
+  }
+
+  /**
    * Create the project detail view HTML
    */
   function createDetailViewContent() {
-    const view = document.getElementById(VIEW_ID);
+    const view = createViewContainer();
     if (!view) return;
+
+    // ... rest of content generation ...
 
     view.innerHTML = `
       <header class="view-header view-header-with-back">
@@ -140,6 +160,13 @@
         </button>
         <h1 id="v2ProjectName" class="view-header-title">Project</h1>
         <div class="view-header-actions">
+          <button type="button" class="v2-btn v2-btn-ghost" id="v2ExportProjectBtn" title="Export Project">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+               <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
+               <polyline points="16 6 12 2 8 6"/>
+               <line x1="12" y1="2" x2="12" y2="15"/>
+            </svg>
+          </button>
           <button type="button" class="v2-btn v2-btn-secondary" id="v2SaveProjectBtn">
             Save
           </button>
@@ -223,7 +250,7 @@
       <div class="v2-device-grid">
         <!-- ROW 1: Camera, Monitor, Wireless -->
         <!-- Camera Section -->
-        <div class="v2-card v2-device-card">
+        <div class="v2-card v2-device-card" id="v2-camera-card">
           <div class="v2-card-header">
             <h3>Camera</h3>
           </div>
@@ -327,7 +354,7 @@
         </div>
 
         <!-- Battery Section -->
-        <div class="v2-card v2-device-card">
+        <div class="v2-card v2-device-card" id="v2-power-card">
           <div class="v2-card-header">
             <h3>Power</h3>
           </div>
@@ -445,12 +472,18 @@
     if (saveBtn) {
       saveBtn.addEventListener('click', () => {
         if (global.cineLegacyShim && currentProject) {
-          // We might need to implement a specific save call or trigger the legacy save button
-          // For now, looking at app-core, there is likely a saveProject function
-          // We can also trigger the hidden save button if needed
-          const legacySaveBtn = document.getElementById('saveProjectBut');
+          const legacySaveBtn = document.getElementById('saveSetupBtn');
           if (legacySaveBtn) legacySaveBtn.click();
         }
+      });
+    }
+
+    // Export button
+    const exportBtn = view.querySelector('#v2ExportProjectBtn');
+    if (exportBtn) {
+      exportBtn.addEventListener('click', () => {
+        const legacyExportBtn = document.getElementById('shareSetupBtn');
+        if (legacyExportBtn) legacyExportBtn.click();
       });
     }
 
@@ -495,6 +528,9 @@
         switchTab(tabId);
       });
     });
+
+    // Inject Add Custom Buttons
+    setTimeout(() => injectAddCustomButtons(view), 0);
   }
 
   // =====================
@@ -509,7 +545,7 @@
     // V2 IDs: v2TotalDraw, v2Runtime, v2BatteryCount, v2Current144, v2Current12
 
     const map = {
-      'heroTotalDraw': 'v2TotalDraw',
+      'totalWatts': 'v2TotalDraw',
       'heroRuntime': 'v2Runtime',
       'heroBatteryCount': 'v2BatteryCount',
       'heroCurrent144': 'v2Current144',
@@ -530,13 +566,11 @@
    * Setup observer to watch for legacy DOM changes (calculation updates)
    */
   function setupPowerObserver() {
-    const targetNode = document.getElementById('heroTotalDraw');
-    // If the specific node isn't the one changing (e.g. text node inside), we might need to observe parent
-    // But usually observing the container or body for subtree changes with filter is robust
-
+    // Note: We observe the results container, not a specific node.
+    // The observer callback doesn't need to inspect mutations, just re-sync.
     const legacyResultContainer = document.getElementById('results') || document.body;
 
-    const observer = new MutationObserver((mutations) => {
+    const observer = new MutationObserver(() => {
       syncLegacyResultsToV2();
     });
 
@@ -612,6 +646,94 @@
         switchTab(params.tab);
       }
     }
+  }
+
+  // =====================
+  // LEGACY MODAL INTEGRATION
+  // =====================
+
+  /**
+   * Slugify a string (matching legacy logic)
+   */
+  function slugify(text) {
+    if (typeof text !== 'string') return '';
+    return text.trim().toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+/, '')
+      .replace(/-+$/, '');
+  }
+
+  /**
+   * Trigger the legacy "Add Custom Item" dialog for a specific category
+   */
+  function triggerLegacyAddCustom(translationKey) {
+    // 1. Get localized label
+    const localizedLabel = global.texts ? global.texts[translationKey] : null;
+    if (!localizedLabel) {
+      console.warn(`[ProjectDetail] Translation key not found: ${translationKey}`);
+      return;
+    }
+
+    // 2. Generate slug
+    const slug = slugify(localizedLabel);
+    console.log(`[ProjectDetail] Triggering Add Custom for: ${localizedLabel} (${slug})`);
+
+    // 3. Find the legacy button
+    // The legacy button is in the hidden #gearListOutput table
+    const legacyBtn = document.querySelector(`[data-gear-custom-add="${slug}"]`);
+
+    if (legacyBtn) {
+      legacyBtn.click();
+    } else {
+      console.warn(`[ProjectDetail] Legacy Add Button not found for slug: ${slug}`);
+      // Fallback: If the row doesn't exist yet (empty category), we might need to find the "Add Custom Item"
+      // button in a different way or force the category to appear.
+      // However, usually "Add Custom" buttons are always present in the legacy view if the category is valid.
+      alert(`Could not open Add Custom dialog for ${localizedLabel}. Legacy element missing.`);
+    }
+  }
+
+  /**
+   * Inject "+" buttons into V2 cards
+   */
+  function injectAddCustomButtons(view) {
+    // Definition of where to inject buttons and mapped categories
+    const targets = [
+      { cardId: 'v2-camera-card', key: 'category_cameras' },
+      { cardId: 'v2-power-card', key: 'category_batteries' },
+      // Add more as needed:
+      // { cardId: 'v2-monitor-card', key: 'category_monitors' },
+      // { cardId: 'v2-wireless-card', key: 'category_video' }
+    ];
+
+    targets.forEach(({ cardId, key }) => {
+      const card = view.querySelector(`#${cardId}`);
+      if (!card) return;
+
+      const header = card.querySelector('.v2-card-header');
+      if (!header) return;
+
+      // Prevent duplicate injection
+      if (header.querySelector('.v2-add-custom-btn')) return;
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'v2-btn v2-btn-sm v2-btn-ghost v2-add-custom-btn';
+      btn.title = 'Add Custom Item';
+      btn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      `;
+
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        triggerLegacyAddCustom(key);
+      });
+
+      header.appendChild(btn);
+    });
   }
 
   // =====================

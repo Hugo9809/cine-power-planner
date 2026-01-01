@@ -2,7 +2,17 @@
  * Cine Power Planner V2 - Bootstrap
  * ===================================
  * Entry point for V2 UI initialization.
- * Loads V2 modules and coordinates startup.
+ * 
+ * DEEP DIVE: The "Hybrid Swap" Strategy
+ * 
+ * This module is responsible for the hot-swap between Legacy (V1) and Modern (V2) UIs.
+ * It does NOT replace the entire page. Instead, it:
+ * 1. Lazy-loads V2 CSS/JS assets (to keep initial bundle size low).
+ * 2. Toggles the `v2-mode` class on `document.body`.
+ * 3. Manually hides Legacy DOM elements (`#topBar`, `#sideMenu`).
+ * 4. Initializes the React-like V2 View Manager.
+ * 
+ * This strategy allows us to ship V2 incrementally without rewriting the V1 engine.
  */
 
 (function (global) {
@@ -33,13 +43,19 @@
             }
 
             return localStorage.getItem(V2_STORAGE_KEY) === 'true';
-        } catch (e) {
+        } catch (_e) {
+            void _e;
             return false;
         }
     }
 
     /**
      * Restore Theme State (Dark/Pink) immediately
+     * 
+     * DEEP DIVE: Persistence Fix
+     * When switching UIs, we risk losing the user's theme preference.
+     * This function forces a re-read of localStorage to ensure the V2 UI
+     * respects the existing specific Dark/Pink mode settings.
      */
     function restoreThemeState() {
         const isDark = localStorage.getItem('darkMode') === 'true';

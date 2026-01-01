@@ -24,6 +24,17 @@
 
   const FALLBACK_SCOPE = detectGlobalScope();
 
+  /**
+   * DEEP DIVE: Connectivity Probe Strategy
+   *
+   * Browsers lie about offline status (`navigator.onLine`). True connectivity
+   * can only be determined by actively probing a reliable endpoint.
+   *
+   * Constants:
+   * - `__cineReloadProbe__`: A cache-busting query param used to force a network request.
+   * - `x-cine-connectivity-probe`: A custom header that the Service Worker intercepts.
+   * - `cine-sw-logs`: A BroadcastChannel used to coordinate state between the SW and the UI thread.
+   */
   const CONNECTIVITY_PROBE_QUERY_PARAM = '__cineReloadProbe__';
   const CONNECTIVITY_PROBE_HEADER = 'x-cine-connectivity-probe';
   const CONNECTIVITY_PROBE_RESULT_HEADER = 'x-cine-connectivity-probe-result';

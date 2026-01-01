@@ -100,6 +100,20 @@
 
     /**
      * Show a specific view and hide all others
+     *
+     * DEEP DIVE: View Switching Architecture
+     *
+     * This is the core routing method of the V2 SPA (Single Page Application) layer.
+     * Unlike the legacy tabular UI, V2 views are distinct screen states managed via the DOM.
+     *
+     * Lifecycle:
+     * 1. VALIDATION: Ensures the requested view ID exists in the DOM.
+     * 2. UNMOUNT (Visual): Removes the 'active' class from ALL views.
+     * 3. MOUNT (Visual): Adds the 'active' class to the target view.
+     * 4. HISTORY: Pushes the previous state to `viewHistory` stack for back navigation.
+     * 5. URL SYNC: Updates the URL fragment (e.g. #/projects) without triggering a reload.
+     * 6. EVENT BUS: Dispatches `v2:viewchange` to notify components (Sidebar, Dashboard) to react.
+     *
      * @param {string} viewName - The name of the view to show (e.g., 'projects', 'projectDetail')
      * @param {object} params - Optional parameters (e.g., { projectId: 'my-project', tab: 'power' })
      * @returns {boolean} - Whether the view switch was successful
@@ -248,6 +262,11 @@
 
     /**
      * Handle hash change events (browser back/forward)
+     *
+     * This serves as the "Router Listener". It ensures that if a user manually changes the URL
+     * or uses the browser's Back/Forward buttons, the View Manager reacts appropriately.
+     * Ideally, `showView` updates the URL via `replaceState` so this function is primarily
+     * for *external* navigation events.
      */
     function handleHashChange() {
         const { viewName, params } = parseHash();
@@ -296,7 +315,8 @@
     function isV2Enabled() {
         try {
             return localStorage.getItem('cine_use_v2_ui') === 'true';
-        } catch (e) {
+        } catch (_e) {
+            void _e;
             return false;
         }
     }
@@ -385,6 +405,7 @@
         // Check if V2 is enabled
         if (isV2Enabled()) {
             enableV2();
+            handleHashChange();
         }
 
         console.log('[ViewManager] Initialized');

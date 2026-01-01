@@ -61,6 +61,19 @@
 
 
 
+  /**
+   * DEEP DIVE: The "Runtime Guard" Pattern
+   *
+   * The Runtime module acts as the "final safety net" for the application.
+   * It wraps critical operations (like module loading and initialization) in
+   * error boundaries to prevent a single failing script from crashing the entire app.
+   *
+   * Key Responsibilities:
+   * 1. SCOPE ABSTRACTION: It doesn't trust `window` or `global` directly.
+   * 2. HELPER RESOLUTION: It dynamically finds helper functions (`cineRuntimeEnvironmentHelpers`)
+   *    injected by the bootloader.
+   * 3. CRASH MITIGATION: If a helper fails, it falls back to safe defaults rather than throwing.
+   */
   const RUNTIME_ENVIRONMENT_HELPERS = resolveRuntimeEnvironmentHelpers();
 
   function invokeEnvironmentHelper(helperName, args, fallback) {

@@ -6916,10 +6916,12 @@ console.log('DEBUG: storage.js execution started');
     return removed;
   }
 
-  function removeOldestAutoBackupEntry(container) {
+  function removeOldestAutoBackupEntry(container, options = {}) {
     if (!isPlainObject(container)) {
       return null;
     }
+
+    const { force = false } = options;
 
     const removeFromEntries = (entries, { respectRename = true } = {}) => {
       if (!Array.isArray(entries) || entries.length === 0) {
@@ -6973,7 +6975,7 @@ console.log('DEBUG: storage.js execution started');
       );
     }
 
-    const oldestAutoBackupKey = removeFromEntries(autoBackups, { respectRename: true });
+    const oldestAutoBackupKey = removeFromEntries(autoBackups, { respectRename: !force });
     if (oldestAutoBackupKey) {
       return oldestAutoBackupKey;
     }
@@ -7237,7 +7239,7 @@ console.log('DEBUG: storage.js execution started');
     try {
       const existing = destination.getItem(modernKey);
       if (existing !== null && existing !== undefined) {
-        if (!keepLegacy && source !== destination) {
+        if (!keepLegacy && (source !== destination || legacyKey !== modernKey)) {
           try {
             source.removeItem(legacyKey);
           } catch (removeError) {
@@ -12094,8 +12096,11 @@ console.log('DEBUG: storage.js execution started');
       forceRefresh = false,
       forMutation = false,
       skipAutoBackupExpansion = false,
+      skipMigrations = false,
     } = options || {};
-    applyLegacyStorageMigrations();
+    if (!skipMigrations) {
+      applyLegacyStorageMigrations();
+    }
 
     const shouldUseCache = !skipAutoBackupExpansion;
 
@@ -12455,8 +12460,13 @@ console.log('DEBUG: storage.js execution started');
         onQuotaExceeded: () => {
           // Cross-shard quota recovery: try to prune the oldest auto-backup shard.
           // Note: we don't want forMutation: true here because we are in the middle of a save.
-          const { projects } = readAllProjectsFromStorage({ forMutation: false });
-          const removedKey = removeOldestAutoBackupEntry(projects);
+          const { projects } = readAllProjectsFromStorage({ forMutation: false, skipMigrations: true });
+          let removedKey = removeOldestAutoBackupEntry(projects);
+
+          if (!removedKey) {
+            removedKey = removeOldestAutoBackupEntry(projects, { force: true });
+          }
+
           if (removedKey) {
             const victimKey = PROJECT_SHARD_PREFIX + normalizeProjectStorageKey(removedKey);
             deleteFromStorage(safeStorage, victimKey, `Pruning shard "${removedKey}" to recover space:`);
@@ -12723,6 +12733,22 @@ console.log('DEBUG: storage.js execution started');
     return { status: 'created', backupName };
   }
 
+  /**
+   * Safe Project Persistence
+   *
+   * This function implements a robust "safe save" strategy to prevent data loss:
+   * 1. NORMALIZATION: Ensures the project structure is valid and standardizes properties (e.g. trimming strings).
+   * 2. MIGRATION BACKUP: If the storage snapshot has changed since the last read (detected via 'changed' flag),
+   *    we create a safety backup of the PREVIOUS state before overwriting it. This protects against race conditions
+   *    where two tabs might try to save, preserving the first tab's work in a backup file.
+   * 3. OVERWRITE BACKUP: Before overwriting an existing project with the same name, we verify content diffs.
+   *    If the content differs, we create a specific overwrite backup (e.g. "MyProject-backup").
+   * 4. ATOMIC COMMIT: We finally write the new project data.
+   *
+   * @param {string} name - The intended name for the project.
+   * @param {object} project - The project data object.
+   * @param {object} [options] - Save options (e.g. skipOverwriteBackup, skipCompression).
+   */
   function saveProject(name, project, options = {}) {
     if (!isPlainObject(project)) return;
 
@@ -12742,11 +12768,14 @@ console.log('DEBUG: storage.js execution started');
     const requestedKey = typeof name === 'string' ? name : '';
     const preferredKey = normalizeProjectStorageKey(requestedKey);
 
+    // Initial check: if what we are about to write will overwrite something that has changed
+    // on disk (via another tab), we must safeguard that data first.
     const initialSnapshot = readAllProjectsFromStorage({ forMutation: true });
     const initialProjects = isPlainObject(initialSnapshot.projects) ? initialSnapshot.projects : {};
     if (initialSnapshot.changed) {
       const safeStorage = getSafeLocalStorage();
       if (safeStorage) {
+        // [SAFETY] Create a migration backup to preserve the state before this write.
         createStorageMigrationBackup(safeStorage, PROJECT_STORAGE_KEY, initialSnapshot.originalValue);
       }
     }
@@ -12767,11 +12796,14 @@ console.log('DEBUG: storage.js execution started');
       ? createStableValueSignature(initialExistingEntry)
       : null;
 
+    // ... (Re-read and Resolve Logic) ...
+
     const latestSnapshot = readAllProjectsFromStorage({ forMutation: true });
     const projects = isPlainObject(latestSnapshot.projects) ? latestSnapshot.projects : {};
     if (latestSnapshot.changed) {
       const safeStorage = getSafeLocalStorage();
       if (safeStorage) {
+        // [SAFETY] Double-check safeguards if a race condition happened between the checks.
         createStorageMigrationBackup(safeStorage, PROJECT_STORAGE_KEY, latestSnapshot.originalValue);
       }
     }
@@ -12810,6 +12842,7 @@ console.log('DEBUG: storage.js execution started');
       const existingSignature = createStableValueSignature(existingEntry);
       const nextSignature = createStableValueSignature(normalized);
       if (existingSignature !== nextSignature) {
+        // [SAFETY] Overwrite Protection: If we are modifying an existing project, create a specific backup.
         const backupOutcome = maybeCreateProjectOverwriteBackup(projects, existingKey);
         if (backupOutcome.status === 'failed') {
           console.warn(
@@ -12824,6 +12857,7 @@ console.log('DEBUG: storage.js execution started');
       && renamedFromKey !== undefined
       && renamedFromKey !== storageKey
     ) {
+      // Logic to safely handle renames by deleting the old key only if it hasn't changed.
       let shouldDelete = Boolean(initialExistingSignature);
       if (Object.prototype.hasOwnProperty.call(projects, renamedFromKey)) {
         if (initialExistingSignature) {
@@ -12894,6 +12928,7 @@ console.log('DEBUG: storage.js execution started');
 
   function deleteProject(name) {
     if (name === undefined) {
+      // ... (Factory reset logic) ...
       const storagesToPrune = [getSafeLocalStorage()];
       if (typeof localStorage !== 'undefined' && storagesToPrune.indexOf(localStorage) === -1) {
         storagesToPrune.push(localStorage);
@@ -12934,8 +12969,7 @@ console.log('DEBUG: storage.js execution started');
           ));
         }
       });
-
-      // Clear related UI caches when deleting all projects
+      // ... (Clear UI caches and notify tabs) ...
       if (typeof clearUiCacheStorageEntries === 'function') {
         try {
           clearUiCacheStorageEntries();
@@ -12978,6 +13012,8 @@ console.log('DEBUG: storage.js execution started');
       }
       return;
     }
+
+    // [SAFETY] Create a "Deletion Backup" (undoable operation support)
     const backupOutcome = maybeCreateProjectDeletionBackup(projects, key);
     if (backupOutcome.status === 'failed') {
       console.warn(`Automatic backup before deleting project "${key}" failed. Deletion aborted.`);
@@ -13012,7 +13048,7 @@ console.log('DEBUG: storage.js execution started');
     // Rename in progress: removing old but not yet persisting
     delete projects[resolvedKey];
     projects[targetName] = movedValue;
-
+    // ... (Persist logic) ...
     persistAllProjects(projects);
     return targetName;
   }

@@ -450,6 +450,18 @@
   const RESOLVED_KERNEL = resolveArchitectureKernel(LOCAL_SCOPE);
   const ACTIVE_KERNEL = RESOLVED_KERNEL || createFallbackKernel(LOCAL_SCOPE);
 
+  /**
+   * DEEP DIVE: Global Scope Detection
+   *
+   * Robustly identifies the global context. This is harder than it looks because:
+   * - 'window' is undefined in Web Workers and Node.
+   * - 'self' is the standard in Workers but can be ambiguous.
+   * - 'global' is Node-specific.
+   * - 'globalThis' is the modern standard but needs a polyfill/check in older envs.
+   *
+   * The kernel tries `ACTIVE_KERNEL.detectGlobalScope()` first (delegation),
+   * and falls back to a manual prioritized check (`fallbackDetectGlobalScope`).
+   */
   function detectGlobalScope() {
     if (ACTIVE_KERNEL && typeof ACTIVE_KERNEL.detectGlobalScope === 'function') {
       try {
@@ -465,19 +477,33 @@
     return fallbackDetectGlobalScope();
   }
 
+  /**
+   * DEEP DIVE: The "Kernel" Pattern
+   *
+   * This module implements a micro-kernel architecture for capability detection.
+   *
+   * Conceptual Model:
+   * 1. ACTIVE_KERNEL: An abstraction layer that normalizes environment-specific behavior
+   *    (e.g., Node.js vs Browser vs Web Worker).
+   * 2. FALLBACK KERNEL: If no specialized kernel is found (e.g. `architecture-kernel.js` is missing),
+   *    we generate a "Fallback Kernel" on the fly using basic JavaScript primitives.
+   *
+   * This guarantees that `system.js` (and thus the whole app) can boot in extremely
+   * constrained environments where external dependencies might fail to load.
+   */
   const PRIMARY_SCOPE =
     ACTIVE_KERNEL && typeof ACTIVE_KERNEL.getGlobalScope === 'function'
       ? (function resolvePrimaryScope() {
-          try {
-            const scoped = ACTIVE_KERNEL.getGlobalScope();
-            if (scoped) {
-              return scoped;
-            }
-          } catch (error) {
-            void error;
+        try {
+          const scoped = ACTIVE_KERNEL.getGlobalScope();
+          if (scoped) {
+            return scoped;
           }
-          return detectGlobalScope();
-        })()
+        } catch (error) {
+          void error;
+        }
+        return detectGlobalScope();
+      })()
       : detectGlobalScope();
 
   let pendingQueueKey =

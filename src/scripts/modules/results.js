@@ -3055,6 +3055,15 @@
         return 0;
       }
 
+      /**
+       * Power Draw Aggregation
+       * Summarizes the power draw (in Watts) from all connected devices.
+       * 
+       * `resolvePowerDraw` handles:
+       * - Direct numeric values
+       * - Object structures (`{ powerDrawWatts: 15 }`)
+       * - String parsing
+       */
       var cameraW = resolvePowerDraw(cameraDevices[camera]);
       var monitorW = resolvePowerDraw(monitorDevices[monitor]);
       var videoW = resolvePowerDraw(videoDevices[video]);
@@ -3068,6 +3077,7 @@
       }
       var distanceW = resolvePowerDraw(distanceDevices[distance]);
 
+      // Global Sum of Power Draw
       var totalWatt = cameraW + monitorW + videoW + motorsW + controllersW + distanceW;
 
       if (totalPowerTarget && typeof totalPowerTarget.textContent !== 'undefined') {
@@ -3379,16 +3389,32 @@
           }
         }
       } else {
+        /**
+       * Runtime Calculation Core Logic
+       *
+       * 1. Check for valid battery selection and capacity.
+       * 2. Apply "Peukert Effect" or efficiency losses if configured (currently linear estimate).
+       * 3. Calculate "Effective Runtime":
+       *    Runtime (h) = Battery Capacity (Wh) / Total Power Draw (W)
+       *
+       * NOTE: This model assumes constant power draw. In reality, devices may fluctuate.
+       * We use a "worst case" or "average nominal" draw provided by the device database.
+       */
         var batteryData = devices.batteries[battery];
         var hsName = safeSelectValue(hotswapSelect, 'hotswap');
         var hotswapData = devices.batteryHotswaps && devices.batteryHotswaps[hsName] ? devices.batteryHotswaps[hsName] : null;
+
+        // Total Capacity = Base Battery + Hotswap Plate (if it contains a buffer battery)
         var capacityWh = (batteryData && typeof batteryData.capacity === 'number' ? batteryData.capacity : 0)
           + (hotswapData && typeof hotswapData.capacity === 'number' ? hotswapData.capacity : 0);
+
         var maxPinA = coerceCurrentLimit(batteryData && batteryData.pinA);
         var maxDtapA = coerceCurrentLimit(batteryData && batteryData.dtapA);
         var hasPinLimit = Number.isFinite(maxPinA) && maxPinA > 0;
         var hasDtapRating = Number.isFinite(maxDtapA) && maxDtapA > 0;
         var hotswapPinLimit = coerceCurrentLimit(hotswapData && hotswapData.pinA);
+
+        // Hotswap limits override battery limits if they are lower (bottleneck)
         if (Number.isFinite(hotswapPinLimit)) {
           if (!hasPinLimit || hotswapPinLimit < maxPinA) {
             var hotswapMessage = resolveText('warnHotswapLower')
@@ -3409,6 +3435,7 @@
         var availableWatt = hasPinLimit ? maxPinA * lowV : 0;
         if (drawPowerDiagramFn) {
           try {
+            // Visualise the power budget allocation in the UI diagram
             drawPowerDiagramFn(availableWatt, segments, hasPinLimit ? maxPinA : null);
           } catch (error) {
             safeWarn('cineResults.updateCalculations could not draw power diagram.', error);
@@ -3447,6 +3474,7 @@
             heroRuntimeTarget.textContent = '∞';
           }
         } else {
+          // Standard Runtime Formula
           hours = capacityWh / totalWatt;
           if (batteryLifeTarget && typeof batteryLifeTarget.textContent !== 'undefined') {
             try {
@@ -3465,6 +3493,7 @@
         runtimeHoursValue = hours;
         batteriesNeeded = 1;
         if (Number.isFinite(hours) && hours > 0) {
+          // Calculate daily battery needs based on a standard 10-hour shooting day
           batteriesNeeded = Math.max(1, Math.ceil(10 / hours));
         }
         batteriesNeededValue = batteriesNeeded;

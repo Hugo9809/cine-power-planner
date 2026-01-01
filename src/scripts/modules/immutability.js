@@ -236,6 +236,18 @@
       return value;
     }
 
+    /**
+     * DEEP DIVE: The "Deep Freeze" Policy
+     *
+     * In this application, "Deep Freeze" is not just `Object.freeze`.
+     * It recursively walks the entire object tree, freezing every property.
+     *
+     * Why?
+     * 1. API Safety: Registered modules CANNOT be tampered with by other modules.
+     * 2. State Integrity: Snapshots of state (like Undo/Redo history) are guaranteed immutable.
+     * 3. Debugging: If something changes unexpectedly, we know it wasn't a mutation.
+     */
+
 
 
     if (typeof value === 'function') {
@@ -247,6 +259,13 @@
       }
     }
 
+    /**
+     * DEEP DIVE: Circular Reference Protection
+     *
+     * We use a `WeakSet` (or a fallback array) to track visited objects.
+     * This prevents infinite recursion when freezing data structures that define
+     * circular relationships (e.g., Parent <-> Child).
+     */
     if (seen.has(value)) {
       return value;
     }

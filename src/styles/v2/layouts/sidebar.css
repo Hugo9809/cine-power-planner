@@ -505,15 +505,22 @@ h1.v2-sidebar-title {
 
 /* Specific styling for Exit V2 button to be smaller */
 #v2ExitBtn {
-    font-size: 11px;
-    padding: 6px;
-    min-height: 0;
-    /* Override any defaults */
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    text-transform: inherit;
+    letter-spacing: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline;
+    min-height: unset;
 }
 
-#v2ExitBtn svg {
-    width: 14px;
-    height: 14px;
+#v2ExitBtn:hover {
+    color: var(--v2-sidebar-text, var(--v2-text-primary));
 }
 
 .v2-sidebar-legal a {

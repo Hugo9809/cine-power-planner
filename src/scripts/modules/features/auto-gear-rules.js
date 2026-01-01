@@ -67,6 +67,19 @@
     return null;
   }
 
+  /*
+   * DEEP DIVE: The "Auto Gear" Logic Engine
+   *
+   * This module contains the decision-making rules for the "Auto Gear" feature,
+   * which automatically recommends accessories (batteries, cables, rods) based
+   * on the selected camera and lens.
+   *
+   * KEY ARCHITECTURE:
+   * 1. Soft Dependencies: It uses `resolveAutoGearHelperFunction` to loosely
+   *    couple with the UI layer, preventing circular dependencies.
+   * 2. Robustness: It aggressively falls back (`ensureFallbackAutoGearHelper`)
+   *    to safe defaults if helper functions are missing.
+   */
   function resolveAutoGearHelperFunction(name) {
     if (typeof name !== 'string' || !name) {
       return null;
@@ -136,6 +149,14 @@
     return installed;
   }
 
+  /**
+   * DEEP DIVE: Legacy Normalization
+   *
+   * Device data comes from many sources (user saves, shared links, old versions).
+   * These "fallback" normalizers ensure that even if a value is malformed
+   * (e.g., "12G" string vs `{ type: "12G-SDI" }` object), the rules engine
+   * can still understand it.
+   */
   function fallbackNormalizeVideoDistributionOptionValue(value) {
     if (typeof value !== 'string') {
       return '';

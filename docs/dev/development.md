@@ -175,7 +175,9 @@ protect user data, documentation and translations:
 Set up with Node.js 18 or later. After cloning the repository:
 
 > [!IMPORTANT]
-> **Always run the app via a local server** (e.g., `npm run serve` or `python3 -m http.server`) when developing and testing. Do not use the `file://` protocol.
+> [!IMPORTANT]
+> **Use a local server for development.** While the app fully supports `file://` protocol for end-users (offline usage), Service Workers and PWA features **require** a secure context (`https://` or `http://localhost`). Developing on `file://` will disable these features and may mask bugs.
+> Use `npm run serve` or `python3 -m http.server`.
 
 
 ```bash
@@ -217,6 +219,25 @@ For new modules, prefer `cineModules.createBlueprint({...})` to capture metadata
 and freeze defaults before registering. The helper freezes the generated API,
 normalises category/description/connection strings and automatically queues
 failed registrations so offline workflows never lose critical safeguards.
+
+### Firebase Setup
+To work on the "Firebase Studio" integration:
+1. Install the Firebase CLI: `npm install -g firebase-tools`
+2. Login: `firebase login`
+3. Link the project: `firebase use default` (or your specific alias)
+
+See [Firebase Studio Architecture](firebase-architecture.md) for details on the data model and security rules.
+
+### Codebase & Architecture
+For a high-level map of the code, see [Codebase Overview](codebase-overview.md).
+
+> [!TIP]
+> **Deep Dive Available**: We have added detailed inline documentation to several core systems including:
+> - **[Runtime & Crash Protection](../../src/scripts/modules/runtime.js)**
+> - **[Offline & Connectivity](../../src/scripts/modules/offline.js)**
+> - **[Persistance Policies](../../src/scripts/modules/persistence.js)**
+> - **[Session & Scope](../../src/scripts/core/app-session.js)**
+> - **[V2 View Logic](../../src/scripts/v2/view-manager.js)**
 
 ### Legacy browser bundle
 

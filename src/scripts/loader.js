@@ -13,6 +13,22 @@
  * side-effect free.
  */
 
+/**
+ * @fileoverview Application Entry Point & Module Loader
+ *
+ * This script is responsible for bootstrapping the entire Cine Power Planner application.
+ * It handles:
+ * 1. Environment Detection: Checking for modern browser features vs. legacy support.
+ * 2. Polyfill Loading: Injecting necessary shims for older environments.
+ * 3. Module Orchestration: Sequentially loading the core application bundles defined in `modernScriptBundle` (or `legacyScriptBundle`).
+ * 4. Error Recovery: providing fallback mechanisms if script loading fails (e.g. network blips or syntax errors).
+ *
+ * Architecture Note:
+ * This loader uses a custom sequential loading strategy (`loadScriptBundle`, `loadScriptsSequentially`) rather than
+ * native ES modules to ensure complete control over execution order and error handling across
+ * a wide range of browser versions (including very old Safari builds).
+ */
+
 var CINE_LOADER_CACHE_BUSTER = (typeof APP_VERSION !== 'undefined' ? APP_VERSION : '1.0.0');
 
 var safeConsole = {
@@ -4770,5 +4786,13 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     }
   }
 
+  /**
+   * Main Execution Entry Point
+   *
+   * 1. Migrates any legacy storage keys to the modern format.
+   * 2. Sets up core runtime placeholders to prevent "undefined" errors during boot.
+   * 3. Waits for the DOM body to be available.
+   * 4. Triggers `startLoading()`, which determines whether to load the Modern or Legacy bundle.
+   */
   startLoaderWhenBodyReady();
 })();

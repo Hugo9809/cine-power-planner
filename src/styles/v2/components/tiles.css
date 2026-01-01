@@ -256,3 +256,69 @@
     font-weight: var(--v2-font-weight-medium);
     color: var(--v2-text-secondary);
 }
+
+/* =====================
+ * CONTEXT MENU
+ * ===================== */
+.v2-context-menu {
+    position: fixed;
+    z-index: 9999;
+    min-width: 180px;
+    background-color: var(--v2-surface-elevated, #fff);
+    border: 1px solid var(--v2-border-default);
+    border-radius: var(--v2-radius-md);
+    box-shadow: var(--v2-shadow-lg);
+    padding: var(--v2-space-xs);
+    animation: v2-fade-in 0.1s ease-out;
+}
+
+.v2-context-menu-item {
+    display: flex;
+    align-items: center;
+    gap: var(--v2-space-sm);
+    width: 100%;
+    padding: var(--v2-space-sm) var(--v2-space-md);
+    font-size: var(--v2-font-size-sm);
+    color: var(--v2-text-primary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: var(--v2-radius-sm);
+    text-align: left;
+    transition: background-color var(--v2-transition-fast);
+}
+
+.v2-context-menu-item:hover {
+    background-color: var(--v2-surface-hover, rgba(0, 0, 0, 0.05));
+    text-decoration: none;
+}
+
+.v2-context-menu-item svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+}
+
+.v2-context-menu-item.danger {
+    color: var(--v2-status-error);
+}
+
+.v2-context-menu-item.danger svg {
+    color: var(--v2-status-error);
+}
+
+.v2-context-menu-item.danger:hover {
+    background-color: color-mix(in srgb, var(--v2-status-error) 10%, transparent);
+}
+
+@keyframes v2-fade-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
