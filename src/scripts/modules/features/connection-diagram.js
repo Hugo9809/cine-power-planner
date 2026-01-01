@@ -2124,9 +2124,17 @@
       enumerable: false,
       writable: false,
     });
+    // [Agent Fix] Expose renderSetupDiagram globally so app-core-new-2.js can pass it to cineResults
+    MODULE_BASE.exposeGlobal('renderSetupDiagram', moduleApi.createConnectionDiagram, GLOBAL_SCOPE, {
+      configurable: true,
+      enumerable: false,
+      writable: true,
+    });
   } else {
     try {
       GLOBAL_SCOPE.cineFeaturesConnectionDiagram = moduleApi;
+      // [Agent Fix] Expose renderSetupDiagram globally so app-core-new-2.js can pass it to cineResults
+      GLOBAL_SCOPE.renderSetupDiagram = moduleApi.createConnectionDiagram;
     } catch (error) {
       void error;
     }

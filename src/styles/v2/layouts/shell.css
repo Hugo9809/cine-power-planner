@@ -11,7 +11,8 @@
     display: grid;
     grid-template-columns: var(--v2-sidebar-width) 1fr;
     grid-template-rows: 1fr;
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
     transition: grid-template-columns var(--v2-transition-normal);
 }
 
@@ -26,7 +27,6 @@
 .v2-main {
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
     overflow-y: auto;
     background-color: var(--v2-surface-base);
     /* Seamless white background */

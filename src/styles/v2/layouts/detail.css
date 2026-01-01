@@ -242,3 +242,39 @@
         gap: var(--v2-space-md);
     }
 }
+
+/* =====================
+ * LEGACY WRAPPER FIXES
+ * ===================== */
+/* Ensure the reparented select-wrapper handles the favorite button correctly */
+.v2-select-container .select-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: var(--v2-space-xs);
+}
+
+.v2-select-container .select-wrapper .v2-select-input {
+    flex: 1;
+    min-width: 0;
+    /* Allow shrinking */
+    width: 100%;
+    /* Ensure it tries to fill space */
+}
+
+.v2-select-container .select-wrapper .favorite-toggle {
+    flex-shrink: 0;
+    position: static;
+    margin: 0;
+    background-color: transparent;
+    border: 1px solid transparent;
+}
+
+.v2-select-container .select-wrapper .favorite-toggle:hover {
+    background-color: var(--v2-surface-muted);
+    color: var(--v2-brand-blue);
+}
+
+.v2-select-container .select-wrapper .favorite-toggle.favorited {
+    color: var(--v2-brand-yellow, #f59e0b);
+}

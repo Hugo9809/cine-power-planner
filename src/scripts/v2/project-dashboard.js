@@ -24,6 +24,10 @@
     // STATE
     // =====================
     let colorIndex = 0;
+    let currentFilter = {
+        query: '',
+        type: 'active' // 'active' | 'archived'
+    };
 
     // =====================
     // HELPERS
@@ -90,6 +94,24 @@
             .filter(val => val !== '');
 
         return [...new Set(names)];
+    }
+
+    /**
+     * Get filtered projects based on current state
+     */
+    function getFilteredProjects() {
+        let projects = getProjectNames();
+
+        // 1. Filter by Query
+        if (currentFilter.query) {
+            const q = currentFilter.query.toLowerCase();
+            projects = projects.filter(name => name.toLowerCase().includes(q));
+        }
+
+        // 2. Filter by Type (Placeholder for Archive logic)
+        // if (currentFilter.type === 'archived') { ... }
+
+        return projects;
     }
 
     /**
@@ -183,27 +205,46 @@
      */
     function createNewProjectTileHtml() {
         return `
-      <div class="v2-project-tile-new" id="v2CreateProjectTile" tabindex="0" role="button" aria-label="Create new project">
-        <div class="v2-project-tile-new-icon">+</div>
-        <span class="v2-project-tile-new-text">Create New Project</span>
+      <div class="v2-project-tile new-project" id="v2NewProjectBtn" tabindex="0" role="button" aria-label="Create new project">
+        <div class="v2-tile-header center">
+          <div class="v2-tile-icon-add">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14M5 12h14" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3 class="v2-tile-title">New Project</h3>
+        </div>
       </div>
     `;
     }
 
     /**
-     * Create the empty state HTML
+     * Create Empty State HTML (No Projects)
      */
     function createEmptyStateHtml() {
         return `
       <div class="view-empty-state">
-        <svg class="view-empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M3 7v4a1 1 0 001 1h3m10-5v4a1 1 0 01-1 1h-3m-4-5v4M8 12v8m8-8v8M3 12h18"/>
-          <rect x="5" y="3" width="14" height="4" rx="1"/>
-        </svg>
+        <img src="assets/icons/empty-box.svg" alt="No projects" class="view-empty-state-icon" onerror="this.style.display='none'">
         <h2>No Projects Yet</h2>
-        <p>Create your first camera power project to get started.</p>
-        <button type="button" class="v2-btn v2-btn-primary" id="v2EmptyStateCreateBtn">
-          + Create New Project
+        <p class="text-muted">Create your first power plan to get started.</p>
+        <button id="v2EmptyStateBtn" class="v2-btn-primary">
+          + Create Project
+        </button>
+      </div>
+    `;
+    }
+
+    /**
+     * Create No Results HTML (Search)
+     */
+    function createNoResultsHtml(query) {
+        return `
+      <div class="view-empty-state">
+        <div class="view-empty-state-icon" style="font-size: 48px; display: flex; align-items: center; justify-content: center;">🔍</div>
+        <h2>No Results Finding "${escapeHtml(query)}"</h2>
+        <p class="text-muted">Try adjustment your search terms.</p>
+        <button id="v2ClearSearchBtn" class="v2-btn-secondary">
+          Clear Search
         </button>
       </div>
     `;
@@ -216,36 +257,21 @@
     /**
      * Render the project grid
      */
-    function renderProjectGrid() {
-        console.log('[ProjectDashboard] renderProjectGrid() called');
-
+    function renderProjects() {
         const container = document.getElementById(GRID_CONTAINER_ID);
-        if (!container) {
-            console.warn('[ProjectDashboard] Grid container not found:', GRID_CONTAINER_ID);
-            return;
-        }
+        if (!container) return;
 
-        // Reset empty state class and styles
-        container.classList.remove('v2-grid-empty');
-        container.style.display = '';
-        container.style.flexDirection = '';
-        container.style.alignItems = '';
-        container.style.justifyContent = '';
-        container.style.minHeight = '';
-        container.style.flex = '';
+        // Reset
+        container.innerHTML = '';
+        container.className = 'v2-project-grid'; // Reset classes
+        container.style = ''; // Reset inline styles
 
-        // [Fix] Remove align-top from parent
-        const main = container.closest('.v2-main');
-        if (main) {
-            main.classList.remove('align-top');
-        }
-
-        const projectNames = getProjectNames();
-
-        if (projectNames.length === 0) {
+        // Check if we have ANY projects at all (Global Empty State)
+        const allProjects = getProjectNames();
+        if (allProjects.length === 0) {
             container.classList.add('v2-grid-empty');
 
-            // Force styles via JS to ensure layout
+            // Force styles logic...
             container.style.display = 'flex';
             container.style.flexDirection = 'column';
             container.style.alignItems = 'center';
@@ -254,35 +280,81 @@
             container.style.minHeight = '100%';
             container.style.flex = '1';
 
-            // [Fix] Add class to parent to force top alignment
             const main = container.closest('.v2-main');
-            if (main) {
-                main.classList.add('align-top');
-            }
+            if (main) main.classList.add('align-top'); // Fix layout
 
             container.innerHTML = createEmptyStateHtml();
             bindEmptyStateEvents(container);
             return;
         }
 
-        // Build tiles HTML
+        // Get Filtered Projects
+        const filteredProjects = getFilteredProjects();
+
+        // Check if Search returned nothing
+        if (filteredProjects.length === 0) {
+            container.classList.add('v2-grid-empty');
+
+            // Force styles logic...
+            container.style.display = 'flex';
+            container.style.flexDirection = 'column';
+            container.style.alignItems = 'center';
+            container.style.justifyContent = 'flex-start';
+            container.style.paddingTop = '10vh';
+            container.style.minHeight = '100%';
+            container.style.flex = '1';
+
+            const main = container.closest('.v2-main');
+            if (main) main.classList.add('align-top'); // Fix layout
+
+            container.innerHTML = createNoResultsHtml(currentFilter.query);
+
+            // Bind Clear Search
+            const clearBtn = container.querySelector('#v2ClearSearchBtn');
+            if (clearBtn) {
+                clearBtn.addEventListener('click', () => {
+                    // Dispatch clear event or manually clear
+                    const searchInput = document.getElementById('v2SidebarSearchInput');
+                    if (searchInput) {
+                        searchInput.value = '';
+                        searchInput.dispatchEvent(new Event('input', { bubbles: true })); // Trigger update
+                    }
+                });
+            }
+            return;
+        }
+
+        // Has Projects - Render Grid
+        const main = container.closest('.v2-main');
+        if (main) main.classList.remove('align-top'); // Reset layout
+
         let html = '';
-        projectNames.forEach((name, index) => {
+        filteredProjects.forEach((name, index) => {
             html += createTileHtml(name, index);
         });
 
-        // Add "New Project" tile at the end
-        html += createNewProjectTileHtml();
+        // Always show "New Project" tile at the end, unless searching
+        if (!currentFilter.query) {
+            html += createNewProjectTileHtml();
+        }
 
         container.innerHTML = html;
-
-        // Bind events
         bindTileEvents(container);
     }
 
     // =====================
     // EVENT HANDLING
     // =====================
+
+    /**
+     * Bind Search Events
+     */
+    function bindSearchEvents() {
+        window.addEventListener('v2:search', (e) => {
+            currentFilter.query = e.detail?.query || '';
+            renderProjects();
+        });
+    }
 
     /**
      * Bind events to project tiles
@@ -694,7 +766,10 @@
         });
 
         // Initial render
-        renderProjectGrid();
+        renderProjects();
+
+        // Bind Search Events
+        bindSearchEvents();
 
         console.log('[ProjectDashboard] Initialized');
     }

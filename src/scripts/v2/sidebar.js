@@ -157,6 +157,14 @@
             });
             legacyInput.dispatchEvent(keyEvent);
         });
+
+        // [New] Dispatch V2 Search Event for Dashboard
+        input.addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+            window.dispatchEvent(new CustomEvent('v2:search', {
+                detail: { query }
+            }));
+        });
     }
 
     function injectSearchInput(container) {

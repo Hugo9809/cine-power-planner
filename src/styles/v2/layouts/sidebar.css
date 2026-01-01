@@ -209,7 +209,8 @@ h1.v2-sidebar-title {
 }
 
 .v2-sidebar-section {
-    margin-bottom: var(--v2-space-lg);
+    margin-bottom: var(--v2-space-md);
+    /* Reduced from lg */
 }
 
 .v2-sidebar-section-title {
