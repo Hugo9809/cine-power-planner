@@ -257,7 +257,7 @@
     /**
      * Render the project grid
      */
-    function renderProjects() {
+    function renderProjectGrid() {
         const container = document.getElementById(GRID_CONTAINER_ID);
         if (!container) return;
 
@@ -352,7 +352,7 @@
     function bindSearchEvents() {
         window.addEventListener('v2:search', (e) => {
             currentFilter.query = e.detail?.query || '';
-            renderProjects();
+            renderProjectGrid();
         });
     }
 
@@ -766,7 +766,7 @@
         });
 
         // Initial render
-        renderProjects();
+        renderProjectGrid();
 
         // Bind Search Events
         bindSearchEvents();
