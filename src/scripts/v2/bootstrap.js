@@ -115,7 +115,15 @@
                 v2Container.setAttribute('aria-hidden', 'false');
             }
 
-            // Initialize View Manager
+            // Initialize project detail FIRST (for view-change events)
+            // IMPORTANT: This must happen BEFORE cineViewManager.enableV2() because
+            // enableV2() dispatches v2:viewchange, and project-detail needs to have
+            // its listener attached to render the top bar correctly.
+            if (global.cineProjectDetail && typeof global.cineProjectDetail.init === 'function') {
+                global.cineProjectDetail.init();
+            }
+
+            // Initialize View Manager (this will dispatch v2:viewchange)
             if (global.cineViewManager && typeof global.cineViewManager.enableV2 === 'function') {
                 global.cineViewManager.enableV2();
             }
@@ -136,11 +144,6 @@
             // Initialize sidebar (search functionality)
             if (global.cineV2Sidebar && typeof global.cineV2Sidebar.init === 'function') {
                 global.cineV2Sidebar.init();
-            }
-
-            // Initialize project detail (for view-change events)
-            if (global.cineProjectDetail && typeof global.cineProjectDetail.init === 'function') {
-                global.cineProjectDetail.init();
             }
 
             // [Fix] Hide V2 Loader after successfully initializing
@@ -304,6 +307,7 @@
             await loadScript('src/scripts/v2/legacy-shim.js');
             await loadScript('src/scripts/v2/sidebar.js?v=final_sidebar'); // Load sidebar logic
             await loadScript('src/scripts/v2/views/rules-view.js'); // Load Rules View
+            await loadScript('src/scripts/v2/views/device-library-view.js'); // Load Device Library View
             console.log('[V2 Bootstrap] V2 JS modules loaded');
 
             // Initialize Sidebar
@@ -314,6 +318,11 @@
             // Initialize Rules View
             if (global.cineRulesView && typeof global.cineRulesView.init === 'function') {
                 global.cineRulesView.init();
+            }
+
+            // Initialize Device Library View
+            if (global.cineV2DeviceLibrary && typeof global.cineV2DeviceLibrary.init === 'function') {
+                global.cineV2DeviceLibrary.init();
             }
 
             return true;

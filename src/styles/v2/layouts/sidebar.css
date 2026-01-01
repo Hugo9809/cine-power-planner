@@ -42,7 +42,7 @@
 h1.v2-sidebar-title {
     font-size: clamp(20px, 6vw, 26px);
     /* Massive for fill */
-    font-weight: var(--v2-font-weight-bold);
+    font-weight: var(--v2-font-weight-semibold);
     color: var(--v2-header-color);
     margin: 0;
     line-height: 1.0;
@@ -234,7 +234,7 @@ h1.v2-sidebar-title {
     text-decoration: none !important;
     transition: background-color var(--v2-transition-fast), color var(--v2-transition-fast);
     font-size: var(--v2-font-size-base);
-    font-weight: var(--v2-font-weight-semibold);
+    font-weight: var(--v2-font-weight-medium);
 }
 
 .v2-sidebar-link:hover {

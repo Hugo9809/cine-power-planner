@@ -93,7 +93,6 @@
         row1.className = 'v2-controls-row-1';
         injectLanguageSelector(row1); // Language Dropdown first
         injectThemeControls(row1);    // Theme Buttons
-        injectDatabaseToggle(row1);   // Database Manager Toggle
         injectHardRefresh(row1);      // Refresh Button
 
         // Assemble (single row)
@@ -378,39 +377,8 @@
         container.appendChild(btn);
     }
 
-    function injectDatabaseToggle(container) {
-        if (container.querySelector('#v2DatabaseToggle')) return;
-
-        const btn = document.createElement('button');
-        btn.className = 'v2-tool-btn';
-        btn.id = 'v2DatabaseToggle';
-        btn.title = 'Manage Device Database';
-        btn.setAttribute('aria-label', 'Manage Device Database');
-        // Database/Server icon (Stack)
-        btn.innerHTML = `
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M4 6c0 1.66 3.58 3 8 3s8-1.34 8-3-3.58-3-8-3-8 1.34-8 3z" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M4 18c0 1.66 3.58 3 8 3s8-1.34 8-3" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M4 6v12" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M20 6v12" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        `;
-
-        btn.addEventListener('click', () => {
-            // Trigger legacy toggle function
-            if (typeof global.toggleDeviceManagerSection === 'function') {
-                global.toggleDeviceManagerSection();
-            } else {
-                console.warn('[V2] toggleDeviceManagerSection not found on global scope');
-                // Fallback: try clicking the hidden legacy button
-                const legacyBtn = document.getElementById('toggleDeviceManager');
-                if (legacyBtn) legacyBtn.click();
-            }
-        });
-
-        container.appendChild(btn);
-    }
+    // Note: injectDatabaseToggle was removed - device database is now
+    // accessed via the Device Library view in the V2 sidebar navigation.
 
     /**
      * [New] Sidebar Translations
@@ -513,6 +481,9 @@
     }
 
     function injectThemeControls(container) {
+        // Prevent duplicate injection
+        if (container.querySelector('#v2ThemeToggleDark')) return;
+
         // Dark Mode Toggle - V1 Style
         const darkBtn = document.createElement('button');
         darkBtn.className = 'v2-theme-toggle';
