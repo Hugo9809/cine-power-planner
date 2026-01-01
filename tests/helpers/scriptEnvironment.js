@@ -211,24 +211,38 @@ function setupScriptEnvironment(options = {}) {
 
   // Track event listeners to prevent zombies
   const addedListeners = [];
-  let originalAddEventListener = null;
-  let originalRemoveEventListener = null;
+  let originalWinAdd = null, originalWinRem = null;
+  let originalDocAdd = null, originalDocRem = null;
+
   if (typeof window !== 'undefined') {
-    originalAddEventListener = window.addEventListener;
-    originalRemoveEventListener = window.removeEventListener;
+    originalWinAdd = window.addEventListener;
+    originalWinRem = window.removeEventListener;
 
     window.addEventListener = (type, listener, options) => {
-      addedListeners.push({ type, listener, options });
-      return originalAddEventListener.call(window, type, listener, options);
+      addedListeners.push({ target: window, type, listener, options });
+      return originalWinAdd.call(window, type, listener, options);
     };
 
     window.removeEventListener = (type, listener, options) => {
-      // Remove from tracking if present
-      const index = addedListeners.findIndex(l => l.type === type && l.listener === listener);
-      if (index !== -1) {
-        addedListeners.splice(index, 1);
-      }
-      return originalRemoveEventListener.call(window, type, listener, options);
+      const idx = addedListeners.findIndex(l => l.target === window && l.type === type && l.listener === listener);
+      if (idx !== -1) addedListeners.splice(idx, 1);
+      return originalWinRem.call(window, type, listener, options);
+    };
+  }
+
+  if (typeof doc !== 'undefined' && doc) {
+    originalDocAdd = doc.addEventListener;
+    originalDocRem = doc.removeEventListener;
+
+    doc.addEventListener = (type, listener, options) => {
+      addedListeners.push({ target: doc, type, listener, options });
+      return originalDocAdd.call(doc, type, listener, options);
+    };
+
+    doc.removeEventListener = (type, listener, options) => {
+      const idx = addedListeners.findIndex(l => l.target === doc && l.type === type && l.listener === listener);
+      if (idx !== -1) addedListeners.splice(idx, 1);
+      return originalDocRem.call(doc, type, listener, options);
     };
   }
 
@@ -301,18 +315,22 @@ function setupScriptEnvironment(options = {}) {
 
   const cleanup = () => {
     // Remove tracked event listeners
-    if (originalRemoveEventListener && addedListeners.length > 0) {
-      // Reverse order for safety
-      for (let i = addedListeners.length - 1; i >= 0; i--) {
-        const { type, listener, options } = addedListeners[i];
-        try {
-          originalRemoveEventListener.call(window, type, listener, options);
-        } catch (e) { /* ignore */ }
-      }
+    while (addedListeners.length > 0) {
+      const { target, type, listener, options } = addedListeners.pop();
+      try {
+        if (target === window && originalWinRem) {
+          originalWinRem.call(window, type, listener, options);
+        } else if (target === doc && originalDocRem) {
+          originalDocRem.call(doc, type, listener, options);
+        }
+      } catch (e) { /* ignore */ }
     }
+
     // Restore original methods
-    if (originalAddEventListener) window.addEventListener = originalAddEventListener;
-    if (originalRemoveEventListener) window.removeEventListener = originalRemoveEventListener;
+    if (originalWinAdd) window.addEventListener = originalWinAdd;
+    if (originalWinRem) window.removeEventListener = originalWinRem;
+    if (originalDocAdd) doc.addEventListener = originalDocAdd;
+    if (originalDocRem) doc.removeEventListener = originalDocRem;
 
     // Clear localStorage
     if (typeof localStorage !== 'undefined') {
@@ -352,6 +370,27 @@ function setupScriptEnvironment(options = {}) {
       }
       delete global.__cineCorePart1Initialized;
       delete global.__cineCorePart2Initialized;
+      delete window.__cineCorePart1Initialized;
+      delete window.__cineCorePart2Initialized;
+      delete global.__cineStorageInitialized;
+      delete window.__cineStorageInitialized;
+      delete global.cineRuntime;
+      delete window.cineRuntime;
+      delete global.__cineGlobal;
+      delete window.__cineGlobal;
+
+      // Also delete some common app-core globals that might persist
+      const commonAppGlobals = [
+        'updateCalculations', 'saveProject', 'loadProject', 'deleteProject',
+        'createCrewRow', 'saveCurrentGearList', 'autoSaveCurrentSetup',
+        'displayGearAndRequirements', 'populateProjectForm', 'collectProjectFormData'
+      ];
+      commonAppGlobals.forEach(g => {
+        delete global[g];
+        delete window[g];
+      });
+
+      console.log('DEBUG: scriptEnvironment cleanup finished');
     } catch (runtimeCleanupError) {
       void runtimeCleanupError;
     }

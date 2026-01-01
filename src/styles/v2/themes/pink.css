@@ -1,0 +1,165 @@
+/*
+ * Cine Power Planner V2 - Pink Theme
+ * ====================================
+ * Pink accent color overrides.
+ * Matches V1 pink mode from style.css
+ */
+
+body.pink-mode {
+    /* =====================
+   * V1 BRAND COLOR SWAP
+   * All blue becomes pink (#ff69b4)
+   * ===================== */
+    --v2-brand-blue: #ff69b4 !important;
+    --v2-brand-blue-hover: #f255a8 !important;
+    --v2-brand-blue-active: #d1308a !important;
+
+    /* V1: --accent-color */
+    --v2-accent-color: var(--v2-brand-blue) !important;
+    --v2-header-color: var(--v2-brand-blue) !important;
+
+    /* =====================
+   * LINK COLORS
+   * ===================== */
+    --v2-text-link: #ff69b4;
+    --v2-text-link-hover: #f255a8;
+
+    /* =====================
+   * FOCUS COLORS
+   * ===================== */
+    --v2-border-focus: #ff69b4;
+}
+
+/* =====================
+ * INTERACTIVE ELEMENTS
+ * Explicit selectors to guarantee overrides
+ * ===================== */
+
+/* Primary button uses pink */
+body.pink-mode .v2-btn-primary {
+    background-color: var(--v2-brand-pink);
+    border-color: var(--v2-brand-pink);
+}
+
+body.pink-mode .v2-btn-primary:hover:not(:disabled) {
+    background-color: var(--v2-brand-pink-hover);
+    border-color: var(--v2-brand-pink-hover);
+}
+
+body.pink-mode .v2-btn-primary:active:not(:disabled) {
+    background-color: var(--v2-brand-pink-active);
+    border-color: var(--v2-brand-pink-active);
+}
+
+/* Active tab uses pink */
+body.pink-mode .v2-tab-btn.active {
+    color: var(--v2-brand-pink);
+    border-bottom-color: var(--v2-brand-pink);
+}
+
+/* Active sidebar link uses pink */
+body.pink-mode .v2-sidebar-link.active {
+    background-color: var(--v2-brand-pink);
+}
+
+/* Focus rings use pink */
+body.pink-mode .v2-input:focus,
+body.pink-mode .v2-select:focus,
+body.pink-mode .v2-textarea:focus {
+    border-color: var(--v2-brand-pink);
+    box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.15);
+}
+
+body.pink-mode .v2-btn:focus-visible,
+body.pink-mode button:focus-visible {
+    outline-color: var(--v2-brand-pink);
+}
+
+/* Selected states */
+body.pink-mode .v2-card-selected {
+    border-color: var(--v2-brand-pink);
+    box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.2);
+}
+
+/* Tab badges */
+body.pink-mode .v2-tab-badge {
+    background-color: var(--v2-brand-pink);
+}
+
+/* Selection highlight */
+body.pink-mode ::selection {
+    background-color: var(--v2-brand-pink);
+}
+
+/* Create new tile hover */
+body.pink-mode .v2-project-tile-new:hover {
+    border-color: var(--v2-brand-pink);
+    background-color: rgba(233, 30, 99, 0.05);
+}
+
+body.pink-mode .v2-project-tile-new:hover .v2-project-tile-new-icon {
+    background-color: var(--v2-brand-pink);
+}
+
+/* Loading spinner */
+body.pink-mode .view-loading-spinner {
+    border-top-color: var(--v2-brand-pink);
+}
+
+/* Scrollbar thumb accent */
+body.pink-mode .v2-app ::-webkit-scrollbar-thumb:hover {
+    background: var(--v2-brand-pink);
+}
+
+/* Checkboxes and radios */
+body.pink-mode .v2-checkbox,
+body.pink-mode .v2-radio {
+    accent-color: var(--v2-brand-pink);
+}
+
+/* Sidebar Title Pink Mode - EXPLICIT OVERRIDE */
+body.pink-mode h1.v2-sidebar-title,
+body.pink-mode .v2-sidebar-title {
+    color: var(--v2-brand-pink) !important;
+}
+
+/* Sidebar Toggle Icon Pink Mode - EXPLICIT OVERRIDE */
+body.pink-mode .v2-theme-toggle {
+    color: var(--v2-brand-pink) !important;
+    border-color: var(--v2-brand-pink) !important;
+}
+
+body.pink-mode .v2-theme-toggle.active {
+    background-color: var(--v2-brand-pink) !important;
+    border-color: var(--v2-brand-pink) !important;
+    color: #ffffff !important;
+}
+
+/* =========================================
+ * DARK MODE + PINK MODE SPECIFIC OVERRIDES
+ * ========================================= */
+
+/* Help Icon - Force White in Dark+Pink to match Header Logic */
+body.dark-mode.pink-mode .v2-sidebar-link .icon-text {
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+}
+
+/* Theme Toggle - Force White Icon in Dark+Pink (Prevents Pink-on-Pink blob) */
+body.dark-mode.pink-mode .v2-theme-toggle {
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+}
+
+/* Ensure Active Toggle maintains White Text */
+body.dark-mode.pink-mode .v2-theme-toggle.active {
+    color: #ffffff !important;
+    border-color: var(--v2-brand-pink) !important;
+}
+
+/* Force SVG Fill to White in Dark+Pink to fix "Pink Blob" */
+body.dark-mode.pink-mode .v2-theme-toggle svg,
+body.dark-mode.pink-mode .v2-theme-toggle.active svg {
+    fill: #ffffff !important;
+    color: #ffffff !important;
+}

@@ -1,0 +1,162 @@
+/*
+ * Cine Power Planner V2 - Dark Theme
+ * ====================================
+ * Dark mode color overrides.
+ * Matches V1 dark mode from style.css
+ */
+
+.dark-mode {
+    /* =====================
+   * V1 SURFACE COLORS
+   * ===================== */
+    --v2-surface-app-bg: #1c1c1e;
+    /* V1: --background-color */
+    --v2-surface-base: #1c1c1e;
+    /* V1: --surface-color */
+    --v2-surface-elevated: #2c2c2f;
+    /* V1: --surface-elevated */
+    --v2-surface-muted: #3a3a3d;
+    --v2-surface-sunken: #121214;
+    --v2-surface-input: #2c2c2f;
+    --v2-surface-inverse: #ffffff;
+
+    /* =====================
+   * V1 TEXT COLORS
+   * ===================== */
+    --v2-text-primary: #f0f0f0;
+    --v2-text-secondary: #bbb;
+    /* V1: --muted-text-color */
+    --v2-text-muted: #888;
+    --v2-text-inverse: #1c1c1e;
+
+    /* =====================
+   * V1 ACCENT COLOR (Dark Mode Override)
+   * Restoring "Dark Blue" (#001589) for Box Elements (Buttons/Sidebar).
+   * Overriding Text Links to White for readability.
+   * ===================== */
+    --v2-brand-blue: #001589;
+    --v2-brand-blue-hover: #00106a;
+    --v2-brand-blue-active: #000d5a;
+
+    /* Text Link Override */
+    --v2-text-link: #ffffff;
+    --v2-text-link-hover: #e0e0e0;
+
+    /* Global Accent */
+    --v2-accent-color: var(--v2-brand-blue);
+    --v2-header-color: var(--v2-text-primary);
+    /* White headers in dark mode */
+
+    /* =====================
+   * V1 BORDER COLORS
+   * ===================== */
+    --v2-border-default: #444;
+    /* V1: --control-border */
+    --v2-border-strong: #555;
+    /* V1: --border-strong-color */
+    --v2-border-muted: #333;
+    /* V1: --panel-border */
+
+    /* =====================
+   * SIDEBAR (dark theme)
+   * ===================== */
+    --v2-sidebar-bg: #1c1c1e;
+    --v2-sidebar-text: #f0f0f0;
+    --v2-sidebar-border: #333;
+    --v2-sidebar-muted: #888;
+    --v2-sidebar-link: #bbb;
+    --v2-sidebar-hover: rgba(255, 255, 255, 0.1);
+    --v2-sidebar-input-bg: #2c2c2f;
+    --v2-sidebar-input-border: #444;
+
+    /* =====================
+   * STATUS COLORS (V1 dark mode)
+   * ===================== */
+    --v2-status-success: #66bb6a;
+    --v2-status-success-bg: rgba(102, 187, 106, 0.2);
+    --v2-status-warning: #ff9f1c;
+    --v2-status-warning-bg: rgba(255, 159, 28, 0.2);
+    --v2-status-error: #ff6666;
+    --v2-status-error-bg: rgba(255, 102, 102, 0.2);
+    --v2-status-info: #f0f0f0;
+    --v2-status-info-bg: rgba(255, 255, 255, 0.1);
+
+    /* =====================
+   * SHADOWS (enhanced for dark mode)
+   * ===================== */
+    --v2-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --v2-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --v2-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.5);
+    --v2-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.6);
+    --v2-shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.7);
+}
+
+/* =====================
+ * COMPONENT OVERRIDES
+ * ===================== */
+
+/* Sidebar adjustments */
+.dark-mode .v2-sidebar {
+    background-color: var(--v2-surface-sunken);
+}
+
+/* Input fields */
+.dark-mode .v2-input,
+.dark-mode .v2-select,
+.dark-mode .v2-textarea {
+    background-color: var(--v2-surface-sunken);
+}
+
+/* Cards get a subtle glow instead of shadow */
+.dark-mode .v2-card-elevated {
+    box-shadow: 0 0 0 1px var(--v2-border-muted), var(--v2-shadow-md);
+}
+
+/* Modal backdrop */
+.dark-mode .v2-modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* Selection highlight */
+.dark-mode ::selection {
+    background-color: var(--v2-brand-blue);
+    color: var(--v2-text-inverse);
+}
+
+/* Scrollbar */
+.dark-mode .v2-app ::-webkit-scrollbar-track {
+    background: var(--v2-surface-sunken);
+}
+
+.dark-mode .v2-app ::-webkit-scrollbar-thumb {
+    background: var(--v2-border-default);
+}
+
+.dark-mode .v2-app ::-webkit-scrollbar-thumb:hover {
+    background: var(--v2-border-strong);
+}
+
+/* Code blocks */
+.dark-mode code {
+    background-color: var(--v2-surface-sunken);
+}
+
+.dark-mode pre {
+    background-color: var(--v2-surface-sunken);
+}
+
+.dark-mode kbd {
+    background-color: var(--v2-surface-muted);
+    border-color: var(--v2-border-default);
+    box-shadow: 0 1px 0 var(--v2-border-muted);
+}
+
+/* Primary Button Text - Force White on Dark Blue */
+.dark-mode .v2-btn-primary {
+    color: #ffffff;
+}
+
+/* Search Icon - Force White on Dark Input */
+.dark-mode .v2-search-icon {
+    color: #ffffff;
+}

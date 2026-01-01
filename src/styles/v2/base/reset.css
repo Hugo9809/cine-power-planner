@@ -1,0 +1,178 @@
+/*
+ * Cine Power Planner V2 - Modern CSS Reset
+ * =========================================
+ * Based on modern CSS reset best practices.
+ * Scoped to .v2-app to avoid affecting legacy styles.
+ */
+
+/* Box sizing for all elements */
+.v2-app *,
+.v2-app *::before,
+.v2-app *::after {
+    box-sizing: border-box;
+}
+
+/* Remove default margins */
+.v2-app h1,
+.v2-app h2,
+.v2-app h3,
+.v2-app h4,
+.v2-app h5,
+.v2-app h6,
+.v2-app p,
+.v2-app figure,
+.v2-app blockquote,
+.v2-app dl,
+.v2-app dd {
+    margin: 0;
+}
+
+/* Remove list styles */
+.v2-app ul,
+.v2-app ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* Prevent font size inflation on mobile */
+.v2-app {
+    -moz-text-size-adjust: none;
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
+}
+
+/* Smooth font rendering */
+.v2-app {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Core body defaults */
+.v2-app {
+    min-height: 100vh;
+    line-height: var(--v2-line-height-normal);
+    font-family: var(--v2-font-family);
+    font-size: var(--v2-font-size-base);
+    color: var(--v2-text-primary);
+    background-color: var(--v2-surface-base);
+}
+
+/* Links */
+.v2-app a {
+    color: var(--v2-text-link);
+    text-decoration: none;
+    transition: color var(--v2-transition-fast);
+}
+
+.v2-app a:hover {
+    color: var(--v2-text-link-hover);
+    text-decoration: underline;
+}
+
+.v2-app a:focus-visible {
+    outline: 2px solid var(--v2-border-focus);
+    outline-offset: 2px;
+    border-radius: var(--v2-radius-sm);
+}
+
+/* Buttons inherit font */
+.v2-app button,
+.v2-app input,
+.v2-app select,
+.v2-app textarea {
+    font: inherit;
+}
+
+/* Remove button defaults */
+.v2-app button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+/* Images */
+.v2-app img,
+.v2-app picture,
+.v2-app video,
+.v2-app canvas,
+.v2-app svg {
+    display: block;
+    max-width: 100%;
+}
+
+/* Inputs and textareas */
+.v2-app input,
+.v2-app textarea,
+.v2-app select {
+    background-color: var(--v2-surface-base);
+    border: 1px solid var(--v2-border-default);
+    border-radius: var(--v2-radius-md);
+    padding: var(--v2-space-sm) var(--v2-space-md);
+    transition: border-color var(--v2-transition-fast), box-shadow var(--v2-transition-fast);
+}
+
+.v2-app input:focus,
+.v2-app textarea:focus,
+.v2-app select:focus {
+    outline: none;
+    border-color: var(--v2-border-focus);
+    box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.15);
+}
+
+/* Tables */
+.v2-app table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+
+    .v2-app *,
+    .v2-app *::before,
+    .v2-app *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Selection highlight */
+.v2-app ::selection {
+    background-color: var(--v2-brand-blue);
+    color: var(--v2-text-inverse);
+}
+
+/* Scrollbar styling (WebKit) */
+.v2-app ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.v2-app ::-webkit-scrollbar-track {
+    background: var(--v2-surface-muted);
+    border-radius: var(--v2-radius-full);
+}
+
+.v2-app ::-webkit-scrollbar-thumb {
+    background: var(--v2-border-strong);
+    border-radius: var(--v2-radius-full);
+}
+
+.v2-app ::-webkit-scrollbar-thumb:hover {
+    background: var(--v2-text-muted);
+}
+
+/* =====================
+ * LEGACY OVERRIDES
+ * ===================== */
+body.v2-mode {
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    /* Prevent legacy body scroll & padding gaps */
+}

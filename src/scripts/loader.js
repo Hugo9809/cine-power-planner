@@ -4417,6 +4417,10 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         if (bundle.deferred && bundle.deferred.length) {
           scheduleDeferredScripts(bundle.deferred);
         }
+        // Load V2 UI scripts after deferred scripts
+        if (bundle.v2 && bundle.v2.length) {
+          scheduleDeferredScripts(bundle.v2);
+        }
         if (typeof settings.onComplete === 'function') {
           try {
             settings.onComplete();
@@ -4523,6 +4527,16 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'src/scripts/overview.js',
       'src/scripts/autosave-overlay.js',
       'src/scripts/modules/features/onboarding-tour.js'
+    ],
+    // V2 UI modules - loaded after deferred, controlled by feature flag
+    // IMPORTANT: bootstrap.js must load LAST since it calls init() on other modules
+    v2: [
+      'src/scripts/v2/view-manager.js',
+      'src/scripts/v2/legacy-shim.js',
+      'src/scripts/v2/sidebar.js',
+      'src/scripts/v2/project-dashboard.js?v=force_center_2',
+      'src/scripts/v2/project-detail.js',
+      'src/scripts/v2/bootstrap.js'
     ],
   };
 

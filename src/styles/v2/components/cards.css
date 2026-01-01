@@ -1,0 +1,165 @@
+/*
+ * Cine Power Planner V2 - Cards
+ * ==============================
+ * Card component styles.
+ */
+
+/* =====================
+ * BASE CARD
+ * ===================== */
+.v2-card {
+    background-color: var(--v2-surface-elevated);
+    border: 1px solid var(--v2-border-muted);
+    border-radius: var(--v2-radius-lg);
+    padding: var(--v2-space-lg);
+    transition: box-shadow var(--v2-transition-fast), border-color var(--v2-transition-fast);
+}
+
+/* =====================
+ * CARD VARIANTS
+ * ===================== */
+.v2-card-elevated {
+    border-color: transparent;
+    box-shadow: var(--v2-shadow-md);
+}
+
+.v2-card-interactive {
+    cursor: pointer;
+}
+
+.v2-card-interactive:hover {
+    border-color: var(--v2-border-default);
+    box-shadow: var(--v2-shadow-md);
+}
+
+.v2-card-interactive:active {
+    box-shadow: var(--v2-shadow-sm);
+}
+
+.v2-card-selected {
+    border-color: var(--v2-brand-blue);
+    box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.2);
+}
+
+/* =====================
+ * CARD STRUCTURE
+ * ===================== */
+.v2-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--v2-space-md);
+    margin-bottom: var(--v2-space-md);
+}
+
+.v2-card-title {
+    font-size: var(--v2-font-size-lg);
+    font-weight: var(--v2-font-weight-semibold);
+    color: var(--v2-text-primary);
+    margin: 0;
+}
+
+.v2-card-subtitle {
+    font-size: var(--v2-font-size-sm);
+    color: var(--v2-text-secondary);
+    margin-top: var(--v2-space-xs);
+}
+
+.v2-card-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--v2-space-sm);
+}
+
+.v2-card-body {
+    color: var(--v2-text-primary);
+}
+
+.v2-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--v2-space-sm);
+    margin-top: var(--v2-space-lg);
+    padding-top: var(--v2-space-md);
+    border-top: 1px solid var(--v2-border-muted);
+}
+
+/* =====================
+ * CARD SIZES
+ * ===================== */
+.v2-card-sm {
+    padding: var(--v2-space-md);
+}
+
+.v2-card-lg {
+    padding: var(--v2-space-xl);
+}
+
+/* =====================
+ * CONTENT CARD (Section style)
+ * ===================== */
+.v2-content-card {
+    background-color: var(--v2-surface-base);
+    border: 1px solid var(--v2-border-default);
+    border-radius: var(--v2-radius-lg);
+    margin-bottom: var(--v2-space-lg);
+}
+
+.v2-content-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--v2-space-md) var(--v2-space-lg);
+    border-bottom: 1px solid var(--v2-border-muted);
+    background-color: var(--v2-surface-elevated);
+    border-radius: var(--v2-radius-lg) var(--v2-radius-lg) 0 0;
+}
+
+.v2-content-card-title {
+    font-size: var(--v2-font-size-base);
+    font-weight: var(--v2-font-weight-semibold);
+    color: var(--v2-text-primary);
+    margin: 0;
+}
+
+.v2-content-card-body {
+    padding: var(--v2-space-lg);
+}
+
+/* =====================
+ * STAT CARD
+ * ===================== */
+.v2-stat-card {
+    background-color: var(--v2-surface-elevated);
+    border: 1px solid var(--v2-border-muted);
+    border-radius: var(--v2-radius-lg);
+    padding: var(--v2-space-lg);
+    text-align: center;
+}
+
+.v2-stat-value {
+    font-size: var(--v2-font-size-2xl);
+    font-weight: var(--v2-font-weight-bold);
+    color: var(--v2-text-primary);
+    line-height: 1;
+    margin-bottom: var(--v2-space-xs);
+}
+
+.v2-stat-label {
+    font-size: var(--v2-font-size-sm);
+    color: var(--v2-text-secondary);
+}
+
+.v2-stat-change {
+    font-size: var(--v2-font-size-xs);
+    margin-top: var(--v2-space-sm);
+}
+
+.v2-stat-change.positive {
+    color: var(--v2-status-success);
+}
+
+.v2-stat-change.negative {
+    color: var(--v2-status-error);
+}

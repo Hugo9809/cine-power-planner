@@ -188,8 +188,11 @@ describe('project autosave', () => {
     });
     console.log('DEBUG: Test 4 setupScriptEnvironment finished');
 
-    require('../../src/scripts/storage.js');
+    jest.isolateModules(() => {
+      require('../../src/scripts/storage.js');
+    });
     console.log('DEBUG: Test 4 storage.js loaded');
+
 
     const setupSelect = document.getElementById('setupSelect');
 
@@ -280,8 +283,11 @@ describe('project autosave', () => {
 
     console.log('DEBUG: Test 5 setupScriptEnvironment finished');
 
-    require('../../src/scripts/storage.js');
+    jest.isolateModules(() => {
+      require('../../src/scripts/storage.js');
+    });
     console.log('DEBUG: Test 5 storage.js loaded');
+
 
 
     if (typeof window.saveProject === 'function') {
@@ -368,7 +374,10 @@ describe('project autosave', () => {
       disableFreeze: true
     });
 
-    require('../../src/scripts/storage.js');
+    jest.isolateModules(() => {
+      require('../../src/scripts/storage.js');
+    });
+
 
     if (typeof window.saveProject === 'function') {
       window.saveProject('Project 1', storedProjects['Project 1']);
@@ -433,7 +442,10 @@ describe('project autosave', () => {
       disableFreeze: true
     });
 
-    require('../../src/scripts/storage.js');
+    jest.isolateModules(() => {
+      require('../../src/scripts/storage.js');
+    });
+
 
     if (typeof window.saveProject === 'function') {
       window.saveProject('Project One', {

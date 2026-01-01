@@ -1,0 +1,208 @@
+/*
+ * Cine Power Planner V2 - Views
+ * ==============================
+ * Page/view container styles.
+ */
+
+/* =====================
+ * VIEW CONTAINER
+ * ===================== */
+.app-view {
+    display: none;
+    flex-direction: column;
+    min-height: 100%;
+    border: none !important;
+    margin: 0 !important;
+    outline: none !important;
+}
+
+.app-view.active {
+    display: flex;
+}
+
+/* =====================
+ * VIEW HEADER
+ * ===================== */
+.view-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--v2-space-md);
+    padding: 0 var(--v2-space-lg) var(--v2-space-lg) var(--v2-space-lg);
+    /* Remove top padding to flush with edge */
+    border-bottom: none;
+    background-color: transparent;
+    position: sticky;
+    top: 0;
+    z-index: var(--v2-z-sticky);
+}
+
+.view-header h1 {
+    margin: 0;
+    font-size: var(--v2-font-size-xl);
+}
+
+.view-header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--v2-space-sm);
+}
+
+/* Force header button to have visible colors in all themes */
+.view-header-actions .v2-btn-primary {
+    background-color: var(--v2-brand-blue);
+    color: var(--v2-text-inverse);
+    border-color: var(--v2-brand-blue);
+    padding: 10px 24px;
+    /* Increased padding */
+    min-width: 160px;
+    /* Ensure width */
+    white-space: nowrap;
+    /* Prevent text overflow */
+    font-weight: 600;
+    /* Premium feel */
+    box-shadow: 0 4px 6px rgba(0, 21, 137, 0.2);
+    /* Subtle shadow */
+}
+
+.view-header-actions .v2-btn-primary:hover:not(:disabled) {
+    background-color: var(--v2-brand-blue-hover);
+    border-color: var(--v2-brand-blue-hover);
+    box-shadow: 0 6px 8px rgba(0, 21, 137, 0.3);
+    transform: translateY(-1px);
+}
+
+/* =====================
+ * VIEW CONTENT
+ * ===================== */
+.view-content {
+    flex: 1;
+    padding: var(--v2-space-lg);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* =====================
+ * BACK BUTTON
+ * ===================== */
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--v2-space-xs);
+    color: var(--v2-text-secondary);
+    font-size: var(--v2-font-size-sm);
+    padding: var(--v2-space-xs) var(--v2-space-sm);
+    border-radius: var(--v2-radius-md);
+    transition: background-color var(--v2-transition-fast), color var(--v2-transition-fast);
+}
+
+.back-btn:hover {
+    background-color: var(--v2-surface-muted);
+    color: var(--v2-text-primary);
+}
+
+/* =====================
+ * PROJECT DETAIL HEADER
+ * ===================== */
+.detail-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--v2-space-sm);
+    padding: var(--v2-space-lg);
+    border-bottom: 1px solid var(--v2-border-default);
+    background-color: var(--v2-surface-base);
+}
+
+.detail-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--v2-space-md);
+}
+
+.detail-header h1 {
+    margin: 0;
+    font-size: var(--v2-font-size-xl);
+}
+
+/* =====================
+ * EMPTY STATE
+ * ===================== */
+.view-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--v2-space-3xl);
+    color: var(--v2-text-secondary);
+    width: 100%;
+    flex: 1;
+    /* Fill height */
+}
+
+.view-empty-state-icon {
+    width: 80px;
+    height: 80px;
+    margin-bottom: var(--v2-space-lg);
+    opacity: 0.5;
+}
+
+.view-empty-state h2 {
+    margin-bottom: var(--v2-space-sm);
+    color: var(--v2-header-color);
+    /* Use header color (White in Dark, Blue in Light) */
+    text-align: center;
+    width: 100%;
+}
+
+.view-empty-state p {
+    margin-bottom: var(--v2-space-lg);
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.view-empty-state .v2-btn-primary {
+    background-color: var(--v2-brand-blue);
+    color: var(--v2-text-inverse);
+    border-color: var(--v2-brand-blue);
+    padding: 12px 32px;
+    /* Larger */
+    font-weight: 600;
+    box-shadow: 0 4px 6px rgba(0, 21, 137, 0.2);
+}
+
+.view-empty-state .v2-btn-primary:hover {
+    background-color: var(--v2-brand-blue-hover);
+    border-color: var(--v2-brand-blue-hover);
+    box-shadow: 0 6px 8px rgba(0, 21, 137, 0.3);
+    transform: translateY(-1px);
+}
+
+/* =====================
+ * LOADING STATE
+ * ===================== */
+.view-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--v2-space-3xl);
+}
+
+.view-loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid var(--v2-border-default);
+    border-top-color: var(--v2-brand-blue);
+    border-radius: var(--v2-radius-full);
+    animation: v2-spin 1s linear infinite;
+}
+
+@keyframes v2-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

@@ -1,0 +1,201 @@
+/*
+ * Cine Power Planner V2 - Forms
+ * ==============================
+ * Form element styles.
+ */
+
+/* =====================
+ * FORM LAYOUT
+ * ===================== */
+.v2-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--v2-space-md);
+}
+
+.v2-form-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--v2-space-xs);
+}
+
+.v2-form-row-inline {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--v2-space-md);
+}
+
+.v2-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--v2-space-md);
+}
+
+@media (max-width: 600px) {
+    .v2-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =====================
+ * LABELS
+ * ===================== */
+.v2-label {
+    font-size: var(--v2-font-size-sm);
+    font-weight: var(--v2-font-weight-medium);
+    color: var(--v2-text-primary);
+}
+
+.v2-label-required::after {
+    content: ' *';
+    color: var(--v2-status-error);
+}
+
+.v2-label-optional::after {
+    content: ' (optional)';
+    color: var(--v2-text-muted);
+    font-weight: var(--v2-font-weight-normal);
+}
+
+/* =====================
+ * TEXT INPUTS
+ * ===================== */
+.v2-input {
+    width: 100%;
+    padding: var(--v2-space-sm) var(--v2-space-md);
+    font-size: var(--v2-font-size-base);
+    color: var(--v2-text-primary);
+    background-color: var(--v2-surface-base);
+    border: 1px solid var(--v2-border-default);
+    border-radius: var(--v2-radius-md);
+    transition: border-color var(--v2-transition-fast), box-shadow var(--v2-transition-fast);
+}
+
+.v2-input::placeholder {
+    color: var(--v2-text-muted);
+}
+
+.v2-input:hover:not(:disabled):not(:focus) {
+    border-color: var(--v2-border-strong);
+}
+
+.v2-input:focus {
+    outline: none;
+    border-color: var(--v2-border-focus);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--v2-brand-blue) 15%, transparent);
+}
+
+.v2-input:disabled {
+    background-color: var(--v2-surface-muted);
+    color: var(--v2-text-muted);
+    cursor: not-allowed;
+}
+
+.v2-input.v2-input-error {
+    border-color: var(--v2-status-error);
+}
+
+.v2-input.v2-input-error:focus {
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
+}
+
+/* =====================
+ * SELECT
+ * ===================== */
+.v2-select {
+    width: 100%;
+    padding: var(--v2-space-sm) var(--v2-space-md);
+    padding-right: var(--v2-space-xl);
+    font-size: var(--v2-font-size-base);
+    color: var(--v2-text-primary);
+    background-color: var(--v2-surface-base);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23666' d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right var(--v2-space-sm) center;
+    border: 1px solid var(--v2-border-default);
+    border-radius: var(--v2-radius-md);
+    appearance: none;
+    cursor: pointer;
+    transition: border-color var(--v2-transition-fast), box-shadow var(--v2-transition-fast);
+}
+
+.v2-select:hover:not(:disabled):not(:focus) {
+    border-color: var(--v2-border-strong);
+}
+
+.v2-select:focus {
+    outline: none;
+    border-color: var(--v2-border-focus);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--v2-brand-blue) 15%, transparent);
+}
+
+.v2-select:disabled {
+    background-color: var(--v2-surface-muted);
+    color: var(--v2-text-muted);
+    cursor: not-allowed;
+}
+
+/* =====================
+ * CHECKBOX & RADIO
+ * ===================== */
+.v2-checkbox-group,
+.v2-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--v2-space-sm);
+}
+
+.v2-checkbox-label,
+.v2-radio-label {
+    display: flex;
+    align-items: center;
+    gap: var(--v2-space-sm);
+    cursor: pointer;
+    font-size: var(--v2-font-size-base);
+}
+
+.v2-checkbox,
+.v2-radio {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--v2-brand-blue);
+}
+
+/* =====================
+ * TEXTAREA
+ * ===================== */
+.v2-textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: var(--v2-space-sm) var(--v2-space-md);
+    font-size: var(--v2-font-size-base);
+    font-family: inherit;
+    color: var(--v2-text-primary);
+    background-color: var(--v2-surface-base);
+    border: 1px solid var(--v2-border-default);
+    border-radius: var(--v2-radius-md);
+    resize: vertical;
+    transition: border-color var(--v2-transition-fast), box-shadow var(--v2-transition-fast);
+}
+
+.v2-textarea:focus {
+    outline: none;
+    border-color: var(--v2-border-focus);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--v2-brand-blue) 15%, transparent);
+}
+
+/* =====================
+ * HELPER TEXT
+ * ===================== */
+.v2-form-help {
+    font-size: var(--v2-font-size-xs);
+    color: var(--v2-text-muted);
+}
+
+.v2-form-error {
+    font-size: var(--v2-font-size-xs);
+    color: var(--v2-status-error);
+}

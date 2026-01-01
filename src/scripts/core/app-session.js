@@ -4744,12 +4744,15 @@ function autoSaveCurrentSetup() {
       delete currentSetup.diagramPositions;
     }
   }
+  const setupCreatedOrRenamed = !existingSetup || existingSetupSignature === '';
   setups[name] = currentSetup;
   console.log('DEBUG: calling storeSetups');
   storeSetups(setups);
-  console.log('DEBUG: calling populateSetupSelect');
-  populateSetupSelect();
-  console.log('DEBUG: populateSetupSelect returned');
+  if (setupCreatedOrRenamed) {
+    console.log('DEBUG: calling populateSetupSelect');
+    populateSetupSelect();
+    console.log('DEBUG: populateSetupSelect returned');
+  }
 
   if (setupSelectRef) setupSelectRef.value = name;
   saveCurrentSession();
@@ -5227,14 +5230,7 @@ if (projectFormRefSession) {
     scheduleProjectAutoSave(true);
   };
   projectFormRefSession.addEventListener('input', queueProjectAutoSave);
-  projectFormRefSession.addEventListener('change', flushProjectAutoSave);
-
-  projectFormRefSession.querySelectorAll('input, textarea, select').forEach(el => {
-    el.addEventListener('change', event => {
-      noteProjectFormDirty();
-      saveCurrentSession(event);
-    });
-  });
+  projectFormRefSession.addEventListener('change', queueProjectAutoSave);
 }
 
 function setSelectValue(select, value) {
@@ -16696,9 +16692,16 @@ const setupHelpSystem = () => {
   };
 
   // Hide the dialog and return focus to the button that opened it
+  // Hide the dialog and return focus to the button that opened it
   const closeHelp = (returnFocusEl = helpButton) => {
-    closeDialog(helpDialog);
-    helpDialog.setAttribute('hidden', '');
+    // Force find the dialog if scope is lost
+    const dialog = helpDialog || document.getElementById('helpDialog');
+    if (dialog) {
+      closeDialog(dialog);
+      dialog.setAttribute('hidden', '');
+      dialog.style.display = 'none'; // Force hide
+    }
+
     if (returnFocusEl && typeof returnFocusEl.focus === 'function') {
       try {
         returnFocusEl.focus({ preventScroll: true });

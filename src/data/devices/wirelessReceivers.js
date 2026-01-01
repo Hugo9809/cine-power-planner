@@ -1002,6 +1002,234 @@
         ]
       },
       "weight_g": 350
+    },
+    "Swit FLOW500 RX": {
+      "powerDrawWatts": 8,
+      "weight_g": 245,
+      "videoInputs": [],
+      "videoOutputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" },
+        { "type": "3G-SDI" }
+      ],
+      "frequency": "5.1-5.9 GHz",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": {
+          "type": "LEMO 2-pin",
+          "voltageRange": "7-34",
+          "notes": "DC input"
+        },
+        "batteryPlateSupport": [
+          { "type": "NP-F", "mount": "integrated" }
+        ]
+      }
+    },
+    "Swit FLOW2000 RX": {
+      "powerDrawWatts": 8,
+      "weight_g": 245,
+      "videoInputs": [],
+      "videoOutputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" },
+        { "type": "3G-SDI" }
+      ],
+      "frequency": "5.1-5.9 GHz",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": {
+          "type": "LEMO 2-pin",
+          "voltageRange": "7-34",
+          "notes": "DC input"
+        },
+        "batteryPlateSupport": [
+          { "type": "NP-F", "mount": "integrated" }
+        ]
+      }
+    },
+    "Swit FLOW6500 RX": {
+      "powerDrawWatts": 9,
+      "weight_g": 1500,
+      "videoInputs": [],
+      "videoOutputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" },
+        { "type": "3G-SDI" }
+      ],
+      "frequency": "5.1-5.9 GHz",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": {
+          "type": "LEMO 2-pin",
+          "voltageRange": "7-34",
+          "notes": "DC input"
+        },
+        "batteryPlateSupport": [
+          { "type": "V-Mount", "mount": "integrated" }
+        ]
+      }
+    },
+    "Swit FLOW10K RX": {
+      "powerDrawWatts": 9,
+      "weight_g": 2300,
+      "videoInputs": [],
+      "videoOutputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" },
+        { "type": "3G-SDI" }
+      ],
+      "frequency": "5.1-5.9 GHz",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": {
+          "type": "LEMO 2-pin",
+          "voltageRange": "7-34",
+          "notes": "DC input"
+        },
+        "batteryPlateSupport": [
+          { "type": "V-Mount", "mount": "integrated" }
+        ]
+      }
+    },
+    "Swit CURVE500+ RX": {
+      "powerDrawWatts": 7,
+      "weight_g": 181,
+      "videoInputs": [],
+      "videoOutputs": [
+        { "type": "HDMI" }
+      ],
+      "frequency": "5.1-5.9 GHz",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": {
+          "type": "DC Barrel",
+          "voltageRange": "7-17",
+          "notes": "DC input"
+        },
+        "batteryPlateSupport": [
+          { "type": "NP-F", "mount": "integrated" }
+        ]
+      }
+    },
+    "Swit CW-H150 RX": {
+      "powerDrawWatts": 6.5,
+      "weight_g": 267,
+      "videoInputs": [],
+      "videoOutputs": [
+        { "type": "HDMI" }
+      ],
+      "frequency": "5.1-5.9 GHz",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": {
+          "type": "DC Barrel",
+          "voltageRange": "7-17",
+          "notes": "DC input"
+        },
+        "batteryPlateSupport": [
+          { "type": "NP-F", "mount": "integrated" }
+        ]
+      }
+    },
+    "Swit CREW RX": {
+      "powerDrawWatts": 6,
+      "weight_g": 334,
+      "videoInputs": [],
+      "videoOutputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" },
+        { "type": "3G-SDI" }
+      ],
+      "frequency": "5.1-5.9 GHz",
+      "latencyMs": "32ms",
+      "power": {
+        "input": {
+          "type": "LEMO 2-pin",
+          "voltageRange": "7-17",
+          "notes": "DC input"
+        },
+        "alternateInputs": [
+          { "type": "USB-C", "voltageRange": "5", "notes": "5V/2A" }
+        ],
+        "batteryPlateSupport": [
+          { "type": "NP-F", "mount": "integrated" }
+        ]
+      }
+    },
+    "Swit CREW-V RX": {
+      "powerDrawWatts": 6,
+      "weight_g": 397,
+      "videoInputs": [],
+      "videoOutputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" },
+        { "type": "3G-SDI" }
+      ],
+      "frequency": "5.1-5.9 GHz",
+      "latencyMs": "32ms",
+      "power": {
+        "input": {
+          "type": "LEMO 2-pin",
+          "voltageRange": "7-17",
+          "notes": "DC input"
+        },
+        "alternateInputs": [
+          { "type": "USB-C", "voltageRange": "5", "notes": "5V/2A" }
+        ],
+        "batteryPlateSupport": [
+          { "type": "V-Mount", "mount": "integrated" }
+        ]
+      }
+    },
+    "Swit CREW MAX RX": {
+      "powerDrawWatts": 6,
+      "weight_g": 1511,
+      "videoInputs": [],
+      "videoOutputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" },
+        { "type": "3G-SDI" }
+      ],
+      "frequency": "5.1-5.9 GHz",
+      "latencyMs": "32ms",
+      "power": {
+        "input": {
+          "type": "LEMO 2-pin",
+          "voltageRange": "7-17",
+          "notes": "DC input"
+        },
+        "alternateInputs": [
+          { "type": "USB-C", "voltageRange": "5", "notes": "5V/2A" }
+        ],
+        "batteryPlateSupport": [
+          { "type": "V-Mount", "mount": "integrated" }
+        ]
+      }
+    },
+    "Swit CREW-V MAX RX": {
+      "powerDrawWatts": 6,
+      "weight_g": 1511,
+      "videoInputs": [],
+      "videoOutputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" },
+        { "type": "3G-SDI" }
+      ],
+      "frequency": "5.1-5.9 GHz",
+      "latencyMs": "32ms",
+      "power": {
+        "input": {
+          "type": "LEMO 2-pin",
+          "voltageRange": "7-17",
+          "notes": "DC input"
+        },
+        "alternateInputs": [
+          { "type": "USB-C", "voltageRange": "5", "notes": "5V/2A" }
+        ],
+        "batteryPlateSupport": [
+          { "type": "V-Mount", "mount": "integrated" }
+        ]
+      }
     }
   };
 

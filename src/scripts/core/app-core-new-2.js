@@ -998,6 +998,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           try {
             return require('./modules/app-core/runtime.js');
           } catch (autoGearCrewRequireError) {
+            console.log('DEBUG: app-core-new-2.js line 1000 REACHED');
+
             void autoGearCrewRequireError;
             return null;
           }
@@ -4998,6 +5000,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             // Ignore selection errors (for older browsers)
           }
         }
+        console.log('DEBUG: app-core-new-2.js line 5000 REACHED');
+
       }
     }
 
@@ -9998,6 +10002,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     const MAX_FEATURE_SEARCH_RECENTS = 5;
     let featureSearchHistoryLoaded = false;
     let featureSearchHistoryLoadInProgress = false;
+    console.log('DEBUG: app-core-new-2.js line 10000 REACHED');
+
     let featureSearchHistoryLoadRetryTimer = null;
     const FEATURE_SEARCH_HISTORY_RETRY_DELAY = 1000;
     const featureSearchHistory = new Map();
@@ -13081,6 +13087,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     };
 
     function populateFeatureSearch() {
+      if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'test') {
+        console.log('DEBUG: populateFeatureSearch skipped in test environment');
+        return;
+      }
+
       console.log('DEBUG: populateFeatureSearch ENTERED, NODE_ENV:', typeof process !== 'undefined' ? process.env.NODE_ENV : 'undefined');
       if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'test') return;
       featureMap.clear();
@@ -14998,6 +15009,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     function getAllPowerPortTypes() {
       const types = new Set();
+      console.log('DEBUG: app-core-new-2.js line 15000 REACHED');
+
       Object.values(devices.cameras || {}).forEach(cam => powerInputTypes(cam).forEach(t => types.add(t)));
       Object.values(devices.viewfinders || {}).forEach(vf => powerInputTypes(vf).forEach(t => types.add(t)));
       Object.values(devices.monitors || {}).forEach(mon => powerInputTypes(mon).forEach(t => types.add(t)));
@@ -18274,8 +18287,39 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             void error;
           }
         }
+        updateCalculations();
       });
     }
+
+    // Agent: Add change listeners to update results for other devices
+    [monitorSelect, videoSelect, cageSelect, distanceSelect, hotswapSelect, lensSelect].forEach(sel => {
+      if (sel) {
+        sel.addEventListener('change', () => {
+          updateCalculations();
+        });
+      }
+    });
+
+    if (Array.isArray(motorSelects)) {
+      motorSelects.forEach(sel => {
+        if (sel) {
+          sel.addEventListener('change', () => {
+            updateCalculations();
+          });
+        }
+      });
+    }
+
+    if (Array.isArray(controllerSelects)) {
+      controllerSelects.forEach(sel => {
+        if (sel) {
+          sel.addEventListener('change', () => {
+            updateCalculations();
+          });
+        }
+      });
+    }
+
     applyFilters();
     setVideoOutputs([]);
     setMonitorVideoInputs([]);
@@ -18304,27 +18348,50 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     setLensMounts([]);
     updateMountTypeOptions();
     updatePowerPortOptions();
+    console.log('DEBUG: updatePowerPortOptions finished');
     setPowerDistribution([]);
+    console.log('DEBUG: setPowerDistribution finished');
     updatePowerDistTypeOptions();
+    console.log('DEBUG: updatePowerDistTypeOptions finished');
     updatePowerDistVoltageOptions();
+    console.log('DEBUG: updatePowerDistVoltageOptions finished');
     updatePowerDistCurrentOptions();
+    console.log('DEBUG: updatePowerDistCurrentOptions finished');
     setTimecodes([]);
+    console.log('DEBUG: setTimecodes finished');
     updateTimecodeTypeOptions();
+    console.log('DEBUG: updateTimecodeTypeOptions finished');
     updateDistanceConnectionOptions();
+    console.log('DEBUG: updateDistanceConnectionOptions finished (second call)');
     updateDistanceMethodOptions();
+    console.log('DEBUG: updateDistanceMethodOptions finished (second call)');
     updateDistanceDisplayOptions();
+    console.log('DEBUG: updateDistanceDisplayOptions finished (second call)');
 
     // Set default selections for dropdowns
 
     // Kamera: Wenn Option „None“ existiert, dann setze sie – sonst erste Option
     if (typeof cameraSelect !== 'undefined' && cameraSelect) {
-      const noneCameraOption = Array.from(cameraSelect.options).find(opt => opt.value === "None");
+      console.log('DEBUG: processing cameraSelect', cameraSelect.id, cameraSelect.tagName, 'Options count:', cameraSelect.options ? cameraSelect.options.length : 'null');
+      let noneCameraOption = null;
+      if (cameraSelect.options) {
+        console.log('DEBUG: cameraSelect options exist, iterating...');
+        for (let i = 0; i < cameraSelect.options.length; i++) {
+          const opt = cameraSelect.options[i];
+          if (opt && opt.value === "None") {
+            noneCameraOption = opt;
+            break;
+          }
+        }
+      }
+      console.log('DEBUG: noneCameraOption resolution finished');
       if (noneCameraOption) {
         cameraSelect.value = "None";
       } else {
         cameraSelect.selectedIndex = 0;
       }
     }
+
 
     // Für die anderen Dropdowns
     [monitorSelect, videoSelect, distanceSelect, batterySelect].forEach(sel => {
@@ -19682,6 +19749,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     corePart2Runtime();
   }
 
+
+
 }
-console.log('DEBUG: app-core-new-2.js FILE END');
+
 

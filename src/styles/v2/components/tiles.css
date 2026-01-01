@@ -1,0 +1,258 @@
+/*
+ * Cine Power Planner V2 - Project Tiles
+ * ======================================
+ * Grid of project cards for dashboard.
+ */
+
+/* =====================
+ * TILE GRID
+ * ===================== */
+.v2-project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--v2-space-lg);
+    padding: var(--v2-space-lg);
+}
+
+@media (max-width: 600px) {
+    .v2-project-grid {
+        grid-template-columns: 1fr;
+        gap: var(--v2-space-md);
+        padding: var(--v2-space-md);
+    }
+}
+
+/* Override grid for empty state to allow centering */
+.v2-project-grid.v2-grid-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 100%;
+    grid-template-columns: none;
+}
+
+/* =====================
+ * PROJECT TILE
+ * ===================== */
+.v2-project-tile {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--v2-surface-elevated);
+    border: 1px solid var(--v2-border-muted);
+    border-radius: var(--v2-radius-lg);
+    padding: var(--v2-space-lg);
+    cursor: pointer;
+    transition: border-color var(--v2-transition-fast),
+        box-shadow var(--v2-transition-fast),
+        transform var(--v2-transition-fast);
+    box-shadow: var(--v2-shadow-xs);
+    /* Default shadow for contrast */
+}
+
+.v2-project-tile:hover {
+    border-color: var(--v2-border-default);
+    box-shadow: var(--v2-shadow-md);
+    transform: translateY(-2px);
+}
+
+.v2-project-tile:active {
+    transform: translateY(0);
+    box-shadow: var(--v2-shadow-sm);
+}
+
+.v2-project-tile:focus-visible {
+    outline: 2px solid var(--v2-border-focus);
+    outline-offset: 2px;
+}
+
+/* =====================
+ * TILE HEADER
+ * ===================== */
+.v2-tile-header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--v2-space-md);
+    margin-bottom: var(--v2-space-md);
+}
+
+.v2-tile-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--v2-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--v2-font-size-xl);
+    flex-shrink: 0;
+}
+
+/* Colorful icon variants */
+.v2-tile-icon.color-blue {
+    background-color: color-mix(in srgb, var(--v2-color-blue) 15%, transparent);
+    color: var(--v2-color-blue);
+}
+
+.v2-tile-icon.color-green {
+    background-color: color-mix(in srgb, var(--v2-color-green) 15%, transparent);
+    color: var(--v2-color-green);
+}
+
+.v2-tile-icon.color-orange {
+    background-color: color-mix(in srgb, var(--v2-color-orange) 15%, transparent);
+    color: var(--v2-color-orange);
+}
+
+.v2-tile-icon.color-purple {
+    background-color: color-mix(in srgb, var(--v2-color-purple) 15%, transparent);
+    color: var(--v2-color-purple);
+}
+
+.v2-tile-icon.color-red {
+    background-color: color-mix(in srgb, var(--v2-color-red) 15%, transparent);
+    color: var(--v2-color-red);
+}
+
+.v2-tile-icon.color-pink {
+    background-color: color-mix(in srgb, var(--v2-color-pink) 15%, transparent);
+    color: var(--v2-color-pink);
+}
+
+.v2-tile-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.v2-tile-title {
+    font-size: var(--v2-font-size-base);
+    font-weight: var(--v2-font-weight-semibold);
+    color: var(--v2-text-primary);
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.v2-tile-meta {
+    font-size: var(--v2-font-size-xs);
+    color: var(--v2-text-muted);
+    margin-top: var(--v2-space-xs);
+}
+
+/* =====================
+ * TILE ACTIONS
+ * ===================== */
+.v2-tile-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--v2-space-xs);
+    margin-left: auto;
+    opacity: 0;
+    transition: opacity var(--v2-transition-fast);
+}
+
+.v2-project-tile:hover .v2-tile-actions,
+.v2-project-tile:focus-within .v2-tile-actions {
+    opacity: 1;
+}
+
+.v2-tile-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--v2-radius-md);
+    color: var(--v2-text-secondary);
+    transition: background-color var(--v2-transition-fast), color var(--v2-transition-fast);
+}
+
+.v2-tile-action-btn:hover {
+    background-color: var(--v2-surface-muted);
+    color: var(--v2-text-primary);
+}
+
+.v2-tile-action-btn.danger:hover {
+    background-color: var(--v2-status-error-bg);
+    color: var(--v2-status-error);
+}
+
+/* =====================
+ * TILE BODY
+ * ===================== */
+.v2-tile-body {
+    flex: 1;
+}
+
+.v2-tile-stats {
+    display: flex;
+    gap: var(--v2-space-lg);
+    margin-top: var(--v2-space-md);
+    padding-top: var(--v2-space-md);
+    border-top: 1px solid var(--v2-border-muted);
+}
+
+.v2-tile-stat {
+    display: flex;
+    flex-direction: column;
+}
+
+.v2-tile-stat-value {
+    font-size: var(--v2-font-size-base);
+    font-weight: var(--v2-font-weight-semibold);
+    color: var(--v2-text-primary);
+}
+
+.v2-tile-stat-label {
+    font-size: var(--v2-font-size-xs);
+    color: var(--v2-text-muted);
+}
+
+/* =====================
+ * CREATE NEW TILE
+ * ===================== */
+.v2-project-tile-new {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--v2-space-md);
+    min-height: 180px;
+    background-color: rgba(0, 0, 0, 0.02);
+    /* Slight tint */
+    border: 2px dashed var(--v2-border-strong);
+    /* Stronger border */
+    border-radius: var(--v2-radius-lg);
+    cursor: pointer;
+    transition: border-color var(--v2-transition-fast), background-color var(--v2-transition-fast);
+}
+
+.v2-project-tile-new:hover {
+    border-color: var(--v2-brand-blue);
+    background-color: color-mix(in srgb, var(--v2-brand-blue) 5%, transparent);
+}
+
+.v2-project-tile-new-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--v2-radius-full);
+    background-color: var(--v2-surface-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--v2-font-size-xl);
+    color: var(--v2-text-secondary);
+    transition: background-color var(--v2-transition-fast), color var(--v2-transition-fast);
+}
+
+.v2-project-tile-new:hover .v2-project-tile-new-icon {
+    background-color: var(--v2-brand-blue);
+    color: var(--v2-text-inverse);
+}
+
+.v2-project-tile-new-text {
+    font-size: var(--v2-font-size-sm);
+    font-weight: var(--v2-font-weight-medium);
+    color: var(--v2-text-secondary);
+}

@@ -1162,6 +1162,196 @@
         ]
       },
       "weight_g": 145
+    },
+    "Swit FLOW500 TX": {
+      "powerDrawWatts": 8,
+      "weight_g": 236,
+      "videoInputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" }
+      ],
+      "videoOutputs": [
+        { "type": "3G-SDI", "notes": "Loop-out" }
+      ],
+      "frequency": "5.1-5.9 GHz",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": [
+          { "type": ["LEMO 2-pin"], "notes": "7-34V" },
+          { "type": ["NP-F"] }
+        ]
+      }
+    },
+    "Swit FLOW2000 TX": {
+      "powerDrawWatts": 8,
+      "weight_g": 236,
+      "videoInputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" }
+      ],
+      "videoOutputs": [
+        { "type": "3G-SDI", "notes": "Loop-out" }
+      ],
+      "frequency": "5.1-5.9 GHz",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": [
+          { "type": ["LEMO 2-pin"], "notes": "7-34V" },
+          { "type": ["NP-F"] }
+        ]
+      }
+    },
+    "Swit FLOW6500 TX": {
+      "powerDrawWatts": 9,
+      "weight_g": 286,
+      "videoInputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" }
+      ],
+      "videoOutputs": [
+        { "type": "3G-SDI", "notes": "Loop-out" }
+      ],
+      "frequency": "5.1-5.9 GHz",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": [
+          { "type": ["LEMO 2-pin"], "notes": "7-34V" },
+          { "type": ["NP-F"] }
+        ]
+      }
+    },
+    "Swit FLOW10K TX": {
+      "powerDrawWatts": 9,
+      "weight_g": 286,
+      "videoInputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" }
+      ],
+      "videoOutputs": [
+        { "type": "3G-SDI", "notes": "Loop-out" }
+      ],
+      "frequency": "5.1-5.9 GHz",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": [
+          { "type": ["LEMO 2-pin"], "notes": "7-34V" },
+          { "type": ["NP-F"] }
+        ]
+      }
+    },
+    "Swit CURVE500+ TX": {
+      "powerDrawWatts": 7.5,
+      "weight_g": 181,
+      "videoInputs": [
+        { "type": "HDMI" }
+      ],
+      "videoOutputs": [
+        { "type": "HDMI", "notes": "Loop-out" }
+      ],
+      "frequency": "5.1-5.9 GHz",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": [
+          { "type": ["DC Barrel"], "notes": "7-17V" },
+          { "type": ["NP-F"] }
+        ]
+      }
+    },
+    "Swit CW-H150 TX": {
+      "powerDrawWatts": 6.5,
+      "weight_g": 268,
+      "videoInputs": [
+        { "type": "HDMI" }
+      ],
+      "videoOutputs": [],
+      "frequency": "5.1-5.9 GHz",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": [
+          { "type": ["DC Barrel"], "notes": "7-17V" },
+          { "type": ["NP-F"] }
+        ]
+      }
+    },
+    "Swit CREW TX": {
+      "powerDrawWatts": 16,
+      "weight_g": 333,
+      "videoInputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" }
+      ],
+      "videoOutputs": [
+        { "type": "3G-SDI", "notes": "Loop-out" }
+      ],
+      "frequency": "5.1-5.9 GHz",
+      "latencyMs": "32ms",
+      "power": {
+        "input": [
+          { "type": ["LEMO 2-pin"], "notes": "7-17V" },
+          { "type": ["USB-C"], "notes": "9V/2A" },
+          { "type": ["NP-F"] }
+        ]
+      }
+    },
+    "Swit CREW-V TX": {
+      "powerDrawWatts": 16,
+      "weight_g": 399,
+      "videoInputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" }
+      ],
+      "videoOutputs": [
+        { "type": "3G-SDI", "notes": "Loop-out" }
+      ],
+      "frequency": "5.1-5.9 GHz",
+      "latencyMs": "32ms",
+      "power": {
+        "input": [
+          { "type": ["LEMO 2-pin"], "notes": "7-17V" },
+          { "type": ["USB-C"], "notes": "9V/2A" },
+          { "type": ["V-Mount"] }
+        ]
+      }
+    },
+    "Swit CREW MAX TX": {
+      "powerDrawWatts": 16,
+      "weight_g": 333,
+      "videoInputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" }
+      ],
+      "videoOutputs": [
+        { "type": "3G-SDI", "notes": "Loop-out" }
+      ],
+      "frequency": "5.1-5.9 GHz",
+      "latencyMs": "32ms",
+      "power": {
+        "input": [
+          { "type": ["LEMO 2-pin"], "notes": "7-17V" },
+          { "type": ["USB-C"], "notes": "9V/2A" },
+          { "type": ["NP-F"] }
+        ]
+      }
+    },
+    "Swit CREW-V MAX TX": {
+      "powerDrawWatts": 16,
+      "weight_g": 399,
+      "videoInputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" }
+      ],
+      "videoOutputs": [
+        { "type": "3G-SDI", "notes": "Loop-out" }
+      ],
+      "frequency": "5.1-5.9 GHz",
+      "latencyMs": "32ms",
+      "power": {
+        "input": [
+          { "type": ["LEMO 2-pin"], "notes": "7-17V" },
+          { "type": ["USB-C"], "notes": "9V/2A" },
+          { "type": ["V-Mount"] }
+        ]
+      }
     }
   };
 

@@ -1,4 +1,6 @@
+console.log('DEBUG: storage.js execution started');
 // storage.js - Handles reading from and writing to localStorage.
+
 /* global texts, currentLang, SAFE_LOCAL_STORAGE, __cineGlobal, LZString,
           applyMountVoltagePreferences, parseStoredMountVoltages,
           resetMountVoltagePreferences, applyFocusScalePreference,
@@ -17300,7 +17302,9 @@
     module.exports = STORAGE_API;
   }
 
+  console.log('DEBUG: storage.js: starting global export loop');
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object') {
+
     Object.keys(STORAGE_API).forEach((key) => {
       const value = STORAGE_API[key];
       if (typeof value !== 'function') {
@@ -17352,6 +17356,8 @@
     }
   }
 
+  console.log('DEBUG: storage.js execution finished');
 })();
+
 
 

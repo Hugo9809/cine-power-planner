@@ -1,0 +1,550 @@
+/*
+ * Cine Power Planner V2 - Sidebar
+ * ================================
+ * Persistent navigation sidebar.
+ * Light mode: white/light gray background
+ * Dark mode: dark background (via themes/dark.css overrides)
+ */
+
+/* =====================
+ * SIDEBAR CONTAINER
+ * ===================== */
+.v2-sidebar {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--v2-surface-base);
+    /* Explicit white for Light Mode */
+    color: var(--v2-sidebar-text, var(--v2-text-primary));
+    width: var(--v2-sidebar-width);
+    overflow: hidden;
+    /* Fixed: Disable outer scrolling, let nav scroll */
+    border-right: 1px solid var(--v2-sidebar-border, var(--v2-border-default));
+    height: 100%;
+}
+
+/* =====================
+ * SIDEBAR TITLE & HEADER
+ * ===================== */
+.v2-sidebar-header {
+    padding: var(--v2-space-lg) var(--v2-space-md);
+    display: flex;
+    align-items: center;
+    gap: var(--v2-space-md);
+    /* Increased spacing */
+}
+
+.v2-sidebar-logo {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+}
+
+h1.v2-sidebar-title {
+    font-size: clamp(20px, 6vw, 26px);
+    /* Massive for fill */
+    font-weight: var(--v2-font-weight-bold);
+    color: var(--v2-header-color);
+    margin: 0;
+    line-height: 1.0;
+    white-space: normal;
+    overflow: hidden;
+    flex: 1;
+}
+
+/* =====================
+ * SIDEBAR CONTROLS (NEW)
+ * ===================== */
+.v2-sidebar-controls-container {
+    padding: var(--v2-space-sm) var(--v2-space-md);
+    border-top: 1px solid var(--v2-border-default);
+    display: flex;
+    flex-direction: column;
+    gap: var(--v2-space-sm);
+    /* Spacing between rows */
+}
+
+.v2-controls-row-1 {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    width: 100%;
+}
+
+.v2-controls-row-2 {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    overflow: visible;
+    min-height: 36px;
+}
+
+/* Language Selector Styles */
+.v2-lang-select-wrapper {
+    flex: 4;
+    min-width: 100px;
+    position: relative;
+    display: flex;
+    /* Ensure wrapper handles alignment */
+    align-items: center;
+    top: 2px;
+}
+
+.v2-lang-select {
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: var(--v2-surface-base) !important;
+    border: 1px solid var(--v2-border-default) !important;
+    border-radius: var(--v2-radius-md) !important;
+    padding: 0 22px 0 10px !important;
+    font-size: var(--v2-font-size-base) !important;
+    font-weight: var(--v2-font-weight-medium) !important;
+    color: var(--v2-header-color) !important;
+    cursor: pointer;
+    font-family: inherit;
+    line-height: 32px !important;
+    /* Revert to 32px */
+    height: 32px !important;
+    box-sizing: border-box !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 8px center !important;
+    background-size: 10px !important;
+}
+
+.v2-lang-select:focus {
+    outline: none;
+    border-color: var(--v2-brand-blue);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--v2-brand-blue) 10%, transparent);
+}
+
+/* =====================
+ * SIDEBAR SEARCH
+ * ===================== */
+.v2-sidebar-search {
+    padding: var(--v2-space-md);
+    border-bottom: 1px solid var(--v2-sidebar-border, var(--v2-border-default));
+    position: relative;
+    padding-top: 0;
+    /* Tighter against controls */
+}
+
+.v2-search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* STRONG SELECTOR FOR PADDING */
+#v2SidebarSearchInput.v2-search-input {
+    width: 100%;
+    padding: 10px 14px 10px 36px;
+    /* Reduced from 56px for better icon proximity */
+    border: 1px solid var(--v2-sidebar-input-border, var(--v2-border-default));
+    border-radius: var(--v2-radius-md);
+    background-color: var(--v2-sidebar-input-bg, var(--v2-surface-input));
+    color: var(--v2-sidebar-text, var(--v2-text-primary));
+    font-size: var(--v2-font-size-base);
+    font-weight: var(--v2-font-weight-medium);
+    transition: border-color var(--v2-transition-fast);
+}
+
+.v2-search-input::placeholder {
+    color: var(--v2-sidebar-muted, var(--v2-text-muted));
+}
+
+.v2-search-input:focus {
+    outline: none;
+    border-color: var(--v2-brand-blue);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--v2-brand-blue) 10%, transparent);
+}
+
+.v2-search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: var(--v2-brand-blue);
+    pointer-events: none;
+    z-index: 10;
+}
+
+#featureSearchDropdown {
+    width: 300px !important;
+    max-width: 90vw;
+    left: 0 !important;
+    position: absolute !important;
+    top: 100% !important;
+    z-index: 99999 !important;
+    /* Top level above all UI */
+    box-shadow: var(--v2-shadow-lg) !important;
+    background-color: var(--v2-surface-base, #fff);
+    border: 1px solid var(--v2-border-default);
+    border-radius: var(--v2-radius-md);
+    margin-top: 4px;
+    display: none;
+    /* Hidden by default, shown via JS when typing */
+}
+
+/* Dropdown visibility controlled by legacy JS */
+#featureSearchDropdown.open {
+    display: block !important;
+}
+
+/* =====================
+ * SIDEBAR NAVIGATION
+ * ===================== */
+.v2-sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--v2-space-sm) var(--v2-space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--v2-space-sm);
+}
+
+.v2-sidebar-section {
+    margin-bottom: var(--v2-space-lg);
+}
+
+.v2-sidebar-section-title {
+    font-size: 11px;
+    /* Smaller */
+    font-weight: var(--v2-font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--v2-sidebar-muted, var(--v2-text-muted));
+    padding: var(--v2-space-sm) var(--v2-space-md);
+    margin-bottom: var(--v2-space-xs);
+}
+
+.v2-sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: var(--v2-space-md);
+    padding: var(--v2-space-sm) var(--v2-space-md);
+    border-radius: var(--v2-radius-md);
+    color: var(--v2-sidebar-link, var(--v2-text-secondary));
+    text-decoration: none !important;
+    transition: background-color var(--v2-transition-fast), color var(--v2-transition-fast);
+    font-size: var(--v2-font-size-base);
+    font-weight: var(--v2-font-weight-semibold);
+}
+
+.v2-sidebar-link:hover {
+    background-color: var(--v2-surface-muted);
+    /* Premium light gray hover */
+    color: var(--v2-text-primary);
+    /* Darker text on hover */
+    text-decoration: none !important;
+}
+
+.v2-sidebar-link.active {
+    background-color: var(--v2-brand-blue);
+    color: white;
+    text-decoration: none !important;
+}
+
+/* FIX: Active link hover should keep white text */
+.v2-sidebar-link.active:hover {
+    background-color: var(--v2-brand-blue-hover, #00106a);
+    color: white;
+    text-decoration: none !important;
+}
+
+.v2-sidebar-link-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    opacity: 0.7;
+}
+
+.v2-sidebar-link:hover .v2-sidebar-link-icon {
+    opacity: 1;
+}
+
+.v2-sidebar-link.active .v2-sidebar-link-icon {
+    opacity: 1;
+}
+
+.v2-sidebar-link-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* =====================
+ * SIDEBAR FOOTER
+ * ===================== */
+.v2-sidebar-footer {
+    padding: var(--v2-space-md);
+    border-top: 1px solid var(--v2-border-default);
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--v2-space-sm);
+}
+
+/* =====================
+ * CIRCLE TOGGLES (Theme & Tools)
+ * ===================== */
+.v2-tool-btn,
+.v2-theme-toggle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    /* CIRCLE */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--v2-border-default);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 0;
+}
+
+/* Unicorn Specifics */
+.v2-theme-toggle[data-theme="pink"] svg {
+    width: 18px !important;
+    /* Force smaller size inside circle */
+    height: 18px !important;
+}
+
+.v2-tool-btn:hover,
+.v2-theme-toggle:hover {
+    background-color: var(--v2-surface-muted);
+    color: var(--v2-text-primary);
+}
+
+.v2-sidebar-user:hover {
+    background-color: var(--v2-surface-muted);
+}
+
+.v2-sidebar-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--v2-radius-full);
+    background-color: var(--v2-surface-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-weight: var(--v2-font-weight-semibold);
+    font-size: var(--v2-font-size-sm);
+    color: var(--v2-text-secondary);
+}
+
+.v2-sidebar-user-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.v2-sidebar-user-name {
+    font-weight: var(--v2-font-weight-medium);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--v2-text-primary);
+}
+
+.v2-sidebar-user-role {
+    font-size: var(--v2-font-size-xs);
+    color: var(--v2-text-muted);
+}
+
+/* =====================
+ * COLLAPSED STATE
+ * ===================== */
+.sidebar-collapsed .v2-sidebar {
+    width: var(--v2-sidebar-collapsed-width);
+}
+
+.sidebar-collapsed .v2-sidebar-title,
+.sidebar-collapsed .v2-sidebar-section-title,
+.sidebar-collapsed .v2-sidebar-link-text,
+.sidebar-collapsed .v2-sidebar-user-info,
+.sidebar-collapsed .v2-search-input {
+    /* Hide input text container */
+    display: none;
+}
+
+.sidebar-collapsed .v2-sidebar-search {
+    display: none;
+    /* Hide search entirely in collapsed mode for simplicity or show icon only */
+}
+
+.sidebar-collapsed .v2-sidebar-link {
+    justify-content: center;
+    padding: var(--v2-space-sm);
+}
+
+.sidebar-collapsed .v2-sidebar-header {
+    justify-content: center;
+    padding: var(--v2-space-md);
+}
+
+.sidebar-collapsed .v2-sidebar-logo {
+    width: 32px;
+    height: 32px;
+}
+
+
+.sidebar-collapsed .v2-sidebar-user {
+    justify-content: center;
+}
+
+/* Hide tools in collapsed mode for now */
+.sidebar-collapsed .v2-sidebar-tools,
+.sidebar-collapsed .v2-theme-controls,
+.sidebar-collapsed .v2-sidebar-controls-container {
+    display: none;
+}
+
+/* =====================
+ * THEME TOGGLES
+ * ===================== */
+.v2-theme-controls {
+    /* Legacy container style if still used inside row, simplified */
+    display: flex;
+    gap: var(--v2-space-sm);
+}
+
+.v2-theme-toggle {
+    background: var(--v2-surface-base);
+    border: 1px solid var(--v2-border-default) !important;
+    border-radius: 50%;
+    cursor: pointer;
+    padding: 6px;
+    color: var(--v2-header-color);
+    transition: all var(--v2-transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+}
+
+.v2-theme-toggle:hover {
+    background-color: var(--v2-surface-muted);
+    color: var(--v2-text-primary);
+}
+
+.v2-theme-toggle.active {
+    background-color: var(--v2-brand-blue);
+    color: #ffffff;
+    border-color: var(--v2-brand-blue);
+}
+
+.v2-theme-toggle svg {
+    width: 14px;
+    height: 14px;
+}
+
+.v2-theme-toggle .icon-glyph {
+    font-size: 14px;
+}
+
+/* Tool button (hard refresh) */
+.v2-tool-btn {
+    background: var(--v2-surface-base);
+    border: 1px solid var(--v2-border-default) !important;
+    border-radius: 50%;
+    cursor: pointer;
+    padding: 6px;
+    color: var(--v2-brand-blue);
+    transition: all var(--v2-transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+}
+
+.v2-tool-btn:hover {
+    background-color: var(--v2-surface-muted);
+}
+
+.v2-tool-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Pink mode specific active state */
+.pink-mode .v2-theme-toggle[data-theme="pink"].active {
+    background-color: var(--v2-brand-pink);
+    border-color: var(--v2-brand-pink);
+    color: white;
+}
+
+/* =====================
+ * LEGAL FOOTER
+ * ===================== */
+.v2-sidebar-legal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--v2-space-xs);
+    margin-top: 0;
+    padding-top: var(--v2-space-sm);
+    border-top: none;
+    font-size: 10px;
+    color: var(--v2-sidebar-muted, var(--v2-text-muted));
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Specific styling for Exit V2 button to be smaller */
+#v2ExitBtn {
+    font-size: 11px;
+    padding: 6px;
+    min-height: 0;
+    /* Override any defaults */
+}
+
+#v2ExitBtn svg {
+    width: 14px;
+    height: 14px;
+}
+
+.v2-sidebar-legal a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.v2-sidebar-legal a:hover {
+    color: var(--v2-sidebar-text, var(--v2-text-primary));
+}
+
+.sidebar-collapsed .v2-sidebar-legal {
+    display: none;
+}
+
+/* =====================
+ * HELP ICON CIRCLE
+ * ===================== */
+.v2-sidebar-link .icon-text {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--v2-header-color);
+    /* Matches accent/pink/white logic */
+}

@@ -72,17 +72,30 @@
     "SWIT KA-B30B B-mount to B-mount Hot-Swap Plate": {
       "capacity": 32,
       "pinA": 7.14,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "weight_g": 750,
+      "notes": "32Wh buffer, 200W load, 2x D-Tap, 1x LEMO, 1x USB"
     },
-    "SWIT KA-S30B B-mount Hot-Swap Plate": {
+    "SWIT KA-S30B B-mount to V-mount Hot-Swap Plate": {
+      "capacity": 43,
+      "pinA": 13.9,
+      "mount_type": "B-Mount",
+      "weight_g": 649,
+      "notes": "43Wh buffer, 200W load, 14.4V output. 2x D-Tap, 1x LEMO, 1x USB"
+    },
+    "SWIT KA-R30B B-mount Hot-Swap Plate": {
       "capacity": 32,
-      "pinA": 7,
-      "mount_type": "B-Mount"
+      "pinA": 7.14,
+      "mount_type": "B-Mount",
+      "weight_g": 731,
+      "notes": "For ARRI Alexa Mini/LF. 32Wh buffer, 200W load. 2x D-Tap, 1x LEMO, 1x USB"
     },
     "SWIT KA-R31B B-mount Hot-Swap Plate": {
       "capacity": 32,
       "pinA": 7.14,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "weight_g": 819,
+      "notes": "For ARRI Alexa Mini/LF. SDI Distribution. 32Wh buffer, 200W load. 2x D-Tap, 1x LEMO, 1x USB"
     },
     "IDX A-HS30B B-Mount to B-Mount Hot-Swap Plate": {
       "capacity": 32,

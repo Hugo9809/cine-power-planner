@@ -3540,7 +3540,16 @@ function clearProjectAutoGearRules() {
 function getProjectScopedAutoGearRules() {
   return projectScopedAutoGearRules ? projectScopedAutoGearRules.slice() : null;
 }
-if (typeof window !== 'undefined') window.getProjectScopedAutoGearRules = getProjectScopedAutoGearRules;
+if (typeof window !== 'undefined') {
+  window.getProjectScopedAutoGearRules = getProjectScopedAutoGearRules;
+  window.getAutoGearRules = getAutoGearRules;
+  window.setAutoGearRules = setAutoGearRules;
+  window.collectAutoGearCatalogNames = collectAutoGearCatalogNames;
+  window.GEAR_LIST_CATEGORIES = GEAR_LIST_CATEGORIES;
+  window.collectAutoGearMonitorNames = collectAutoGearMonitorNames;
+  window.collectAutoGearTripodNames = collectAutoGearTripodNames;
+  window.collectDeviceManagerCategories = collectDeviceManagerCategories;
+}
 
 function usingProjectAutoGearRules() {
   return Array.isArray(projectScopedAutoGearRules) && projectScopedAutoGearRules.length > 0;
@@ -13304,7 +13313,7 @@ function updateRowLinkedBadge(row) {
   badge.hidden = true;
 }
 
-function handleCrewRowManualChange(row, immediate = true) {
+function handleCrewRowManualChange(row, immediate = false) {
   if (typeof window !== 'undefined' && window.cineSuppressAutosave) {
     return;
   }
@@ -14212,7 +14221,7 @@ function createCrewRow(data = {}) {
     if (typeof markProjectFormDataDirty === 'function') {
       markProjectFormDataDirty();
     }
-    scheduleProjectAutoSave(true);
+    scheduleProjectAutoSave();
   });
 
   const actions = document.createElement('div');
@@ -14284,18 +14293,12 @@ function createCrewRow(data = {}) {
     avatarFileInput.value = '';
   });
 
-  roleSel.addEventListener('change', () => handleCrewRowManualChange(row, true));
+  roleSel.addEventListener('change', () => handleCrewRowManualChange(row, false));
   nameInput.addEventListener('input', () => {
     refreshRowAvatarInitial(row);
-    handleCrewRowManualChange(row, false);
+    // handleCrewRowManualChange(row, false); // Covered by form level listener
   });
-  nameInput.addEventListener('blur', () => handleCrewRowManualChange(row, true));
-  phoneInput.addEventListener('input', () => handleCrewRowManualChange(row, false));
-  phoneInput.addEventListener('blur', () => handleCrewRowManualChange(row, true));
-  emailInput.addEventListener('input', () => handleCrewRowManualChange(row, false));
-  emailInput.addEventListener('blur', () => handleCrewRowManualChange(row, true));
-  websiteInput.addEventListener('input', () => handleCrewRowManualChange(row, false));
-  websiteInput.addEventListener('blur', () => handleCrewRowManualChange(row, true));
+  // phoneInput/emailInput/websiteInput listeners removed, covered by form level listener
 
   contactSelect.addEventListener('change', () => {
     const selectedId = contactSelect.value;
@@ -14357,7 +14360,7 @@ function createPrepRow(data = {}) {
     if (typeof markProjectFormDataDirty === 'function') {
       markProjectFormDataDirty();
     }
-    scheduleProjectAutoSave(true);
+    scheduleProjectAutoSave();
   });
   row.append(start, span, end, removeBtn);
   prepContainer.appendChild(row);
@@ -14400,7 +14403,7 @@ function createShootRow(data = {}) {
     if (typeof markProjectFormDataDirty === 'function') {
       markProjectFormDataDirty();
     }
-    scheduleProjectAutoSave(true);
+    scheduleProjectAutoSave();
   });
   row.append(start, span, end, removeBtn);
   shootContainer.appendChild(row);
@@ -14445,7 +14448,7 @@ function createReturnRow(data = {}) {
     if (typeof markProjectFormDataDirty === 'function') {
       markProjectFormDataDirty();
     }
-    scheduleProjectAutoSave(true);
+    scheduleProjectAutoSave();
   });
   row.append(start, span, end, removeBtn);
   returnContainer.appendChild(row);
@@ -14752,8 +14755,9 @@ function createStorageRequirementRow(data = {}) {
   quantityLabel.setAttribute('for', quantityId);
   quantityLabel.textContent = quantityLabelText;
   quantityLabel.dataset.storageLabelKey = 'storageQuantityLabel';
-  quantityInput.addEventListener('input', () => scheduleProjectAutoSave(true));
-  quantityInput.addEventListener('change', () => scheduleProjectAutoSave(true));
+  // quantityInput listeners removed, covered by form level listener
+  // variantSelect listeners removed, covered by form level listener
+  // notesInput listeners removed, covered by form level listener
 
   const typeSelect = document.createElement('select');
   typeSelect.name = 'storageMediaType';
@@ -14770,7 +14774,6 @@ function createStorageRequirementRow(data = {}) {
   const variantLabelText = getProjectFormText('storageVariantLabel', 'Brand & capacity');
   const variantLabel = createHiddenLabel(ensureElementId(variantSelect, variantLabelText), variantLabelText);
   variantLabel.dataset.storageLabelKey = 'storageVariantLabel';
-  variantSelect.addEventListener('change', () => scheduleProjectAutoSave(true));
 
   const notesInput = document.createElement('input');
   notesInput.type = 'text';
@@ -14781,12 +14784,10 @@ function createStorageRequirementRow(data = {}) {
   const notesLabelText = getProjectFormText('storageNotesLabel', 'Notes');
   const notesLabel = createHiddenLabel(ensureElementId(notesInput, notesLabelText), notesLabelText);
   notesLabel.dataset.storageLabelKey = 'storageNotesLabel';
-  notesInput.addEventListener('input', () => scheduleProjectAutoSave(true));
-  notesInput.addEventListener('change', () => scheduleProjectAutoSave(true));
 
   typeSelect.addEventListener('change', () => {
     updateStorageVariantOptions(variantSelect, typeSelect.value);
-    scheduleProjectAutoSave(true);
+    scheduleProjectAutoSave();
   });
 
   const removeBtn = document.createElement('button');
@@ -14809,7 +14810,7 @@ function createStorageRequirementRow(data = {}) {
     if (typeof markProjectFormDataDirty === 'function') {
       markProjectFormDataDirty();
     }
-    scheduleProjectAutoSave(true);
+    scheduleProjectAutoSave();
   });
 
   const duplicateBtn = document.createElement('button');
@@ -14839,7 +14840,7 @@ function createStorageRequirementRow(data = {}) {
         }
       }
     }
-    scheduleProjectAutoSave(true);
+    scheduleProjectAutoSave();
   });
 
   const actionContainer = document.createElement('div');
@@ -20906,8 +20907,12 @@ Object.assign(CORE_RUNTIME_CONSTANTS, MOUNT_VOLTAGE_RUNTIME_EXPORTS);
 exposeCoreRuntimeConstants(CORE_RUNTIME_CONSTANTS);
 
 exposeCoreRuntimeBindings({
-  updatePowerSummary: updatePowerSummary,
-  drawPowerDiagram: drawPowerDiagram,
+  updatePowerSummary: {
+    get: () => updatePowerSummary,
+  },
+  drawPowerDiagram: {
+    get: () => drawPowerDiagram,
+  },
   safeGenerateConnectorSummary: {
     get: () => sessionSafeGenerateConnectorSummary,
     set: value => {

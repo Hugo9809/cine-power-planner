@@ -1,0 +1,95 @@
+/*
+ * Cine Power Planner V2 - Main Stylesheet
+ * ========================================
+ * Central entrypoint for all V2 UI styles.
+ * Imports base, layouts, components, and themes.
+ */
+
+/* =====================
+ * BASE
+ * ===================== */
+@import url('./base/variables.css');
+@import url('./base/reset.css');
+@import url('./base/typography.css');
+
+/* =====================
+ * LAYOUTS
+ * ===================== */
+@import url('./layouts/shell.css');
+@import url('./layouts/sidebar.css');
+@import url('./layouts/views.css');
+@import url('./layouts/detail.css');
+
+/* =====================
+ * COMPONENTS
+ * ===================== */
+@import url('./components/buttons.css');
+@import url('./components/forms.css');
+@import url('./components/cards.css');
+@import url('./components/tabs.css');
+@import url('./components/tiles.css');
+@import url('./components/modals.css');
+
+/* =====================
+ * THEMES
+ * ===================== */
+@import url('./themes/dark.css');
+@import url('./themes/pink.css');
+
+/* =====================
+ * V2 LOADING SCREEN
+ * ===================== */
+#v2-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--v2-surface-base);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+#v2-loader.visible {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.v2-loader-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.v2-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--v2-border-default);
+    border-top: 4px solid var(--v2-brand-blue);
+    border-radius: 50%;
+    animation: v2-spin 1s linear infinite;
+}
+
+.v2-loader-text {
+    font-family: var(--v2-font-sans);
+    color: var(--v2-text-muted);
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+@keyframes v2-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
