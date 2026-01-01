@@ -7669,6 +7669,14 @@ console.log('DEBUG: storage.js execution started');
             : `Recovered ${key} from migration backup copy but could not rewrite the primary entry.`,
         );
 
+        // Remove the migration backup to prevent repeated recovery loops
+        try {
+          storage.removeItem(candidateKey);
+          clearCachedStorageEntry(storage, candidateKey);
+        } catch (removeError) {
+          console.warn(`Unable to remove migration backup ${candidateKey} after recovery`, removeError);
+        }
+
         return { success: true, value: candidateValue, shouldAlert: shouldEscalate };
       }
 
@@ -8023,6 +8031,12 @@ console.log('DEBUG: storage.js execution started');
         // Priority 3: Caches (can be rebuilt)
         if (key === DEVICE_SCHEMA_CACHE_KEY || key === LEGACY_SCHEMA_CACHE_KEY) {
           candidates.push({ key, priority: 3, size: 0 });
+          continue;
+        }
+
+        // Priority 4: Auto-backup project shards (oldest first, safe to delete)
+        if (key.startsWith(PROJECT_SHARD_PREFIX) && key.includes('auto-backup-')) {
+          candidates.push({ key, priority: 4, size: 0 });
           continue;
         }
       }
