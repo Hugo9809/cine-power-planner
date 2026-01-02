@@ -1,0 +1,203 @@
+/**
+ * Cine Power Planner V2 - Device Library Styling
+ * ==============================================
+ * This file applies V2 design tokens to the legacy #device-manager
+ * elements when they are reparented into the V2 view.
+ */
+
+/* ==============================================
+   1. RESET & BASE THEME
+   ============================================== */
+
+#view-devices #device-manager {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-family: var(--v2-font-main) !important;
+    color: var(--v2-text-primary) !important;
+    display: flex !important;
+    /* Always visible when active */
+    flex-direction: column;
+}
+
+#view-devices #device-manager .button-group {
+    background: var(--v2-surface-base);
+    border: 1px solid var(--v2-border-default);
+    border-radius: var(--v2-radius-lg);
+    padding: var(--v2-space-lg);
+    margin-bottom: var(--v2-space-xl);
+}
+
+#view-devices #device-manager h3 {
+    font-size: var(--v2-font-size-lg);
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: var(--v2-space-lg);
+    color: var(--v2-header-color);
+}
+
+#view-devices #device-manager h4 {
+    font-size: var(--v2-font-size-md);
+    font-weight: 600;
+    margin-top: var(--v2-space-lg);
+    margin-bottom: var(--v2-space-sm);
+    color: var(--v2-text-primary);
+    border-bottom: 1px solid var(--v2-border-muted);
+    padding-bottom: var(--v2-space-xs);
+}
+
+/* ==============================================
+   2. FORMS & INPUTS (V2 DESIGN)
+   ============================================== */
+
+#view-devices #device-manager .form-row {
+    margin-bottom: var(--v2-space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--v2-space-xs);
+}
+
+#view-devices #device-manager label {
+    font-size: var(--v2-font-size-sm);
+    font-weight: 500;
+    color: var(--v2-text-secondary);
+}
+
+/* Select Styling */
+#view-devices #device-manager select {
+    appearance: none;
+    background-color: var(--v2-input-bg);
+    border: 1px solid var(--v2-input-border);
+    border-radius: var(--v2-radius-md);
+    color: var(--v2-text-primary);
+    font-family: inherit;
+    font-size: var(--v2-font-size-md);
+    padding: 10px 12px;
+    width: 100%;
+    transition: border-color var(--v2-transition-fast), box-shadow var(--v2-transition-fast);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+}
+
+#view-devices #device-manager select:focus {
+    outline: none;
+    border-color: var(--v2-brand-blue);
+    box-shadow: 0 0 0 3px rgba(0, 50, 255, 0.1);
+}
+
+/* Input Styling */
+#view-devices #device-manager input[type="text"],
+#view-devices #device-manager input[type="number"] {
+    background-color: var(--v2-input-bg);
+    border: 1px solid var(--v2-input-border);
+    border-radius: var(--v2-radius-md);
+    color: var(--v2-text-primary);
+    font-family: inherit;
+    font-size: var(--v2-font-size-md);
+    padding: 10px 12px;
+    width: 100%;
+    transition: border-color var(--v2-transition-fast), box-shadow var(--v2-transition-fast);
+}
+
+#view-devices #device-manager input:focus {
+    outline: none;
+    border-color: var(--v2-brand-blue);
+    box-shadow: 0 0 0 3px rgba(0, 50, 255, 0.1);
+}
+
+/* ==============================================
+   3. BUTTONS (V2 DESIGN)
+   ============================================== */
+
+#view-devices #device-manager button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--v2-space-xs);
+    font-family: inherit;
+    font-weight: 600;
+    font-size: var(--v2-font-size-sm);
+    padding: 10px 16px;
+    border-radius: var(--v2-radius-md);
+    cursor: pointer;
+    transition: all var(--v2-transition-fast);
+    border: 1px solid var(--v2-border-default);
+    background-color: var(--v2-surface-muted);
+    color: var(--v2-text-primary);
+}
+
+#view-devices #device-manager button:hover {
+    background-color: var(--v2-surface-highlight);
+    border-color: var(--v2-text-secondary);
+}
+
+/* Primary/Action buttons */
+#view-devices #device-manager #addDeviceBtn,
+#view-devices #device-manager #exportDataBtn,
+#view-devices #device-manager #importDataBtn {
+    background-color: var(--v2-brand-blue);
+    color: white;
+    border-color: var(--v2-brand-blue);
+}
+
+#view-devices #device-manager #addDeviceBtn:hover,
+#view-devices #device-manager #exportDataBtn:hover,
+#view-devices #device-manager #importDataBtn:hover {
+    background-color: var(--v2-brand-blue-hover);
+    border-color: var(--v2-brand-blue-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Danger buttons */
+#view-devices #device-manager #exportAndRevertBtn {
+    color: var(--v2-brand-red);
+    border-color: var(--v2-brand-red);
+}
+
+#view-devices #device-manager #exportAndRevertBtn:hover {
+    background-color: rgba(255, 59, 48, 0.1);
+}
+
+/* ==============================================
+   4. LISTS & CONTAINERS
+   ============================================== */
+
+#view-devices #device-manager #device-list-container {
+    background: var(--v2-surface-base);
+    border: 1px solid var(--v2-border-default);
+    border-radius: var(--v2-radius-lg);
+    padding: var(--v2-space-lg);
+}
+
+#view-devices #device-manager .device-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--v2-space-sm) 0;
+    border-bottom: 1px solid var(--v2-border-muted);
+}
+
+#view-devices #device-manager .device-item:last-child {
+    border-bottom: none;
+}
+
+/* Section visibility */
+#view-devices #device-manager .hidden,
+#view-devices #device-manager [hidden] {
+    display: none !important;
+}
+
+#view-devices #device-manager .camera-subsection,
+#view-devices #device-manager .lens-subsection,
+#view-devices #device-manager .monitor-subsection,
+#view-devices #device-manager .viewfinder-subsection {
+    margin-bottom: var(--v2-space-md);
+    padding: var(--v2-space-sm);
+    background: var(--v2-surface-muted);
+    border-radius: var(--v2-radius-md);
+}

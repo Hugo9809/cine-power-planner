@@ -31,13 +31,40 @@
         // Listen for V2 view changes
         document.addEventListener('v2:viewchange', handleViewChange);
 
+        // Also listen for hashchange directly as a fallback
+        window.addEventListener('hashchange', handleHashChange);
+
         // Check if we should activate immediately based on current hash
-        const hash = window.location.hash || '';
-        if (hash.match(/^#?\/?devices?\/?$/i)) {
-            activateView();
-        }
+        checkAndActivateForCurrentHash();
 
         console.log('[V2 DeviceLibrary] Initialized');
+    }
+
+    /**
+     * Check current hash and activate if needed
+     */
+    function checkAndActivateForCurrentHash() {
+        const hash = window.location.hash || '';
+        if (hash.match(/^#?\/?devices?\/?$/i)) {
+            console.log('[V2 DeviceLibrary] Hash matches, activating...');
+            activateView();
+        }
+    }
+
+    /**
+     * Handle hashchange events directly
+     */
+    function handleHashChange() {
+        const hash = window.location.hash || '';
+        if (hash.match(/^#?\/?devices?\/?$/i)) {
+            if (!isActive) {
+                console.log('[V2 DeviceLibrary] Hash changed to devices, activating...');
+                activateView();
+            }
+        } else if (isActive) {
+            console.log('[V2 DeviceLibrary] Hash changed away, deactivating...');
+            deactivateView();
+        }
     }
 
     /**
@@ -46,6 +73,8 @@
     function handleViewChange(event) {
         const detail = event && event.detail ? event.detail : {};
         const viewName = detail.view;
+
+        console.log('[V2 DeviceLibrary] View change event received:', viewName);
 
         if (viewName === 'devices') {
             activateView();
@@ -59,14 +88,27 @@
      * Reparents legacy device-manager content into the V2 view
      */
     function activateView() {
-        if (isActive) return;
+        if (isActive) {
+            console.log('[V2 DeviceLibrary] Already active, skipping');
+            return;
+        }
 
         const viewElement = document.getElementById(VIEW_ID);
         const legacySection = document.getElementById(LEGACY_SECTION_ID);
         const contentContainer = document.getElementById(CONTENT_CONTAINER_ID);
 
-        if (!viewElement || !legacySection) {
-            console.warn('[V2 DeviceLibrary] Required elements not found');
+        console.log('[V2 DeviceLibrary] Attempting activation...');
+        console.log('[V2 DeviceLibrary] viewElement:', !!viewElement);
+        console.log('[V2 DeviceLibrary] legacySection:', !!legacySection);
+        console.log('[V2 DeviceLibrary] contentContainer:', !!contentContainer);
+
+        if (!viewElement) {
+            console.warn('[V2 DeviceLibrary] View element #view-devices not found');
+            return;
+        }
+
+        if (!legacySection) {
+            console.warn('[V2 DeviceLibrary] Legacy section #device-manager not found');
             return;
         }
 
@@ -109,7 +151,7 @@
         }
 
         isActive = true;
-        console.log('[V2 DeviceLibrary] View activated');
+        console.log('[V2 DeviceLibrary] View activated successfully');
     }
 
     /**
@@ -118,6 +160,8 @@
      */
     function deactivateView() {
         if (!isActive) return;
+
+        console.log('[V2 DeviceLibrary] Deactivating view...');
 
         const legacySection = document.getElementById(LEGACY_SECTION_ID);
 
@@ -129,13 +173,9 @@
                 legacyParent.appendChild(legacySection);
             }
 
-            // Restore hidden state for legacy UI
-            // Only hide if not in V2 mode to maintain V1 toggle behavior
-            const isV2Mode = document.body.classList.contains('v2-mode');
-            if (!isV2Mode) {
-                legacySection.classList.add('hidden');
-                document.body.classList.remove('device-manager-active');
-            }
+            // Restore hidden state for V2 mode (it will show via its own view)
+            legacySection.classList.add('hidden');
+            document.body.classList.remove('device-manager-active');
         }
 
         // Restore legacy toggle button visibility

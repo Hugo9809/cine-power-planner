@@ -123,6 +123,11 @@
                 global.cineProjectDetail.init();
             }
 
+            // Initialize Device Library view (for view-change events)
+            if (global.cineV2DeviceLibrary && typeof global.cineV2DeviceLibrary.init === 'function') {
+                global.cineV2DeviceLibrary.init();
+            }
+
             // Initialize View Manager (this will dispatch v2:viewchange)
             if (global.cineViewManager && typeof global.cineViewManager.enableV2 === 'function') {
                 global.cineViewManager.enableV2();
@@ -300,6 +305,7 @@
             // Load V2 CSS
             await loadStylesheet('src/styles/v2/index.css?v=2');
             await loadStylesheet('src/styles/v2/views/rules-view.css');
+            await loadStylesheet('src/styles/v2/views/devices-view.css');
             console.log('[V2 Bootstrap] V2 CSS loaded');
 
             // Load V2 JS modules

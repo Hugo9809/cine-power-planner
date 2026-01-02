@@ -109,9 +109,12 @@ beforeEach(() => {
       try {
         delete scope.__cameraPowerPlannerFactoryResetting;
         scope.__cameraPowerPlannerFactoryResetting = false;
+        delete scope.__cineMonolithicProjectCleanupDone;
+        scope.__cineMonolithicProjectCleanupDone = false;
       } catch (unusedError) {
         // Fallback for non-configurable properties
         scope.__cameraPowerPlannerFactoryResetting = false;
+        scope.__cineMonolithicProjectCleanupDone = false;
         void unusedError;
       }
     }

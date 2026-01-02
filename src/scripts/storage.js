@@ -51,6 +51,13 @@ console.log('DEBUG: storage.js execution started');
         GLOBAL_SCOPE.__cineStorageApi = null;
         void resetApiError;
       }
+
+      try {
+        delete GLOBAL_SCOPE.__cineMonolithicProjectCleanupDone;
+      } catch (resetCleanupFlagError) {
+        GLOBAL_SCOPE.__cineMonolithicProjectCleanupDone = false;
+        void resetCleanupFlagError;
+      }
     } else {
       if (
         typeof module !== 'undefined' &&
@@ -12414,11 +12421,21 @@ console.log('DEBUG: storage.js execution started');
 
   function cleanupMonolithicProjectStorage(storage) {
     if (!storage) return;
-    const raw = storage.getItem(PROJECT_STORAGE_KEY);
-    // If it's already empty, we don't need to do anything.
-    if (!raw) {
+
+    // Skip if we've already handled the monolith this session
+    if (GLOBAL_SCOPE && GLOBAL_SCOPE.__cineMonolithicProjectCleanupDone) {
       return;
     }
+
+    const raw = storage.getItem(PROJECT_STORAGE_KEY);
+    // If it's already empty, mark as done and return.
+    if (!raw) {
+      if (GLOBAL_SCOPE) {
+        GLOBAL_SCOPE.__cineMonolithicProjectCleanupDone = true;
+      }
+      return;
+    }
+
     // Ensure we have a migration backup before we delete the monolith
     try {
       const parsed = JSON.parse(decodeStoredValue(raw));
@@ -12440,6 +12457,11 @@ console.log('DEBUG: storage.js execution started');
         disableMigrationCleanup: true
       }
     );
+
+    // Mark as done so we don't repeat this process
+    if (GLOBAL_SCOPE) {
+      GLOBAL_SCOPE.__cineMonolithicProjectCleanupDone = true;
+    }
   }
 
   function persistProjectShard(name, project, options = {}) {
@@ -12471,6 +12493,7 @@ console.log('DEBUG: storage.js execution started');
       {
         disableCompression: skipCompression,
         forceCompressionOnQuota: true,
+        disableBackup: true,
         onQuotaExceeded: () => {
           // Cross-shard quota recovery: try to prune the oldest auto-backup shard.
           // Note: we don't want forMutation: true here because we are in the middle of a save.
@@ -12503,13 +12526,17 @@ console.log('DEBUG: storage.js execution started');
     // Prune within the projects object first (handling auto-backup counts)
     enforceAutoBackupLimits(projects);
 
+    // CRITICAL: Clean up orphan shards BEFORE persisting new ones.
+    // This frees storage space first, preventing quota exceeded errors
+    // when old auto-backup shards persist from previous sessions.
+    pruneOrphanProjectShards(safeStorage, projects);
+
     // Persist each project as its own shard.
     Object.keys(projects).forEach((name) => {
       persistProjectShard(name, projects[name], { skipCompression });
     });
 
-    // Clean up orphans (projects that were deleted or renamed) and the monolithic key
-    pruneOrphanProjectShards(safeStorage, projects);
+    // Monolithic key cleanup (migration from old format)
     cleanupMonolithicProjectStorage(safeStorage);
 
     bumpProjectStorageRevision(safeStorage);
@@ -14996,7 +15023,10 @@ console.log('DEBUG: storage.js execution started');
       if (typeof globalThis !== 'undefined') globalThis.__cameraPowerPlannerFactoryResetting = true;
       if (typeof global !== 'undefined') global.__cameraPowerPlannerFactoryResetting = true;
       if (typeof window !== 'undefined') window.__cameraPowerPlannerFactoryResetting = true;
-      if (GLOBAL_SCOPE) GLOBAL_SCOPE.__cameraPowerPlannerFactoryResetting = true;
+      if (GLOBAL_SCOPE) {
+        GLOBAL_SCOPE.__cameraPowerPlannerFactoryResetting = true;
+        GLOBAL_SCOPE.__cineMonolithicProjectCleanupDone = false;
+      }
       if (typeof sessionStorage !== 'undefined') sessionStorage.setItem(FACTORY_RESET_LOCK_KEY, 'true');
       if (typeof localStorage !== 'undefined') localStorage.setItem(FACTORY_RESET_LOCK_KEY, 'true');
     } catch (e) {
