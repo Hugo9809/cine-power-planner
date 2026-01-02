@@ -79,6 +79,7 @@ describe('device manager cable subcategory persistence', () => {
 
   beforeEach(() => {
     jest.resetModules();
+    delete global.cineUiCache;
 
     originalFreeze = Object.freeze;
     originalIsFrozen = Object.isFrozen;

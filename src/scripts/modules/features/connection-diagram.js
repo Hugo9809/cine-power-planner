@@ -663,6 +663,10 @@
     const inlineControllers = controllers;
 
     const nodes = [];
+    console.warn('[PowerDiagram Debug] Starting node generation...');
+    console.warn('[PowerDiagram Debug] cameraSelect:', cameraSelect, 'Value:', cameraSelect ? cameraSelect.value : 'N/A');
+    console.warn('[PowerDiagram Debug] batterySelect:', batterySelect, 'Value:', batterySelect ? batterySelect.value : 'N/A');
+    console.warn('[PowerDiagram Debug] devices available:', Object.keys(devices || {}));
     const pos = {};
     const nodeMap = {};
     const step = 300;

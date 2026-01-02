@@ -77,6 +77,7 @@ describe('device manager filter visibility', () => {
 
   beforeEach(() => {
     jest.resetModules();
+    delete global.cineUiCache;
 
     document.body.innerHTML = getHtmlBody();
 

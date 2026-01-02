@@ -14,7 +14,7 @@
     flex-direction: column;
     background-color: var(--v2-surface-base);
     /* Explicit white for Light Mode */
-    color: var(--v2-sidebar-text, var(--v2-text-primary));
+    color: var(--v2-text-primary);
     width: var(--v2-sidebar-width);
     overflow: hidden;
     /* Fixed: Disable outer scrolling, let nav scroll */
@@ -247,14 +247,14 @@ h1.v2-sidebar-title {
 
 .v2-sidebar-link.active {
     background-color: var(--v2-brand-blue);
-    color: white;
+    color: var(--v2-text-inverse);
     text-decoration: none !important;
 }
 
 /* FIX: Active link hover should keep white text */
 .v2-sidebar-link.active:hover {
     background-color: var(--v2-brand-blue-hover, #00106a);
-    color: white;
+    color: var(--v2-text-inverse);
     text-decoration: none !important;
 }
 
@@ -418,12 +418,12 @@ h1.v2-sidebar-title {
 }
 
 .v2-theme-toggle {
-    background: var(--v2-surface-base);
+    background: transparent;
     border: 1px solid var(--v2-border-default) !important;
     border-radius: 50%;
     cursor: pointer;
-    padding: 6px;
-    color: var(--v2-header-color);
+    padding: 0;
+    color: var(--v2-text-secondary);
     transition: all var(--v2-transition-fast);
     display: flex;
     align-items: center;
@@ -436,21 +436,30 @@ h1.v2-sidebar-title {
 .v2-theme-toggle:hover {
     background-color: var(--v2-surface-muted);
     color: var(--v2-text-primary);
+    border-color: var(--v2-border-strong) !important;
 }
 
 .v2-theme-toggle.active {
     background-color: var(--v2-brand-blue);
     color: #ffffff;
-    border-color: var(--v2-brand-blue);
+    border-color: var(--v2-brand-blue) !important;
+    box-shadow: var(--v2-shadow-sm);
+}
+
+.v2-theme-toggle.active:hover {
+    background-color: var(--v2-brand-blue-hover);
+    border-color: var(--v2-brand-blue-hover) !important;
 }
 
 .v2-theme-toggle svg {
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
 }
 
 .v2-theme-toggle .icon-glyph {
-    font-size: 14px;
+    font-size: 16px;
+    line-height: 1;
 }
 
 /* Tool button (hard refresh) */
@@ -479,11 +488,34 @@ h1.v2-sidebar-title {
     height: 14px;
 }
 
-/* Pink mode specific active state */
-.pink-mode .v2-theme-toggle[data-theme="pink"].active {
-    background-color: var(--v2-brand-pink);
-    border-color: var(--v2-brand-pink);
-    color: white;
+/* Pink mode specific active state - Handled via ID below now */
+
+/* =====================
+ * TOGGLE SPECIFIC BRANDING
+ * Decouple from var(--v2-brand-blue) to ensure distinct buttons
+ * ===================== */
+#v2ThemeToggleDark.active {
+    background-color: #001589;
+    /* Always Dark Blue */
+    border-color: #001589 !important;
+    color: #ffffff;
+}
+
+#v2ThemeToggleDark.active:hover {
+    background-color: #00106a;
+    border-color: #00106a !important;
+}
+
+#v2ThemeTogglePink.active {
+    background-color: #ff69b4;
+    /* Always Pink */
+    border-color: #ff69b4 !important;
+    color: #ffffff;
+}
+
+#v2ThemeTogglePink.active:hover {
+    background-color: #f255a8;
+    border-color: #f255a8 !important;
 }
 
 /* =====================

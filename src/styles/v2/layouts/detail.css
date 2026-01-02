@@ -140,7 +140,7 @@
     margin-bottom: var(--v2-space-lg);
     background-color: var(--v2-brand-blue-dark);
     /* Flat color */
-    color: white;
+    color: var(--v2-text-inverse);
     /* Gradient removed */
 }
 

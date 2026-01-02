@@ -1,0 +1,208 @@
+/*
+ * Cine Power Planner V2 - Settings View
+ * =====================================
+ */
+
+.v2-settings-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: var(--v2-space-xl);
+    height: 100%;
+    align-items: start;
+}
+
+/* Sidebar Navigation */
+.v2-settings-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--v2-space-xs);
+    position: sticky;
+    top: 0;
+}
+
+.v2-settings-tab {
+    display: flex;
+    align-items: center;
+    gap: var(--v2-space-md);
+    padding: var(--v2-space-md) var(--v2-space-lg);
+    background: none;
+    border: none;
+    border-radius: var(--v2-radius-md);
+    color: var(--v2-text-secondary);
+    font-size: var(--v2-font-size-base);
+    font-weight: var(--v2-font-weight-medium);
+    text-align: left;
+    cursor: pointer;
+    transition: all var(--v2-transition-fast);
+}
+
+.v2-settings-tab:hover {
+    background-color: var(--v2-surface-hover);
+    color: var(--v2-text-primary);
+}
+
+.v2-settings-tab.active {
+    background-color: color-mix(in srgb, var(--v2-brand-blue) 10%, transparent);
+    color: var(--v2-brand-blue);
+}
+
+.v2-settings-tab .icon {
+    font-size: 20px;
+    font-family: 'Material Symbols Rounded', sans-serif;
+    opacity: 0.8;
+}
+
+/* Content Area */
+.v2-settings-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--v2-space-xl);
+    padding-bottom: var(--v2-space-2xl);
+    max-width: 800px;
+}
+
+.v2-settings-panel h2 {
+    font-size: var(--v2-font-size-2xl);
+    font-weight: var(--v2-font-weight-bold);
+    color: var(--v2-text-primary);
+    margin-bottom: var(--v2-space-lg);
+}
+
+/* Cards */
+.v2-settings-card {
+    background-color: var(--v2-surface-card);
+    border: 1px solid var(--v2-border-default);
+    border-radius: var(--v2-radius-lg);
+    padding: var(--v2-space-xl);
+    margin-bottom: var(--v2-space-lg);
+}
+
+.v2-settings-card h3 {
+    font-size: var(--v2-font-size-lg);
+    font-weight: var(--v2-font-weight-semibold);
+    color: var(--v2-text-primary);
+    margin-bottom: var(--v2-space-md);
+}
+
+.v2-settings-card p {
+    color: var(--v2-text-secondary);
+    margin-bottom: var(--v2-space-lg);
+    line-height: 1.5;
+}
+
+/* Form Elements Spacing */
+.v2-settings-card .v2-form-group+.v2-form-group {
+    margin-top: var(--v2-space-lg);
+}
+
+.v2-checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: var(--v2-space-md);
+    margin-bottom: var(--v2-space-sm);
+    cursor: pointer;
+}
+
+/* Color Picker Customization */
+.v2-color-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--v2-space-md);
+}
+
+.v2-color-input {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 48px;
+    height: 32px;
+    background: none;
+    border: 1px solid var(--v2-border-default);
+    border-radius: var(--v2-radius-md);
+    padding: 2px;
+    cursor: pointer;
+}
+
+.v2-color-input::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.v2-color-input::-webkit-color-swatch {
+    border: none;
+    border-radius: var(--v2-radius-sm);
+}
+
+/* Camera Colors Grid */
+.v2-camera-colors-grid {
+    display: flex;
+    gap: var(--v2-space-lg);
+    margin-top: var(--v2-space-md);
+}
+
+.v2-color-field {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--v2-space-xs);
+}
+
+.v2-color-field label {
+    font-size: var(--v2-font-size-sm);
+    font-weight: var(--v2-font-weight-medium);
+    color: var(--v2-text-secondary);
+}
+
+/* Key Value List (for Data Status) */
+.v2-key-value-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.v2-kv-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--v2-border-subtle);
+}
+
+.v2-kv-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.v2-kv-label {
+    color: var(--v2-text-secondary);
+    font-size: 0.9rem;
+}
+
+.v2-kv-value {
+    font-family: var(--v2-font-mono, monospace);
+    font-size: 0.9rem;
+    color: var(--v2-text-primary);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .v2-settings-layout {
+        grid-template-columns: 1fr;
+        gap: var(--v2-space-lg);
+    }
+
+    .v2-settings-sidebar {
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: var(--v2-space-sm);
+        border-bottom: 1px solid var(--v2-border-default);
+        position: static;
+    }
+
+    .v2-settings-tab {
+        white-space: nowrap;
+        padding: var(--v2-space-sm) var(--v2-space-md);
+    }
+
+    .v2-camera-colors-grid {
+        justify-content: space-between;
+    }
+}

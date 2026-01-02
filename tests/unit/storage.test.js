@@ -2927,7 +2927,7 @@ describe('export/import all data', () => {
   });
 
   test('importAllData extracts nested project data containers', () => {
-    clearAllData();
+    localStorage.clear();
     importAllData({
       data: {
         project: { gearList: '<div>Nested</div>' },
@@ -2939,7 +2939,7 @@ describe('export/import all data', () => {
   });
 
   test('importAllData imports legacy plannerData project entries', () => {
-    clearAllData();
+    localStorage.clear();
     importAllData({
       plannerData: [
         ['projects', [{ name: 'Planner One', gearList: '<p>One</p>' }]],
@@ -2953,7 +2953,7 @@ describe('export/import all data', () => {
   });
 
   test('importAllData converts legacy filter arrays into serialized filter selections', () => {
-    clearAllData();
+    localStorage.clear();
     importAllData({
       project: {
         'Filter Project': {
@@ -2977,7 +2977,7 @@ describe('export/import all data', () => {
   });
 
   test('importAllData normalizes map-based filter payloads with mixed formats', () => {
-    clearAllData();
+    localStorage.clear();
     importAllData({
       project: {
         'Mapped Filters': {

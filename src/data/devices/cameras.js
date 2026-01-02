@@ -155,6 +155,13 @@
         "S35 3:2",
         "S35 16:9"
       ],
+      "sensorModeMaxFps": {
+        "LF Open Gate 4.5K (3:2)": 40,
+        "LF 16:9": 60,
+        "LF 2.39:1": 60,
+        "S35 3:2": 60,
+        "S35 16:9": 90
+      },
       "resolutions": [
         "4448×3096",
         "3840×2160",
@@ -318,6 +325,16 @@
         "ARRIRAW 16:9 2.8K 2880×1620",
         "ARRIRAW Open Gate 3.4K 3424×2202"
       ],
+      "sensorModeMaxFps": {
+        "S16 HD 1600×900": 200,
+        "HD 2880×1620": 200,
+        "2K 2868×1612": 200,
+        "3.2K 3200×1800": 60,
+        "UHD 3840×2160 (upsampled from 3.2K)": 60,
+        "4:3 2.8K 2880×2160": 50,
+        "ARRIRAW 16:9 2.8K 2880×1620": 48,
+        "ARRIRAW Open Gate 3.4K 3424×2202": 30
+      },
       "resolutions": [
         "HD 1920×1080",
         "2K 2048×1152",
@@ -479,6 +496,17 @@
         "2.7K 8:9",
         "2K 16:9 S16"
       ],
+      "sensorModeMaxFps": {
+        "4.6K 3:2 Open Gate": 75,
+        "4.6K 16:9": 75,
+        "4K 16:9": 120,
+        "4K 2:1": 120,
+        "3.8K 16:9": 120,
+        "3.3K 6:5": 100,
+        "3K 1:1": 100,
+        "2.7K 8:9": 100,
+        "2K 16:9 S16": 120
+      },
       "resolutions": [
         "4608x3164",
         "4608x2592",
@@ -664,6 +692,17 @@
         "2.7K 8:9",
         "2K 16:9 S16"
       ],
+      "sensorModeMaxFps": {
+        "4.6K 3:2 Open Gate": 165,
+        "4.6K 16:9": 240,
+        "4K 16:9": 240,
+        "4K 2:1": 240,
+        "3.8K 16:9": 240,
+        "3.3K 6:5": 200,
+        "3K 1:1": 200,
+        "2.7K 8:9": 200,
+        "2K 16:9 S16": 660
+      },
       "resolutions": [
         "4608x3164",
         "4608x2592",
@@ -824,6 +863,14 @@
         "4K UHD 3200×1800 (UHD option)",
         "ARRIRAW 16:9 2.8K 2880×1620"
       ],
+      "sensorModeMaxFps": {
+        "S16 HD 1600×900": 200,
+        "HD 2880×1620": 200,
+        "2K 2868×1612": 200,
+        "3.2K 3200×1800": 60,
+        "4K UHD 3200×1800 (UHD option)": 60,
+        "ARRIRAW 16:9 2.8K 2880×1620": 48
+      },
       "resolutions": [
         "HD 1920×1080",
         "2K 2048×1152",
@@ -1011,6 +1058,20 @@
         "4K 6:5 Anamorphic (6K Sensor)",
         "4K 17:9 (6K Sensor)"
       ],
+      "sensorModeMaxFps": {
+        "8.6K 3:2 Open Gate (8K Sensor)": 30,
+        "8.2K 17:9 (8K Sensor)": 60,
+        "7.6K 16:9 (8K Sensor)": 60,
+        "5.8K 6:5 Anamorphic (8K Sensor)": 48,
+        "5.8K 17:9 (8K Sensor)": 90,
+        "6K 3:2 Open Gate (6K Sensor)": 60,
+        "6K 17:9 (6K Sensor)": 72,
+        "6K 2.39:1 (6K Sensor)": 90,
+        "5.7K 16:9 (6K Sensor)": 72,
+        "4K 4:3 Anamorphic (6K Sensor)": 75,
+        "4K 6:5 Anamorphic (6K Sensor)": 72,
+        "4K 17:9 (6K Sensor)": 110
+      },
       "resolutions": [
         "8640x5760 (8.6K 3:2)",
         "8192x4320 (8.2K 17:9)",
@@ -1200,6 +1261,10 @@
         "Full-Frame 3:2 6K",
         "Super 35 4K"
       ],
+      "sensorModeMaxFps": {
+        "Full-Frame 3:2 6K": 60,
+        "Super 35 4K": 110
+      },
       "resolutions": [
         "6048×4032 (6K 3:2)",
         "4096×2160 (DCI 4K)",
@@ -1341,6 +1406,16 @@
         "Super 35 4K 17:9",
         "Super 35 4K 16:9"
       ],
+      "sensorModeMaxFps": {
+        "Full Frame 8.6K 16:9": 30,
+        "Full Frame 8.6K 17:9": 30,
+        "Full Frame Crop 6K 16:9": 60,
+        "Full Frame Crop 6K 17:9": 60,
+        "Super 35 5.8K 16:9": 60,
+        "Super 35 5.8K 17:9": 60,
+        "Super 35 4K 17:9": 120,
+        "Super 35 4K 16:9": 120
+      },
       "resolutions": [
         "8632x4856",
         "8632x4552",
@@ -1452,6 +1527,11 @@
         "Full-Frame HD",
         "S35 crop 4K"
       ],
+      "sensorModeMaxFps": {
+        "Full-Frame 4K (oversampled)": 120,
+        "Full-Frame HD": 240,
+        "S35 crop 4K": 60
+      },
       "resolutions": [
         "UHD 3840×2160 (up to 120p)",
         "HD 1920×1080 (up to 240p)"
@@ -1603,6 +1683,10 @@
         "Full Frame (DCI 4K/UHD/HD)",
         "Super 35 crop (HD)"
       ],
+      "sensorModeMaxFps": {
+        "Full Frame (DCI 4K/UHD/HD)": 120,
+        "Super 35 crop (HD)": 240
+      },
       "resolutions": [
         "4096×2160",
         "3840×2160",
@@ -1746,6 +1830,12 @@
         "FF HD",
         "S35 UHD"
       ],
+      "sensorModeMaxFps": {
+        "FF 6K oversample→4K": 30,
+        "S35 4K (DCI)": 60,
+        "FF HD": 120,
+        "S35 UHD": 60
+      },
       "resolutions": [
         "DCI 4K 4096×2160 (S35)",
         "UHD 3840×2160",
@@ -3107,6 +3197,11 @@
         "S35 6K 2.4:1",
         "2.8K window (HFR)"
       ],
+      "sensorModeMaxFps": {
+        "S35 6K 16:9": 50,
+        "S35 6K 2.4:1": 60,
+        "2.8K window (HFR)": 120
+      },
       "resolutions": [
         "6144×3456 (6K 16:9)",
         "6144×2560 (6K 2.4:1)",
@@ -3245,6 +3340,9 @@
       "sensorModes": [
         "Super 35"
       ],
+      "sensorModeMaxFps": {
+        "Super 35": 240
+      },
       "resolutions": [
         "12288x6480",
         "8192x4320",
@@ -3928,6 +4026,11 @@
         "S35 4K crop",
         "S35 2K crop"
       ],
+      "sensorModeMaxFps": {
+        "Super35 6K": 40,
+        "S35 4K crop": 60,
+        "S35 2K crop": 120
+      },
       "resolutions": [
         "6K 6144×3240",
         "5K 5120×2700",
@@ -4045,6 +4148,12 @@
         "4K S35",
         "2K S16"
       ],
+      "sensorModeMaxFps": {
+        "6K S35": 80,
+        "5K S35": 96,
+        "4K S35": 120,
+        "2K S16": 240
+      },
       "resolutions": [
         "6144×3240",
         "5120×2700",
@@ -4194,6 +4303,10 @@
         "VV 8K (17:9, 2.4:1, 1:1)",
         "S35 window (6K, 5K, 4K)"
       ],
+      "sensorModeMaxFps": {
+        "VV 8K (17:9, 2.4:1, 1:1)": 150,
+        "S35 window (6K, 5K, 4K)": 240
+      },
       "resolutions": [
         "8192x4320 (8K)",
         "7168x3780 (7K)",
@@ -4345,6 +4458,10 @@
         "VV 8K (global shutter)",
         "S35 window (6K/4K)"
       ],
+      "sensorModeMaxFps": {
+        "VV 8K (global shutter)": 150,
+        "S35 window (6K/4K)": 240
+      },
       "resolutions": [
         "8192x4320 (8K)",
         "7168x3780 (7K)",
@@ -4494,6 +4611,9 @@
       "sensorModes": [
         "Super 35 8K (17:9, 2.4:1, 1:1)"
       ],
+      "sensorModeMaxFps": {
+        "Super 35 8K (17:9, 2.4:1, 1:1)": 120
+      },
       "resolutions": [
         "8192x4320 (8K S35)",
         "7168x3780 (7K)",
@@ -5172,6 +5292,10 @@
         "Super 35 5K",
         "Windowed 4K/3K/2K"
       ],
+      "sensorModeMaxFps": {
+        "Super 35 5K": 60,
+        "Windowed 4K/3K/2K": 150
+      },
       "resolutions": [
         "5120x2700 (5K)",
         "4096x2160 (4K)",
@@ -5275,6 +5399,10 @@
         "Super 35 8K",
         "Windowed 7K/6K/5K/4K/2K"
       ],
+      "sensorModeMaxFps": {
+        "Super 35 8K": 60,
+        "Windowed 7K/6K/5K/4K/2K": 240
+      },
       "resolutions": [
         "8192x4320 (8K)",
         "7168x3780 (7K)",
@@ -5378,6 +5506,10 @@
         "8K S35 (Helium)",
         "8K VV (VistaVision, where equipped)"
       ],
+      "sensorModeMaxFps": {
+        "8K S35 (Helium)": 60,
+        "8K VV (VistaVision, where equipped)": 60
+      },
       "resolutions": [
         "8192x4320 (8K)",
         "6144x3240 (6K)",
@@ -5478,6 +5610,10 @@
         "Super 35 6K",
         "Windowed 5K/4K/3K/2K"
       ],
+      "sensorModeMaxFps": {
+        "Super 35 6K": 75,
+        "Windowed 5K/4K/3K/2K": 200
+      },
       "resolutions": [
         "6144x3160 (6K)",
         "5120x2700 (5K)",
@@ -5579,6 +5715,9 @@
       "sensorModes": [
         "S35 6K / 5K windows (per mode)"
       ],
+      "sensorModeMaxFps": {
+        "S35 6K / 5K windows (per mode)": 150
+      },
       "resolutions": [
         "6144x3160",
         "5120x2700",
@@ -5679,6 +5818,10 @@
         "Super 35 5K",
         "Windowed 4K/3K/2K"
       ],
+      "sensorModeMaxFps": {
+        "Super 35 5K": 60,
+        "Windowed 4K/3K/2K": 120
+      },
       "resolutions": [
         "5120x2700 (5K)",
         "4096x2160 (4K)",
@@ -7718,6 +7861,10 @@
         "Monstro 8K VV",
         "Monstro 8K 2.4:1"
       ],
+      "sensorModeMaxFps": {
+        "Monstro 8K VV": 60,
+        "Monstro 8K 2.4:1": 75
+      },
       "resolutions": [
         "8192x4320",
         "8192x3456",
@@ -9923,6 +10070,10 @@
         "Super 35 4K (DCI/UHD)",
         "Super 35 HD"
       ],
+      "sensorModeMaxFps": {
+        "Super 35 4K (DCI/UHD)": 60,
+        "Super 35 HD": 180
+      },
       "resolutions": [
         "4096×2160",
         "3840×2160",
@@ -10296,6 +10447,11 @@
         "6K S35",
         "4K S35"
       ],
+      "sensorModeMaxFps": {
+        "8K VV (Full Frame)": 120,
+        "6K S35": 160,
+        "4K S35": 240
+      },
       "resolutions": [
         "8192×4320",
         "6144×3240",
@@ -10398,6 +10554,11 @@
         "6K S35",
         "4K S35"
       ],
+      "sensorModeMaxFps": {
+        "8K VV (Full Frame)": 120,
+        "6K S35": 160,
+        "4K S35": 240
+      },
       "resolutions": [
         "8192×4320",
         "6144×3240",
@@ -10503,6 +10664,14 @@
         "S35 6K 17:9",
         "S35 6K 2.4:1"
       ],
+      "sensorModeMaxFps": {
+        "S35 8K 17:9": 120,
+        "S35 8K 2.4:1": 150,
+        "S35 7K 17:9": 140,
+        "S35 7K 2.4:1": 175,
+        "S35 6K 17:9": 160,
+        "S35 6K 2.4:1": 200
+      },
       "resolutions": [
         "8192×4320",
         "8192×3456",
@@ -10596,6 +10765,14 @@
         "4K DCI 17:9",
         "Super 16 16:9"
       ],
+      "sensorModeMaxFps": {
+        "Full Frame 3:2 Open Gate": 36,
+        "6K DCI 17:9": 48,
+        "6K 2.4:1": 60,
+        "Super 35 4:3": 50,
+        "4K DCI 17:9": 60,
+        "Super 16 16:9": 120
+      },
       "resolutions": [
         "6048×4032",
         "4832×4032",

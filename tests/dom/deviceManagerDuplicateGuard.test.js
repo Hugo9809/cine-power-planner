@@ -85,6 +85,7 @@ describe('device manager duplicate protections', () => {
 
   beforeEach(() => {
     jest.resetModules();
+    delete global.cineUiCache; // Ensure UI Cache is reset
 
     originalFreeze = Object.freeze;
     originalIsFrozen = Object.isFrozen;

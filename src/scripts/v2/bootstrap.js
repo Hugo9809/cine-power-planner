@@ -300,6 +300,8 @@
             // Load V2 CSS
             await loadStylesheet('src/styles/v2/index.css?v=2');
             await loadStylesheet('src/styles/v2/views/rules-view.css');
+            await loadStylesheet('src/styles/v2/views/contacts.css');
+            await loadStylesheet('src/styles/v2/views/settings.css');
             console.log('[V2 Bootstrap] V2 CSS loaded');
 
             // Load V2 JS modules
@@ -308,6 +310,11 @@
             await loadScript('src/scripts/v2/sidebar.js?v=final_sidebar'); // Load sidebar logic
             await loadScript('src/scripts/v2/views/rules-view.js'); // Load Rules View
             await loadScript('src/scripts/v2/views/device-library-view.js'); // Load Device Library View
+            await loadScript('src/scripts/modules/features/contacts.js'); // Load Contacts Module
+            await loadScript('src/scripts/modules/features/own-gear.js'); // Load Own Gear Module
+            await loadScript('src/scripts/v2/views/contacts-view.js'); // Load Contacts View
+            await loadScript('src/scripts/v2/views/settings-view.js'); // Load Settings View
+            await loadScript('src/scripts/v2/views/owned-gear-view.js'); // Load Owned Gear View
             console.log('[V2 Bootstrap] V2 JS modules loaded');
 
             // Initialize Sidebar
@@ -323,6 +330,21 @@
             // Initialize Device Library View
             if (global.cineV2DeviceLibrary && typeof global.cineV2DeviceLibrary.init === 'function') {
                 global.cineV2DeviceLibrary.init();
+            }
+
+            // Initialize Contacts View
+            if (global.cineContactsView && typeof global.cineContactsView.init === 'function') {
+                global.cineContactsView.init();
+            }
+
+            // Initialize Settings View
+            if (global.cineSettingsView && typeof global.cineSettingsView.init === 'function') {
+                global.cineSettingsView.init();
+            }
+
+            // Initialize Owned Gear View
+            if (global.cineOwnGearView && typeof global.cineOwnGearView.init === 'function') {
+                global.cineOwnGearView.init();
             }
 
             return true;

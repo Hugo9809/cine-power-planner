@@ -3943,7 +3943,21 @@
       }
       if (setupDiagramContainer && renderSetupDiagramFn) {
         try {
-          renderSetupDiagramFn();
+          renderSetupDiagramFn({
+            document: resolveDocument(opts),
+            window: runtimeFeedbackState.dependencies.window,
+            getDevices: resolveFunctionDependency('getDevices'),
+            getTexts: resolveFunctionDependency('getTexts'),
+            getCurrentLang: resolveFunctionDependency('getCurrentLang'),
+            cameraSelect: resolveElementFromOptions(opts, 'cameraSelect'),
+            monitorSelect: resolveElementFromOptions(opts, 'monitorSelect'),
+            videoSelect: resolveElementFromOptions(opts, 'videoSelect'),
+            distanceSelect: resolveElementFromOptions(opts, 'distanceSelect'),
+            batterySelect: resolveElementFromOptions(opts, 'batterySelect'),
+            motorSelects: resolveElementFromOptions(opts, 'motorSelects'),
+            controllerSelects: resolveElementFromOptions(opts, 'controllerSelects'),
+            setupDiagramContainer: setupDiagramContainer
+          });
         } catch (error) {
           safeWarn('cineResults.updateCalculations could not render setup diagram.', error);
         }

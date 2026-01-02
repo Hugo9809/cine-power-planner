@@ -1,0 +1,138 @@
+/* V2 Owned Gear View */
+#view-own-gear {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Empty State */
+.own-gear-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6rem 2rem;
+    background: var(--v2-surface-base);
+    border-radius: var(--v2-radius-lg);
+    border: 1px dashed var(--v2-border-default);
+    margin-top: 2rem;
+}
+
+.own-gear-empty-state .icon {
+    font-size: 3rem;
+    color: var(--v2-text-muted);
+    margin-bottom: 1.5rem;
+    font-family: 'uicons';
+}
+
+.own-gear-empty-state h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--v2-text-primary);
+}
+
+.own-gear-empty-state p {
+    color: var(--v2-text-secondary);
+    margin-bottom: 2rem;
+    max-width: 400px;
+    line-height: 1.6;
+}
+
+/* List Layout */
+.own-gear-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+/* Item Card */
+.own-gear-item-card {
+    background: var(--v2-surface-base);
+    border: 1px solid var(--v2-border-default);
+    border-radius: var(--v2-radius-md);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.2s ease;
+    cursor: default;
+    position: relative;
+    box-shadow: var(--v2-shadow-xs);
+}
+
+.own-gear-item-card:hover {
+    border-color: var(--v2-border-focus);
+    box-shadow: var(--v2-shadow-md);
+    transform: translateY(-2px);
+}
+
+.own-gear-item-info {
+    margin-bottom: 1rem;
+    flex: 1;
+}
+
+.own-gear-item-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--v2-text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.own-gear-item-notes {
+    font-size: 0.9rem;
+    color: var(--v2-text-secondary);
+    line-height: 1.4;
+    white-space: pre-wrap;
+}
+
+.own-gear-item-meta {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: auto;
+    margin-bottom: 1rem;
+}
+
+.own-gear-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background: var(--v2-surface-muted);
+    color: var(--v2-text-secondary);
+}
+
+.own-gear-badge.qty-badge {
+    background: var(--v2-status-info-bg);
+    color: var(--v2-status-info);
+}
+
+.own-gear-item-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    border-top: 1px solid var(--v2-border-muted);
+    padding-top: 1rem;
+    margin-top: 0.5rem;
+}
+
+/* Modal Specifics */
+.own-gear-modal-body {
+    padding-top: 1rem;
+}
+
+/* Response handling */
+@media (max-width: 600px) {
+    #view-own-gear {
+        padding: 1rem;
+    }
+
+    .own-gear-list {
+        grid-template-columns: 1fr;
+    }
+}

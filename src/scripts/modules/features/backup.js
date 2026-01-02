@@ -2543,7 +2543,20 @@
       queueMessage: resolveQueuedBackupMessage(fileName),
     };
 
-    if (typeof payload !== 'string') {
+    // Defensive: Validate and normalize filename
+    let safeFileName = typeof fileName === 'string' && fileName.trim() ? fileName.trim() : '';
+    if (!safeFileName) {
+      // Generate a fallback name if missing
+      const fallbackDate = new Date();
+      const fallbackIso = fallbackDate.toISOString().replace(/[:.]/g, '-');
+      safeFileName = `${fallbackIso}-backup.json`;
+    }
+    // Ensure .json extension
+    if (!safeFileName.toLowerCase().endsWith('.json')) {
+      safeFileName += '.json';
+    }
+
+    if (typeof payload !== 'string' || payload.length < 2) {
       return failureResult;
     }
 
@@ -2560,7 +2573,7 @@
     if (blob) {
       if (typeof navigator !== 'undefined' && typeof navigator.msSaveOrOpenBlob === 'function') {
         try {
-          const msSaveResult = navigator.msSaveOrOpenBlob(blob, fileName);
+          const msSaveResult = navigator.msSaveOrOpenBlob(blob, safeFileName);
           if (msSaveResult === false) {
             console.warn('Saving backup via msSaveOrOpenBlob was cancelled or declined');
           } else {
@@ -2581,7 +2594,7 @@
         }
 
         if (objectUrl) {
-          const triggered = triggerBackupDownload(objectUrl, fileName);
+          const triggered = triggerBackupDownload(objectUrl, safeFileName);
           if (typeof URL.revokeObjectURL === 'function') {
             setTimeout(() => {
               try {
@@ -2600,13 +2613,13 @@
 
     const encoded = encodeBackupDataUrl(payload);
     if (encoded) {
-      const triggered = triggerBackupDownload(encoded, fileName);
+      const triggered = triggerBackupDownload(encoded, safeFileName);
       if (triggered) {
         return { success: true, method: 'data-url', permission: permissionMonitor };
       }
     }
 
-    const opened = openBackupFallbackWindow(payload, fileName);
+    const opened = openBackupFallbackWindow(payload, safeFileName);
     if (opened) {
       return { success: true, method: 'manual', permission: permissionMonitor };
     }
@@ -2615,7 +2628,7 @@
       const metadata = config.queueMetadata && typeof config.queueMetadata === 'object'
         ? config.queueMetadata
         : {};
-      const record = queueBackupPayloadForVault(fileName, payload, {
+      const record = queueBackupPayloadForVault(safeFileName, payload, {
         reason: metadata.reason || config.reason || 'download-blocked',
         permissionState: metadata.permissionState
           || (permissionMonitor && typeof permissionMonitor.state === 'string'

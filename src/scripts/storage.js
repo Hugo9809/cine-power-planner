@@ -7753,8 +7753,8 @@ console.log('DEBUG: storage.js execution started');
           if (typeof restoredRawValue === 'string' && restoredRawValue) {
             cacheStorageValue(storage, key, restoredRawValue, normalizedBackup, backup.value);
           }
+          return backup.value;
         }
-        return backup.value;
       }
     }
 
@@ -7769,6 +7769,21 @@ console.log('DEBUG: storage.js execution started');
         if (migrationRecovery.shouldAlert) {
           shouldAlert = true;
         }
+
+        // Hard cleanup of migration key to ensure no loop
+        if (migrationBackupCandidates.length) {
+          const cleanupKey = migrationBackupCandidates[0].key;
+          try {
+            storage.removeItem(cleanupKey);
+            // Also force delete from internal fallback if present
+            if (storage[STORAGE_RAW_GET_ITEM_PROPERTY] && storage.removeItem) {
+              storage.removeItem(cleanupKey);
+            }
+          } catch (cleanupErr) {
+            console.warn('Post-migration cleanup error:', cleanupErr);
+          }
+        }
+
         return migrationRecovery.value;
       }
       if (migrationRecovery.shouldAlert) {
@@ -7781,6 +7796,10 @@ console.log('DEBUG: storage.js execution started');
     }
 
     clearCachedStorageEntry(storage, key);
+    // Log why we are returning default
+    if (missingPrimary && !shouldAttemptBackup && !shouldAttemptMigrationBackup) {
+      console.debug(`[Storage] Returning default for ${key} (No primary, no backups found)`);
+    }
     return defaultValue;
   }
 
@@ -12793,7 +12812,6 @@ console.log('DEBUG: storage.js execution started');
   function saveProject(name, project, options = {}) {
     if (!isPlainObject(project)) return;
 
-
     const normalized = normalizeProject(project);
     if (!normalized) {
       if (typeof console !== 'undefined' && typeof console.warn === 'function') {
@@ -13146,7 +13164,7 @@ console.log('DEBUG: storage.js execution started');
 
       const baseName = candidates.length > 0 ? candidates[0] : fallback;
       const normalizedBase = typeof baseName === "string" ? baseName.trim().toLowerCase() : "";
-      const uniqueName = normalizedBase && normalizedNames.has(normalizedBase)
+      const uniqueName = normalizedNames.has(normalizedBase)
         ? generateImportedProjectName(baseName, usedNames, normalizedNames)
         : generateUniqueName(baseName, usedNames, normalizedNames);
       saveProject(uniqueName, normalizedProject, { skipCompression: false });
@@ -15915,12 +15933,20 @@ console.log('DEBUG: storage.js execution started');
       return;
     }
     if (response && typeof response.then === 'function') {
-      response.then((records) => {
+      return response.then((records) => {
         backupVaultRecordCache = normalizeBackupVaultRecordList(records);
+        return backupVaultRecordCache;
       }).catch((error) => {
         console.warn('Unable to load backup vault records for export', error);
+        return [];
       });
     }
+    return Promise.resolve(backupVaultRecordCache);
+  }
+
+  async function prepareBackupForExport() {
+    const records = await refreshBackupVaultRecordCache();
+    return records;
   }
 
   function exportAllData() {
@@ -17327,6 +17353,7 @@ console.log('DEBUG: storage.js execution started');
     saveFeedback,
     clearAllData,
     exportAllData,
+    prepareBackupForExport,
     importAllData,
     loadAutoGearRules,
     saveAutoGearRules,

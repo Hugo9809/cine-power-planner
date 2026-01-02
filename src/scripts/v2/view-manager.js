@@ -56,6 +56,11 @@
             id: 'view-rules',
             title: 'Auto Gear Rules',
             pattern: /^#?\/?rules\/?$/i
+        },
+        ownGear: {
+            id: 'view-own-gear',
+            title: 'Owned Gear',
+            pattern: /^#?\/?own-gear\/?$/i
         }
     };
 

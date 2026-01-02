@@ -11209,11 +11209,19 @@ function mergeAutoGearRuleLists(primary, secondary) {
   return { combined: baseList, changed };
 }
 
-function collectFullBackupData() {
+async function collectFullBackupData() {
   const diagnostics = [];
   let rawData = {};
   let exportAttempted = false;
   let exportFailed = false;
+
+  if (typeof prepareBackupForExport === 'function') {
+    try {
+      await prepareBackupForExport();
+    } catch (e) {
+      console.warn('Failed to prepare backup vault cache', e);
+    }
+  }
 
   if (typeof exportAllData === 'function') {
     exportAttempted = true;
@@ -11313,12 +11321,12 @@ function collectFullBackupData() {
   return { data, diagnostics };
 }
 
-function buildSettingsBackupPackage(timestamp = new Date()) {
+async function buildSettingsBackupPackage(timestamp = new Date()) {
   const { iso, fileName } = formatFullBackupFilename(timestamp);
   const safeStorage = resolveSafeLocalStorage();
   const settings = captureStorageSnapshot(safeStorage);
   const sessionEntries = captureStorageSnapshot(typeof sessionStorage !== 'undefined' ? sessionStorage : null);
-  const { data: backupData, diagnostics } = collectFullBackupData();
+  const { data: backupData, diagnostics } = await collectFullBackupData();
   const backupVersion =
     ACTIVE_APP_VERSION
     || normalizeVersionValue(typeof APP_VERSION === 'string' ? APP_VERSION : null);
@@ -11343,12 +11351,12 @@ function buildSettingsBackupPackage(timestamp = new Date()) {
   };
 }
 
-function performSettingsBackup(notify = true, timestamp = new Date(), options = {}) {
+async function performSettingsBackup(notify = true, timestamp = new Date(), options = {}) {
   try {
     const config = typeof options === 'object' && options !== null ? options : {};
     const isEvent = notify && typeof notify === 'object' && typeof notify.type === 'string';
     const shouldNotify = config.deferDownload ? false : (isEvent ? true : Boolean(notify));
-    const { fileName, payload, iso } = buildSettingsBackupPackage(timestamp);
+    const { fileName, payload, iso } = await buildSettingsBackupPackage(timestamp);
 
     if (config.deferDownload) {
       return {
@@ -11397,9 +11405,20 @@ function performSettingsBackup(notify = true, timestamp = new Date(), options = 
   }
 }
 
-function createSettingsBackup(notify = true, timestamp = new Date()) {
-  const result = performSettingsBackup(notify, timestamp);
-  return result ? result.fileName : null;
+function createSettingsBackup(notifyOrEvent = true, timestamp = new Date()) {
+  // Defensive: Handle case where called as event listener (1st arg is event)
+  let notify = notifyOrEvent;
+  let time = timestamp;
+
+  if (notifyOrEvent && typeof notifyOrEvent === 'object' && (notifyOrEvent instanceof Event || !!notifyOrEvent.type)) {
+    // Called as event listener
+    notify = true;
+    time = new Date();
+  }
+
+  return performSettingsBackup(notify, time).then(result => {
+    return result ? result.fileName : null;
+  });
 }
 
 if (typeof backupSettings !== 'undefined' && backupSettings) {

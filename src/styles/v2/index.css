@@ -19,6 +19,7 @@
 @import url('./layouts/sidebar.css');
 @import url('./layouts/views.css');
 @import url('./layouts/detail.css');
+@import url('./views/owned-gear.css');
 
 /* =====================
  * COMPONENTS

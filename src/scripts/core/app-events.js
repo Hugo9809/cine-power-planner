@@ -4233,13 +4233,13 @@ function scheduleAutoGearBackupTimer() {
   }
 }
 
-function queueScheduledFullBackup() {
+async function queueScheduledFullBackup() {
   if (typeof queueBackupPayloadForVaultForEvents !== 'function'
     || typeof buildSettingsBackupPackageForEvents !== 'function') {
     return;
   }
   try {
-    const packageInfo = buildSettingsBackupPackageForEvents(new Date());
+    const packageInfo = await buildSettingsBackupPackageForEvents(new Date());
     if (!packageInfo || typeof packageInfo.payload !== 'string') {
       return;
     }
@@ -5992,7 +5992,27 @@ addSafeEventListener('exportDataBtn', "click", () => {
       console.warn('Failed to auto backup before export', error);
     }
   }
-  const dataStr = JSON.stringify(devices, null, 2);
+
+  if (!devices || typeof devices !== 'object') {
+    alert(texts[currentLang].alertExportError || 'Export failed: No valid device data found.');
+    return;
+  }
+
+  let dataStr;
+  try {
+    dataStr = JSON.stringify(devices, null, 2);
+  } catch (stringifyError) {
+    console.error('Failed to stringify devices for export', stringifyError);
+    if (typeof window.cineShowAlertDialog === 'function') {
+      window.cineShowAlertDialog({
+        title: 'Export Failed',
+        message: 'Unable to serialize device data. Please check for corrupted entries.'
+      });
+    } else {
+      alert('Export failed: Unable to serialize data.');
+    }
+    return;
+  }
   exportOutput.style.display = "block";
   exportOutput.value = dataStr;
   const blob = new Blob([dataStr], { type: "application/json" });
@@ -6242,3 +6262,64 @@ addSafeEventListener('importFileInput', "change", (event) => {
   reader.readAsText(file);
   event.target.value = ''; // Clear the file input for re-selection of the same file
 });
+
+// Dynamic Frame Rate Tooltip Logic
+function updateRecordingFrameRateHint() {
+  const cameraSelect = document.getElementById('cameraSelect');
+  const sensorModeSelect = document.getElementById('sensorMode');
+  const resolutionSelect = document.getElementById('recordingResolution');
+  const hintElem = document.getElementById('recordingFrameRateHint');
+
+  if (!hintElem || !cameraSelect || !sensorModeSelect) {
+    return;
+  }
+
+  const cameraName = cameraSelect.value;
+  const sensorMode = sensorModeSelect.value;
+
+  let maxFps = 200; // Default safety fallback
+
+  // Access global camera data
+  const cameras = (globalThis.devices && globalThis.devices.cameras) ? globalThis.devices.cameras : {};
+  const cameraData = cameras[cameraName];
+
+  if (cameraData && cameraData.sensorModeMaxFps && cameraData.sensorModeMaxFps[sensorMode]) {
+    maxFps = cameraData.sensorModeMaxFps[sensorMode];
+  }
+
+  // Get template from data attribute or fallback
+  let rangeTemplate = hintElem.getAttribute('data-range-template');
+  if (!rangeTemplate) {
+    if (typeof texts !== 'undefined' && texts[currentLang] && texts[currentLang].recordingFrameRateRangeHint) {
+      rangeTemplate = texts[currentLang].recordingFrameRateRangeHint;
+    } else {
+      rangeTemplate = "Enter a recording frame rate from 1 to {max} fps.";
+    }
+  }
+
+  const newText = rangeTemplate.replace('{max}', maxFps);
+  hintElem.textContent = newText;
+}
+
+// Attach listeners for dynamic frame rate hint
+(function initFrameRateDynamicHint() {
+  const cameraSelect = document.getElementById('cameraSelect');
+  const sensorModeSelect = document.getElementById('sensorMode');
+  const resolutionSelect = document.getElementById('recordingResolution');
+
+  if (cameraSelect) {
+    cameraSelect.addEventListener('change', () => {
+      // Delay slightly to allow other handlers to populate sensor mode
+      setTimeout(updateRecordingFrameRateHint, 100);
+    });
+  }
+  if (sensorModeSelect) {
+    sensorModeSelect.addEventListener('change', updateRecordingFrameRateHint);
+  }
+  if (resolutionSelect) {
+    resolutionSelect.addEventListener('change', updateRecordingFrameRateHint);
+  }
+
+  // Initial check
+  setTimeout(updateRecordingFrameRateHint, 500);
+})();
