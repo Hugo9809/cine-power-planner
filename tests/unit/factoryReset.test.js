@@ -49,6 +49,8 @@ global.BroadcastChannel = jest.fn().mockImplementation((name) => {
 
 // Require storage module
 // We must use require because we want to run the initialization code
+// Hack: storage.js skips BroadcastChannel if JEST_WORKER_ID is present.
+// We temporary unset it to test the channel logic.
 jest.resetModules();
 const storage = require('../../src/scripts/storage');
 

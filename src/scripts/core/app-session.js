@@ -13867,7 +13867,7 @@ if (factoryResetButton) {
 
         let backupResult = null;
         try {
-          backupResult = performSettingsBackup(false, new Date());
+          backupResult = await performSettingsBackup(false, new Date());
         } catch (error) {
           console.error('Backup before factory reset failed', error);
         }

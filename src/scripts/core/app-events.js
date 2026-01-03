@@ -2147,7 +2147,7 @@ addSafeEventListener('skipLink', "click", () => {
 
 
 // Setup management
-function handleSaveSetupClick(optionsOrEvent) {
+function handleSaveSetupClickInternal(optionsOrEvent) {
   const isSilent = optionsOrEvent && optionsOrEvent.silent === true;
 
   if (typeof applyPendingProjectNameCollisionResolution === 'function') {
@@ -2343,6 +2343,33 @@ function handleSaveSetupClick(optionsOrEvent) {
   }
 }
 
+function handleSaveSetupClick(optionsOrEvent) {
+  if (typeof window !== 'undefined' && window.cineUiFeedback) {
+    window.cineUiFeedback.showLoading('Saving Project...');
+  }
+
+  if (typeof setTimeout === 'function') {
+    setTimeout(function () {
+      try {
+        handleSaveSetupClickInternal(optionsOrEvent);
+      } catch (error) {
+        console.error('Save failed:', error);
+        alert('Save failed: ' + error.message);
+      } finally {
+        if (typeof window !== 'undefined' && window.cineUiFeedback) {
+          window.cineUiFeedback.hideLoading();
+        }
+      }
+    }, 50);
+  } else {
+    // Fallback for environments without setTimeout (should not happen in browser)
+    handleSaveSetupClickInternal(optionsOrEvent);
+    if (typeof window !== 'undefined' && window.cineUiFeedback) {
+      window.cineUiFeedback.hideLoading();
+    }
+  }
+}
+
 addSafeEventListener('saveSetupBtn', "click", handleSaveSetupClick);
 
 if (setupNameInput) {
@@ -2370,7 +2397,7 @@ if (setupNameInput) {
   });
 }
 
-function handleDeleteSetupClick() {
+function handleDeleteSetupClickInternal() {
   const setupSelectElement = getSetupSelectElement();
   const setupName = setupSelectElement && typeof setupSelectElement.value === 'string'
     ? setupSelectElement.value
@@ -2388,71 +2415,83 @@ function handleDeleteSetupClick() {
   }
 
   const performDeletion = () => {
-    const backupName = ensureAutoBackupBeforeDeletion('delete setup');
-    if (!backupName) {
-      return;
-    }
-    let setups = getSetups();
-    delete setups[setupName];
-    storeSetups(setups);
-    if (typeof deleteProject === 'function') {
-      deleteProject(setupName);
-    }
-    populateSetupSelect();
-    setupNameInput.value = ""; // Clear setup name input
-
-    let selectionResetHandled = false;
-    if (setupSelectElement && typeof setupSelectElement.dispatchEvent === 'function') {
-      lastSetupName = '';
-      setupSelectElement.value = "";
-      setupSelectElement.dispatchEvent(new Event('change'));
-      selectionResetHandled = true;
+    if (typeof window !== 'undefined' && window.cineUiFeedback) {
+      window.cineUiFeedback.showLoading('Deleting Project...');
     }
 
-    if (!selectionResetHandled) {
-      if (gearListOutput) {
-        gearListOutput.innerHTML = '';
-        gearListOutput.classList.add('hidden');
-      }
-      if (projectRequirementsOutput) {
-        projectRequirementsOutput.innerHTML = '';
-        projectRequirementsOutput.classList.add('hidden');
-      }
-      currentProjectInfo = null;
-      if (projectForm) populateProjectForm({});
-      storeLoadedSetupStateSafe(null);
-      updateBatteryPlateVisibility();
-      updateBatteryOptions();
-      clearProjectAutoGearRules();
-      renderAutoGearRulesList();
-      updateAutoGearCatalogOptions();
-      // Reset dropdowns to "None" or first option after deleting current setup
-      [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect].forEach(sel => {
-        const noneOption = Array.from(sel.options).find(opt => opt.value === "None");
-        if (noneOption) {
-          sel.value = "None";
-        } else {
-          sel.selectedIndex = 0;
+    // Defer deletion to allow UI update
+    setTimeout(() => {
+      try {
+        const backupName = ensureAutoBackupBeforeDeletion('delete setup');
+        if (!backupName) {
+          return;
         }
-      });
-      if (typeof updateCageSelectOptions === 'function') {
-        updateCageSelectOptions('None');
+        let setups = getSetups();
+        delete setups[setupName];
+        storeSetups(setups);
+        if (typeof deleteProject === 'function') {
+          deleteProject(setupName);
+        }
+        populateSetupSelect();
+        setupNameInput.value = ""; // Clear setup name input
+
+        let selectionResetHandled = false;
+        if (setupSelectElement && typeof setupSelectElement.dispatchEvent === 'function') {
+          lastSetupName = '';
+          setupSelectElement.value = "";
+          setupSelectElement.dispatchEvent(new Event('change'));
+          selectionResetHandled = true;
+        }
+
+        if (!selectionResetHandled) {
+          if (gearListOutput) {
+            gearListOutput.innerHTML = '';
+            gearListOutput.classList.add('hidden');
+          }
+          if (projectRequirementsOutput) {
+            projectRequirementsOutput.innerHTML = '';
+            projectRequirementsOutput.classList.add('hidden');
+          }
+          currentProjectInfo = null;
+          if (projectForm) populateProjectForm({});
+          storeLoadedSetupStateSafe(null);
+          updateBatteryPlateVisibility();
+          updateBatteryOptions();
+          clearProjectAutoGearRules();
+          renderAutoGearRulesList();
+          updateAutoGearCatalogOptions();
+          // Reset dropdowns to "None" or first option after deleting current setup
+          [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect].forEach(sel => {
+            const noneOption = Array.from(sel.options).find(opt => opt.value === "None");
+            if (noneOption) {
+              sel.value = "None";
+            } else {
+              sel.selectedIndex = 0;
+            }
+          });
+          if (typeof updateCageSelectOptions === 'function') {
+            updateCageSelectOptions('None');
+          }
+          const sbSel = getSliderBowlSelect();
+          if (sbSel) sbSel.value = '';
+          motorSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
+          controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
+          updateCalculations(); // Recalculate after deleting setup
+        }
+        const message = texts[currentLang].alertSetupDeleted.replace("{name}", setupName);
+        if (typeof window.cineShowAlertDialog === 'function') {
+          window.cineShowAlertDialog({
+            title: (texts[currentLang] && texts[currentLang].deleteSetupTitle) || 'Project Deleted',
+            message: message
+          });
+          alert(message);
+        }
+      } finally {
+        if (typeof window !== 'undefined' && window.cineUiFeedback) {
+          window.cineUiFeedback.hideLoading();
+        }
       }
-      const sbSel = getSliderBowlSelect();
-      if (sbSel) sbSel.value = '';
-      motorSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
-      controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
-      updateCalculations(); // Recalculate after deleting setup
-    }
-    const message = texts[currentLang].alertSetupDeleted.replace("{name}", setupName);
-    if (typeof window.cineShowAlertDialog === 'function') {
-      window.cineShowAlertDialog({
-        title: (texts[currentLang] && texts[currentLang].deleteSetupTitle) || 'Project Deleted',
-        message: message
-      });
-    } else {
-      alert(message);
-    }
+    }, 50);
   };
 
   if (typeof window.cineShowConfirmDialog === 'function') {
@@ -2481,6 +2520,12 @@ function handleDeleteSetupClick() {
       performDeletion();
     }
   }
+}
+
+function handleDeleteSetupClick() {
+  // We do not wrap the initial click because it just shows a confirmation dialog.
+  // The heavy lifting is in performDeletion.
+  handleDeleteSetupClickInternal();
 }
 
 addSafeEventListener('deleteSetupBtn', "click", handleDeleteSetupClick);
@@ -6138,28 +6183,146 @@ addSafeEventListener('importFileInput', "change", (event) => {
     return;
   }
 
-  const reader = new FileReader();
-  const importFileName = typeof file.name === 'string' && file.name ? file.name : null;
-  reader.onload = (e) => {
-    try {
-      const importedData = JSON.parse(e.target.result);
-      const result = parseDeviceDatabaseImport(importedData);
-      const importDeviceCounts = buildDeviceCountsSnapshot(devices, result.devices);
+  if (typeof window !== 'undefined' && window.cineUiFeedback) {
+    window.cineUiFeedback.showLoading('Importing Data...');
+  }
 
-      if (!result.devices) {
-        const summary = formatDeviceImportErrors(result.errors);
+  setTimeout(() => {
+    const reader = new FileReader();
+    const importFileName = typeof file.name === 'string' && file.name ? file.name : null;
+    reader.onload = (e) => {
+      try {
+        const importedData = JSON.parse(e.target.result);
+        const result = parseDeviceDatabaseImport(importedData);
+        const importDeviceCounts = buildDeviceCountsSnapshot(devices, result.devices);
+
+        if (!result.devices) {
+          const summary = formatDeviceImportErrors(result.errors);
+          logDeviceImportEvent(
+            'warn',
+            'Device import validation failed',
+            {
+              fileName: importFileName,
+              deviceCounts: importDeviceCounts,
+              validationErrors: sanitizeImportErrors(result.errors),
+              errorCount: Array.isArray(result.errors) ? result.errors.length : 0,
+            },
+            { action: 'validate' }
+          );
+          console.error('Device import validation failed:', result.errors);
+          const message = summary ? `${texts[currentLang].alertImportError}\n${summary}` : texts[currentLang].alertImportError;
+          if (typeof window.cineShowAlertDialog === 'function') {
+            window.cineShowAlertDialog({
+              title: texts[currentLang].alertImportErrorTitle || 'Import Error',
+              message: message
+            });
+          } else {
+            alert(message);
+          }
+          return;
+        }
+
+        if (typeof autoBackup === 'function') {
+          try {
+            autoBackup({
+              suppressSuccess: true,
+              triggerAutoSaveNotification: true,
+              reason: 'import',
+            });
+          } catch (error) {
+            logDeviceImportEvent(
+              'warn',
+              'Auto backup before device import failed',
+              {
+                fileName: importFileName,
+                deviceCounts: importDeviceCounts,
+                error: sanitizeErrorForLogging(error),
+              },
+              { action: 'auto-backup' }
+            );
+            console.warn('Failed to auto backup before import', error);
+          }
+        }
+
+        devices = result.devices; // Overwrite current devices with imported data
+        if (typeof updateGlobalDevicesReference === 'function') {
+          updateGlobalDevicesReference(devices);
+        }
+
+        unifyDevices(devices, { force: true });
+        storeDevices(devices);
+        viewfinderTypeOptions = syncCoreOptionsArray('viewfinderTypeOptions', 'getAllViewfinderTypes', viewfinderTypeOptions);
+        viewfinderConnectorOptions = syncCoreOptionsArray('viewfinderConnectorOptions', 'getAllViewfinderConnectors', viewfinderConnectorOptions);
+        refreshDeviceListsSafe(); // Update device manager lists
+
+        // Re-populate all dropdowns and update calculations
+        const curCameraSelect = typeof cameraSelect !== 'undefined' ? cameraSelect : (typeof document !== 'undefined' ? document.getElementById('cameraSelect') : null);
+        const curVideoSelect = typeof videoSelect !== 'undefined' ? videoSelect : (typeof document !== 'undefined' ? document.getElementById('videoSelect') : null);
+        const curDistanceSelect = typeof distanceSelect !== 'undefined' ? distanceSelect : (typeof document !== 'undefined' ? document.getElementById('distanceSelect') : null);
+        const curBatterySelect = typeof batterySelect !== 'undefined' ? batterySelect : (typeof document !== 'undefined' ? document.getElementById('batterySelect') : null);
+
+        populateSelect(curCameraSelect, devices.cameras, true);
+        populateMonitorSelect();
+        populateSelect(curVideoSelect, devices.video, true);
+
+        const fiz = devices.fiz || {};
+        const curMotorSelects = (typeof motorSelects !== 'undefined' && Array.isArray(motorSelects)) ? motorSelects : [
+          document.getElementById("motor1Select"),
+          document.getElementById("motor2Select"),
+          document.getElementById("motor3Select"),
+          document.getElementById("motor4Select")
+        ];
+        const curControllerSelects = (typeof controllerSelects !== 'undefined' && Array.isArray(controllerSelects)) ? controllerSelects : [
+          document.getElementById("controller1Select"),
+          document.getElementById("controller2Select")
+        ];
+
+        curMotorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
+        curControllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
+        populateSelect(curDistanceSelect, devices.fiz.distance, true);
+        populateSelect(curBatterySelect, devices.batteries, true);
+        updateFizConnectorOptions();
+        updateMotorConnectorOptions();
+        updateControllerConnectorOptions();
+        updateControllerPowerOptions();
+        updateControllerBatteryOptions();
+        updateControllerConnectivityOptions();
+        updateDistanceConnectionOptions();
+        updateDistanceMethodOptions();
+        updateDistanceDisplayOptions();
+        applyFilters();
+        updateCalculations();
+
+        const deviceCount = countDeviceDatabaseEntries(devices);
+        const message = texts[currentLang].alertImportSuccess.replace("{num_devices}", deviceCount);
+        if (typeof window.cineShowAlertDialog === 'function') {
+          window.cineShowAlertDialog({
+            title: texts[currentLang].alertImportSuccessTitle || 'Import Successful',
+            message: message
+          });
+        } else {
+          alert(message);
+        }
+
+        const curExportOutput = typeof exportOutput !== 'undefined' ? exportOutput : (typeof document !== 'undefined' ? document.getElementById('exportOutput') : null);
+        if (curExportOutput) {
+          curExportOutput.style.display = "block";
+          curExportOutput.value = JSON.stringify(devices, null, 2);
+        }
+      } catch (error) {
         logDeviceImportEvent(
-          'warn',
-          'Device import validation failed',
+          'error',
+          'Failed to import device data',
           {
             fileName: importFileName,
-            deviceCounts: importDeviceCounts,
-            validationErrors: sanitizeImportErrors(result.errors),
-            errorCount: Array.isArray(result.errors) ? result.errors.length : 0,
+            deviceCounts: buildDeviceCountsSnapshot(devices, null),
+            error: sanitizeErrorForLogging(error),
           },
-          { action: 'validate' }
+          { action: 'parse' }
         );
-        console.error('Device import validation failed:', result.errors);
+        console.error("Error parsing or importing data:", error);
+        const errorMessage = error && error.message ? error.message : String(error);
+        const summary = formatDeviceImportErrors([errorMessage]);
         const message = summary ? `${texts[currentLang].alertImportError}\n${summary}` : texts[currentLang].alertImportError;
         if (typeof window.cineShowAlertDialog === 'function') {
           window.cineShowAlertDialog({
@@ -6169,118 +6332,22 @@ addSafeEventListener('importFileInput', "change", (event) => {
         } else {
           alert(message);
         }
-        return;
-      }
-
-      if (typeof autoBackup === 'function') {
-        try {
-          autoBackup({
-            suppressSuccess: true,
-            triggerAutoSaveNotification: true,
-            reason: 'import',
-          });
-        } catch (error) {
-          logDeviceImportEvent(
-            'warn',
-            'Auto backup before device import failed',
-            {
-              fileName: importFileName,
-              deviceCounts: importDeviceCounts,
-              error: sanitizeErrorForLogging(error),
-            },
-            { action: 'auto-backup' }
-          );
-          console.warn('Failed to auto backup before import', error);
+      } finally {
+        if (typeof window !== 'undefined' && window.cineUiFeedback) {
+          window.cineUiFeedback.hideLoading();
         }
       }
-
-      devices = result.devices; // Overwrite current devices with imported data
-      if (typeof updateGlobalDevicesReference === 'function') {
-        updateGlobalDevicesReference(devices);
+    };
+    reader.onerror = () => {
+      if (typeof window !== 'undefined' && window.cineUiFeedback) {
+        window.cineUiFeedback.hideLoading();
       }
-      unifyDevices(devices, { force: true });
-      storeDevices(devices);
-      viewfinderTypeOptions = syncCoreOptionsArray('viewfinderTypeOptions', 'getAllViewfinderTypes', viewfinderTypeOptions);
-      viewfinderConnectorOptions = syncCoreOptionsArray('viewfinderConnectorOptions', 'getAllViewfinderConnectors', viewfinderConnectorOptions);
-      refreshDeviceListsSafe(); // Update device manager lists
-      // Re-populate all dropdowns and update calculations
-      const curCameraSelect = typeof cameraSelect !== 'undefined' ? cameraSelect : (typeof document !== 'undefined' ? document.getElementById('cameraSelect') : null);
-      const curVideoSelect = typeof videoSelect !== 'undefined' ? videoSelect : (typeof document !== 'undefined' ? document.getElementById('videoSelect') : null);
-      const curDistanceSelect = typeof distanceSelect !== 'undefined' ? distanceSelect : (typeof document !== 'undefined' ? document.getElementById('distanceSelect') : null);
-      const curBatterySelect = typeof batterySelect !== 'undefined' ? batterySelect : (typeof document !== 'undefined' ? document.getElementById('batterySelect') : null);
-
-      populateSelect(curCameraSelect, devices.cameras, true);
-      populateMonitorSelect();
-      populateSelect(curVideoSelect, devices.video, true);
-
-      const fiz = devices.fiz || {};
-      const curMotorSelects = (typeof motorSelects !== 'undefined' && Array.isArray(motorSelects)) ? motorSelects : [
-        document.getElementById("motor1Select"),
-        document.getElementById("motor2Select"),
-        document.getElementById("motor3Select"),
-        document.getElementById("motor4Select")
-      ];
-      const curControllerSelects = (typeof controllerSelects !== 'undefined' && Array.isArray(controllerSelects)) ? controllerSelects : [
-        document.getElementById("controller1Select"),
-        document.getElementById("controller2Select")
-      ];
-
-      curMotorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
-      curControllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
-      populateSelect(curDistanceSelect, devices.fiz.distance, true);
-      populateSelect(curBatterySelect, devices.batteries, true);
-      updateFizConnectorOptions();
-      updateMotorConnectorOptions();
-      updateControllerConnectorOptions();
-      updateControllerPowerOptions();
-      updateControllerBatteryOptions();
-      updateControllerConnectivityOptions();
-      updateDistanceConnectionOptions();
-      updateDistanceMethodOptions();
-      updateDistanceDisplayOptions();
-      applyFilters();
-      updateCalculations();
-
-      const deviceCount = countDeviceDatabaseEntries(devices);
-      const message = texts[currentLang].alertImportSuccess.replace("{num_devices}", deviceCount);
-      if (typeof window.cineShowAlertDialog === 'function') {
-        window.cineShowAlertDialog({
-          title: texts[currentLang].alertImportSuccessTitle || 'Import Successful',
-          message: message
-        });
-      } else {
-        alert(message);
-      }
-      exportOutput.style.display = "block"; // Show the textarea
-      exportOutput.value = JSON.stringify(devices, null, 2); // Display the newly imported data
-    } catch (error) {
-      logDeviceImportEvent(
-        'error',
-        'Failed to import device data',
-        {
-          fileName: importFileName,
-          deviceCounts: buildDeviceCountsSnapshot(devices, null),
-          error: sanitizeErrorForLogging(error),
-        },
-        { action: 'parse' }
-      );
-      console.error("Error parsing or importing data:", error);
-      const errorMessage = error && error.message ? error.message : String(error);
-      const summary = formatDeviceImportErrors([errorMessage]);
-      const message = summary ? `${texts[currentLang].alertImportError}\n${summary}` : texts[currentLang].alertImportError;
-      if (typeof window.cineShowAlertDialog === 'function') {
-        window.cineShowAlertDialog({
-          title: texts[currentLang].alertImportErrorTitle || 'Import Error',
-          message: message
-        });
-      } else {
-        alert(message);
-      }
-    }
-  };
-  reader.readAsText(file);
-  event.target.value = ''; // Clear the file input for re-selection of the same file
+    };
+    reader.readAsText(file);
+  }, 50);
+  event.target.value = '';
 });
+
 
 // Dynamic Frame Rate Tooltip Logic
 function updateRecordingFrameRateHint() {
