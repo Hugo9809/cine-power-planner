@@ -384,7 +384,17 @@
      * [New] Sidebar Translations
      * Updates sidebar text based on current language
      */
+    /**
+     * [New] Sidebar Translations
+     * Updates sidebar text based on current language
+     */
     function updateSidebarTranslations(lang) {
+        // 1. Try Global Translations first
+        const t = (key) => {
+            if (window.texts && window.texts[key]) return window.texts[key];
+            return null;
+        };
+
         const translations = {
             'de': {
                 'All Projects': 'Alle Projekte',
@@ -457,7 +467,17 @@
 
         textElements.forEach(el => {
             if (!el.dataset.key) el.dataset.key = el.textContent.trim();
-            const key = el.dataset.key;
+            const key = el.dataset.key; // e.g. "Settings"
+
+            // Try explicit V2 key if mapped, or constructing one
+            // Ideally we'd map "Settings" -> "sidebarSettings" but let's see if we can just use the map for now 
+            // OR use window.texts directly if keys match.
+            // Since we don't have perfect key mapping, we'll stick to the map as primary for sidebar 
+            // BUT check if a global override exists.
+
+            // Actually, for consistency with the rest of V2, let's prioritize the map 
+            // UNLESS we want to move sidebar trans to en.js completely.
+            // For now, let's just make sure it triggers correctly.
 
             if (map && map[key]) {
                 el.textContent = map[key];

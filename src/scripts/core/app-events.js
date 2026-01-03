@@ -5979,6 +5979,18 @@ addSafeEventListener('cancelEditBtn', "click", () => {
   resetDeviceForm();
 });
 
+// Helper to generate consistent export filenames
+function generateExportFilename(prefix = 'cine_power_planner_export') {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  return `${prefix}_${year}-${month}-${day}_${hours}-${minutes}-${seconds}.json`;
+}
+
 // Export device data
 addSafeEventListener('exportDataBtn', "click", () => {
   if (typeof autoBackup === 'function') {
@@ -6015,19 +6027,23 @@ addSafeEventListener('exportDataBtn', "click", () => {
   }
   exportOutput.style.display = "block";
   exportOutput.value = dataStr;
-  const blob = new Blob([dataStr], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "device_data_export.json";
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(() => {
-    document.body.removeChild(a);
-  }, 1500);
-  setTimeout(() => {
-    URL.revokeObjectURL(url);
-  }, 60000);
+
+  if (typeof downloadBackupPayload === 'function') {
+    downloadBackupPayload(dataStr, generateExportFilename());
+  } else {
+    // Fallback if backup module not loaded (unlikely)
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = generateExportFilename();
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 1500);
+  }
 });
 
 const exportAndRevertBtn = document.getElementById('exportAndRevertBtn');
@@ -6049,19 +6065,22 @@ if (exportAndRevertBtn) {
       }
       const dataStr = JSON.stringify(devices, null, 2);
       // For simplicity, let's just trigger a download directly.
-      const blob = new Blob([dataStr], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "device_data_backup_before_revert.json"; // Suggests it's a backup
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => {
-        document.body.removeChild(a);
-      }, 1500);
-      setTimeout(() => {
-        URL.revokeObjectURL(url);
-      }, 60000);
+      const filename = generateExportFilename('cine_power_planner_backup_before_revert');
+      if (typeof downloadBackupPayload === 'function') {
+        downloadBackupPayload(dataStr, filename);
+      } else {
+        const blob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 1500);
+      }
 
       // Give a small delay to ensure download prompt appears before next step
       const revertTimer = setTimeout(() => {

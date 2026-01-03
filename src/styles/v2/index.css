@@ -20,6 +20,7 @@
 @import url('./layouts/views.css');
 @import url('./layouts/detail.css');
 @import url('./views/owned-gear.css');
+@import url('./views/settings.css');
 
 /* =====================
  * COMPONENTS

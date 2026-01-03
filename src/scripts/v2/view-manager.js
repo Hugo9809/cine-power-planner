@@ -408,9 +408,29 @@
         window.addEventListener('hashchange', handleHashChange);
 
         // Check if V2 is enabled
-        if (isV2Enabled()) {
-            enableV2();
-            handleHashChange();
+        // BUT do not auto-enable here if we want to wait for bootstrap.
+        // If bootstrap is controlling, it will call enableV2().
+        // If standard legacy load (where bootstrap might be missing or different), we might need it.
+        // However, since bootstrap.js is the one loading this file now (mostly), 
+        // we should defer to it to avoid race conditions with view containers being created.
+
+        // If we are NOT in the bootstrap flow (e.g. standalone dev), we might want to check.
+        // But for safe integration, let's trust the bootstrap process will call enableV2() when ready.
+
+        // Only if we are already in V2 mode in DOM (unlikely on reload unless persistent state is handled by bootstrap first),
+        // we might want to sync.
+
+        // Better: Just set listener. Logic:
+        // 1. bootstrap calls loadV2Assets
+        // 2. bootstrap calls viewManager.enableV2()
+        // 3. viewManager.enableV2() -> handleHashChange() -> showView()
+
+        // So we remove the auto-call here.
+        if (isV2Enabled() && !global.cineV2Bootstrap) {
+            // Fallback: If no bootstrap global found, maybe we want to try?
+            // But usually bootstrap defines itself before loading assets?
+            // Actually assets are loaded async.
+            // Let's safe: Just don't auto-enable. bootstrap will do it.
         }
 
         console.log('[ViewManager] Initialized');

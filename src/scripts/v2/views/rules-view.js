@@ -58,6 +58,22 @@
         return [];
     }
 
+    function _t(key) {
+        if (typeof window !== 'undefined' && window.texts) {
+            const langSelect = document.getElementById('languageSelect');
+            const lang = (langSelect && langSelect.value) ||
+                (typeof window.currentLanguage === 'string' && window.currentLanguage) ||
+                'en';
+
+            const dict = window.texts[lang] || window.texts['en'];
+
+            if (dict) {
+                return key.split('.').reduce((o, i) => (o ? o[i] : null), dict) || key;
+            }
+        }
+        return key;
+    }
+
 
     // =====================
     // PUBLIC API
@@ -93,12 +109,12 @@
             const header = `
                 <div class="rules-header">
                     <div class="rules-title">
-                        <h1>Auto Gear Rules</h1>
-                        <p>Manage automatic gear additions based on your equipment selection.</p>
+                        <h1>${_t('rulesViewTitle')}</h1>
+                        <p>${_t('rulesViewSubtitle')}</p>
                     </div>
                     <button class="v2-btn v2-btn-primary" id="btn-add-rule">
                         <span class="icon">add</span>
-                        <span>Add Rule</span>
+                        <span>${_t('buttonAddRule')}</span>
                     </button>
                 </div>
             `;
@@ -111,8 +127,8 @@
             if (rules.length === 0) {
                 rulesHtml += `
                     <div class="rule-empty-state">
-                        <h3>No rules defined</h3>
-                        <p>Create your first rule to automate your gear list.</p>
+                        <h3>${_t('rulesEmptyTitle')}</h3>
+                        <p>${_t('rulesEmptyText')}</p>
                     </div>
                 `;
             } else {
@@ -131,18 +147,18 @@
                             <div class="rule-content">
                                 <div class="rule-header">
                                     <h3 class="rule-name">${this.escapeHtml(rule.label) || 'Untitled Rule'}</h3>
-                                    ${rule.always ? '<span class="v2-badge v2-badge-primary">Always</span>' : ''}
+                                    ${rule.always ? `<span class="v2-badge v2-badge-primary">${_t('ruleBadgeAlways')}</span>` : ''}
                                 </div>
                                 <div class="rule-conditions">
-                                    <span class="condition-tag"><strong>${conditionCount}</strong> Conditions</span>
-                                    <span class="condition-tag"><strong>${addCount}</strong> Items Added</span>
+                                    <span class="condition-tag"><strong>${conditionCount}</strong> ${_t('ruleTagConditions')}</span>
+                                    <span class="condition-tag"><strong>${addCount}</strong> ${_t('ruleTagItemsAdded')}</span>
                                 </div>
                             </div>
                             <div class="rule-actions">
-                                <button class="v2-btn v2-btn-icon v2-btn-ghost btn-edit-rule" title="Edit">
+                                <button class="v2-btn v2-btn-icon v2-btn-ghost btn-edit-rule" title="${_t('buttonEdit')}">
                                     <span class="icon">edit</span>
                                 </button>
-                                <button class="v2-btn v2-btn-icon v2-btn-ghost btn-delete-rule" title="Delete">
+                                <button class="v2-btn v2-btn-icon v2-btn-ghost btn-delete-rule" title="${_t('buttonDelete')}">
                                     <span class="icon">delete</span>
                                 </button>
                             </div>
@@ -180,7 +196,7 @@
             this.container.querySelectorAll('.btn-delete-rule').forEach(btn => {
                 btn.onclick = (e) => {
                     const card = e.target.closest('.rule-card');
-                    if (confirm('Are you sure you want to delete this rule?')) {
+                    if (confirm(_t('confirmDeleteRule'))) {
                         this.deleteRule(card.dataset.ruleId);
                     }
                 };
@@ -295,7 +311,7 @@
             backdrop.innerHTML = `
                 <div class="v2-modal v2-modal-lg">
                     <div class="v2-modal-header">
-                        <h3 class="v2-modal-title">${isNew ? 'Create Rule' : 'Edit Rule'}</h3>
+                        <h3 class="v2-modal-title">${isNew ? _t('modalTitleCreateRule') : _t('modalTitleEditRule')}</h3>
                         <button type="button" class="v2-modal-close v2-btn v2-btn-ghost"><span class="icon">close</span></button>
                     </div>
                     <div class="v2-modal-body rules-modal-body">
@@ -304,40 +320,40 @@
                         </datalist>
 
                         <div class="rules-modal-tabs">
-                            <button class="rules-tab-btn active" data-tab="general">General</button>
-                            <button class="rules-tab-btn" data-tab="context">Context</button>
-                            <button class="rules-tab-btn" data-tab="camera">Camera</button>
-                            <button class="rules-tab-btn" data-tab="monitor">Monitoring</button>
-                            <button class="rules-tab-btn" data-tab="support">Support</button>
-                            <button class="rules-tab-btn" data-tab="crew">Crew</button>
-                            <button class="rules-tab-btn" data-tab="actions">Actions</button>
+                            <button class="rules-tab-btn active" data-tab="general">${_t('tabGeneral')}</button>
+                            <button class="rules-tab-btn" data-tab="context">${_t('tabContext')}</button>
+                            <button class="rules-tab-btn" data-tab="camera">${_t('tabCamera')}</button>
+                            <button class="rules-tab-btn" data-tab="monitor">${_t('tabMonitoring')}</button>
+                            <button class="rules-tab-btn" data-tab="support">${_t('tabSupport')}</button>
+                            <button class="rules-tab-btn" data-tab="crew">${_t('tabCrew')}</button>
+                            <button class="rules-tab-btn" data-tab="actions">${_t('tabActions')}</button>
                         </div>
 
                         <!-- 1. GENERAL -->
                         <div class="rules-tab-content active" id="tab-general">
                             <div class="v2-form-group">
-                                <label for="ruleLabel" class="v2-label">Rule Name</label>
-                                <input type="text" id="ruleLabel" class="v2-input" value="${this.escapeHtml(rule.label)}" placeholder="e.g. Add Batteries for Monitor">
+                                <label for="ruleLabel" class="v2-label">${_t('labelRuleName')}</label>
+                                <input type="text" id="ruleLabel" class="v2-input" value="${this.escapeHtml(rule.label)}" placeholder="${_t('placeholderRuleName')}">
                             </div>
                             <div class="v2-form-group">
                                 <label class="v2-checkbox-label">
                                     <input type="checkbox" id="ruleEnabled" ${rule.enabled !== false ? 'checked' : ''}>
-                                    <span>Rule Enabled</span>
+                                    <span>${_t('labelRuleEnabled')}</span>
                                 </label>
                             </div>
                             <div class="v2-form-group">
                                 <label class="v2-checkbox-label">
                                     <input type="checkbox" id="ruleAlways" ${rule.always ? 'checked' : ''}>
-                                    <span>Always Apply</span>
+                                    <span>${_t('labelRuleAlways')}</span>
                                 </label>
-                                <p class="v2-help-text">Overrides all other conditions.</p>
+                                <p class="v2-help-text">${_t('helpRuleAlways')}</p>
                             </div>
                         </div>
 
                         <!-- 2. CONTEXT -->
                         <div class="rules-tab-content" id="tab-context">
                             <div class="form-section">
-                                <span class="form-section-title">Scenarios</span>
+                                <span class="form-section-title">${_t('sectionScenarios')}</span>
                                 <div class="condition-grid">
                                     ${this.renderCheckboxGroup(data.scenarios, rule.scenarios, 'scenarios')}
                                 </div>
@@ -347,19 +363,19 @@
                         <!-- 3. CAMERA -->
                         <div class="rules-tab-content" id="tab-camera">
                             <div class="form-section">
-                                <span class="form-section-title">Camera Models</span>
+                                <span class="form-section-title">${_t('sectionCameraModels')}</span>
                                 <div class="condition-grid">
                                     ${this.renderCheckboxGroup(data.cameras, rule.camera, 'camera')}
                                 </div>
                             </div>
                             <div class="form-section">
-                                <span class="form-section-title">Matteboxes</span>
+                                <span class="form-section-title">${_t('sectionMatteboxes')}</span>
                                 <div class="condition-grid">
                                     ${this.renderCheckboxGroup(data.matteboxes, rule.mattebox, 'mattebox')}
                                 </div>
                             </div>
                              <div class="form-section">
-                                <span class="form-section-title">Viewfinders / Top Handles (Extensions)</span>
+                                <span class="form-section-title">${_t('sectionViewfinders')}</span>
                                 <div class="condition-grid">
                                     ${this.renderCheckboxGroup(data.viewfinders, rule.viewfinderExtension, 'viewfinderExtension')}
                                 </div>
@@ -369,13 +385,13 @@
                         <!-- 4. MONITORING -->
                         <div class="rules-tab-content" id="tab-monitor">
                              <div class="form-section">
-                                <span class="form-section-title">Monitors</span>
+                                <span class="form-section-title">${_t('sectionMonitors')}</span>
                                 <div class="condition-grid">
                                     ${this.renderCheckboxGroup(data.monitors, rule.monitor, 'monitor')}
                                 </div>
                             </div>
                              <div class="form-section">
-                                <span class="form-section-title">Wireless</span>
+                                <span class="form-section-title">${_t('sectionWireless')}</span>
                                 <div class="condition-grid">
                                     ${this.renderCheckboxGroup(data.wireless, rule.wireless, 'wireless')}
                                 </div>
@@ -385,25 +401,25 @@
                         <!-- 5. SUPPORT -->
                         <div class="rules-tab-content" id="tab-support">
                             <div class="form-section">
-                                <span class="form-section-title">Tripod Heads</span>
+                                <span class="form-section-title">${_t('sectionTripodHeads')}</span>
                                 <div class="condition-grid">
                                     ${this.renderCheckboxGroup(data.tripodHeads, rule.tripodHeadBrand, 'tripodHeadBrand')}
                                 </div>
                             </div>
                             <div class="form-section">
-                                <span class="form-section-title">Bowl Size</span>
+                                <span class="form-section-title">${_t('sectionBowlSize')}</span>
                                 <div class="condition-grid">
                                     ${this.renderCheckboxGroup(data.tripodBowls, rule.tripodBowl, 'tripodBowl')}
                                 </div>
                             </div>
                              <div class="form-section">
-                                <span class="form-section-title">Leg Types</span>
+                                <span class="form-section-title">${_t('sectionLegTypes')}</span>
                                 <div class="condition-grid">
                                     ${this.renderCheckboxGroup(data.tripodTypes, rule.tripodTypes, 'tripodTypes')}
                                 </div>
                             </div>
                              <div class="form-section">
-                                <span class="form-section-title">Spreaders</span>
+                                <span class="form-section-title">${_t('sectionSpreaders')}</span>
                                 <div class="condition-grid">
                                     ${this.renderCheckboxGroup(data.tripodSpreaders, rule.tripodSpreader, 'tripodSpreader')}
                                 </div>
@@ -413,13 +429,13 @@
                         <!-- 6. CREW -->
                         <div class="rules-tab-content" id="tab-crew">
                             <div class="form-section">
-                                <span class="form-section-title">Crew Present</span>
+                                <span class="form-section-title">${_t('sectionCrewPresent')}</span>
                                 <div class="condition-grid">
                                     ${this.renderCheckboxGroup(data.crew, rule.crewPresent, 'crewPresent')}
                                 </div>
                             </div>
                             <div class="form-section">
-                                <span class="form-section-title">Crew Absent</span>
+                                <span class="form-section-title">${_t('sectionCrewAbsent')}</span>
                                 <div class="condition-grid">
                                     ${this.renderCheckboxGroup(data.crew, rule.crewAbsent, 'crewAbsent')}
                                 </div>
@@ -430,8 +446,8 @@
                         <div class="rules-tab-content" id="tab-actions">
                             <div class="form-section">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                    <span class="form-section-title" style="margin: 0;">Items to Add</span>
-                                    <button class="v2-btn v2-btn-sm v2-btn-secondary btn-show-add-item" data-type="add">+ Add Item</button>
+                                    <span class="form-section-title" style="margin: 0;">${_t('sectionItemsToAdd')}</span>
+                                    <button class="v2-btn v2-btn-sm v2-btn-secondary btn-show-add-item" data-type="add">${_t('buttonAddItem')}</button>
                                 </div>
                                 <div class="add-item-form-container" id="add-item-form-add" style="display: none; margin-bottom: 10px; padding: 10px; background: var(--bg-surface-active); border-radius: 4px;">
                                     ${this.renderAddItemForm('add', categories)}
@@ -442,8 +458,8 @@
                             </div>
                              <div class="form-section">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                    <span class="form-section-title" style="margin: 0;">Items to Remove</span>
-                                    <button class="v2-btn v2-btn-sm v2-btn-secondary btn-show-add-item" data-type="remove">+ Add Item</button>
+                                    <span class="form-section-title" style="margin: 0;">${_t('sectionItemsToRemove')}</span>
+                                    <button class="v2-btn v2-btn-sm v2-btn-secondary btn-show-add-item" data-type="remove">${_t('buttonAddItem')}</button>
                                 </div>
                                 <div class="add-item-form-container" id="add-item-form-remove" style="display: none; margin-bottom: 10px; padding: 10px; background: var(--bg-surface-active); border-radius: 4px;">
                                     ${this.renderAddItemForm('remove', categories)}
@@ -456,8 +472,8 @@
 
                     </div>
                     <div class="v2-modal-footer">
-                        <button type="button" class="v2-btn v2-btn-secondary" id="btn-cancel-rule">Cancel</button>
-                        <button type="button" class="v2-btn v2-btn-primary" id="btn-save-rule">Save Rule</button>
+                        <button type="button" class="v2-btn v2-btn-secondary" id="btn-cancel-rule">${_t('buttonCancel')}</button>
+                        <button type="button" class="v2-btn v2-btn-primary" id="btn-save-rule">${_t('buttonSaveRule')}</button>
                     </div>
                 </div>
             `;
@@ -470,7 +486,7 @@
         // --- RENDER HELPERS ---
         renderCheckboxGroup(items, selectedItems, groupName) {
             const selectedSet = new Set(selectedItems || []);
-            if (!items || items.length === 0) return '<div class="v2-empty-text">No options available.</div>';
+            if (!items || items.length === 0) return `<div class="v2-empty-text">${_t('textNoOptions')}</div>`;
 
             return items.map(item => `
                 <label class="condition-item">
@@ -484,21 +500,21 @@
             return `
                  <div style="display: grid; grid-template-columns: 2fr 1fr 0.5fr auto; gap: 8px; align-items: end;">
                     <div>
-                        <label class="v2-label" style="font-size: 11px;">Item Name</label>
-                        <input type="text" class="v2-input input-item-name" list="gearCatalogList" placeholder="Search..." data-type="${type}">
+                        <label class="v2-label" style="font-size: 11px;">${_t('labelItemName')}</label>
+                        <input type="text" class="v2-input input-item-name" list="gearCatalogList" placeholder="${_t('placeholderItemSearch')}" data-type="${type}">
                     </div>
                     <div>
-                        <label class="v2-label" style="font-size: 11px;">Category</label>
+                        <label class="v2-label" style="font-size: 11px;">${_t('labelCategory')}</label>
                         <select class="v2-select select-item-category" data-type="${type}">
                             ${categories.map(c => `<option value="${c}">${c}</option>`).join('')}
                         </select>
                     </div>
                     <div>
-                        <label class="v2-label" style="font-size: 11px;">Qty</label>
+                        <label class="v2-label" style="font-size: 11px;">${_t('labelQty')}</label>
                         <input type="number" class="v2-input input-item-qty" value="1" min="1" data-type="${type}">
                     </div>
                     <div style="display: flex; gap: 4px;">
-                        <button class="v2-btn v2-btn-primary btn-confirm-add-item" data-type="${type}">Add</button>
+                        <button class="v2-btn v2-btn-primary btn-confirm-add-item" data-type="${type}">${_t('buttonAdd')}</button>
                     </div>
                 </div>
             `;
@@ -507,7 +523,7 @@
         renderActionList(items, type) {
             // Same as before
             if (!items || !items.length) {
-                return '<div class="v2-empty-text">No items defined.</div>';
+                return `<div class="v2-empty-text">${_t('textNoItems')}</div>`;
             }
             return items.map((item, index) => `
                 <div class="action-item-row">
@@ -599,7 +615,7 @@
                 rule.always = backdrop.querySelector('#ruleAlways').checked;
 
                 if (!rule.label) {
-                    alert('Please enter a rule name.');
+                    alert(_t('alertEnterRuleName'));
                     return;
                 }
 

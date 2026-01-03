@@ -29,6 +29,22 @@
             .replace(/'/g, '&#039;');
     }
 
+    function _t(key) {
+        if (typeof window !== 'undefined' && window.texts) {
+            const langSelect = document.getElementById('languageSelect');
+            const lang = (langSelect && langSelect.value) ||
+                (typeof window.currentLanguage === 'string' && window.currentLanguage) ||
+                'en';
+
+            const dict = window.texts[lang] || window.texts['en'];
+
+            if (dict) {
+                return key.split('.').reduce((o, i) => (o ? o[i] : null), dict) || key;
+            }
+        }
+        return key;
+    }
+
     // =====================
     // PUBLIC API
     // =====================
@@ -36,24 +52,37 @@
         container: null,
 
         init() {
-            this.container = document.getElementById(VIEW_ID);
-            if (!this.container) {
-                // Try to create it if it doesn't exist (e.g. if we want to inject it dynamically)
-                // But typically it should be in the DOM or created by a router.
-                // For now, let's assume it should be there or we create it.
-                this.createViewContainer();
-            }
+            try {
+                this.container = document.getElementById(VIEW_ID);
+                if (!this.container) {
+                    // Try to create it if it doesn't exist
+                    this.createViewContainer();
+                }
 
-            if (!isInitialized) {
-                console.log('[OwnGearView] Initializing...');
-                document.addEventListener('v2:viewchange', (e) => {
-                    if (e.detail && e.detail.view === 'ownGear') {
-                        this.render();
-                    }
-                });
-                isInitialized = true;
-                console.log('[OwnGearView] Initialized');
+                if (!isInitialized) {
+                    console.log('[OwnGearView] Initializing...');
+                    document.addEventListener('v2:viewchange', (e) => {
+                        if (e.detail && e.detail.view === 'ownGear') {
+                            this.render();
+                        }
+                    });
+
+                    // Listen for language changes
+                    document.addEventListener('v2:languagechange', () => {
+                        if (this.isVisible()) this.render();
+                    });
+
+                    isInitialized = true;
+                    console.log('[OwnGearView] Initialized');
+                }
+            } catch (e) {
+                console.error('[OwnGearView] Init failed:', e);
             }
+        },
+
+        isVisible() {
+            // Check if container is part of DOM and active
+            return this.container && !this.container.classList.contains('hidden') && this.container.style.display !== 'none';
         },
 
         createViewContainer() {
@@ -66,65 +95,74 @@
         },
 
         render() {
-            if (!this.container) {
-                this.init();
-            }
+            try {
+                if (!this.container) {
+                    this.init();
+                    if (!this.container) return; // Still not there? Bail.
+                }
 
-            // Load items using the legacy store
-            // We'll use the cineFeaturesOwnGear global which exposes the API directly
-            const features = global.cineFeaturesOwnGear;
+                // Load items using the legacy store
+                // We'll use the cineFeaturesOwnGear global which exposes the API directly
+                const features = global.cineFeaturesOwnGear;
 
-            if (!features) {
-                this.container.innerHTML = `
-                    <div class="v2-empty-state">
-                        <p>Own Gear module not loaded.</p>
-                    </div>
+                if (!features) {
+                    this.container.innerHTML = `
+                        <div class="v2-empty-state">
+                            <p>${_t('statusUnavailable') || 'Module not available'}</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const items = features.loadStoredOwnGearItems();
+
+                const header = `
+                    <header class="view-header">
+                        <div class="header-content">
+                            <h1>${_t('ownGearViewTitle')}</h1>
+                            <p class="header-subtitle">${_t('ownGearViewSubtitle')}</p>
+                        </div>
+                        <div class="view-header-actions">
+                            <button class="v2-btn v2-btn-primary" id="btn-add-own-gear">
+                                <span class="icon">add</span>
+                                <span>${_t('buttonAddGearItem')}</span>
+                            </button>
+                        </div>
+                    </header>
                 `;
-                return;
+
+                let contentHtml = '<div class="view-content">';
+
+                if (!items || items.length === 0) {
+                    contentHtml += `
+                        <div class="own-gear-empty-state">
+                            <span class="icon">inventory_2</span>
+                            <h3>${_t('ownGearEmptyTitle')}</h3>
+                            <p>${_t('ownGearEmptyText')}</p>
+                            <button class="v2-btn v2-btn-primary" id="btn-add-own-gear-empty">
+                                ${_t('buttonAddFirstGearItem')}
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    contentHtml += '<div class="own-gear-list">';
+                    items.forEach(item => {
+                        contentHtml += this.renderItemRow(item);
+                    });
+                    contentHtml += '</div>';
+                }
+
+                contentHtml += '</div>'; // End view-content
+
+                this.container.innerHTML = header + contentHtml;
+                this.attachListeners();
+
+            } catch (err) {
+                console.error('[OwnGearView] Render failed', err);
+                if (this.container) {
+                    this.container.innerHTML = `<div class="v2-error-state"><p>Error loading view: ${err.message}</p></div>`;
+                }
             }
-
-            const items = features.loadStoredOwnGearItems();
-
-            const header = `
-                <header class="view-header">
-                    <div class="header-content">
-                        <h1>Owned Gear</h1>
-                        <p class="header-subtitle">Manage your personal equipment inventory.</p>
-                    </div>
-                    <div class="view-header-actions">
-                        <button class="v2-btn v2-btn-primary" id="btn-add-own-gear">
-                            <span class="icon">add</span>
-                            <span>Add Item</span>
-                        </button>
-                    </div>
-                </header>
-            `;
-
-            let contentHtml = '<div class="view-content">';
-
-            if (!items || items.length === 0) {
-                contentHtml += `
-                    <div class="own-gear-empty-state">
-                        <span class="icon">inventory_2</span>
-                        <h3>No gear found</h3>
-                        <p>Add items to your personal inventory to quickly add them to projects.</p>
-                        <button class="v2-btn v2-btn-primary" id="btn-add-own-gear-empty">
-                            + Add First Item
-                        </button>
-                    </div>
-                `;
-            } else {
-                contentHtml += '<div class="own-gear-list">';
-                items.forEach(item => {
-                    contentHtml += this.renderItemRow(item);
-                });
-                contentHtml += '</div>';
-            }
-
-            contentHtml += '</div>'; // End view-content
-
-            this.container.innerHTML = header + contentHtml;
-            this.attachListeners();
         },
 
         renderItemRow(item) {
@@ -135,14 +173,14 @@
                         ${item.notes ? `<div class="own-gear-item-notes">${escapeHtml(item.notes)}</div>` : ''}
                     </div>
                      <div class="own-gear-item-meta">
-                        ${item.quantity ? `<span class="own-gear-badge qty-badge">Qty: ${escapeHtml(item.quantity)}</span>` : ''}
-                        ${item.source ? `<span class="own-gear-badge source-badge">${escapeHtml(item.source)}</span>` : ''}
+                        ${item.quantity ? `<span class="own-gear-badge qty-badge">${_t('labelQtyPrefix')}${escapeHtml(item.quantity)}</span>` : ''}
+                        ${item.source ? `<span class="own-gear-badge source-badge">${_t('labelSourcePrefix')}${escapeHtml(item.source)}</span>` : ''}
                     </div>
                     <div class="own-gear-item-actions">
-                        <button class="v2-btn v2-btn-icon v2-btn-ghost btn-edit-own-gear" title="Edit" data-id="${escapeHtml(item.id)}">
+                        <button class="v2-btn v2-btn-icon v2-btn-ghost btn-edit-own-gear" title="${_t('buttonEdit')}" data-id="${escapeHtml(item.id)}">
                             <span class="icon">edit</span>
                         </button>
-                        <button class="v2-btn v2-btn-icon v2-btn-ghost btn-delete-own-gear" title="Delete" data-id="${escapeHtml(item.id)}">
+                        <button class="v2-btn v2-btn-icon v2-btn-ghost btn-delete-own-gear" title="${_t('buttonDelete')}" data-id="${escapeHtml(item.id)}">
                             <span class="icon">delete</span>
                         </button>
                     </div>
@@ -169,7 +207,7 @@
                 btn.onclick = (e) => {
                     e.stopPropagation();
                     const id = e.currentTarget.dataset.id;
-                    if (id && confirm('Are you sure you want to delete this item?')) {
+                    if (id && confirm(_t('confirmDeleteGearItem'))) {
                         this.deleteItem(id);
                     }
                 };
@@ -186,7 +224,7 @@
             if (features.persistOwnGearItems(filtered)) {
                 this.render();
             } else {
-                alert('Failed to delete item.');
+                alert(_t('alertSaveItemFailed'));
             }
         },
 
@@ -226,30 +264,30 @@
             backdrop.innerHTML = `
                 <div class="v2-modal">
                     <div class="v2-modal-header">
-                        <h3 class="v2-modal-title">${isNew ? 'New Gear Item' : 'Edit Gear Item'}</h3>
+                        <h3 class="v2-modal-title">${isNew ? _t('modalTitleNewGearItem') : _t('modalTitleEditGearItem')}</h3>
                         <button type="button" class="v2-modal-close v2-btn v2-btn-ghost"><span class="icon">close</span></button>
                     </div>
                     <div class="v2-modal-body own-gear-modal-body">
                         
                         <div class="v2-form-group">
-                            <label class="v2-label">Item Name</label>
-                            <input type="text" id="ownGearName" class="v2-input" value="${escapeHtml(item.name)}" placeholder="e.g. Arri Alexa Mini" required>
+                            <label class="v2-label">${_t('labelItemName')}</label>
+                            <input type="text" id="ownGearName" class="v2-input" value="${escapeHtml(item.name)}" placeholder="${_t('placeholderGearName')}" required>
                         </div>
 
                          <div class="v2-form-group">
-                            <label class="v2-label">Quantity</label>
-                            <input type="number" id="ownGearQuantity" class="v2-input" value="${escapeHtml(item.quantity)}" placeholder="1">
+                            <label class="v2-label">${_t('labelQuantity')}</label>
+                            <input type="number" id="ownGearQuantity" class="v2-input" value="${escapeHtml(item.quantity)}" placeholder="${_t('placeholderGearQty')}">
                         </div>
 
                         <div class="v2-form-group">
-                            <label class="v2-label">Notes</label>
-                            <textarea id="ownGearNotes" class="v2-input" rows="3" placeholder="Condition, serial number, etc...">${escapeHtml(item.notes)}</textarea>
+                            <label class="v2-label">${_t('labelNotes')}</label>
+                            <textarea id="ownGearNotes" class="v2-input" rows="3" placeholder="${_t('placeholderGearNotes')}">${escapeHtml(item.notes)}</textarea>
                         </div>
 
                     </div>
                     <div class="v2-modal-footer">
-                        <button type="button" class="v2-btn v2-btn-secondary" id="btn-cancel-own-gear">Cancel</button>
-                        <button type="button" class="v2-btn v2-btn-primary" id="btn-save-own-gear">Save Item</button>
+                        <button type="button" class="v2-btn v2-btn-secondary" id="btn-cancel-own-gear">${_t('buttonCancel')}</button>
+                        <button type="button" class="v2-btn v2-btn-primary" id="btn-save-own-gear">${_t('buttonSaveGearItem')}</button>
                     </div>
                 </div>
             `;
@@ -273,7 +311,7 @@
             backdrop.querySelector('#btn-save-own-gear').onclick = () => {
                 const name = nameInput.value.trim();
                 if (!name) {
-                    alert('Please enter a name.');
+                    alert(_t('alertEnterName'));
                     return;
                 }
 
@@ -296,7 +334,7 @@
                 }
 
                 if (!finalItem) {
-                    alert('Invalid item data.');
+                    alert(_t('alertInvalidItemData'));
                     return;
                 }
 
@@ -311,7 +349,7 @@
                     this.render();
                     close();
                 } else {
-                    alert('Failed to save item.');
+                    alert(_t('alertSaveItemFailed'));
                 }
             };
         }

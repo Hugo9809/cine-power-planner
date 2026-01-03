@@ -10,7 +10,18 @@
     // =====================
     function _t(key) {
         if (typeof window !== 'undefined' && window.texts) {
-            return key.split('.').reduce((o, i) => (o ? o[i] : null), window.texts) || key;
+            // 1. Get current language
+            const langSelect = document.getElementById('languageSelect');
+            const lang = (langSelect && langSelect.value) ||
+                (typeof window.currentLanguage === 'string' && window.currentLanguage) ||
+                'en';
+
+            // 2. Get correct dictionary
+            const dict = window.texts[lang] || window.texts['en'];
+
+            if (dict) {
+                return key.split('.').reduce((o, i) => (o ? o[i] : null), dict) || key;
+            }
         }
         return key;
     }
@@ -71,13 +82,38 @@
 
             if (!isInitialized) {
                 console.log('[SettingsView] Initializing...');
+
+                // View Change Listener
                 document.addEventListener('v2:viewchange', (e) => {
                     if (e.detail && e.detail.view === 'settings') {
                         this.render();
                     }
                 });
+
+                // Language Change Listener (Standard DOM event from Legacy Shim)
+                const legacySelect = document.getElementById('languageSelect');
+                if (legacySelect) {
+                    legacySelect.addEventListener('change', () => {
+                        // Re-render if currently visible to apply translations
+                        if (this.isVisible()) {
+                            this.render();
+                        }
+                    });
+                }
+
+                // Also listen for custom v2 event if invoked programmatically (e.g. from Sidebar)
+                document.addEventListener('v2:languagechange', () => {
+                    if (this.isVisible()) {
+                        this.render();
+                    }
+                });
+
                 isInitialized = true;
             }
+        },
+
+        isVisible() {
+            return this.container && this.container.classList.contains('active');
         },
 
         render() {
@@ -86,10 +122,10 @@
                 if (!this.container) return;
             }
 
-            // Generate HTML
+            // Generate HTML (Always regenerate to apply new translations)
             this.container.innerHTML = this.getTemplate();
 
-            // Initialize Logic
+            // Initialize Logic (Re-attach listeners to new DOM)
             this.attachListeners();
             this.syncFromLegacy();
             this.initTabs();
@@ -109,18 +145,37 @@
             </div>
             
             <div class="v2-settings-tabs">
-                <button class="v2-tab-btn active" data-tab="general">${_t('settingsTabGeneral')}</button>
-                <button class="v2-tab-btn" data-tab="backup">${_t('settingsTabBackup')}</button>
-                <button class="v2-tab-btn" data-tab="data">${_t('settingsTabData')}</button>
-                <button class="v2-tab-btn" data-tab="about">${_t('settingsTabAbout')}</button>
+                <button class="v2-tab-btn active" data-tab="general">
+                    <span class="material-symbols-rounded icon">tune</span>
+                    ${_t('settingsTabGeneral')}
+                </button>
+                <button class="v2-tab-btn" data-tab="backup">
+                    <span class="material-symbols-rounded icon">backup</span>
+                    ${_t('settingsTabBackup')}
+                </button>
+                <button class="v2-tab-btn" data-tab="data">
+                    <span class="material-symbols-rounded icon">database</span>
+                    ${_t('settingsTabData')}
+                </button>
+                <button class="v2-tab-btn" data-tab="about">
+                    <span class="material-symbols-rounded icon">info</span>
+                    ${_t('settingsTabAbout')}
+                </button>
             </div>
 
             <div class="v2-settings-body">
-                <!-- Content injected here -->
+                ${this.getGeneralTabHtml()}
+                ${this.getBackupTabHtml()}
+                ${this.getDataTabHtml()}
+                ${this.getAboutTabHtml()}
             </div>
             <div class="v2-settings-footer">
                 <button class="v2-btn v2-btn-primary" id="v2-settings-done">${_t('buttonClose')}</button>
             </div>
+            
+            <!-- Modals -->
+            ${this.getBackupDiffModalHtml()}
+            ${this.getRehearsalModalHtml()}
         `;
         },
 
@@ -619,7 +674,7 @@
 
         attachListeners() {
             // Tab Switching
-            const tabs = this.container.querySelectorAll('.v2-settings-tab');
+            const tabs = this.container.querySelectorAll('.v2-tab-btn');
             const panels = this.container.querySelectorAll('.v2-settings-panel');
 
             tabs.forEach(tab => {
@@ -861,7 +916,7 @@
         },
 
         initTabs() {
-            const activeTab = this.container.querySelector('.v2-settings-tab.active');
+            const activeTab = this.container.querySelector('.v2-tab-btn.active');
             if (activeTab) {
                 const targetId = `v2-panel-${activeTab.dataset.tab}`;
                 const targetPanel = document.getElementById(targetId);

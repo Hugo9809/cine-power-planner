@@ -15,14 +15,27 @@
 /* =====================
  * TAB NAVIGATION
  * ===================== */
+/* =====================
+ * TAB NAVIGATION
+ * ===================== */
 .v2-tabs-nav {
     display: flex;
-    gap: var(--v2-space-xs);
+    align-items: flex-end;
+    gap: 4px;
+    padding: var(--v2-space-sm) var(--v2-space-lg) 0;
+    background-color: var(--v2-surface-muted);
     border-bottom: 1px solid var(--v2-border-default);
-    padding: 0 var(--v2-space-md);
     overflow-x: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    flex-shrink: 0;
+    min-height: 48px;
+    /* Slightly taller */
+    width: 100%;
+    position: relative;
+    z-index: 5;
+    box-sizing: border-box;
+    /* IMPORTANT */
 }
 
 .v2-tabs-nav::-webkit-scrollbar {
@@ -35,38 +48,75 @@
 .v2-tab-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: var(--v2-space-sm);
-    padding: var(--v2-space-md) var(--v2-space-lg);
+    padding: var(--v2-space-sm) var(--v2-space-lg);
+    min-width: 120px;
+    height: 40px;
+
+    /* Typography */
     font-size: var(--v2-font-size-sm);
     font-weight: var(--v2-font-weight-medium);
     color: var(--v2-text-secondary);
-    background: none;
-    border: none;
-    border-bottom: 2px solid transparent;
+
+    /* Shape & Borders */
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-bottom: none;
+    border-radius: var(--v2-radius-md) var(--v2-radius-md) 0 0;
+    /* Top rounded corners */
+
     cursor: pointer;
     white-space: nowrap;
-    transition: color var(--v2-transition-fast), border-color var(--v2-transition-fast);
-    margin-bottom: -1px;
+    transition: all var(--v2-transition-fast);
+    position: relative;
+    top: 1px;
+    /* Push down to overlap border */
 }
 
-.v2-tab-btn:hover:not(:disabled) {
+.v2-tab-btn:hover:not(:disabled):not(.active) {
+    background-color: rgba(255, 255, 255, 0.05);
+    /* Subtle hover */
     color: var(--v2-text-primary);
 }
 
 .v2-tab-btn:focus-visible {
-    outline: 2px solid var(--v2-border-focus);
+    outline: 2px solid var(--v2-brand-blue);
     outline-offset: -2px;
-    border-radius: var(--v2-radius-sm);
+    z-index: 10;
 }
 
+/* Active State - Browser Tab Look */
 .v2-tab-btn.active {
-    color: var(--v2-brand-blue);
-    border-bottom-color: var(--v2-brand-blue);
+    background-color: var(--v2-surface-base);
+    /* Match content background */
+    color: var(--v2-text-primary);
+    font-weight: var(--v2-font-weight-semibold);
+
+    /* Borders to define the tab shape */
+    border-color: var(--v2-border-default);
+    border-bottom-color: var(--v2-surface-base);
+    /* "Erase" the bottom border */
+
+    /* Helper to cover the line below if needed */
+    z-index: 2;
+}
+
+/* Add a pseudo-element to extend the active tab background slightly if needed for pixel perfection */
+.v2-tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background-color: var(--v2-surface-base);
 }
 
 .v2-tab-btn:disabled {
     color: var(--v2-text-muted);
     cursor: not-allowed;
+    opacity: 0.6;
 }
 
 .v2-tab-btn .icon {
@@ -98,19 +148,36 @@
 .v2-tabs-content {
     flex: 1;
     overflow-y: auto;
+    background-color: var(--v2-surface-base);
+    /* Ensure consistent background */
+    position: relative;
+    z-index: 1;
 }
 
 .v2-tab-pane {
     display: none;
     padding: var(--v2-space-lg);
+    animation: v2-fade-in var(--v2-transition-fast);
 }
 
 .v2-tab-pane.active {
     display: block;
 }
 
+@keyframes v2-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* =====================
- * PILL TABS VARIANT
+ * PILL TABS VARIANT (Preserved)
  * ===================== */
 .v2-tabs-pills .v2-tabs-nav {
     border-bottom: none;
@@ -119,12 +186,16 @@
     background-color: var(--v2-surface-muted);
     border-radius: var(--v2-radius-lg);
     width: fit-content;
+    align-items: center;
 }
 
 .v2-tabs-pills .v2-tab-btn {
     padding: var(--v2-space-sm) var(--v2-space-md);
-    border-bottom: none;
+    border: none;
     border-radius: var(--v2-radius-md);
+    height: auto;
+    min-width: auto;
+    top: 0;
     margin-bottom: 0;
 }
 
@@ -132,10 +203,15 @@
     background-color: var(--v2-surface-base);
     color: var(--v2-text-primary);
     box-shadow: var(--v2-shadow-sm);
+    border: none;
+}
+
+.v2-tabs-pills .v2-tab-btn.active::after {
+    display: none;
 }
 
 /* =====================
- * VERTICAL TABS
+ * VERTICAL TABS (Preserved)
  * ===================== */
 .v2-tabs-vertical {
     flex-direction: row;
@@ -143,21 +219,33 @@
 
 .v2-tabs-vertical .v2-tabs-nav {
     flex-direction: column;
+    align-items: stretch;
     border-bottom: none;
     border-right: 1px solid var(--v2-border-default);
     padding: var(--v2-space-md) 0;
     min-width: 200px;
+    background-color: transparent;
 }
 
 .v2-tabs-vertical .v2-tab-btn {
-    border-bottom: none;
+    border: none;
     border-right: 2px solid transparent;
+    border-radius: 0;
     margin-bottom: 0;
     margin-right: -1px;
     justify-content: flex-start;
     text-align: left;
+    height: auto;
+    padding: var(--v2-space-md);
+    top: 0;
 }
 
 .v2-tabs-vertical .v2-tab-btn.active {
+    background-color: var(--v2-surface-muted);
     border-right-color: var(--v2-brand-blue);
+    border-bottom: none;
+}
+
+.v2-tabs-vertical .v2-tab-btn.active::after {
+    display: none;
 }

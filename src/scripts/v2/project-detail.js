@@ -173,23 +173,23 @@
         </div>
       </header>
       
+      <!-- Tab Navigation (Sticky Top) -->
+      <nav class="v2-tabs-nav" role="tablist" aria-label="Project sections">
+        <button type="button" class="v2-tab-btn active" data-tab="camera" role="tab" aria-selected="true" aria-controls="tab-camera">
+          Camera Package
+        </button>
+        <button type="button" class="v2-tab-btn" data-tab="power" role="tab" aria-selected="false" aria-controls="tab-power">
+          Power Summary
+        </button>
+        <button type="button" class="v2-tab-btn" data-tab="requirements" role="tab" aria-selected="false" aria-controls="tab-requirements">
+          Requirements
+        </button>
+        <button type="button" class="v2-tab-btn" data-tab="kit" role="tab" aria-selected="false" aria-controls="tab-kit">
+          Gear List
+        </button>
+      </nav>
+
       <div class="view-content">
-        <!-- Tab Navigation (Horizontal) -->
-        <nav class="v2-tabs-nav" role="tablist" aria-label="Project sections">
-          <button type="button" class="v2-tab-btn active" data-tab="camera" role="tab" aria-selected="true" aria-controls="tab-camera">
-            Camera Package
-          </button>
-          <button type="button" class="v2-tab-btn" data-tab="power" role="tab" aria-selected="false" aria-controls="tab-power">
-            Power Summary
-          </button>
-          <button type="button" class="v2-tab-btn" data-tab="requirements" role="tab" aria-selected="false" aria-controls="tab-requirements">
-            Requirements
-          </button>
-          <button type="button" class="v2-tab-btn" data-tab="kit" role="tab" aria-selected="false" aria-controls="tab-kit">
-            Gear List
-          </button>
-        </nav>
-        
         <!-- Tab Content -->
         <div class="v2-tab-content" style="padding-top: var(--v2-space-lg);">
           <!-- Camera Package Tab -->

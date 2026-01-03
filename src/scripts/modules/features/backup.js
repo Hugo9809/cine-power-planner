@@ -1457,7 +1457,7 @@
     const safeIso = iso.replace(/[:]/g, '-');
     return {
       iso,
-      fileName: `${safeIso} full app backup.json`,
+      fileName: `cine_power_planner_backup_${safeIso}.json`,
     };
   }
 
