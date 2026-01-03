@@ -228,7 +228,7 @@
                     </div>
                     <div class="v2-form-group" style="margin-top: 1rem;">
                         <label class="v2-label">${_t('accentColorSetting')}</label>
-                        <div class="v2-color-picker-row">
+                        <div class="v2-color-input-wrapper">
                             <input type="color" class="v2-color-input" id="v2-settings-accent-color">
                             <button class="v2-btn v2-btn-sm v2-btn-secondary" id="v2-accent-reset">${_t('buttonReset')}</button>
                         </div>
@@ -239,43 +239,43 @@
                     <h3>${_t('mountVoltageSettingsHeading')}</h3>
                     <p>${_t('mountVoltageDescription')}</p>
                     
-                    <div class="v2-form-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                    <div class="v2-form-grid v2-voltage-grid">
                         
                         <!-- V-Mount -->
-                        <div style="background: var(--v2-surface-muted); padding: 0.75rem; border-radius: var(--v2-radius-sm);">
-                            <h4 style="margin: 0 0 0.5rem 0; font-size: 0.9rem;">${_t('mountVoltageCardLabelV')}</h4>
+                        <div class="v2-voltage-card">
+                            <h4>${_t('mountVoltageCardLabelV')}</h4>
                             <div class="v2-form-group">
-                                <label class="v2-label" style="font-size: 0.8rem;">${_t('mountVoltageHighLabel')}</label>
+                                <label class="v2-label v2-voltage-label-small">${_t('mountVoltageHighLabel')}</label>
                                 <input type="number" class="v2-input" id="v2-volt-v-high" step="0.1" min="0">
                             </div>
                             <div class="v2-form-group" style="margin-top: 0.5rem;">
-                                <label class="v2-label" style="font-size: 0.8rem;">${_t('mountVoltageLowLabel')}</label>
+                                <label class="v2-label v2-voltage-label-small">${_t('mountVoltageLowLabel')}</label>
                                 <input type="number" class="v2-input" id="v2-volt-v-low" step="0.1" min="0">
                             </div>
                         </div>
 
                         <!-- Gold Mount -->
-                        <div style="background: var(--v2-surface-muted); padding: 0.75rem; border-radius: var(--v2-radius-sm);">
-                            <h4 style="margin: 0 0 0.5rem 0; font-size: 0.9rem;">${_t('mountVoltageCardLabelGold')}</h4>
+                        <div class="v2-voltage-card">
+                            <h4>${_t('mountVoltageCardLabelGold')}</h4>
                             <div class="v2-form-group">
-                                <label class="v2-label" style="font-size: 0.8rem;">${_t('mountVoltageHighLabel')}</label>
+                                <label class="v2-label v2-voltage-label-small">${_t('mountVoltageHighLabel')}</label>
                                 <input type="number" class="v2-input" id="v2-volt-gold-high" step="0.1" min="0">
                             </div>
                              <div class="v2-form-group" style="margin-top: 0.5rem;">
-                                <label class="v2-label" style="font-size: 0.8rem;">${_t('mountVoltageLowLabel')}</label>
+                                <label class="v2-label v2-voltage-label-small">${_t('mountVoltageLowLabel')}</label>
                                 <input type="number" class="v2-input" id="v2-volt-gold-low" step="0.1" min="0">
                             </div>
                         </div>
 
                         <!-- B-Mount -->
-                        <div style="background: var(--v2-surface-muted); padding: 0.75rem; border-radius: var(--v2-radius-sm);">
-                            <h4 style="margin: 0 0 0.5rem 0; font-size: 0.9rem;">${_t('mountVoltageCardLabelB')}</h4>
+                        <div class="v2-voltage-card">
+                            <h4>${_t('mountVoltageCardLabelB')}</h4>
                             <div class="v2-form-group">
-                                <label class="v2-label" style="font-size: 0.8rem;">${_t('mountVoltageHighLabel')}</label>
+                                <label class="v2-label v2-voltage-label-small">${_t('mountVoltageHighLabel')}</label>
                                 <input type="number" class="v2-input" id="v2-volt-b-high" step="0.1" min="0">
                             </div>
                              <div class="v2-form-group" style="margin-top: 0.5rem;">
-                                <label class="v2-label" style="font-size: 0.8rem;">${_t('mountVoltageLowLabel')}</label>
+                                <label class="v2-label v2-voltage-label-small">${_t('mountVoltageLowLabel')}</label>
                                 <input type="number" class="v2-input" id="v2-volt-b-low" step="0.1" min="0">
                             </div>
                         </div>

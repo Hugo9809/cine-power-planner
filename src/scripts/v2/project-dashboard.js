@@ -212,7 +212,7 @@
      */
     function createNewProjectTileHtml() {
         return `
-      <div class="v2-project-tile new-project" id="v2NewProjectBtn" tabindex="0" role="button" aria-label="Create new project">
+      <div class="v2-project-tile new-project" id="v2CreateProjectTile" tabindex="0" role="button" aria-label="Create new project">
         <div class="v2-tile-header center">
           <div class="v2-tile-icon-add">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -240,7 +240,7 @@
         </div>
         <h2>No Projects Yet</h2>
         <p class="text-muted">Create your first power plan to get started.</p>
-        <button id="v2EmptyStateBtn" class="v2-btn-primary">
+        <button id="v2EmptyStateCreateBtn" class="v2-btn-primary">
           + Create Project
         </button>
       </div>
