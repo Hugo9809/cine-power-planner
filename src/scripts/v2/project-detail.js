@@ -11,7 +11,11 @@
   // =====================
   // CONFIGURATION
   // =====================
+  // =====================
+  // CONFIGURATION
+  // =====================
   const VIEW_ID = 'view-project-detail';
+  const STORAGE_KEY = 'cameraPowerPlanner_setups';
   const TABS = ['camera', 'power', 'requirements', 'kit'];
   const DEFAULT_TAB = 'camera';
 
@@ -57,6 +61,11 @@
     document.dispatchEvent(new CustomEvent('v2:tabchange', {
       detail: { tab: tabId, project: currentProject }
     }));
+
+    if (tabId === 'power') {
+      // Slight delay to ensure visibility transitions finish if any
+      setTimeout(() => renderV2Diagram(), 10);
+    }
   }
 
   /**
@@ -64,6 +73,64 @@
    */
   function getCurrentTab() {
     return currentTab;
+  }
+
+  // =====================
+  // DATA HELPERS
+  // =====================
+
+  /**
+   * Format a date for display
+   */
+  function formatDate(dateStr) {
+    if (!dateStr) return '';
+    try {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString(undefined, {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    } catch (_e) {
+      void _e;
+      return '';
+    }
+  }
+
+  /**
+   * Format a date range string "YYYY-MM-DD to YYYY-MM-DD"
+   */
+  function formatDateRange(rangeStr) {
+    if (!rangeStr || typeof rangeStr !== 'string') return '';
+    const parts = rangeStr.split(' to ');
+    if (parts.length === 1) return formatDate(parts[0]);
+    if (parts.length === 2) {
+      return `${formatDate(parts[0])} - ${formatDate(parts[1])}`;
+    }
+    return rangeStr;
+  }
+
+  /**
+   * Get project data from storage
+   */
+  function getProjectData(projectName) {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const data = JSON.parse(stored);
+        if (data && data[projectName]) {
+          const project = data[projectName];
+          return {
+            prepDays: project.prepDays || [],
+            shootingDays: project.shootingDays || [],
+            returnDays: project.returnDays || []
+          };
+        }
+      }
+    } catch (_e) {
+      void _e;
+    }
+    return { prepDays: [], shootingDays: [], returnDays: [] };
   }
 
   // =====================
@@ -90,6 +157,26 @@
     // Load project via legacy shim
     if (global.cineLegacyShim) {
       global.cineLegacyShim.loadProject(projectName);
+    }
+
+    // Update Project Periods in Header
+    const projectData = getProjectData(projectName);
+    const periodsContainer = document.getElementById('v2ProjectPeriods');
+
+    // Helper to get first range
+    const getFirstRange = (arr) => Array.isArray(arr) && arr.length > 0 ? formatDateRange(arr[0]) : '';
+    const prepStr = getFirstRange(projectData.prepDays);
+    const shootStr = getFirstRange(projectData.shootingDays);
+    const returnStr = getFirstRange(projectData.returnDays);
+
+    if (periodsContainer) {
+      let html = '';
+      if (prepStr) html += `<span class="v2-header-badge prep" title="Prep Dates"><span class="period-icon">📅</span> ${prepStr}</span>`;
+      if (shootStr) html += `<span class="v2-header-badge shoot" title="Shooting Dates"><span class="period-icon">🎥</span> ${shootStr}</span>`;
+      if (returnStr) html += `<span class="v2-header-badge return" title="Return Dates"><span class="period-icon">🚛</span> ${returnStr}</span>`;
+
+      periodsContainer.innerHTML = html;
+      periodsContainer.style.display = html ? 'flex' : 'none';
     }
 
     // No need to manually sync if we are reparenting the actual live elements
@@ -159,6 +246,7 @@
           <span>Projects</span>
         </button>
         <h1 id="v2ProjectName" class="view-header-title">Project</h1>
+        <div id="v2ProjectPeriods" class="v2-header-periods" style="display: none;"></div>
         <div class="view-header-actions">
           <button type="button" class="v2-btn v2-btn-ghost" id="v2ExportProjectBtn" title="Export Project">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -247,131 +335,77 @@
    */
   function renderCameraPackageTab() {
     return `
-      <div class="v2-device-grid">
-        <!-- ROW 1: Camera, Monitor, Wireless -->
-        <!-- Camera Section -->
-        <div class="v2-card v2-device-card" id="v2-camera-card">
-          <div class="v2-card-header">
-            <h3>Camera</h3>
-          </div>
-          <div class="v2-card-body">
-            <div class="v2-form-group">
-              <label class="v2-label">Camera Body</label>
-              <div class="v2-select-container" data-reparent="cameraSelect"></div>
-            </div>
-          </div>
+      <div id="v2-setup-config" style="padding: 0; margin: 0;">
+        <h2 id="deviceSelectionHeading">Configure Devices</h2>
+        
+        <div class="form-row">
+          <label for="cameraSelect" id="cameraLabel">Camera:</label>
+          <div data-reparent="cameraSelect"></div>
         </div>
         
-        <!-- Monitor Section -->
-        <div class="v2-card v2-device-card">
-          <div class="v2-card-header">
-            <h3>Monitor</h3>
-          </div>
-          <div class="v2-card-body">
-            <div class="v2-form-group">
-              <label class="v2-label">On-Camera Monitor</label>
-              <div class="v2-select-container" data-reparent="monitorSelect"></div>
-            </div>
-          </div>
+        <div class="form-row" id="monitorSelectRow">
+          <label for="monitorSelect" id="monitorLabel">Monitor:</label>
+          <div data-reparent="monitorSelect"></div>
         </div>
         
-        <!-- Wireless Transmitter Section -->
-        <div class="v2-card v2-device-card">
-          <div class="v2-card-header">
-            <h3>Wireless Video</h3>
-          </div>
-          <div class="v2-card-body">
-            <div class="v2-form-group">
-              <label class="v2-label">Transmitter</label>
-              <div class="v2-select-container" data-reparent="videoSelect"></div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- ROW 2: FIZ Systems -->
-        <!-- FIZ Motors Section -->
-        <div class="v2-card v2-device-card v2-card-wide">
-          <div class="v2-card-header">
-            <h3>FIZ Motors</h3>
-          </div>
-          <div class="v2-card-body v2-form-row">
-            <div class="v2-form-group">
-              <label class="v2-label">Motor 1</label>
-              <div class="v2-select-container" data-reparent="motor1Select"></div>
-            </div>
-            <div class="v2-form-group">
-              <label class="v2-label">Motor 2</label>
-              <div class="v2-select-container" data-reparent="motor2Select"></div>
-            </div>
-            <div class="v2-form-group">
-              <label class="v2-label">Motor 3</label>
-              <div class="v2-select-container" data-reparent="motor3Select"></div>
-            </div>
-            <div class="v2-form-group">
-              <label class="v2-label">Motor 4</label>
-              <div class="v2-select-container" data-reparent="motor4Select"></div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- FIZ Controllers Section -->
-        <div class="v2-card v2-device-card v2-card-wide">
-          <div class="v2-card-header">
-            <h3>FIZ Controllers</h3>
-          </div>
-          <div class="v2-card-body v2-form-row">
-            <div class="v2-form-group">
-              <label class="v2-label">Controller 1</label>
-              <div class="v2-select-container" data-reparent="controller1Select"></div>
-            </div>
-            <div class="v2-form-group">
-              <label class="v2-label">Controller 2</label>
-              <div class="v2-select-container" data-reparent="controller2Select"></div>
-            </div>
-            <div class="v2-form-group">
-              <label class="v2-label">Controller 3</label>
-              <div class="v2-select-container" data-reparent="controller3Select"></div>
-            </div>
-            <div class="v2-form-group">
-              <label class="v2-label">Controller 4</label>
-              <div class="v2-select-container" data-reparent="controller4Select"></div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- ROW 3: Distance & Power -->
-        <!-- Distance Sensor Section -->
-        <div class="v2-card v2-device-card">
-          <div class="v2-card-header">
-            <h3>Distance Sensor</h3>
-          </div>
-          <div class="v2-card-body">
-            <div class="v2-form-group">
-              <label class="v2-label">Sensor</label>
-              <div class="v2-select-container" data-reparent="distanceSelect"></div>
-            </div>
-          </div>
+        <div class="form-row" id="wirelessVideoRow">
+          <label for="videoSelect" id="videoLabel">Wireless Transmitter:</label>
+          <div data-reparent="videoSelect"></div>
         </div>
 
-        <!-- Battery Section -->
-        <div class="v2-card v2-device-card" id="v2-power-card">
-          <div class="v2-card-header">
-            <h3>Power</h3>
+        <fieldset id="fizFieldset">
+          <legend id="fizLegend">FIZ (Follow Focus) Systems</legend>
+          <div class="form-row">
+            <label for="motor1Select" id="fizMotorsLabel">FIZ Motors:</label>
+            <div data-reparent="motor1Select"></div>
           </div>
-          <div class="v2-card-body">
-            <div class="v2-form-group">
-              <label class="v2-label">Battery Plate</label>
-              <div class="v2-select-container" data-reparent="batteryPlateSelect"></div>
-            </div>
-            <div class="v2-form-group">
-              <label class="v2-label">Battery</label>
-              <div class="v2-select-container" data-reparent="batterySelect"></div>
-            </div>
-            <div class="v2-form-group">
-              <label class="v2-label">Hotswap Battery</label>
-              <div class="v2-select-container" data-reparent="batteryHotswapSelect"></div>
-            </div>
+          <div class="form-row">
+            <label for="motor2Select"></label>
+            <div data-reparent="motor2Select"></div>
           </div>
+          <div class="form-row">
+            <label for="motor3Select"></label>
+            <div data-reparent="motor3Select"></div>
+          </div>
+          <div class="form-row">
+            <label for="motor4Select"></label>
+            <div data-reparent="motor4Select"></div>
+          </div>
+          <div class="form-row">
+            <label for="controller1Select" id="fizControllersLabel">FIZ Controllers:</label>
+            <div data-reparent="controller1Select"></div>
+          </div>
+          <div class="form-row">
+            <label for="controller2Select"></label>
+            <div data-reparent="controller2Select"></div>
+          </div>
+          <div class="form-row">
+            <label for="controller3Select"></label>
+            <div data-reparent="controller3Select"></div>
+          </div>
+          <div class="form-row">
+            <label for="controller4Select"></label>
+            <div data-reparent="controller4Select"></div>
+          </div>
+          <div class="form-row">
+            <label for="distanceSelect" id="distanceLabel">Distance Sensor:</label>
+            <div data-reparent="distanceSelect"></div>
+          </div>
+        </fieldset>
+
+        <div class="form-row" id="batteryPlateRow">
+          <label for="batteryPlateSelect" id="batteryPlateLabel">Battery Plate:</label>
+          <div data-reparent="batteryPlateSelect"></div>
+        </div>
+
+        <div class="form-row" id="batterySelectRow">
+          <label for="batterySelect" id="batteryLabel">Battery:</label>
+          <div data-reparent="batterySelect"></div>
+        </div>
+
+        <div class="form-row" id="batteryHotswapRow">
+          <label for="batteryHotswapSelect" id="batteryHotswapLabel">Battery Hotswap:</label>
+          <div data-reparent="batteryHotswapSelect"></div>
         </div>
       </div>
     `;
@@ -387,24 +421,26 @@
       const legacyElement = document.getElementById(legacyId);
 
       if (legacyElement) {
-        // Apply V2 styling class
-        legacyElement.classList.add('v2-select-input');
-
         // Ensure it's visible (legacy might hide it)
         legacyElement.style.display = 'block';
-        legacyElement.style.width = '100%';
 
-        // Ensure height is auto to preventing cutting off text
-        legacyElement.style.height = 'auto';
-        legacyElement.style.minHeight = '44px';
-        legacyElement.style.whiteSpace = 'normal';
+        // Remove V2 Styling if present
+        legacyElement.classList.remove('v2-select-input');
+
+        // Reset styles that might have been set by V2 previously
+        legacyElement.style.width = '';
+        legacyElement.style.height = '';
+        legacyElement.style.minHeight = '';
+        legacyElement.style.whiteSpace = '';
 
         // Check if the element has a wrapper (which holds the favorite button)
         const wrapper = legacyElement.closest('.select-wrapper');
         const elementToMove = wrapper || legacyElement;
 
-        // Move to new container
-        container.appendChild(elementToMove);
+        // Replace the placeholder container with the legitimate legacy wrapper/element
+        // This ensures the DOM structure matches V1 exactly: .form-row > .select-wrapper > select
+        container.parentNode.replaceChild(elementToMove, container);
+
       } else {
         console.warn(`[ProjectDetail] Legacy element not found: ${legacyId}`);
         container.innerHTML = '<span class="v2-error-text">Element missing</span>';
@@ -417,41 +453,71 @@
    */
   function renderPowerSummaryTab() {
     return `
-      <!-- Power Summary Hero Card -->
-      <div class="v2-power-hero v2-card v2-card-elevated">
-        <div class="v2-power-hero-main">
-          <div class="v2-power-stat v2-power-stat-primary">
-            <span class="v2-power-stat-value" id="v2TotalDraw">0W</span>
-            <span class="v2-power-stat-label">Total Draw</span>
+      <div class="v2-power-grid">
+        <!-- Power Summary Hero Card -->
+        <div class="v2-power-hero v2-card v2-card-elevated">
+          <div class="v2-power-hero-main">
+            <div class="v2-power-stat v2-power-stat-primary">
+              <span class="v2-power-stat-value" id="v2TotalDraw">0W</span>
+              <span class="v2-power-stat-label">Total Draw</span>
+            </div>
+            <div class="v2-power-stat">
+              <span class="v2-power-stat-value" id="v2Runtime">--:--</span>
+              <span class="v2-power-stat-label">Runtime</span>
+            </div>
+            <div class="v2-power-stat">
+              <span class="v2-power-stat-value" id="v2BatteryCount">0</span>
+              <span class="v2-power-stat-label">Batteries</span>
+            </div>
           </div>
-          <div class="v2-power-stat">
-            <span class="v2-power-stat-value" id="v2Runtime">--:--</span>
-            <span class="v2-power-stat-label">Runtime</span>
-          </div>
-          <div class="v2-power-stat">
-            <span class="v2-power-stat-value" id="v2BatteryCount">0</span>
-            <span class="v2-power-stat-label">Batteries</span>
+          <div class="v2-power-hero-details">
+            <div class="v2-power-detail">
+              <span class="v2-power-detail-label">14.4V Current</span>
+              <span class="v2-power-detail-value" id="v2Current144">0A</span>
+            </div>
+            <div class="v2-power-detail">
+              <span class="v2-power-detail-label">12V Current</span>
+              <span class="v2-power-detail-value" id="v2Current12">0A</span>
+            </div>
           </div>
         </div>
-        <div class="v2-power-hero-details">
-          <div class="v2-power-detail">
-            <span class="v2-power-detail-label">14.4V Current</span>
-            <span class="v2-power-detail-value" id="v2Current144">0A</span>
-          </div>
-          <div class="v2-power-detail">
-            <span class="v2-power-detail-label">12V Current</span>
-            <span class="v2-power-detail-value" id="v2Current12">0A</span>
-          </div>
-        </div>
-      </div>
 
-      <!-- Power Breakdown -->
-      <div class="v2-card" style="margin-top: var(--v2-space-lg);">
-        <div class="v2-card-header">
-          <h3>Consumption Breakdown</h3>
+        <!-- Connection Diagram Card -->
+        <div class="v2-card v2-diagram-card">
+          <div class="v2-card-header v2-card-header-with-actions">
+            <h3>Connection Diagram</h3>
+            <div class="v2-diagram-toolbar">
+               <button type="button" class="v2-btn v2-btn-sm v2-btn-ghost" id="v2ZoomOut" title="Zoom Out">
+                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+               </button>
+               <button type="button" class="v2-btn v2-btn-sm v2-btn-ghost" id="v2ResetView" title="Reset View">
+                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+               </button>
+               <button type="button" class="v2-btn v2-btn-sm v2-btn-ghost" id="v2ZoomIn" title="Zoom In">
+                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+               </button>
+               <div class="v2-vr"></div>
+               <button type="button" class="v2-btn v2-btn-sm v2-btn-ghost" id="v2DownloadDiagram" title="Download Diagram">
+                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+               </button>
+            </div>
+          </div>
+          <div class="v2-card-body v2-diagram-body">
+            <div id="v2-diagram-area" class="v2-diagram-area"></div>
+            <div id="v2-diagram-legend" class="v2-diagram-legend"></div>
+            <!-- Hidden containers required by module -->
+            <div id="v2-diagram-hint" style="display:none;"></div>
+          </div>
         </div>
-        <div class="v2-card-body">
-           <p class="v2-text-muted">Breakdown visualization coming soon.</p>
+
+        <!-- Power Breakdown -->
+        <div class="v2-card" style="margin-top: var(--v2-space-lg);">
+          <div class="v2-card-header">
+            <h3>Consumption Breakdown</h3>
+          </div>
+          <div class="v2-card-body">
+             <p class="v2-text-muted">Breakdown visualization coming soon.</p>
+          </div>
         </div>
       </div>
     `;
@@ -534,6 +600,69 @@
   }
 
   // =====================
+  // DIAGRAM RENDERING
+  // =====================
+
+  let diagramInstance = null;
+
+  /**
+   * Initialize and render the Connection Diagram in V2 container
+   */
+  function renderV2Diagram() {
+    if (!currentProject) return;
+
+    // Check if module is available
+    if (!global.cineFeaturesConnectionDiagram || typeof global.cineFeaturesConnectionDiagram.createConnectionDiagram !== 'function') {
+      console.warn('[ProjectDetail] Connection Diagram module not found.');
+      return;
+    }
+
+    const container = document.getElementById('v2-diagram-area');
+    if (!container) return; // Tab might be hidden or not rendered
+
+    console.log('[ProjectDetail] Rendering Power Diagram...');
+
+    // If we already have an instance, we might want to just let it update?
+    // The current module helper creates a new one every time, but handles cleanups internally if we re-call it?
+    // Actually createConnectionDiagram returns an object with { enableDiagramInteractions, ... }
+    // It clears the container.
+
+    const context = {
+      // Override UI getters to point to V2 elements
+      getSetupDiagramContainer: () => document.getElementById('v2-diagram-area'),
+      getDiagramLegend: () => document.getElementById('v2-diagram-legend'),
+      getDiagramHint: () => document.getElementById('v2-diagram-hint'),
+      getDownloadDiagramBtn: () => document.getElementById('v2DownloadDiagram'),
+      getZoomInBtn: () => document.getElementById('v2ZoomIn'),
+      getZoomOutBtn: () => document.getElementById('v2ZoomOut'),
+      getResetViewBtn: () => document.getElementById('v2ResetView'),
+
+      // Use existing global getters for data inputs (since we reparented the actual elements)
+      // The module defaults to GLOBAL_SCOPE.cameraSelect etc. which still works.
+    };
+
+    // Inject diagram CSS if needed
+    if (!document.getElementById('v2-diagram-css')) {
+      const css = (typeof global.cineFeaturesConnectionDiagram.getDiagramCss === 'function')
+        ? global.cineFeaturesConnectionDiagram.getDiagramCss(false)
+        : '';
+
+      if (css) {
+        const style = document.createElement('style');
+        style.id = 'v2-diagram-css';
+        style.textContent = css;
+        document.head.appendChild(style);
+      }
+    }
+
+    try {
+      diagramInstance = global.cineFeaturesConnectionDiagram.createConnectionDiagram(context);
+    } catch (e) {
+      console.error('[ProjectDetail] Error rendering diagram:', e);
+    }
+  }
+
+  // =====================
   // DATA SYNC
   // =====================
 
@@ -560,6 +689,12 @@
         v2El.textContent = legacyEl.textContent;
       }
     });
+
+    // Also refresh diagram if visible
+    if (getCurrentTab() === 'power') {
+      // Debounce slightly to allow legacy calculations to settle if they modify DOM attributes
+      setTimeout(() => renderV2Diagram(), 50);
+    }
   }
 
   /**
@@ -568,7 +703,12 @@
   function setupPowerObserver() {
     // Note: We observe the results container, not a specific node.
     // The observer callback doesn't need to inspect mutations, just re-sync.
-    const legacyResultContainer = document.getElementById('results') || document.body;
+    const legacyResultContainer = document.getElementById('results');
+
+    if (!legacyResultContainer) {
+      console.warn('[ProjectDetail] Legacy results container not found. Auto-sync disabled.');
+      return;
+    }
 
     const observer = new MutationObserver(() => {
       syncLegacyResultsToV2();

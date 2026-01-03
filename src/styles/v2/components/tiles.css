@@ -210,6 +210,48 @@
 }
 
 /* =====================
+ * TILE PERIODS
+ * ===================== */
+.v2-tile-periods {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.v2-period-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    /* Pill shape */
+    font-weight: 500;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.period-icon {
+    font-size: 10px;
+    opacity: 0.8;
+}
+
+.v2-period-badge.prep {
+    background: color-mix(in srgb, var(--v2-color-blue) 10%, transparent);
+    color: var(--v2-color-blue);
+    border: 1px solid color-mix(in srgb, var(--v2-color-blue) 20%, transparent);
+}
+
+.v2-period-badge.shoot {
+    background: color-mix(in srgb, var(--v2-color-red) 10%, transparent);
+    color: var(--v2-color-red);
+    border: 1px solid color-mix(in srgb, var(--v2-color-red) 20%, transparent);
+}
+
+/* =====================
  * CREATE NEW TILE
  * ===================== */
 .v2-project-tile-new {

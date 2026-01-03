@@ -78,6 +78,19 @@
         }
     }
 
+    /**
+     * Format a date range string "YYYY-MM-DD to YYYY-MM-DD"
+     */
+    function formatDateRange(rangeStr) {
+        if (!rangeStr || typeof rangeStr !== 'string') return '';
+        const parts = rangeStr.split(' to ');
+        if (parts.length === 1) return formatDate(parts[0]);
+        if (parts.length === 2) {
+            return `${formatDate(parts[0])} - ${formatDate(parts[1])}`;
+        }
+        return rangeStr;
+    }
+
     // =====================
     // PROJECT DATA
     // =====================
@@ -134,7 +147,10 @@
                     return {
                         lastModified: project.lastModified || null,
                         color: project.color || null,
-                        icon: project.icon || null
+                        icon: project.icon || null,
+                        prepDays: project.prepDays || [],
+                        shootingDays: project.shootingDays || [],
+                        returnDays: project.returnDays || []
                     };
                 }
             }
@@ -142,11 +158,11 @@
             void _e;
             // Ignore errors
         }
-        return { lastModified: null, color: null, icon: null };
+        return { lastModified: null, color: null, icon: null, prepDays: [], shootingDays: [], returnDays: [] };
     }
 
     /**
-     * Update project metadata (color, icon)
+     * Update project metadata (color, icon, dates)
      */
     function updateProjectMetadata(projectName, metadata = {}) {
         try {
@@ -157,6 +173,9 @@
                     // Merge new metadata
                     if (metadata.color) data[projectName].color = metadata.color;
                     if (metadata.icon) data[projectName].icon = metadata.icon;
+                    if (metadata.prepDays) data[projectName].prepDays = metadata.prepDays;
+                    if (metadata.shootingDays) data[projectName].shootingDays = metadata.shootingDays;
+                    if (metadata.returnDays) data[projectName].returnDays = metadata.returnDays;
 
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
                     return true;
@@ -184,8 +203,21 @@
         // Use stored icon or default
         const icon = metadata.icon || '📽️';
 
+        // Helper to get first range
+        const getFirstRange = (arr) => Array.isArray(arr) && arr.length > 0 ? formatDateRange(arr[0]) : '';
+        const prepStr = getFirstRange(metadata.prepDays);
+        const shootStr = getFirstRange(metadata.shootingDays);
+
         const dateStr = metadata.lastModified ? formatDate(metadata.lastModified) : '';
         const escapedName = escapeHtml(projectName);
+
+        let periodsHtml = '';
+        if (prepStr || shootStr) {
+            periodsHtml = `<div class="v2-tile-periods">`;
+            if (prepStr) periodsHtml += `<span class="v2-period-badge prep" title="Prep: ${prepStr}"><span class="period-icon">📅</span> ${prepStr}</span>`;
+            if (shootStr) periodsHtml += `<span class="v2-period-badge shoot" title="Shoot: ${shootStr}"><span class="period-icon">🎥</span> ${shootStr}</span>`;
+            periodsHtml += `</div>`;
+        }
 
         return `
       <div class="v2-project-tile" data-project="${escapedName}" tabindex="0" role="button" aria-label="Open project ${escapedName}">
@@ -194,6 +226,7 @@
           <div class="v2-tile-info">
             <h3 class="v2-tile-title">${escapedName}</h3>
             ${dateStr ? `<span class="v2-tile-meta">${dateStr}</span>` : ''}
+            ${periodsHtml}
           </div>
           <div class="v2-tile-actions">
             <button type="button" class="v2-tile-action-btn danger" data-action="delete" data-project="${escapedName}" title="Delete project" aria-label="Delete ${escapedName}">
@@ -645,6 +678,47 @@
                     font-weight: var(--v2-font-weight-medium);
                     font-size: var(--v2-font-size-sm);
                     color: var(--v2-text-secondary);
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                }
+                .v2-date-group {
+                    display: grid;
+                    grid-template-columns: 100px 1fr auto 1fr;
+                    align-items: center;
+                    gap: var(--v2-space-sm);
+                    margin-bottom: var(--v2-space-sm);
+                    padding: var(--v2-space-sm);
+                    background: var(--v2-surface-input);
+                    border: 1px solid var(--v2-border-muted);
+                    border-radius: var(--v2-radius-md);
+                    transition: border-color 0.2s;
+                }
+                .v2-date-group:focus-within {
+                    border-color: var(--v2-brand-blue);
+                }
+                .v2-date-label {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    font-size: var(--v2-font-size-sm);
+                    color: var(--v2-text-secondary);
+                    font-weight: var(--v2-font-weight-medium);
+                }
+                .v2-date-input {
+                    background: transparent;
+                    border: none;
+                    color: var(--v2-text-primary);
+                    font-family: inherit;
+                    font-size: var(--v2-font-size-sm);
+                    padding: 4px;
+                    width: 100%;
+                }
+                .v2-date-input:focus {
+                    outline: none;
+                }
+                .v2-date-separator {
+                    color: var(--v2-text-muted);
+                    font-size: var(--v2-font-size-xs);
                 }
             </style>
         `;
@@ -685,6 +759,42 @@
                         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: var(--v2-space-sm);">
                             ${iconGridHtml}
                         </div>
+                        </div>
+                    </div>
+
+                    <!-- Project Periods -->
+                    <div style="margin-bottom: var(--v2-space-md);">
+                         <label class="v2-form-section-label">Project Roadmap</label>
+                         
+                         <!-- Prep -->
+                         <div class="v2-date-group">
+                            <div class="v2-date-label">
+                                <span style="font-size: 14px;">📅</span> Prep
+                            </div>
+                            <input type="date" id="v2PrepStart" class="v2-date-input" aria-label="Prep Start Date">
+                            <span class="v2-date-separator">to</span>
+                            <input type="date" id="v2PrepEnd" class="v2-date-input" aria-label="Prep End Date">
+                         </div>
+
+                         <!-- Shooting -->
+                         <div class="v2-date-group">
+                            <div class="v2-date-label">
+                                <span style="font-size: 14px;">🎥</span> Shoot
+                            </div>
+                            <input type="date" id="v2ShootStart" class="v2-date-input" aria-label="Shooting Start Date">
+                            <span class="v2-date-separator">to</span>
+                            <input type="date" id="v2ShootEnd" class="v2-date-input" aria-label="Shooting End Date">
+                         </div>
+
+                         <!-- Return -->
+                         <div class="v2-date-group">
+                            <div class="v2-date-label">
+                                <span style="font-size: 14px;">🚛</span> Return
+                            </div>
+                            <input type="date" id="v2ReturnStart" class="v2-date-input" aria-label="Return Start Date">
+                            <span class="v2-date-separator">to</span>
+                            <input type="date" id="v2ReturnEnd" class="v2-date-input" aria-label="Return End Date">
+                         </div>
                     </div>
                 </div>
                 <div class="v2-modal-footer">
@@ -755,7 +865,30 @@
             }
 
             closeModal();
-            createProject(projectName, { color: selectedColor, icon: selectedIcon });
+
+            // Collect dates
+            const collectDate = (startId, endId) => {
+                const s = backdrop.querySelector(startId).value;
+                const e = backdrop.querySelector(endId).value;
+                if (!s && !e) return [];
+                // Format: "YYYY-MM-DD to YYYY-MM-DD"
+                if (s && e) return [`${s} to ${e}`];
+                if (s) return [s]; // One day
+                if (e) return [e];
+                return [];
+            };
+
+            const prepDays = collectDate('#v2PrepStart', '#v2PrepEnd');
+            const shootingDays = collectDate('#v2ShootStart', '#v2ShootEnd');
+            const returnDays = collectDate('#v2ReturnStart', '#v2ReturnEnd');
+
+            createProject(projectName, {
+                color: selectedColor,
+                icon: selectedIcon,
+                prepDays,
+                shootingDays,
+                returnDays
+            });
         }
 
         // Event listeners
@@ -857,11 +990,12 @@
             v2Main.appendChild(view);
         }
 
-        // Bind the header button event
-        const headerBtn = document.getElementById('v2HeaderCreateBtn');
-        if (headerBtn) {
-            headerBtn.addEventListener('click', showCreateProjectDialog);
-        }
+        // Bind the header button event (Delegated for robustness)
+        document.addEventListener('click', (e) => {
+            if (e.target && e.target.closest('#v2HeaderCreateBtn')) {
+                showCreateProjectDialog();
+            }
+        });
 
         // Listen for view changes
         document.addEventListener('v2:viewchange', (e) => {

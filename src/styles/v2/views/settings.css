@@ -1,336 +1,215 @@
-/*
- * Cine Power Planner V2 - Settings View
- * =====================================
- */
+/* V2 Settings View - V1 "Legacy" Design Reversion */
+/* Re-implementing V1 look-and-feel within the V2 layout structure */
 
+/* Use V1 variables where possible, falling back to V2 equivalents if needed */
 .v2-settings-layout {
     display: grid;
     grid-template-columns: 240px 1fr;
-    gap: var(--v2-space-2xl);
-    height: 100%;
+    gap: 20px;
     align-items: start;
-    padding-top: var(--v2-space-lg);
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-/* Sidebar Navigation */
+/* Sidebar - Styled to look like V1 tabs but vertical */
 .v2-settings-sidebar {
     display: flex;
     flex-direction: column;
-    gap: var(--v2-space-xs);
-    position: sticky;
-    top: var(--v2-space-lg);
-    padding-right: var(--v2-space-md);
+    gap: 8px;
+    /* Slightly tighter than V2 */
 }
 
 .v2-tab-btn {
     display: flex;
     align-items: center;
-    gap: var(--v2-space-md);
-    padding: var(--v2-space-md) var(--v2-space-lg);
-    background: transparent;
+    gap: 10px;
+    width: 100%;
+    padding: 12px 16px;
     border: none;
-    border-radius: var(--v2-radius-lg);
-    color: var(--v2-text-secondary);
-    font-size: var(--v2-font-size-base);
-    font-weight: var(--v2-font-weight-medium);
+    background-color: transparent;
     text-align: left;
+    font-family: var(--v2-font-family);
+    font-size: 1rem;
+    /* V1 base size */
+    font-weight: 500;
+    /* V1 font-weight-medium */
+    color: var(--v2-text-primary);
     cursor: pointer;
-    transition: all var(--v2-transition-fast);
-    position: relative;
+    border-radius: 5px;
+    /* V1 border radius */
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .v2-tab-btn:hover {
-    background-color: var(--v2-surface-hover);
-    color: var(--v2-text-primary);
+    background-color: rgba(0, 0, 0, 0.05);
 }
 
+/* V1 Active State: Accent BG, White Text */
 .v2-tab-btn.active {
-    background-color: color-mix(in srgb, var(--v2-brand-blue) 10%, transparent);
-    color: var(--v2-brand-blue);
-    font-weight: var(--v2-font-weight-semibold);
+    background-color: var(--v2-brand-blue);
+    /* Matches V1 --accent-color */
+    color: #ffffff;
+    /* Matches V1 --inverse-text-color */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    /* V1 shadow */
 }
 
-.v2-tab-btn .icon {
-    font-size: 20px;
-    opacity: 0.7;
-    transition: opacity var(--v2-transition-fast);
+.v2-tab-icon {
+    font-size: 1.2rem;
+    opacity: 0.8;
 }
 
-.v2-tab-btn:hover .icon,
-.v2-tab-btn.active .icon {
+.v2-tab-btn.active .v2-tab-icon {
     opacity: 1;
 }
 
 /* Content Area */
-.v2-settings-content {
+.v2-settings-panel h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    /* V1 spacing */
+    font-size: 1.5rem;
+    /* ~ --font-scale-xxl */
+    font-weight: 400;
+    /* V1 regular */
+    color: var(--v2-brand-blue);
+    border-bottom: 1px solid var(--v2-brand-blue);
+    padding-bottom: 10px;
+}
+
+.v2-settings-section-grid {
     display: flex;
     flex-direction: column;
-    gap: var(--v2-space-xl);
-    padding-bottom: var(--v2-space-3xl);
-    max-width: 800px;
-    animation: v2-fade-in-up 0.4s ease-out forwards;
+    gap: 20px;
 }
 
-.v2-settings-panel {
-    animation: v2-fade-in 0.3s ease-out;
-}
-
-.v2-settings-panel h2 {
-    font-size: var(--v2-font-size-2xl);
-    font-weight: var(--v2-font-weight-bold);
-    color: var(--v2-text-primary);
-    margin-bottom: var(--v2-space-xl);
-    letter-spacing: -0.02em;
-}
-
-/* Cards */
+/* Cards - Exact V1 Styling */
 .v2-settings-card {
-    background-color: var(--v2-surface-card);
-    border: 1px solid var(--v2-border-subtle);
-    border-radius: var(--v2-radius-xl);
-    padding: var(--v2-space-xl);
-    margin-bottom: var(--v2-space-lg);
-    /* box-shadow: var(--v2-shadow-sm); */
-    transition: border-color var(--v2-transition-normal);
-}
-
-.v2-settings-card:hover {
-    border-color: var(--v2-border-default);
-}
-
-.v2-settings-card h3 {
-    font-size: var(--v2-font-size-lg);
-    font-weight: var(--v2-font-weight-semibold);
-    color: var(--v2-text-primary);
-    margin-bottom: var(--v2-space-xs);
     display: flex;
-    align-items: center;
-    gap: var(--v2-space-sm);
+    flex-direction: column;
+    gap: 16px;
+    padding: 18px;
+    border: 1px solid var(--v2-border-default);
+    /* Matches --panel-border */
+    border-radius: 5px;
+    /* V1 radius */
+    background: var(--v2-surface-1);
+    /* Matches --panel-bg */
+    box-shadow: none;
+    /* V1 default cards don't have heavy shadows usually, but let's stick to simple */
+}
+
+.v2-settings-card h4 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    /* semibold */
+    color: var(--v2-brand-blue);
 }
 
 .v2-settings-card p {
+    margin: 0;
+    font-size: 0.95rem;
     color: var(--v2-text-secondary);
-    margin-bottom: var(--v2-space-lg);
-    line-height: 1.6;
-    font-size: var(--v2-font-size-sm);
-    max-width: 60ch;
+    /* Muted text */
+    line-height: 1.4;
 }
 
-/* Form Elements Spacing */
-.v2-settings-card .v2-form-group+.v2-form-group {
-    margin-top: var(--v2-space-lg);
+/* Form Elements - V1 Style */
+.v2-form-group {
+    display: flex;
+    flex-direction: column;
+    /* stacked in V2 usually, keeping checking V1... V1 had .form-row with flex-wrap */
+    gap: 6px;
 }
 
-/* Checkbox Row Styling Override usually handled in forms.css but specific overrides here */
-.v2-checkbox-row {
-    padding: var(--v2-space-sm) 0;
-    transition: opacity var(--v2-transition-fast);
+.v2-form-group label {
+    font-size: 1rem;
+    font-weight: 400;
+    /* Light/Regular */
+    color: var(--v2-text-primary);
 }
 
-.v2-checkbox-row:hover {
-    opacity: 0.8;
+/* Inputs & Selects - match V1 borders */
+.v2-select,
+.v2-input-text,
+.v2-input-number {
+    padding: 6px 10px;
+    /* Standard V1 padding roughly */
+    border: 1px solid var(--v2-border-default);
+    /* #ddd */
+    border-radius: 4px;
+    background-color: #fff;
+    font-size: 1rem;
+    color: var(--v2-text-primary);
 }
 
-/* Voltage Settings Grid */
+/* Voltage Settings - Matching V1 "mount-voltage-card" feel */
 .v2-voltage-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: var(--v2-space-md);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
 }
 
 .v2-voltage-card {
-    background: var(--v2-surface-muted);
-    padding: var(--v2-space-md);
-    border-radius: var(--v2-radius-lg);
-    border: 1px solid transparent;
-    transition: border-color var(--v2-transition-fast);
-}
-
-.v2-voltage-card:hover {
-    border-color: var(--v2-border-strong);
-}
-
-.v2-voltage-card h4 {
-    margin: 0 0 var(--v2-space-sm) 0;
-    font-size: 0.9rem;
-    font-weight: var(--v2-font-weight-semibold);
-    color: var(--v2-text-primary);
-}
-
-.v2-voltage-label-small {
-    font-size: 0.8rem !important;
-}
-
-/* Color Picker Customization */
-.v2-color-input-wrapper {
-    display: flex;
-    align-items: center;
-    gap: var(--v2-space-md);
-    padding: 6px;
-    background: var(--v2-surface-base);
-    border-radius: var(--v2-radius-lg);
+    background: var(--v2-surface-2);
+    /* Slightly darker/lighter depending on theme */
     border: 1px solid var(--v2-border-default);
-    width: fit-content;
+    border-radius: 5px;
+    padding: 15px;
 }
 
-.v2-color-input {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 48px;
-    height: 32px;
-    background: none;
-    border: none;
-    border-radius: var(--v2-radius-md);
-    padding: 0;
-    cursor: pointer;
-    overflow: hidden;
-    position: relative;
+.v2-voltage-card h5 {
+    margin: 0 0 12px 0;
+    font-size: 1rem;
+    color: var(--v2-text-primary);
+    font-weight: 600;
+    border-bottom: 1px solid var(--v2-border-subtle);
+    padding-bottom: 6px;
 }
 
-.v2-color-input::-webkit-color-swatch-wrapper {
-    padding: 0;
-}
-
-.v2-color-input::-webkit-color-swatch {
-    border: none;
-    border-radius: var(--v2-radius-md);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-/* Camera Colors Grid */
-.v2-camera-colors-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: var(--v2-space-md);
-    margin-top: var(--v2-space-md);
-}
-
-.v2-color-field {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--v2-space-sm);
-    background: var(--v2-surface-base);
-    padding: var(--v2-space-md);
-    border-radius: var(--v2-radius-lg);
-    border: 1px solid var(--v2-border-subtle);
-    transition: transform var(--v2-transition-fast);
-}
-
-.v2-color-field:hover {
-    transform: translateY(-2px);
-    border-color: var(--v2-border-default);
-}
-
-.v2-color-field label {
-    font-size: var(--v2-font-size-xs);
-    font-weight: var(--v2-font-weight-bold);
-    color: var(--v2-text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-/* Key Value List (for Data Status) */
-.v2-key-value-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    background: var(--v2-surface-base);
-    border-radius: var(--v2-radius-lg);
-    border: 1px solid var(--v2-border-subtle);
-    overflow: hidden;
-}
-
-.v2-kv-item {
+.v2-voltage-field-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--v2-space-md);
-    border-bottom: 1px solid var(--v2-border-subtle);
+    margin-bottom: 10px;
 }
 
-.v2-kv-item:last-child {
-    border-bottom: none;
-}
-
-.v2-kv-label {
-    color: var(--v2-text-secondary);
+.v2-voltage-label-small {
     font-size: 0.9rem;
-    font-weight: var(--v2-font-weight-medium);
+    color: var(--v2-text-secondary);
 }
 
-.v2-kv-value {
-    font-family: var(--v2-font-mono, monospace);
-    font-size: 0.85rem;
-    color: var(--v2-text-primary);
-    background: var(--v2-surface-muted);
-    padding: 2px 8px;
+.v2-voltage-input {
+    width: 80px;
+    padding: 4px 8px;
+    border: 1px solid var(--v2-border-default);
     border-radius: 4px;
 }
 
-/* Animations */
-@keyframes v2-fade-in {
-    from {
-        opacity: 0;
-    }
+/* Toggle Switch - keeping V2 toggle for functionality, but ensuring it fits V1 aesthetic (clean) */
 
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes v2-fade-in-up {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Mobile Responsiveness */
+/* Responsive */
 @media (max-width: 768px) {
     .v2-settings-layout {
         grid-template-columns: 1fr;
-        gap: var(--v2-space-lg);
-        display: block;
-        /* Stack on mobile */
     }
 
     .v2-settings-sidebar {
-        flex-direction: row;
-        overflow-x: auto;
-        padding-bottom: var(--v2-space-sm);
         position: sticky;
         top: 0;
-        background: var(--v2-surface-app-bg);
         z-index: 10;
-        margin-bottom: var(--v2-space-lg);
-        border-bottom: 1px solid var(--v2-border-subtle);
-        padding-right: 0;
+        background: var(--v2-surface-0);
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--v2-border-default);
+        flex-direction: row;
+        overflow-x: auto;
     }
 
     .v2-tab-btn {
         white-space: nowrap;
-        padding: var(--v2-space-sm) var(--v2-space-md);
-        flex-shrink: 0;
-        border-radius: var(--v2-radius-full);
-    }
-
-    .v2-tab-btn.active {
-        background-color: var(--v2-brand-blue);
-        color: white;
-    }
-
-    .v2-tab-btn.active .icon {
-        color: white;
-    }
-
-    .v2-settings-content {
-        padding-left: var(--v2-space-md);
-        padding-right: var(--v2-space-md);
+        width: auto;
+        flex: 0 0 auto;
     }
 }

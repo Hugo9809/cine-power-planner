@@ -45,6 +45,48 @@
     font-weight: var(--v2-font-weight-semibold);
 }
 
+.v2-header-periods {
+    display: flex;
+    gap: var(--v2-space-sm);
+    margin-right: var(--v2-space-lg);
+    align-items: center;
+}
+
+.v2-header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: var(--v2-radius-md);
+    font-size: 13px;
+    /* Smaller than title */
+    font-weight: var(--v2-font-weight-medium);
+    white-space: nowrap;
+}
+
+.period-icon {
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+.v2-header-badge.prep {
+    background: color-mix(in srgb, var(--v2-color-blue) 10%, transparent);
+    color: var(--v2-color-blue);
+    border: 1px solid color-mix(in srgb, var(--v2-color-blue) 20%, transparent);
+}
+
+.v2-header-badge.shoot {
+    background: color-mix(in srgb, var(--v2-color-red) 10%, transparent);
+    color: var(--v2-color-red);
+    border: 1px solid color-mix(in srgb, var(--v2-color-red) 20%, transparent);
+}
+
+.v2-header-badge.return {
+    background: color-mix(in srgb, var(--v2-text-secondary) 10%, transparent);
+    color: var(--v2-text-secondary);
+    border: 1px solid color-mix(in srgb, var(--v2-text-secondary) 20%, transparent);
+}
+
 /* =====================
  * DEVICE GRID
  * ===================== */
