@@ -608,70 +608,140 @@
         let selectedColor = TILE_COLORS[randomColorIndex];
         let selectedIcon = '📽️';
 
-        // Create color swatches HTML
-        const colorSwatchesHtml = TILE_COLORS.map(color => `
-            <button type="button" class="v2-color-swatch color-${color} ${color === selectedColor ? 'selected' : ''}" 
-                    data-color="${color}" aria-label="Select ${color} color">
-            </button>
-        `).join('');
-
-        // Create icon grid HTML
-        const iconGridHtml = PROJECT_ICONS.map(icon => `
-            <button type="button" class="v2-icon-option ${icon === selectedIcon ? 'selected' : ''}" 
-                    data-icon="${icon}" aria-label="Select icon ${icon}">
-                ${icon}
-            </button>
-        `).join('');
+        // Default periods
+        let periods = [
+            { id: 'prep', name: 'Prep', icon: '📅', startDate: '', endDate: '' },
+            { id: 'shoot', name: 'Shoot', icon: '🎥', startDate: '', endDate: '' },
+            { id: 'return', name: 'Return', icon: '🚛', startDate: '', endDate: '' }
+        ];
+        let periodCounter = 3; // For generating unique IDs
 
         // Modal styles for new elements
         const modalStyles = `
             <style>
-                .v2-color-swatch {
+                /* Picker Trigger Button */
+                .v2-picker-trigger {
+                    display: flex;
+                    align-items: center;
+                    gap: var(--v2-space-sm);
+                    padding: 8px 12px;
+                    border: 1px solid var(--v2-border-default);
+                    border-radius: var(--v2-radius-md);
+                    background: var(--v2-surface-input);
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    min-width: 120px;
+                }
+                .v2-picker-trigger:hover {
+                    border-color: var(--v2-brand-blue);
+                }
+                .v2-picker-trigger .v2-picker-preview {
+                    width: 24px;
+                    height: 24px;
+                    border-radius: 50%;
+                    flex-shrink: 0;
+                }
+                .v2-picker-trigger .v2-picker-icon-preview {
+                    width: 28px;
+                    height: 28px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 18px;
+                    flex-shrink: 0;
+                }
+                .v2-picker-trigger .v2-picker-label {
+                    flex: 1;
+                    font-size: var(--v2-font-size-sm);
+                    color: var(--v2-text-secondary);
+                }
+                .v2-picker-trigger .v2-picker-arrow {
+                    color: var(--v2-text-muted);
+                    transition: transform 0.2s;
+                }
+                .v2-picker-trigger.open .v2-picker-arrow {
+                    transform: rotate(180deg);
+                }
+
+                /* Picker Popover */
+                .v2-picker-popover {
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    margin-top: 4px;
+                    background: var(--v2-surface-elevated);
+                    border: 1px solid var(--v2-border-default);
+                    border-radius: var(--v2-radius-lg);
+                    box-shadow: var(--v2-shadow-lg);
+                    padding: var(--v2-space-sm);
+                    z-index: 100;
+                    display: none;
+                    min-width: 200px;
+                }
+                .v2-picker-popover.open {
+                    display: block;
+                }
+                .v2-picker-popover-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+                    gap: 6px;
+                }
+
+                /* Color Swatch in Popover */
+                .v2-color-swatch-sm {
                     width: 32px;
                     height: 32px;
                     border-radius: 50%;
                     border: 2px solid transparent;
                     cursor: pointer;
                     transition: transform 0.2s, border-color 0.2s;
-                    background-color: currentColor; /* Inherit from class color logic via CSS vars usually, but here we need mapping */
                 }
-                /* Manual color mapping since CSS classes might be complex */
-                .v2-color-swatch.color-blue { background-color: var(--v2-color-blue); }
-                .v2-color-swatch.color-green { background-color: var(--v2-color-green); }
-                .v2-color-swatch.color-orange { background-color: var(--v2-color-orange); }
-                .v2-color-swatch.color-purple { background-color: var(--v2-color-purple); }
-                .v2-color-swatch.color-red { background-color: var(--v2-color-red); }
-                .v2-color-swatch.color-pink { background-color: var(--v2-color-pink); }
-                .v2-color-swatch.color-teal { background-color: var(--v2-color-teal); }
-                .v2-color-swatch.color-indigo { background-color: var(--v2-color-indigo); }
-
-                .v2-color-swatch:hover { transform: scale(1.1); }
-                .v2-color-swatch.selected { 
+                .v2-color-swatch-sm:hover { transform: scale(1.1); }
+                .v2-color-swatch-sm.selected { 
                     border-color: var(--v2-text-primary); 
-                    transform: scale(1.1);
-                    box-shadow: 0 0 0 2px var(--v2-surface-base), 0 0 0 4px var(--v2-brand-blue);
+                    box-shadow: 0 0 0 2px var(--v2-surface-base);
                 }
+                .v2-color-swatch-sm.color-blue { background-color: var(--v2-color-blue); }
+                .v2-color-swatch-sm.color-green { background-color: var(--v2-color-green); }
+                .v2-color-swatch-sm.color-orange { background-color: var(--v2-color-orange); }
+                .v2-color-swatch-sm.color-purple { background-color: var(--v2-color-purple); }
+                .v2-color-swatch-sm.color-red { background-color: var(--v2-color-red); }
+                .v2-color-swatch-sm.color-pink { background-color: var(--v2-color-pink); }
+                .v2-color-swatch-sm.color-teal { background-color: var(--v2-color-teal); }
+                .v2-color-swatch-sm.color-indigo { background-color: var(--v2-color-indigo); }
 
-                .v2-icon-option {
+                /* Icon Option in Popover */
+                .v2-icon-option-sm {
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    width: 40px;
-                    height: 40px;
-                    font-size: 20px;
-                    border: 1px solid var(--v2-border-default);
+                    width: 36px;
+                    height: 36px;
+                    font-size: 18px;
+                    border: 1px solid transparent;
                     border-radius: var(--v2-radius-md);
-                    background: var(--v2-surface-input);
+                    background: transparent;
                     cursor: pointer;
                     transition: all 0.2s;
                 }
-                .v2-icon-option:hover { background: var(--v2-surface-muted); }
-                .v2-icon-option.selected {
+                .v2-icon-option-sm:hover { background: var(--v2-surface-muted); }
+                .v2-icon-option-sm.selected {
                     background: var(--v2-brand-blue);
-                    color: white;
                     border-color: var(--v2-brand-blue);
                 }
 
+                /* Picker Row */
+                .v2-picker-row {
+                    display: flex;
+                    gap: var(--v2-space-md);
+                    align-items: flex-start;
+                }
+                .v2-picker-group {
+                    position: relative;
+                    flex: 1;
+                }
+
+                /* Form Section Label */
                 .v2-form-section-label {
                     display: block; 
                     margin-bottom: var(--v2-space-sm); 
@@ -681,28 +751,46 @@
                     text-transform: uppercase;
                     letter-spacing: 0.05em;
                 }
-                .v2-date-group {
+
+                /* Date Periods */
+                .v2-periods-container {
+                    display: flex;
+                    flex-direction: column;
+                    gap: var(--v2-space-sm);
+                }
+                .v2-period-row {
                     display: grid;
-                    grid-template-columns: 100px 1fr auto 1fr;
+                    grid-template-columns: 100px 1fr auto 1fr auto;
                     align-items: center;
                     gap: var(--v2-space-sm);
-                    margin-bottom: var(--v2-space-sm);
                     padding: var(--v2-space-sm);
                     background: var(--v2-surface-input);
                     border: 1px solid var(--v2-border-muted);
                     border-radius: var(--v2-radius-md);
                     transition: border-color 0.2s;
                 }
-                .v2-date-group:focus-within {
+                .v2-period-row:focus-within {
                     border-color: var(--v2-brand-blue);
                 }
-                .v2-date-label {
+                .v2-period-name {
                     display: flex;
                     align-items: center;
                     gap: 6px;
+                }
+                .v2-period-name-input {
+                    background: transparent;
+                    border: none;
+                    color: var(--v2-text-primary);
+                    font-family: inherit;
                     font-size: var(--v2-font-size-sm);
-                    color: var(--v2-text-secondary);
                     font-weight: var(--v2-font-weight-medium);
+                    padding: 4px;
+                    width: 80px;
+                }
+                .v2-period-name-input:focus {
+                    outline: none;
+                    background: var(--v2-surface-muted);
+                    border-radius: var(--v2-radius-sm);
                 }
                 .v2-date-input {
                     background: transparent;
@@ -712,6 +800,7 @@
                     font-size: var(--v2-font-size-sm);
                     padding: 4px;
                     width: 100%;
+                    min-width: 0;
                 }
                 .v2-date-input:focus {
                     outline: none;
@@ -720,15 +809,100 @@
                     color: var(--v2-text-muted);
                     font-size: var(--v2-font-size-xs);
                 }
+                .v2-period-remove {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 28px;
+                    height: 28px;
+                    border: none;
+                    background: transparent;
+                    color: var(--v2-text-muted);
+                    cursor: pointer;
+                    border-radius: var(--v2-radius-sm);
+                    transition: all 0.2s;
+                }
+                .v2-period-remove:hover {
+                    background: var(--v2-status-error-bg);
+                    color: var(--v2-status-error);
+                }
+                .v2-add-period-btn {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: var(--v2-space-xs);
+                    padding: var(--v2-space-sm);
+                    border: 1px dashed var(--v2-border-default);
+                    border-radius: var(--v2-radius-md);
+                    background: transparent;
+                    color: var(--v2-text-secondary);
+                    font-size: var(--v2-font-size-sm);
+                    cursor: pointer;
+                    transition: all 0.2s;
+                }
+                .v2-add-period-btn:hover {
+                    border-color: var(--v2-brand-blue);
+                    color: var(--v2-brand-blue);
+                    background: var(--v2-surface-muted);
+                }
             </style>
         `;
+
+        // Helper to get color CSS variable value
+        function getColorVar(color) {
+            const colorMap = {
+                blue: 'var(--v2-color-blue)',
+                green: 'var(--v2-color-green)',
+                orange: 'var(--v2-color-orange)',
+                purple: 'var(--v2-color-purple)',
+                red: 'var(--v2-color-red)',
+                pink: 'var(--v2-color-pink)',
+                teal: 'var(--v2-color-teal)',
+                indigo: 'var(--v2-color-indigo)'
+            };
+            return colorMap[color] || colorMap.blue;
+        }
+
+        // Build color swatches for popover
+        const colorSwatchesHtml = TILE_COLORS.map(color => `
+            <button type="button" class="v2-color-swatch-sm color-${color} ${color === selectedColor ? 'selected' : ''}" 
+                    data-color="${color}" aria-label="Select ${color} color">
+            </button>
+        `).join('');
+
+        // Build icon options for popover
+        const iconOptionsHtml = PROJECT_ICONS.map(icon => `
+            <button type="button" class="v2-icon-option-sm ${icon === selectedIcon ? 'selected' : ''}" 
+                    data-icon="${icon}" aria-label="Select icon ${icon}">
+                ${icon}
+            </button>
+        `).join('');
+
+        // Build periods HTML
+        function buildPeriodsHtml() {
+            return periods.map(p => `
+                <div class="v2-period-row" data-period-id="${p.id}">
+                    <div class="v2-period-name">
+                        <input type="text" class="v2-period-name-input" value="${escapeHtml(p.name)}" placeholder="Name" data-field="name">
+                    </div>
+                    <input type="date" class="v2-date-input" value="${p.startDate}" data-field="startDate" aria-label="${p.name} Start Date">
+                    <span class="v2-date-separator">to</span>
+                    <input type="date" class="v2-date-input" value="${p.endDate}" data-field="endDate" aria-label="${p.name} End Date">
+                    <button type="button" class="v2-period-remove" data-period-id="${p.id}" aria-label="Remove period">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+        }
 
         // Create modal backdrop
         const backdrop = document.createElement('div');
         backdrop.className = 'v2-modal-backdrop';
         backdrop.innerHTML = `
             ${modalStyles}
-            <div class="v2-modal v2-modal-sm">
+            <div class="v2-modal" style="max-width: 520px;">
                 <div class="v2-modal-header">
                     <h3 class="v2-modal-title">Create New Project</h3>
                     <button type="button" class="v2-modal-close v2-btn v2-btn-ghost" aria-label="Close">
@@ -738,6 +912,7 @@
                     </button>
                 </div>
                 <div class="v2-modal-body">
+                    <!-- Project Name -->
                     <div style="margin-bottom: var(--v2-space-lg);">
                         <label for="v2NewProjectName" class="v2-form-section-label" style="font-size: var(--v2-font-size-base); color: var(--v2-text-primary);">
                             Project Name
@@ -747,54 +922,52 @@
                         <p id="v2NewProjectError" style="color: var(--v2-status-error); font-size: var(--v2-font-size-sm); margin-top: var(--v2-space-sm); display: none;"></p>
                     </div>
 
-                    <div style="margin-bottom: var(--v2-space-lg);">
-                        <label class="v2-form-section-label">Project Color</label>
-                        <div style="display: flex; gap: var(--v2-space-sm); flex-wrap: wrap;">
-                            ${colorSwatchesHtml}
+                    <!-- Color & Icon Pickers Row -->
+                    <div class="v2-picker-row" style="margin-bottom: var(--v2-space-lg);">
+                        <div class="v2-picker-group">
+                            <label class="v2-form-section-label">Color</label>
+                            <button type="button" class="v2-picker-trigger" id="v2ColorPickerTrigger">
+                                <span class="v2-picker-preview" id="v2ColorPreview" style="background-color: ${getColorVar(selectedColor)};"></span>
+                                <span class="v2-picker-label">${selectedColor.charAt(0).toUpperCase() + selectedColor.slice(1)}</span>
+                                <svg class="v2-picker-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"/>
+                                </svg>
+                            </button>
+                            <div class="v2-picker-popover" id="v2ColorPopover">
+                                <div class="v2-picker-popover-grid">
+                                    ${colorSwatchesHtml}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-
-                    <div style="margin-bottom: var(--v2-space-md);">
-                        <label class="v2-form-section-label">Project Icon</label>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: var(--v2-space-sm);">
-                            ${iconGridHtml}
-                        </div>
+                        <div class="v2-picker-group">
+                            <label class="v2-form-section-label">Icon</label>
+                            <button type="button" class="v2-picker-trigger" id="v2IconPickerTrigger">
+                                <span class="v2-picker-icon-preview" id="v2IconPreview">${selectedIcon}</span>
+                                <span class="v2-picker-label">Icon</span>
+                                <svg class="v2-picker-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"/>
+                                </svg>
+                            </button>
+                            <div class="v2-picker-popover" id="v2IconPopover" style="min-width: 280px;">
+                                <div class="v2-picker-popover-grid" style="grid-template-columns: repeat(7, 1fr);">
+                                    ${iconOptionsHtml}
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Project Periods -->
                     <div style="margin-bottom: var(--v2-space-md);">
-                         <label class="v2-form-section-label">Project Roadmap</label>
-                         
-                         <!-- Prep -->
-                         <div class="v2-date-group">
-                            <div class="v2-date-label">
-                                <span style="font-size: 14px;">📅</span> Prep
-                            </div>
-                            <input type="date" id="v2PrepStart" class="v2-date-input" aria-label="Prep Start Date">
-                            <span class="v2-date-separator">to</span>
-                            <input type="date" id="v2PrepEnd" class="v2-date-input" aria-label="Prep End Date">
-                         </div>
-
-                         <!-- Shooting -->
-                         <div class="v2-date-group">
-                            <div class="v2-date-label">
-                                <span style="font-size: 14px;">🎥</span> Shoot
-                            </div>
-                            <input type="date" id="v2ShootStart" class="v2-date-input" aria-label="Shooting Start Date">
-                            <span class="v2-date-separator">to</span>
-                            <input type="date" id="v2ShootEnd" class="v2-date-input" aria-label="Shooting End Date">
-                         </div>
-
-                         <!-- Return -->
-                         <div class="v2-date-group">
-                            <div class="v2-date-label">
-                                <span style="font-size: 14px;">🚛</span> Return
-                            </div>
-                            <input type="date" id="v2ReturnStart" class="v2-date-input" aria-label="Return Start Date">
-                            <span class="v2-date-separator">to</span>
-                            <input type="date" id="v2ReturnEnd" class="v2-date-input" aria-label="Return End Date">
-                         </div>
+                        <label class="v2-form-section-label">Project Roadmap</label>
+                        <div class="v2-periods-container" id="v2PeriodsContainer">
+                            ${buildPeriodsHtml()}
+                        </div>
+                        <button type="button" class="v2-add-period-btn" id="v2AddPeriodBtn" style="margin-top: var(--v2-space-sm); width: 100%;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14M5 12h14"/>
+                            </svg>
+                            Add Period
+                        </button>
                     </div>
                 </div>
                 <div class="v2-modal-footer">
@@ -816,26 +989,129 @@
         const createBtn = backdrop.querySelector('#v2CreateProjectBtn');
         const cancelBtn = backdrop.querySelector('#v2CancelProjectBtn');
         const closeBtn = backdrop.querySelector('.v2-modal-close');
+        const periodsContainer = backdrop.querySelector('#v2PeriodsContainer');
+        const addPeriodBtn = backdrop.querySelector('#v2AddPeriodBtn');
 
-        // Color selection logic
-        const colorSwatches = backdrop.querySelectorAll('.v2-color-swatch');
-        colorSwatches.forEach(swatch => {
-            swatch.addEventListener('click', () => {
-                colorSwatches.forEach(s => s.classList.remove('selected'));
+        // Color picker logic
+        const colorTrigger = backdrop.querySelector('#v2ColorPickerTrigger');
+        const colorPopover = backdrop.querySelector('#v2ColorPopover');
+        const colorPreview = backdrop.querySelector('#v2ColorPreview');
+        const colorLabel = colorTrigger.querySelector('.v2-picker-label');
+
+        colorTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            colorTrigger.classList.toggle('open');
+            colorPopover.classList.toggle('open');
+            // Close icon popover
+            iconTrigger.classList.remove('open');
+            iconPopover.classList.remove('open');
+        });
+
+        colorPopover.querySelectorAll('.v2-color-swatch-sm').forEach(swatch => {
+            swatch.addEventListener('click', (e) => {
+                e.stopPropagation();
+                colorPopover.querySelectorAll('.v2-color-swatch-sm').forEach(s => s.classList.remove('selected'));
                 swatch.classList.add('selected');
                 selectedColor = swatch.dataset.color;
+                colorPreview.style.backgroundColor = getColorVar(selectedColor);
+                colorLabel.textContent = selectedColor.charAt(0).toUpperCase() + selectedColor.slice(1);
+                colorTrigger.classList.remove('open');
+                colorPopover.classList.remove('open');
             });
         });
 
-        // Icon selection logic
-        const iconOptions = backdrop.querySelectorAll('.v2-icon-option');
-        iconOptions.forEach(opt => {
-            opt.addEventListener('click', () => {
-                iconOptions.forEach(o => o.classList.remove('selected'));
+        // Icon picker logic
+        const iconTrigger = backdrop.querySelector('#v2IconPickerTrigger');
+        const iconPopover = backdrop.querySelector('#v2IconPopover');
+        const iconPreview = backdrop.querySelector('#v2IconPreview');
+
+        iconTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            iconTrigger.classList.toggle('open');
+            iconPopover.classList.toggle('open');
+            // Close color popover
+            colorTrigger.classList.remove('open');
+            colorPopover.classList.remove('open');
+        });
+
+        iconPopover.querySelectorAll('.v2-icon-option-sm').forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                e.stopPropagation();
+                iconPopover.querySelectorAll('.v2-icon-option-sm').forEach(o => o.classList.remove('selected'));
                 opt.classList.add('selected');
                 selectedIcon = opt.dataset.icon;
+                iconPreview.textContent = selectedIcon;
+                iconTrigger.classList.remove('open');
+                iconPopover.classList.remove('open');
             });
         });
+
+        // Close popovers when clicking outside
+        backdrop.addEventListener('click', () => {
+            colorTrigger.classList.remove('open');
+            colorPopover.classList.remove('open');
+            iconTrigger.classList.remove('open');
+            iconPopover.classList.remove('open');
+        });
+
+        // Periods management
+        function updatePeriodData(periodId, field, value) {
+            const period = periods.find(p => p.id === periodId);
+            if (period) {
+                period[field] = value;
+            }
+        }
+
+        function removePeriod(periodId) {
+            periods = periods.filter(p => p.id !== periodId);
+            renderPeriods();
+        }
+
+        function addPeriod() {
+            periodCounter++;
+            periods.push({
+                id: `period-${periodCounter}`,
+                name: '',
+                icon: '📌',
+                startDate: '',
+                endDate: ''
+            });
+            renderPeriods();
+            // Focus the new name input
+            const lastRow = periodsContainer.querySelector('.v2-period-row:last-child');
+            if (lastRow) {
+                lastRow.querySelector('.v2-period-name-input').focus();
+            }
+        }
+
+        function renderPeriods() {
+            periodsContainer.innerHTML = buildPeriodsHtml();
+            bindPeriodEvents();
+        }
+
+        function bindPeriodEvents() {
+            periodsContainer.querySelectorAll('.v2-period-row').forEach(row => {
+                const periodId = row.dataset.periodId;
+
+                // Input changes
+                row.querySelectorAll('input').forEach(input => {
+                    input.addEventListener('input', () => {
+                        updatePeriodData(periodId, input.dataset.field, input.value);
+                    });
+                });
+
+                // Remove button
+                row.querySelector('.v2-period-remove').addEventListener('click', () => {
+                    removePeriod(periodId);
+                });
+            });
+        }
+
+        // Initial bind
+        bindPeriodEvents();
+
+        // Add period button
+        addPeriodBtn.addEventListener('click', addPeriod);
 
         // Focus input
         setTimeout(() => input.focus(), 100);
@@ -866,28 +1142,40 @@
 
             closeModal();
 
-            // Collect dates
-            const collectDate = (startId, endId) => {
-                const s = backdrop.querySelector(startId).value;
-                const e = backdrop.querySelector(endId).value;
+            // Collect period data
+            const prepPeriod = periods.find(p => p.name.toLowerCase() === 'prep');
+            const shootPeriod = periods.find(p => p.name.toLowerCase() === 'shoot' || p.name.toLowerCase() === 'shooting');
+            const returnPeriod = periods.find(p => p.name.toLowerCase() === 'return');
+
+            const formatPeriod = (period) => {
+                if (!period) return [];
+                const s = period.startDate;
+                const e = period.endDate;
                 if (!s && !e) return [];
-                // Format: "YYYY-MM-DD to YYYY-MM-DD"
                 if (s && e) return [`${s} to ${e}`];
-                if (s) return [s]; // One day
+                if (s) return [s];
                 if (e) return [e];
                 return [];
             };
 
-            const prepDays = collectDate('#v2PrepStart', '#v2PrepEnd');
-            const shootingDays = collectDate('#v2ShootStart', '#v2ShootEnd');
-            const returnDays = collectDate('#v2ReturnStart', '#v2ReturnEnd');
+            const prepDays = formatPeriod(prepPeriod);
+            const shootingDays = formatPeriod(shootPeriod);
+            const returnDays = formatPeriod(returnPeriod);
+
+            // Also store all custom periods
+            const allPeriods = periods.map(p => ({
+                name: p.name,
+                startDate: p.startDate,
+                endDate: p.endDate
+            })).filter(p => p.name || p.startDate || p.endDate);
 
             createProject(projectName, {
                 color: selectedColor,
                 icon: selectedIcon,
                 prepDays,
                 shootingDays,
-                returnDays
+                returnDays,
+                periods: allPeriods
             });
         }
 
@@ -913,6 +1201,7 @@
         });
     }
 
+
     /**
      * Create a new project
      */
@@ -920,8 +1209,27 @@
         if (global.cineLegacyShim) {
             global.cineLegacyShim.createProject(projectName);
 
-            // Immediately update metadata (color/icon) in storage
-            updateProjectMetadata(projectName, metadata);
+            // Wait for the project to be saved before updating metadata
+            // The legacy save is async (triggered via button click), so we poll
+            const waitForProjectAndUpdateMetadata = (attempts = 0) => {
+                const maxAttempts = 20; // ~2 seconds max
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    try {
+                        const data = JSON.parse(stored);
+                        if (data && data[projectName]) {
+                            updateProjectMetadata(projectName, metadata);
+                            return;
+                        }
+                    } catch (_e) { void _e; }
+                }
+                if (attempts < maxAttempts) {
+                    setTimeout(() => waitForProjectAndUpdateMetadata(attempts + 1), 100);
+                } else {
+                    console.warn('[V2] Timed out waiting for project to be saved:', projectName);
+                }
+            };
+            waitForProjectAndUpdateMetadata();
         }
 
         // Navigate to the new project

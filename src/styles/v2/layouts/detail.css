@@ -88,6 +88,43 @@
 }
 
 /* =====================
+ * PROJECT ACTIONS BAR
+ * ===================== */
+.v2-project-actions {
+    display: flex;
+    gap: var(--v2-space-sm);
+    padding: var(--v2-space-sm) var(--v2-space-xl);
+    background-color: var(--v2-surface-base);
+    border-bottom: 1px solid var(--v2-border-muted);
+}
+
+.v2-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--v2-space-xs);
+    padding: var(--v2-space-sm) var(--v2-space-md);
+    background-color: var(--v2-surface-elevated);
+    border: 1px solid var(--v2-border-default);
+    border-radius: var(--v2-radius-md);
+    color: var(--v2-text-primary);
+    font-size: var(--v2-font-size-sm);
+    font-weight: var(--v2-font-weight-medium);
+    cursor: pointer;
+    transition: background-color var(--v2-transition-fast),
+        border-color var(--v2-transition-fast);
+}
+
+.v2-action-btn:hover {
+    background-color: var(--v2-surface-muted);
+    border-color: var(--v2-border-muted);
+}
+
+.v2-action-btn .btn-icon {
+    font-size: 14px;
+    line-height: 1;
+}
+
+/* =====================
  * DEVICE GRID
  * ===================== */
 .v2-device-grid {
@@ -151,12 +188,10 @@
 }
 
 /* Dark mode arrow adjustment */
-@media (prefers-color-scheme: dark) {
-    .v2-select-input {
-        background-color: var(--v2-surface-elevated);
-        /* Ensure bg is correct */
-        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-    }
+body.dark-mode .v2-select-input {
+    background-color: var(--v2-surface-elevated);
+    /* Ensure bg is correct */
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
 }
 
 .v2-select-input:focus {

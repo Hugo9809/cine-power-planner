@@ -93,11 +93,9 @@
     color: var(--v2-text-secondary);
 }
 
-@media (prefers-color-scheme: dark) {
-    .v2-diagram-legend {
-        background: rgba(30, 30, 30, 0.7);
-        border-color: rgba(255, 255, 255, 0.1);
-    }
+body.dark-mode .v2-diagram-legend {
+    background: rgba(30, 30, 30, 0.7);
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
 .v2-diagram-legend span {
@@ -147,4 +145,15 @@
 
 #v2-setup-config .form-row:first-of-type {
     margin-top: 0;
+}
+
+/* Increase dropdown height to prevent text cutoff in V2 */
+#v2-setup-config select,
+#v2-setup-config .select-wrapper select {
+    min-height: 44px !important;
+    height: auto !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    line-height: 1.5 !important;
+    font-size: inherit;
 }

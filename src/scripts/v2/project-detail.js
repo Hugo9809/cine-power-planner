@@ -260,6 +260,18 @@
           </button>
         </div>
       </header>
+
+      <!-- Project Actions Bar -->
+      <div class="v2-project-actions">
+        <button type="button" class="v2-action-btn" id="v2ExportProjectActionBtn">
+          <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7AB;</span>
+          <span class="v2-action-btn-label">Export Project</span>
+        </button>
+        <button type="button" class="v2-action-btn" id="v2GenerateOverviewBtn">
+          <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xF1F5;</span>
+          <span class="v2-action-btn-label">Generate Overview</span>
+        </button>
+      </div>
       
       <!-- Tab Navigation (Sticky Top) -->
       <nav class="v2-tabs-nav" role="tablist" aria-label="Project sections">
@@ -336,8 +348,6 @@
   function renderCameraPackageTab() {
     return `
       <div id="v2-setup-config" style="padding: 0; margin: 0;">
-        <h2 id="deviceSelectionHeading">Configure Devices</h2>
-        
         <div class="form-row">
           <label for="cameraSelect" id="cameraLabel">Camera:</label>
           <div data-reparent="cameraSelect"></div>
@@ -544,12 +554,30 @@
       });
     }
 
-    // Export button
+    // Export button (header icon)
     const exportBtn = view.querySelector('#v2ExportProjectBtn');
     if (exportBtn) {
       exportBtn.addEventListener('click', () => {
         const legacyExportBtn = document.getElementById('shareSetupBtn');
         if (legacyExportBtn) legacyExportBtn.click();
+      });
+    }
+
+    // Export Project Action Button (action bar)
+    const exportActionBtn = view.querySelector('#v2ExportProjectActionBtn');
+    if (exportActionBtn) {
+      exportActionBtn.addEventListener('click', () => {
+        const legacyExportBtn = document.getElementById('shareSetupBtn');
+        if (legacyExportBtn) legacyExportBtn.click();
+      });
+    }
+
+    // Generate Overview Button (action bar)
+    const generateOverviewBtn = view.querySelector('#v2GenerateOverviewBtn');
+    if (generateOverviewBtn) {
+      generateOverviewBtn.addEventListener('click', () => {
+        const legacyBtn = document.getElementById('generateOverviewBtn');
+        if (legacyBtn) legacyBtn.click();
       });
     }
 
@@ -595,6 +623,26 @@
       });
     });
 
+    // Download Diagram button
+    const downloadDiagramBtn = view.querySelector('#v2DownloadDiagram');
+    if (downloadDiagramBtn) {
+      downloadDiagramBtn.addEventListener('click', (e) => {
+        // Trigger the legacy download handler from app-session.js
+        const legacyBtn = document.getElementById('downloadDiagram');
+        if (legacyBtn) {
+          // Create a new event with the same shiftKey state for JPG export
+          const syntheticEvent = new MouseEvent('click', {
+            bubbles: true,
+            cancelable: true,
+            shiftKey: e.shiftKey
+          });
+          legacyBtn.dispatchEvent(syntheticEvent);
+        } else {
+          console.warn('[ProjectDetail] Legacy download button not found');
+        }
+      });
+    }
+
     // Inject Add Custom Buttons
     setTimeout(() => injectAddCustomButtons(view), 0);
   }
@@ -627,6 +675,17 @@
     // Actually createConnectionDiagram returns an object with { enableDiagramInteractions, ... }
     // It clears the container.
 
+    // Ensure the legacy dialog elements are accessible in V2 mode
+    // Move them to the V2 container if they're currently hidden in mainContent
+    const ensureDialogAccessible = () => {
+      const dialog = document.getElementById('diagramDetailDialog');
+      if (dialog && dialog.closest('#mainContent')) {
+        // Move dialog to body so it's not hidden when mainContent is display:none
+        document.body.appendChild(dialog);
+      }
+      return dialog;
+    };
+
     const context = {
       // Override UI getters to point to V2 elements
       getSetupDiagramContainer: () => document.getElementById('v2-diagram-area'),
@@ -636,6 +695,10 @@
       getZoomInBtn: () => document.getElementById('v2ZoomIn'),
       getZoomOutBtn: () => document.getElementById('v2ZoomOut'),
       getResetViewBtn: () => document.getElementById('v2ResetView'),
+
+      // Explicit dialog getters to ensure accessibility in V2 mode
+      getDiagramDetailDialog: ensureDialogAccessible,
+      getDiagramDetailContent: () => document.getElementById('diagramDetailDialogContent'),
 
       // Use existing global getters for data inputs (since we reparented the actual elements)
       // The module defaults to GLOBAL_SCOPE.cameraSelect etc. which still works.
@@ -674,7 +737,7 @@
     // V2 IDs: v2TotalDraw, v2Runtime, v2BatteryCount, v2Current144, v2Current12
 
     const map = {
-      'totalWatts': 'v2TotalDraw',
+      'heroTotalDraw': 'v2TotalDraw',
       'heroRuntime': 'v2Runtime',
       'heroBatteryCount': 'v2BatteryCount',
       'heroCurrent144': 'v2Current144',
