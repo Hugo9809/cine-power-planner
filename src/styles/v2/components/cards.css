@@ -25,15 +25,18 @@
 
 .v2-card-interactive {
     cursor: pointer;
+    transition: border-color var(--v2-transition-fast), box-shadow var(--v2-transition-fast);
 }
 
 .v2-card-interactive:hover {
-    border-color: var(--v2-border-default);
-    box-shadow: var(--v2-shadow-md);
+    border-color: var(--v2-brand-blue);
+    box-shadow: var(--v2-shadow-sm);
 }
 
 .v2-card-interactive:active {
-    box-shadow: var(--v2-shadow-sm);
+    box-shadow: none;
+    border-color: var(--v2-brand-blue-active);
+    background-color: var(--v2-surface-muted);
 }
 
 .v2-card-selected {

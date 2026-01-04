@@ -18,29 +18,25 @@
 .v2-tabs-nav {
     display: flex;
     align-items: flex-end;
-    gap: 4px;
+    gap: 2px;
     padding: 0 var(--v2-space-lg);
     padding-top: var(--v2-space-sm);
-    background: linear-gradient(180deg,
-            rgba(245, 247, 250, 0.95) 0%,
-            rgba(240, 242, 245, 0.98) 100%);
+    background-color: var(--v2-surface-app-bg);
     border-bottom: 1px solid var(--v2-border-default);
     overflow-x: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
     flex-shrink: 0;
-    min-height: 52px;
+    min-height: 48px;
     width: 100%;
 
     /* Sticky Positioning */
     position: sticky;
-    top: 60px;
     top: var(--v2-header-height, 60px);
     z-index: 100;
 
-    /* Enhanced Glassmorphism */
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    /* Removed Glassmorphism - Solid Design */
+    opacity: 0.98;
 
     box-sizing: border-box;
 }
@@ -60,14 +56,14 @@
     justify-content: center;
     gap: var(--v2-space-sm);
     padding: var(--v2-space-md) var(--v2-space-xl);
-    min-width: 130px;
-    height: 46px;
+    min-width: 120px;
+    height: 44px;
 
     /* Typography */
     font-size: var(--v2-font-size-sm);
     font-weight: var(--v2-font-weight-medium);
     color: var(--v2-text-secondary);
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
 
     /* Shape & Borders */
     background: transparent;
@@ -77,81 +73,55 @@
 
     cursor: pointer;
     white-space: nowrap;
-    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 150ms ease-out;
     position: relative;
     top: 1px;
     margin-bottom: -1px;
 }
 
-/* Hover state - subtle lift effect */
+/* Hover state */
 .v2-tab-btn:hover:not(:disabled):not(.active) {
-    background: linear-gradient(180deg,
-            rgba(255, 255, 255, 0.6) 0%,
-            rgba(255, 255, 255, 0.3) 100%);
+    background-color: var(--v2-surface-muted);
     color: var(--v2-text-primary);
-    transform: translateY(-1px);
-    border-color: rgba(0, 0, 0, 0.04);
+    border-color: transparent;
 }
 
-/* Note: Dark mode hover styling handled by body.dark-mode selectors below */
-
-.v2-tab-btn:focus-visible {
-    outline: 2px solid var(--v2-brand-blue);
-    outline-offset: -2px;
-    z-index: 10;
-}
-
-/* Active State - Premium Browser Tab Look */
+/* Active State - Solid look */
 .v2-tab-btn.active {
-    background: linear-gradient(180deg,
-            var(--v2-surface-base) 0%,
-            var(--v2-surface-base) 100%);
+    background-color: var(--v2-surface-base);
     color: var(--v2-brand-blue);
     font-weight: var(--v2-font-weight-semibold);
-    letter-spacing: 0.01em;
 
     /* Borders */
     border-color: var(--v2-border-default);
     border-bottom-color: var(--v2-surface-base);
 
-    /* Enhanced shadow for depth */
-    box-shadow:
-        0 -4px 12px rgba(0, 21, 137, 0.08),
-        0 -1px 3px rgba(0, 0, 0, 0.04);
-
     z-index: 2;
 }
 
-/* Accent indicator bar on active tab */
+/* Accent indicator bar */
 .v2-tab-btn.active::before {
     content: '';
     position: absolute;
     top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100% - 16px);
+    left: 0;
+    width: 100%;
     height: 3px;
-    background: linear-gradient(90deg,
-            var(--v2-brand-blue) 0%,
-            color-mix(in srgb, var(--v2-brand-blue) 80%, #4169E1) 50%,
-            var(--v2-brand-blue) 100%);
-    border-radius: 0 0 2px 2px;
-    box-shadow: 0 0 8px rgba(0, 21, 137, 0.3);
+    background-color: var(--v2-brand-blue);
+    border-radius: 2px 2px 0 0;
 }
 
-/* Masking the bottom border of the container */
+/* Masking the bottom border */
 .v2-tab-btn.active::after {
     content: '';
     position: absolute;
     bottom: -1px;
     left: 0;
     width: 100%;
-    height: 3px;
+    height: 1px;
     background-color: var(--v2-surface-base);
     pointer-events: none;
 }
-
-/* Note: Dark mode active styling handled by body.dark-mode selectors below */
 
 .v2-tab-btn:disabled {
     color: var(--v2-text-muted);
@@ -171,6 +141,12 @@
     color: var(--v2-brand-blue);
 }
 
+.v2-tab-btn:focus-visible {
+    outline: 2px solid var(--v2-brand-blue);
+    outline-offset: -2px;
+    z-index: 10;
+}
+
 /* =====================
  * TAB BADGE
  * ===================== */
@@ -180,12 +156,13 @@
     justify-content: center;
     min-width: 18px;
     height: 18px;
-    padding: 0 var(--v2-space-xs);
-    font-size: var(--v2-font-size-xs);
-    font-weight: var(--v2-font-weight-semibold);
+    padding: 0 5px;
+    font-size: 11px;
+    font-weight: var(--v2-font-weight-bold);
     color: var(--v2-text-inverse);
     background-color: var(--v2-brand-blue);
-    border-radius: var(--v2-radius-full);
+    border-radius: 10px;
+    line-height: 1;
 }
 
 /* =====================
@@ -195,7 +172,6 @@
     flex: 1;
     overflow-y: auto;
     background-color: var(--v2-surface-base);
-    /* Ensure consistent background */
     position: relative;
     z-index: 1;
 }
@@ -213,7 +189,7 @@
 @keyframes v2-fade-in {
     from {
         opacity: 0;
-        transform: translateY(4px);
+        transform: translateY(2px);
     }
 
     to {
@@ -253,6 +229,10 @@
 }
 
 .v2-tabs-pills .v2-tab-btn.active::after {
+    display: none;
+}
+
+.v2-tabs-pills .v2-tab-btn.active::before {
     display: none;
 }
 
@@ -296,13 +276,15 @@
     display: none;
 }
 
+.v2-tabs-vertical .v2-tab-btn.active::before {
+    display: none;
+}
+
 /* =====================
  * DARK MODE THEME
  * ===================== */
 body.dark-mode .v2-tabs-nav {
-    background: linear-gradient(180deg,
-            rgba(28, 28, 30, 0.95) 0%,
-            rgba(24, 24, 26, 0.98) 100%);
+    background-color: var(--v2-surface-app-bg);
     border-bottom-color: var(--v2-border-default);
 }
 
@@ -311,29 +293,19 @@ body.dark-mode .v2-tab-btn {
 }
 
 body.dark-mode .v2-tab-btn:hover:not(:disabled):not(.active) {
-    background: linear-gradient(180deg,
-            rgba(255, 255, 255, 0.08) 0%,
-            rgba(255, 255, 255, 0.04) 100%);
+    background-color: var(--v2-surface-muted);
     color: var(--v2-text-primary);
-    border-color: rgba(255, 255, 255, 0.08);
 }
 
 body.dark-mode .v2-tab-btn.active {
-    background: var(--v2-surface-elevated);
+    background-color: var(--v2-surface-elevated);
     color: #5c7cfa;
     border-color: var(--v2-border-default);
     border-bottom-color: var(--v2-surface-elevated);
-    box-shadow:
-        0 -4px 16px rgba(92, 124, 250, 0.15),
-        0 -1px 4px rgba(0, 0, 0, 0.3);
 }
 
 body.dark-mode .v2-tab-btn.active::before {
-    background: linear-gradient(90deg,
-            #5c7cfa 0%,
-            #7c9cff 50%,
-            #5c7cfa 100%);
-    box-shadow: 0 0 12px rgba(92, 124, 250, 0.5);
+    background-color: #5c7cfa;
 }
 
 body.dark-mode .v2-tab-btn.active::after {
@@ -356,85 +328,61 @@ body.dark-mode .v2-tabs-content {
  * PINK MODE THEME
  * ===================== */
 body.pink-mode .v2-tabs-nav {
-    background: linear-gradient(180deg,
-            rgba(255, 245, 250, 0.95) 0%,
-            rgba(255, 240, 248, 0.98) 100%);
-    border-bottom-color: rgba(255, 105, 180, 0.15);
+    background-color: #fff9fc;
+    /* Very light pink background */
+    border-bottom-color: rgba(255, 105, 180, 0.2);
 }
 
 body.pink-mode .v2-tab-btn:hover:not(:disabled):not(.active) {
-    background: linear-gradient(180deg,
-            rgba(255, 105, 180, 0.08) 0%,
-            rgba(255, 105, 180, 0.04) 100%);
+    background-color: rgba(255, 105, 180, 0.05);
     color: var(--v2-text-primary);
-    border-color: rgba(255, 105, 180, 0.1);
 }
 
 body.pink-mode .v2-tab-btn.active {
     color: var(--v2-brand-blue);
-    box-shadow:
-        0 -4px 12px rgba(255, 105, 180, 0.12),
-        0 -1px 3px rgba(0, 0, 0, 0.04);
+    border-color: rgba(255, 105, 180, 0.3);
+    border-bottom-color: var(--v2-surface-base);
 }
 
 body.pink-mode .v2-tab-btn.active::before {
-    background: linear-gradient(90deg,
-            #ff69b4 0%,
-            #ff8dc7 50%,
-            #ff69b4 100%);
-    box-shadow: 0 0 10px rgba(255, 105, 180, 0.4);
+    background-color: #ff69b4;
 }
 
-body.pink-mode .v2-tab-btn:focus-visible {
-    outline-color: var(--v2-brand-blue);
+body.pink-mode .v2-tab-btn.active::after {
+    background-color: var(--v2-surface-base);
 }
 
 body.pink-mode .v2-tab-badge {
-    background-color: var(--v2-brand-blue);
+    background-color: #ff69b4;
 }
 
 /* =====================
  * DARK MODE + PINK MODE COMBINED
  * ===================== */
 body.dark-mode.pink-mode .v2-tabs-nav {
-    background: linear-gradient(180deg,
-            rgba(45, 25, 35, 0.95) 0%,
-            rgba(40, 20, 30, 0.98) 100%);
-    border-bottom-color: rgba(255, 105, 180, 0.2);
+    background-color: #1a1015;
+    /* Dark pinkish background */
+    border-bottom-color: rgba(255, 105, 180, 0.3);
 }
 
 body.dark-mode.pink-mode .v2-tab-btn:hover:not(:disabled):not(.active) {
-    background: linear-gradient(180deg,
-            rgba(255, 105, 180, 0.12) 0%,
-            rgba(255, 105, 180, 0.06) 100%);
-    color: var(--v2-text-primary);
-    border-color: rgba(255, 105, 180, 0.15);
+    background-color: rgba(255, 105, 180, 0.1);
+    color: #ffdce8;
 }
 
 body.dark-mode.pink-mode .v2-tab-btn.active {
-    background: var(--v2-surface-elevated);
+    background-color: var(--v2-surface-elevated);
     color: #ff80c0;
-    border-color: rgba(255, 105, 180, 0.3);
+    border-color: rgba(255, 105, 180, 0.4);
     border-bottom-color: var(--v2-surface-elevated);
-    box-shadow:
-        0 -4px 16px rgba(255, 105, 180, 0.2),
-        0 -1px 4px rgba(0, 0, 0, 0.3);
 }
 
 body.dark-mode.pink-mode .v2-tab-btn.active::before {
-    background: linear-gradient(90deg,
-            #ff69b4 0%,
-            #ff8dc7 50%,
-            #ff69b4 100%);
-    box-shadow: 0 0 14px rgba(255, 105, 180, 0.6);
+    background-color: #ff69b4;
 }
 
 body.dark-mode.pink-mode .v2-tab-btn.active::after {
     background-color: var(--v2-surface-elevated);
-}
-
-body.dark-mode.pink-mode .v2-tab-btn:focus-visible {
-    outline-color: #ff80c0;
 }
 
 body.dark-mode.pink-mode .v2-tab-badge {
