@@ -15036,7 +15036,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               ? (...args) => globalThis.saveCurrentSession(...args)
               : undefined);
 
-        const connectionDiagram = connectionDiagramModule.createConnectionDiagram({
+        const diagramContext = {
           document,
           window,
           navigator,
@@ -15095,9 +15095,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           positionSvgMarkup,
           ensureSvgHasAriaHidden,
           formatSvgCoordinate,
-        });
+        };
+
+        const connectionDiagram = connectionDiagramModule.createConnectionDiagram(diagramContext);
+
+        // Fix: Explicitly bind the render function using the context since the module result doesn't expose it
+        renderSetupDiagram = () => connectionDiagramModule.createConnectionDiagram(diagramContext);
 
         if (connectionDiagram && typeof connectionDiagram === 'object') {
+          // If the module exposed a specific render function, we'd use it, otherwise keep our bound one
           if (typeof connectionDiagram.renderSetupDiagram === 'function') {
             renderSetupDiagram = connectionDiagram.renderSetupDiagram;
           }
