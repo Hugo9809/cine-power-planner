@@ -14771,7 +14771,21 @@ function doesProjectNameExist(name) {
 }
 const sessionCreatedProjects = new Set();
 
+
+let saveGearListDebounceTimer = null;
+
 function saveCurrentGearList() {
+  if (saveGearListDebounceTimer) {
+     clearTimeout(saveGearListDebounceTimer);
+  }
+  
+  saveGearListDebounceTimer = setTimeout(() => {
+      saveCurrentGearListImplementation();
+  }, 300);
+}
+
+function saveCurrentGearListImplementation() {
+
   console.log('DEBUG: saveCurrentGearList ENTERED');
   if (factoryResetInProgress) { console.log('DEBUG: saveCurrentGearList EXIT: factoryResetInProgress'); return; }
   if (isProjectPersistenceSuspended()) { console.log('DEBUG: saveCurrentGearList EXIT: isProjectPersistenceSuspended'); return; }
