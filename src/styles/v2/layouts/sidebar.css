@@ -494,6 +494,23 @@ h1.v2-sidebar-title {
  * TOGGLE SPECIFIC BRANDING
  * Decouple from var(--v2-brand-blue) to ensure distinct buttons
  * ===================== */
+/* Pink Mode - Inactive State (Grayscale) */
+#v2ThemeTogglePink .pink-mode-icon {
+    filter: grayscale(100%);
+    opacity: 0.6;
+    transition: filter 0.2s, opacity 0.2s;
+}
+
+#v2ThemeTogglePink:hover .pink-mode-icon {
+    filter: grayscale(0%);
+    opacity: 1;
+}
+
+#v2ThemeTogglePink.active .pink-mode-icon {
+    filter: grayscale(0%);
+    opacity: 1;
+}
+
 #v2ThemeToggleDark.active {
     background-color: #001589;
     /* Always Dark Blue */

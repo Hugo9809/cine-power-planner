@@ -1115,7 +1115,10 @@ if (typeof self !== 'undefined') {
           }
           return response;
         } catch (error) {
-          console.error('Network request failed:', error);
+          const requestUrl = event.request ? event.request.url : 'unknown';
+          console.error(`[cine-sw] Network request failed for ${requestUrl}:`, error);
+
+          // Allow fallback logic to handle the failure instead of throwing unhandled 
           throw error;
         }
       })();

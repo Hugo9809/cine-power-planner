@@ -339,9 +339,10 @@ body.pink-mode .v2-tab-btn:hover:not(:disabled):not(.active) {
 }
 
 body.pink-mode .v2-tab-btn.active {
-    color: var(--v2-brand-blue);
-    border-color: rgba(255, 105, 180, 0.3);
-    border-bottom-color: var(--v2-surface-base);
+    background-color: var(--v2-brand-blue);
+    color: var(--v2-text-inverse);
+    border-color: var(--v2-brand-blue);
+    border-bottom-color: var(--v2-brand-blue);
 }
 
 body.pink-mode .v2-tab-btn.active::before {

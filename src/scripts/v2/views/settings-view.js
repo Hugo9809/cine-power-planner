@@ -144,24 +144,20 @@
                 </button>
             </div>
             
-            <div class="v2-settings-tabs">
-                <button class="v2-tab-btn active" data-tab="general">
-                    <span class="material-symbols-rounded icon">tune</span>
+            <nav class="v2-tabs-nav v2-settings-tabs-nav" role="tablist" aria-label="${_t('settingsHeading')}">
+                <button type="button" class="v2-tab-btn active" data-tab="general" role="tab" aria-selected="true" aria-controls="v2-panel-general">
                     ${_t('settingsTabGeneral')}
                 </button>
-                <button class="v2-tab-btn" data-tab="backup">
-                    <span class="material-symbols-rounded icon">backup</span>
+                <button type="button" class="v2-tab-btn" data-tab="backup" role="tab" aria-selected="false" aria-controls="v2-panel-backup">
                     ${_t('settingsTabBackup')}
                 </button>
-                <button class="v2-tab-btn" data-tab="data">
-                    <span class="material-symbols-rounded icon">database</span>
+                <button type="button" class="v2-tab-btn" data-tab="data" role="tab" aria-selected="false" aria-controls="v2-panel-data">
                     ${_t('settingsTabData')}
                 </button>
-                <button class="v2-tab-btn" data-tab="about">
-                    <span class="material-symbols-rounded icon">info</span>
+                <button type="button" class="v2-tab-btn" data-tab="about" role="tab" aria-selected="false" aria-controls="v2-panel-about">
                     ${_t('settingsTabAbout')}
                 </button>
-            </div>
+            </nav>
 
             <div class="v2-settings-body">
                 ${this.getGeneralTabHtml()}
@@ -680,11 +676,15 @@
             tabs.forEach(tab => {
                 tab.addEventListener('click', () => {
                     // Deactivate all
-                    tabs.forEach(t => t.classList.remove('active'));
+                    tabs.forEach(t => {
+                        t.classList.remove('active');
+                        t.setAttribute('aria-selected', 'false');
+                    });
                     panels.forEach(p => p.hidden = true);
 
                     // Activate clicked
                     tab.classList.add('active');
+                    tab.setAttribute('aria-selected', 'true');
                     const targetId = `v2-panel-${tab.dataset.tab}`;
                     const target = document.getElementById(targetId);
                     if (target) target.hidden = false;

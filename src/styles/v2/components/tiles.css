@@ -119,6 +119,86 @@
     color: var(--v2-color-pink);
 }
 
+.v2-tile-icon.color-yellow {
+    background-color: color-mix(in srgb, var(--v2-color-yellow) 15%, transparent);
+    color: var(--v2-color-yellow);
+}
+
+.v2-tile-icon.color-amber {
+    background-color: color-mix(in srgb, var(--v2-color-amber) 15%, transparent);
+    color: var(--v2-color-amber);
+}
+
+.v2-tile-icon.color-lime {
+    background-color: color-mix(in srgb, var(--v2-color-lime) 15%, transparent);
+    color: var(--v2-color-lime);
+}
+
+.v2-tile-icon.color-emerald {
+    background-color: color-mix(in srgb, var(--v2-color-emerald) 15%, transparent);
+    color: var(--v2-color-emerald);
+}
+
+.v2-tile-icon.color-cyan {
+    background-color: color-mix(in srgb, var(--v2-color-cyan) 15%, transparent);
+    color: var(--v2-color-cyan);
+}
+
+.v2-tile-icon.color-sky {
+    background-color: color-mix(in srgb, var(--v2-color-sky) 15%, transparent);
+    color: var(--v2-color-sky);
+}
+
+.v2-tile-icon.color-violet {
+    background-color: color-mix(in srgb, var(--v2-color-violet) 15%, transparent);
+    color: var(--v2-color-violet);
+}
+
+.v2-tile-icon.color-fuchsia {
+    background-color: color-mix(in srgb, var(--v2-color-fuchsia) 15%, transparent);
+    color: var(--v2-color-fuchsia);
+}
+
+.v2-tile-icon.color-rose {
+    background-color: color-mix(in srgb, var(--v2-color-rose) 15%, transparent);
+    color: var(--v2-color-rose);
+}
+
+.v2-tile-icon.color-slate {
+    background-color: color-mix(in srgb, var(--v2-color-slate) 15%, transparent);
+    color: var(--v2-color-slate);
+}
+
+.v2-tile-icon.color-stone {
+    background-color: color-mix(in srgb, var(--v2-color-stone) 15%, transparent);
+    color: var(--v2-color-stone);
+}
+
+.v2-tile-icon.color-neutral {
+    background-color: color-mix(in srgb, var(--v2-color-neutral) 15%, transparent);
+    color: var(--v2-color-neutral);
+}
+
+.v2-tile-icon.color-gold {
+    background-color: color-mix(in srgb, var(--v2-color-gold) 15%, transparent);
+    color: var(--v2-color-gold);
+}
+
+.v2-tile-icon.color-crimson {
+    background-color: color-mix(in srgb, var(--v2-color-crimson) 15%, transparent);
+    color: var(--v2-color-crimson);
+}
+
+.v2-tile-icon.color-navy {
+    background-color: color-mix(in srgb, var(--v2-color-navy) 15%, transparent);
+    color: var(--v2-color-navy);
+}
+
+.v2-tile-icon.color-aquamarine {
+    background-color: color-mix(in srgb, var(--v2-color-aquamarine) 15%, transparent);
+    color: var(--v2-color-aquamarine);
+}
+
 .v2-tile-info {
     flex: 1;
     min-width: 0;

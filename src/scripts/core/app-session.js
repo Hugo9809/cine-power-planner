@@ -8390,23 +8390,47 @@ if (initialSettingsButton && initialSettingsDialog) {
       }
       fontFamily = family;
     }
-    if (settingsLogo && settingsLogo.files && settingsLogo.files[0]) {
-      const file = settingsLogo.files[0];
+    // Explicitly resolve the element to ensure we have the latest reference
+    const settingsLogoEl = document.getElementById('settingsLogo');
+    if (settingsLogoEl && settingsLogoEl.files && settingsLogoEl.files[0]) {
+      const file = settingsLogoEl.files[0];
+      console.log('[Settings] Logo upload detected:', file.name, file.type, file.size);
+
       if (file.type === 'image/svg+xml' || file.name.toLowerCase().endsWith('.svg')) {
+        console.log('[Settings] Logo format valid (SVG). Reading file...');
         const reader = new FileReader();
-        reader.onload = () => {
-          try {
-            localStorage.setItem('customLogo', reader.result);
-          } catch (e) {
-            console.warn('Could not save custom logo', e);
+        reader.onload = (e) => {
+          if (!e.target.result) {
+            console.error('[Settings] FileReader result is empty');
+            showNotification('error', 'Failed to read logo file');
+            return;
           }
-          renderSettingsLogoPreview(reader.result);
+          console.log('[Settings] Logo file read success. Length:', e.target.result.length);
+          try {
+            localStorage.setItem('customLogo', e.target.result);
+            console.log('[Settings] Logo saved to localStorage');
+          } catch (e) {
+            console.warn('[Settings] Could not save custom logo to localStorage', e);
+            showNotification('error', 'Failed to save logo to storage (quota exceeded?)');
+          }
+          renderSettingsLogoPreview(e.target.result);
+        };
+        reader.onerror = (err) => {
+          console.error('[Settings] FileReader error:', err);
+          showNotification('error', 'Error reading logo file');
         };
         reader.readAsDataURL(file);
       } else {
-        showNotification('error', texts[currentLang].logoFormatError || 'Unsupported logo format');
-        if (settingsLogo) settingsLogo.value = '';
+        console.warn('[Settings] Unsupported logo format:', file.type);
+        showNotification('error', texts[currentLang].logoFormatError || 'Unsupported logo format. Please use SVG.');
+        if (settingsLogoEl) settingsLogoEl.value = '';
         safeLoadStoredLogoPreview();
+      }
+    } else {
+      if (settingsLogoEl && settingsLogoEl.files && settingsLogoEl.files.length === 0) {
+        // No file selected, do nothing (user might have just opened settings without changing logo)
+      } else if (!settingsLogoEl) {
+        console.warn('[Settings] settingsLogo element not found during save');
       }
     }
     closeAutoGearEditor();

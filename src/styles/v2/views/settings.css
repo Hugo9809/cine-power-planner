@@ -2,77 +2,12 @@
 /* Re-implementing V1 look-and-feel within the V2 layout structure */
 
 /* Use V1 variables where possible, falling back to V2 equivalents if needed */
-.v2-settings-layout {
-    display: grid;
-    grid-template-columns: 240px 1fr;
-    gap: 20px;
-    align-items: start;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-/* Sidebar - Styled to look like V1 tabs but vertical */
-.v2-settings-sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    /* Slightly tighter than V2 */
-}
-
-.v2-tab-btn {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    padding: 12px 16px;
-    border: none;
-    background-color: transparent;
-    text-align: left;
-    font-family: var(--v2-font-family);
-    font-size: 1rem;
-    /* V1 base size */
-    font-weight: 500;
-    /* V1 font-weight-medium */
-    color: var(--v2-text-primary);
-    cursor: pointer;
-    border-radius: 5px;
-    /* V1 border radius */
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.v2-tab-btn:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-}
-
-/* V1 Active State: Accent BG, White Text */
-.v2-tab-btn.active {
-    background-color: var(--v2-brand-blue);
-    /* Matches V1 --accent-color */
-    color: #ffffff;
-    /* Matches V1 --inverse-text-color */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    /* V1 shadow */
-}
-
-.v2-tab-icon {
-    font-size: 1.2rem;
-    opacity: 0.8;
-}
-
-.v2-tab-btn.active .v2-tab-icon {
-    opacity: 1;
-}
-
 /* Content Area */
 .v2-settings-panel h2 {
     margin-top: 0;
     margin-bottom: 20px;
-    /* V1 spacing */
     font-size: 1.5rem;
-    /* ~ --font-scale-xxl */
     font-weight: 400;
-    /* V1 regular */
     color: var(--v2-brand-blue);
     border-bottom: 1px solid var(--v2-brand-blue);
     padding-bottom: 10px;
@@ -84,132 +19,192 @@
     gap: 20px;
 }
 
-/* Cards - Exact V1 Styling */
+/* Cards - V1 Style Refined */
 .v2-settings-card {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    padding: 18px;
+    padding: 20px;
     border: 1px solid var(--v2-border-default);
-    /* Matches --panel-border */
     border-radius: 5px;
-    /* V1 radius */
     background: var(--v2-surface-1);
-    /* Matches --panel-bg */
-    box-shadow: none;
-    /* V1 default cards don't have heavy shadows usually, but let's stick to simple */
+    margin-bottom: 20px;
 }
 
-.v2-settings-card h4 {
+.v2-settings-card:last-child {
+    margin-bottom: 0;
+}
+
+.v2-settings-card h3 {
     margin: 0;
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     font-weight: 600;
-    /* semibold */
     color: var(--v2-brand-blue);
+    border-bottom: 1px solid var(--v2-border-subtle);
+    padding-bottom: 8px;
+    margin-bottom: 4px;
 }
 
 .v2-settings-card p {
     margin: 0;
     font-size: 0.95rem;
     color: var(--v2-text-secondary);
-    /* Muted text */
-    line-height: 1.4;
+    line-height: 1.5;
 }
 
 /* Form Elements - V1 Style */
+.v2-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+    align-items: start;
+}
+
 .v2-form-group {
     display: flex;
     flex-direction: column;
-    /* stacked in V2 usually, keeping checking V1... V1 had .form-row with flex-wrap */
+    gap: 8px;
+}
+
+.v2-form-group label.v2-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--v2-text-primary);
+}
+
+.v2-form-row-inline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+
+/* Inputs & Selects */
+.v2-select,
+.v2-input,
+.v2-textarea {
+    padding: 8px 12px;
+    border: 1px solid var(--v2-border-default);
+    border-radius: 4px;
+    background-color: var(--v2-surface-0);
+    font-size: 0.95rem;
+    color: var(--v2-text-primary);
+    transition: border-color 0.2s;
+    width: 100%;
+}
+
+.v2-select:focus,
+.v2-input:focus,
+.v2-textarea:focus {
+    border-color: var(--v2-brand-blue);
+    outline: none;
+}
+
+/* Button Alignment Fixes */
+.v2-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    vertical-align: middle;
+}
+
+.v2-btn .icon {
+    font-size: 1.1em;
+    line-height: 1;
+    display: inline-block;
+}
+
+/* Camera Colors Grid */
+.v2-camera-colors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 16px;
+    margin-top: 10px;
+}
+
+.v2-color-field {
+    display: flex;
+    flex-direction: column;
     gap: 6px;
 }
 
-.v2-form-group label {
-    font-size: 1rem;
-    font-weight: 400;
-    /* Light/Regular */
-    color: var(--v2-text-primary);
+.v2-color-field label {
+    font-size: 0.85rem;
+    color: var(--v2-text-secondary);
 }
 
-/* Inputs & Selects - match V1 borders */
-.v2-select,
-.v2-input-text,
-.v2-input-number {
-    padding: 6px 10px;
-    /* Standard V1 padding roughly */
+.v2-color-input-wrapper {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.v2-color-input {
+    width: 100%;
+    height: 36px;
+    padding: 2px;
     border: 1px solid var(--v2-border-default);
-    /* #ddd */
     border-radius: 4px;
-    background-color: #fff;
-    font-size: 1rem;
-    color: var(--v2-text-primary);
+    cursor: pointer;
 }
 
-/* Voltage Settings - Matching V1 "mount-voltage-card" feel */
+/* Voltage Settings */
 .v2-voltage-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 20px;
 }
 
 .v2-voltage-card {
     background: var(--v2-surface-2);
-    /* Slightly darker/lighter depending on theme */
     border: 1px solid var(--v2-border-default);
-    border-radius: 5px;
-    padding: 15px;
+    border-radius: 6px;
+    padding: 16px;
 }
 
-.v2-voltage-card h5 {
+.v2-voltage-card h4 {
     margin: 0 0 12px 0;
     font-size: 1rem;
     color: var(--v2-text-primary);
     font-weight: 600;
     border-bottom: 1px solid var(--v2-border-subtle);
-    padding-bottom: 6px;
-}
-
-.v2-voltage-field-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
+    padding-bottom: 8px;
 }
 
 .v2-voltage-label-small {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--v2-text-secondary);
 }
 
-.v2-voltage-input {
-    width: 80px;
-    padding: 4px 8px;
-    border: 1px solid var(--v2-border-default);
-    border-radius: 4px;
+/* Settings Tabs */
+.v2-settings-tabs-nav {
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--v2-border-default);
 }
 
-/* Toggle Switch - keeping V2 toggle for functionality, but ensuring it fits V1 aesthetic (clean) */
+.v2-settings-tabs-nav .v2-tab-btn {
+    padding: 10px 24px;
+    font-size: 1rem;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    color: var(--v2-text-secondary);
+    transition: all 0.2s;
+}
 
-/* Responsive */
-@media (max-width: 768px) {
-    .v2-settings-layout {
-        grid-template-columns: 1fr;
-    }
+.v2-settings-tabs-nav .v2-tab-btn:hover {
+    color: var(--v2-text-primary);
+}
 
-    .v2-settings-sidebar {
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        background: var(--v2-surface-0);
-        padding-bottom: 10px;
-        border-bottom: 1px solid var(--v2-border-default);
-        flex-direction: row;
-        overflow-x: auto;
-    }
+.v2-settings-tabs-nav .v2-tab-btn.active {
+    color: var(--v2-brand-blue);
+    border-bottom-color: var(--v2-brand-blue);
+    font-weight: 500;
+}
 
-    .v2-tab-btn {
-        white-space: nowrap;
-        width: auto;
-        flex: 0 0 auto;
-    }
+/* Documentation Tracker List */
+.v2-doc-tracker-list {
+    background: var(--v2-surface-0);
 }

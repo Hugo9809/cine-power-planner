@@ -15,7 +15,13 @@
     const STORAGE_KEY = 'cameraPowerPlanner_setups';
 
     // Color palette for project tiles
-    const TILE_COLORS = ['blue', 'green', 'orange', 'purple', 'red', 'pink', 'teal', 'indigo'];
+    const TILE_COLORS = [
+        'blue', 'green', 'orange', 'purple', 'red', 'pink', 'teal', 'indigo',
+        'yellow', 'amber', 'lime', 'emerald', 'cyan', 'sky',
+        'violet', 'fuchsia', 'rose',
+        'slate', 'stone', 'neutral',
+        'gold', 'crimson', 'navy', 'aquamarine'
+    ];
 
     // Icon options
     const PROJECT_ICONS = [
@@ -203,19 +209,39 @@
         // Use stored icon or default
         const icon = metadata.icon || '📽️';
 
-        // Helper to get first range
-        const getFirstRange = (arr) => Array.isArray(arr) && arr.length > 0 ? formatDateRange(arr[0]) : '';
-        const prepStr = getFirstRange(metadata.prepDays);
-        const shootStr = getFirstRange(metadata.shootingDays);
-
         const dateStr = metadata.lastModified ? formatDate(metadata.lastModified) : '';
         const escapedName = escapeHtml(projectName);
 
         let periodsHtml = '';
-        if (prepStr || shootStr) {
+        const hasDates = (metadata.prepDays?.length > 0) || (metadata.shootingDays?.length > 0) || (metadata.returnDays?.length > 0);
+
+        if (hasDates) {
             periodsHtml = `<div class="v2-tile-periods">`;
-            if (prepStr) periodsHtml += `<span class="v2-period-badge prep" title="Prep: ${prepStr}"><span class="period-icon">📅</span> ${prepStr}</span>`;
-            if (shootStr) periodsHtml += `<span class="v2-period-badge shoot" title="Shoot: ${shootStr}"><span class="period-icon">🎥</span> ${shootStr}</span>`;
+
+            // Render all Prep dates
+            if (Array.isArray(metadata.prepDays)) {
+                metadata.prepDays.forEach(range => {
+                    const fmt = formatDateRange(range);
+                    if (fmt) periodsHtml += `<span class="v2-period-badge prep" title="Prep: ${fmt}"><span class="period-icon">📅</span> ${fmt}</span>`;
+                });
+            }
+
+            // Render all Shoot dates
+            if (Array.isArray(metadata.shootingDays)) {
+                metadata.shootingDays.forEach(range => {
+                    const fmt = formatDateRange(range);
+                    if (fmt) periodsHtml += `<span class="v2-period-badge shoot" title="Shoot: ${fmt}"><span class="period-icon">🎥</span> ${fmt}</span>`;
+                });
+            }
+
+            // Render all Return dates
+            if (Array.isArray(metadata.returnDays)) {
+                metadata.returnDays.forEach(range => {
+                    const fmt = formatDateRange(range);
+                    if (fmt) periodsHtml += `<span class="v2-period-badge return" title="Return: ${fmt}"><span class="period-icon">🚛</span> ${fmt}</span>`;
+                });
+            }
+
             periodsHtml += `</div>`;
         }
 
@@ -603,18 +629,27 @@
     /**
      * Show create project dialog using internal modal
      */
+    /**
+     * Show create project dialog using internal modal
+     */
     function showCreateProjectDialog() {
         const randomColorIndex = Math.floor(Math.random() * TILE_COLORS.length);
         let selectedColor = TILE_COLORS[randomColorIndex];
         let selectedIcon = '📽️';
 
-        // Default periods
+        // Dynamic periods state
         let periods = [
-            { id: 'prep', name: 'Prep', icon: '📅', startDate: '', endDate: '' },
-            { id: 'shoot', name: 'Shoot', icon: '🎥', startDate: '', endDate: '' },
-            { id: 'return', name: 'Return', icon: '🚛', startDate: '', endDate: '' }
+            { id: 'period-1', type: 'prep', name: 'Prep', startDate: '', endDate: '' },
+            { id: 'period-2', type: 'shoot', name: 'Shoot', startDate: '', endDate: '' },
+            { id: 'period-3', type: 'return', name: 'Return', startDate: '', endDate: '' }
         ];
-        let periodCounter = 3; // For generating unique IDs
+        let periodCounter = 3;
+
+        const PERIOD_TYPES = [
+            { value: 'prep', label: 'Prep', icon: '📅' },
+            { value: 'shoot', label: 'Shoot', icon: '🎥' },
+            { value: 'return', label: 'Return', icon: '🚛' }
+        ];
 
         // Modal styles for new elements
         const modalStyles = `
@@ -709,6 +744,23 @@
                 .v2-color-swatch-sm.color-pink { background-color: var(--v2-color-pink); }
                 .v2-color-swatch-sm.color-teal { background-color: var(--v2-color-teal); }
                 .v2-color-swatch-sm.color-indigo { background-color: var(--v2-color-indigo); }
+                .v2-color-swatch-sm.color-yellow { background-color: var(--v2-color-yellow); }
+                .v2-color-swatch-sm.color-amber { background-color: var(--v2-color-amber); }
+                .v2-color-swatch-sm.color-lime { background-color: var(--v2-color-lime); }
+                .v2-color-swatch-sm.color-emerald { background-color: var(--v2-color-emerald); }
+                .v2-color-swatch-sm.color-cyan { background-color: var(--v2-color-cyan); }
+                .v2-color-swatch-sm.color-sky { background-color: var(--v2-color-sky); }
+                .v2-color-swatch-sm.color-violet { background-color: var(--v2-color-violet); }
+                .v2-color-swatch-sm.color-fuchsia { background-color: var(--v2-color-fuchsia); }
+                .v2-color-swatch-sm.color-rose { background-color: var(--v2-color-rose); }
+                .v2-color-swatch-sm.color-slate { background-color: var(--v2-color-slate); }
+                .v2-color-swatch-sm.color-stone { background-color: var(--v2-color-stone); }
+                .v2-color-swatch-sm.color-neutral { background-color: var(--v2-color-neutral); }
+                .v2-color-swatch-sm.color-gold { background-color: var(--v2-color-gold); }
+                .v2-color-swatch-sm.color-crimson { background-color: var(--v2-color-crimson); }
+                .v2-color-swatch-sm.color-navy { background-color: var(--v2-color-navy); }
+                .v2-color-swatch-sm.color-aquamarine { background-color: var(--v2-color-aquamarine); }
+
 
                 /* Icon Option in Popover */
                 .v2-icon-option-sm {
@@ -757,6 +809,9 @@
                     display: flex;
                     flex-direction: column;
                     gap: var(--v2-space-sm);
+                    max-height: 300px;
+                    overflow-y: auto;
+                    margin-bottom: var(--v2-space-sm);
                 }
                 .v2-period-row {
                     display: grid;
@@ -772,12 +827,8 @@
                 .v2-period-row:focus-within {
                     border-color: var(--v2-brand-blue);
                 }
-                .v2-period-name {
-                    display: flex;
-                    align-items: center;
-                    gap: 6px;
-                }
-                .v2-period-name-input {
+                .v2-period-type-select {
+                    appearance: none;
                     background: transparent;
                     border: none;
                     color: var(--v2-text-primary);
@@ -785,9 +836,10 @@
                     font-size: var(--v2-font-size-sm);
                     font-weight: var(--v2-font-weight-medium);
                     padding: 4px;
-                    width: 80px;
+                    width: 100%;
+                    cursor: pointer;
                 }
-                .v2-period-name-input:focus {
+                .v2-period-type-select:focus {
                     outline: none;
                     background: var(--v2-surface-muted);
                     border-radius: var(--v2-radius-sm);
@@ -880,10 +932,20 @@
 
         // Build periods HTML
         function buildPeriodsHtml() {
-            return periods.map(p => `
+            if (periods.length === 0) {
+                return `<div class="v2-empty-state" style="padding: 16px; font-size: 13px;">No dates added yet.</div>`;
+            }
+            return periods.map(p => {
+                const typeOptions = PERIOD_TYPES.map(t =>
+                    `<option value="${t.value}" ${p.type === t.value ? 'selected' : ''}>${t.icon} ${t.label}</option>`
+                ).join('');
+
+                return `
                 <div class="v2-period-row" data-period-id="${p.id}">
                     <div class="v2-period-name">
-                        <input type="text" class="v2-period-name-input" value="${escapeHtml(p.name)}" placeholder="Name" data-field="name">
+                        <select class="v2-period-type-select" data-field="type">
+                            ${typeOptions}
+                        </select>
                     </div>
                     <input type="date" class="v2-date-input" value="${p.startDate}" data-field="startDate" aria-label="${p.name} Start Date">
                     <span class="v2-date-separator">to</span>
@@ -894,7 +956,7 @@
                         </svg>
                     </button>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         // Create modal backdrop
@@ -1058,7 +1120,15 @@
         function updatePeriodData(periodId, field, value) {
             const period = periods.find(p => p.id === periodId);
             if (period) {
-                period[field] = value;
+                if (field === 'type') {
+                    const typeInfo = PERIOD_TYPES.find(t => t.value === value);
+                    if (typeInfo) {
+                        period.type = value;
+                        period.name = typeInfo.label;
+                    }
+                } else {
+                    period[field] = value;
+                }
             }
         }
 
@@ -1071,17 +1141,13 @@
             periodCounter++;
             periods.push({
                 id: `period-${periodCounter}`,
-                name: '',
-                icon: '📌',
+                type: 'shoot',
+                name: 'Shoot',
                 startDate: '',
                 endDate: ''
             });
             renderPeriods();
-            // Focus the new name input
-            const lastRow = periodsContainer.querySelector('.v2-period-row:last-child');
-            if (lastRow) {
-                lastRow.querySelector('.v2-period-name-input').focus();
-            }
+            // Focus new date input? Or scroll to bottom
         }
 
         function renderPeriods() {
@@ -1093,17 +1159,23 @@
             periodsContainer.querySelectorAll('.v2-period-row').forEach(row => {
                 const periodId = row.dataset.periodId;
 
-                // Input changes
-                row.querySelectorAll('input').forEach(input => {
+                // Inputs
+                row.querySelectorAll('input, select').forEach(input => {
+                    input.addEventListener('change', () => {
+                        updatePeriodData(periodId, input.dataset.field, input.value);
+                    });
                     input.addEventListener('input', () => {
                         updatePeriodData(periodId, input.dataset.field, input.value);
                     });
                 });
 
                 // Remove button
-                row.querySelector('.v2-period-remove').addEventListener('click', () => {
-                    removePeriod(periodId);
-                });
+                const removeBtn = row.querySelector('.v2-period-remove');
+                if (removeBtn) {
+                    removeBtn.addEventListener('click', () => {
+                        removePeriod(periodId);
+                    });
+                }
             });
         }
 
@@ -1142,40 +1214,31 @@
 
             closeModal();
 
-            // Collect period data
-            const prepPeriod = periods.find(p => p.name.toLowerCase() === 'prep');
-            const shootPeriod = periods.find(p => p.name.toLowerCase() === 'shoot' || p.name.toLowerCase() === 'shooting');
-            const returnPeriod = periods.find(p => p.name.toLowerCase() === 'return');
-
+            // Collect period data into V1 structures
             const formatPeriod = (period) => {
-                if (!period) return [];
+                if (!period) return null;
                 const s = period.startDate;
                 const e = period.endDate;
-                if (!s && !e) return [];
-                if (s && e) return [`${s} to ${e}`];
-                if (s) return [s];
-                if (e) return [e];
-                return [];
+                if (!s && !e) return null;
+                if (s && e) return `${s} to ${e}`;
+                if (s) return s;
+                if (e) return e;
+                return null;
             };
 
-            const prepDays = formatPeriod(prepPeriod);
-            const shootingDays = formatPeriod(shootPeriod);
-            const returnDays = formatPeriod(returnPeriod);
+            const prepDays = periods.filter(p => p.type === 'prep').map(formatPeriod).filter(Boolean);
+            const shootingDays = periods.filter(p => p.type === 'shoot').map(formatPeriod).filter(Boolean);
+            const returnDays = periods.filter(p => p.type === 'return').map(formatPeriod).filter(Boolean);
 
-            // Also store all custom periods
-            const allPeriods = periods.map(p => ({
-                name: p.name,
-                startDate: p.startDate,
-                endDate: p.endDate
-            })).filter(p => p.name || p.startDate || p.endDate);
+            // Also store all custom periods for V2 use if needed, but V1 structure is key
+            // V1 expects arrays of strings like "YYYY-MM-DD to YYYY-MM-DD"
 
             createProject(projectName, {
                 color: selectedColor,
                 icon: selectedIcon,
                 prepDays,
                 shootingDays,
-                returnDays,
-                periods: allPeriods
+                returnDays
             });
         }
 

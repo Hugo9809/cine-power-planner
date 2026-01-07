@@ -163,17 +163,32 @@
     const projectData = getProjectData(projectName);
     const periodsContainer = document.getElementById('v2ProjectPeriods');
 
-    // Helper to get first range
-    const getFirstRange = (arr) => Array.isArray(arr) && arr.length > 0 ? formatDateRange(arr[0]) : '';
-    const prepStr = getFirstRange(projectData.prepDays);
-    const shootStr = getFirstRange(projectData.shootingDays);
-    const returnStr = getFirstRange(projectData.returnDays);
-
     if (periodsContainer) {
       let html = '';
-      if (prepStr) html += `<span class="v2-header-badge prep" title="Prep Dates"><span class="period-icon">📅</span> ${prepStr}</span>`;
-      if (shootStr) html += `<span class="v2-header-badge shoot" title="Shooting Dates"><span class="period-icon">🎥</span> ${shootStr}</span>`;
-      if (returnStr) html += `<span class="v2-header-badge return" title="Return Dates"><span class="period-icon">🚛</span> ${returnStr}</span>`;
+
+      // Render all Prep dates
+      if (Array.isArray(projectData.prepDays)) {
+        projectData.prepDays.forEach(range => {
+          const fmt = formatDateRange(range);
+          if (fmt) html += `<span class="v2-header-badge prep" title="Prep Dates: ${fmt}"><span class="period-icon">📅</span> ${fmt}</span>`;
+        });
+      }
+
+      // Render all Shoot dates
+      if (Array.isArray(projectData.shootingDays)) {
+        projectData.shootingDays.forEach(range => {
+          const fmt = formatDateRange(range);
+          if (fmt) html += `<span class="v2-header-badge shoot" title="Shooting Dates: ${fmt}"><span class="period-icon">🎥</span> ${fmt}</span>`;
+        });
+      }
+
+      // Render all Return dates
+      if (Array.isArray(projectData.returnDays)) {
+        projectData.returnDays.forEach(range => {
+          const fmt = formatDateRange(range);
+          if (fmt) html += `<span class="v2-header-badge return" title="Return Dates: ${fmt}"><span class="period-icon">🚛</span> ${fmt}</span>`;
+        });
+      }
 
       periodsContainer.innerHTML = html;
       periodsContainer.style.display = html ? 'flex' : 'none';
@@ -248,6 +263,13 @@
         <h1 id="v2ProjectName" class="view-header-title">Project</h1>
         <div id="v2ProjectPeriods" class="v2-header-periods" style="display: none;"></div>
         <div class="view-header-actions">
+          <button type="button" class="v2-btn v2-btn-ghost" id="v2PrintProjectBtn" title="Print / Export PDF">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 6 2 18 2 18 9"></polyline>
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+              <rect x="6" y="14" width="12" height="8"></rect>
+            </svg>
+          </button>
           <button type="button" class="v2-btn v2-btn-ghost" id="v2ExportProjectBtn" title="Export Project">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
@@ -541,6 +563,21 @@
     const backBtn = view.querySelector('#v2BackToProjects');
     if (backBtn) {
       backBtn.addEventListener('click', goBack);
+    }
+
+    // Print button
+    const printBtn = view.querySelector('#v2PrintProjectBtn');
+    if (printBtn) {
+      printBtn.addEventListener('click', () => {
+        console.log('[ProjectDetail] Triggering Print/Export');
+        if (global.cineFeaturePrint && typeof global.cineFeaturePrint.triggerOverviewPrintWorkflow === 'function') {
+          global.cineFeaturePrint.triggerOverviewPrintWorkflow({}, { reason: 'export' });
+        } else if (typeof global.triggerOverviewPrintWorkflow === 'function') {
+          global.triggerOverviewPrintWorkflow({}, { reason: 'export' });
+        } else {
+          window.print();
+        }
+      });
     }
 
     // Save button
