@@ -213,13 +213,19 @@
                 <div class="v2-settings-card">
                     <h3>${_t('generalSectionAppearanceHeading')}</h3>
                     <div class="v2-checkbox-group">
-                        <label class="v2-checkbox-row">
-                            <input type="checkbox" class="v2-checkbox" id="v2-settings-dark-mode">
-                            <span class="v2-label">${_t('darkModeSetting')}</span>
+                        <label class="v2-toggle-row">
+                            <span class="v2-toggle-label">${_t('darkModeSetting')}</span>
+                            <div class="v2-toggle-switch">
+                                <input type="checkbox" id="v2-settings-dark-mode">
+                                <span class="v2-toggle-slider"></span>
+                            </div>
                         </label>
-                        <label class="v2-checkbox-row">
-                            <input type="checkbox" class="v2-checkbox" id="v2-settings-pink-mode">
-                            <span class="v2-label">${_t('pinkModeSetting')}</span>
+                        <label class="v2-toggle-row">
+                            <span class="v2-toggle-label">${_t('pinkModeSetting')}</span>
+                            <div class="v2-toggle-switch">
+                                <input type="checkbox" id="v2-settings-pink-mode">
+                                <span class="v2-toggle-slider"></span>
+                            </div>
                         </label>
                     </div>
                     <div class="v2-form-group" style="margin-top: 1rem;">
@@ -312,17 +318,26 @@
                     <h3>${_t('generalSectionInterfaceHeading')}</h3>
                     <p>${_t('generalSectionInterfaceHelp')}</p>
                     <div class="v2-checkbox-group">
-                        <label class="v2-checkbox-row">
-                             <input type="checkbox" class="v2-checkbox" id="v2-settings-high-contrast">
-                             <span class="v2-label">${_t('checkboxHighContrast')}</span>
+                        <label class="v2-toggle-row">
+                             <span class="v2-toggle-label">${_t('checkboxHighContrast')}</span>
+                             <div class="v2-toggle-switch">
+                                 <input type="checkbox" id="v2-settings-high-contrast">
+                                 <span class="v2-toggle-slider"></span>
+                             </div>
                         </label>
-                        <label class="v2-checkbox-row">
-                             <input type="checkbox" class="v2-checkbox" id="v2-settings-reduce-motion">
-                             <span class="v2-label">${_t('checkboxReduceMotion')}</span>
+                        <label class="v2-toggle-row">
+                             <span class="v2-toggle-label">${_t('checkboxReduceMotion')}</span>
+                             <div class="v2-toggle-switch">
+                                 <input type="checkbox" id="v2-settings-reduce-motion">
+                                 <span class="v2-toggle-slider"></span>
+                             </div>
                         </label>
-                         <label class="v2-checkbox-row">
-                             <input type="checkbox" class="v2-checkbox" id="v2-settings-relaxed-spacing">
-                             <span class="v2-label">${_t('checkboxRelaxedSpacing')}</span>
+                         <label class="v2-toggle-row">
+                             <span class="v2-toggle-label">${_t('checkboxRelaxedSpacing')}</span>
+                             <div class="v2-toggle-switch">
+                                 <input type="checkbox" id="v2-settings-relaxed-spacing">
+                                 <span class="v2-toggle-slider"></span>
+                             </div>
                         </label>
                     </div>
                     
@@ -383,9 +398,12 @@
                 <div class="v2-settings-card">
                     <h3>${_t('settingsBackupAutomatedHeading')}</h3>
                     <div class="v2-form-group">
-                        <label class="v2-checkbox-row">
-                            <input type="checkbox" class="v2-checkbox" id="v2-settings-auto-backup">
-                            <span class="v2-label">${_t('checkboxAutoBackupList')}</span>
+                        <label class="v2-toggle-row">
+                            <span class="v2-toggle-label">${_t('checkboxAutoBackupList')}</span>
+                            <div class="v2-toggle-switch">
+                                <input type="checkbox" id="v2-settings-auto-backup">
+                                <span class="v2-toggle-slider"></span>
+                            </div>
                         </label>
                     </div>
                     <div class="v2-form-group" style="margin-top: 1rem;">
@@ -542,21 +560,33 @@
                         </div>
                     </div>
                     <div class="v2-checkbox-group" style="margin-top: 1rem;">
-                        <label class="v2-checkbox-row">
-                            <input type="checkbox" class="v2-checkbox" id="v2-settings-log-console">
-                            <span class="v2-label">${_t('checkboxMirrorConsole')}</span>
+                        <label class="v2-toggle-row">
+                            <span class="v2-toggle-label">${_t('checkboxMirrorConsole')}</span>
+                            <div class="v2-toggle-switch">
+                                <input type="checkbox" id="v2-settings-log-console">
+                                <span class="v2-toggle-slider"></span>
+                            </div>
                         </label>
-                        <label class="v2-checkbox-row">
-                            <input type="checkbox" class="v2-checkbox" id="v2-settings-log-capture">
-                            <span class="v2-label">${_t('checkboxCaptureConsole')}</span>
+                        <label class="v2-toggle-row">
+                            <span class="v2-toggle-label">${_t('checkboxCaptureConsole')}</span>
+                            <div class="v2-toggle-switch">
+                                <input type="checkbox" id="v2-settings-log-capture">
+                                <span class="v2-toggle-slider"></span>
+                            </div>
                         </label>
-                        <label class="v2-checkbox-row">
-                            <input type="checkbox" class="v2-checkbox" id="v2-settings-log-errors">
-                            <span class="v2-label">${_t('checkboxCaptureGlobalErrors')}</span>
+                        <label class="v2-toggle-row">
+                            <span class="v2-toggle-label">${_t('checkboxCaptureGlobalErrors')}</span>
+                            <div class="v2-toggle-switch">
+                                <input type="checkbox" id="v2-settings-log-errors">
+                                <span class="v2-toggle-slider"></span>
+                            </div>
                         </label>
-                        <label class="v2-checkbox-row">
-                            <input type="checkbox" class="v2-checkbox" id="v2-settings-log-persist">
-                            <span class="v2-label">${_t('checkboxPersistSession')}</span>
+                        <label class="v2-toggle-row">
+                            <span class="v2-toggle-label">${_t('checkboxPersistSession')}</span>
+                            <div class="v2-toggle-switch">
+                                <input type="checkbox" id="v2-settings-log-persist">
+                                <span class="v2-toggle-slider"></span>
+                            </div>
                         </label>
                     </div>
                     

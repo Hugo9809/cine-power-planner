@@ -14776,332 +14776,341 @@ let saveGearListDebounceTimer = null;
 
 function saveCurrentGearList() {
   if (saveGearListDebounceTimer) {
-     clearTimeout(saveGearListDebounceTimer);
+    clearTimeout(saveGearListDebounceTimer);
   }
-  
+
   saveGearListDebounceTimer = setTimeout(() => {
-      saveCurrentGearListImplementation();
+    saveCurrentGearListImplementation();
   }, 300);
 }
+
+let isSavingGearList = false;
 
 function saveCurrentGearListImplementation() {
 
   console.log('DEBUG: saveCurrentGearList ENTERED');
+  if (isSavingGearList) { console.log('DEBUG: saveCurrentGearList EXIT: recursion detected'); return; }
   if (factoryResetInProgress) { console.log('DEBUG: saveCurrentGearList EXIT: factoryResetInProgress'); return; }
   if (isProjectPersistenceSuspended()) { console.log('DEBUG: saveCurrentGearList EXIT: isProjectPersistenceSuspended'); return; }
   if (typeof restoringSession !== 'undefined' && restoringSession) { console.log('DEBUG: saveCurrentGearList EXIT: restoringSession'); return; }
 
-  console.log('DEBUG: saveCurrentGearList: collecting form data...');
-  const html = gearListGetCurrentHtmlImpl({ forPersistence: true });
-  const normalizedHtml = typeof html === 'string' ? html.trim() : '';
-  const gearListGenerated = Boolean(normalizedHtml);
-  const info = projectForm ? collectProjectFormData() : {};
-  info.sliderBowl = getSetupsCoreValue('getSliderBowlValue');
-  info.easyrig = getSetupsCoreValue('getEasyrigValue');
-  const previousProjectInfo = (currentProjectInfo && typeof currentProjectInfo === 'object')
-    ? currentProjectInfo
-    : null;
-  const requirementsVisible = Boolean(
-    projectRequirementsOutput
-    && typeof projectRequirementsOutput.querySelector === 'function'
-    && projectRequirementsOutput.querySelector('.requirement-box')
-  );
-  let pendingProjectInfo = deriveProjectInfo(info);
-  const powerSelectionSnapshot = getPowerSelectionSnapshot();
-  const gearSelectorsRaw = getGearListSelectors();
-  const gearSelectors = cloneGearListSelectors(gearSelectorsRaw);
-  const hasGearSelectors = Object.keys(gearSelectors).length > 0;
-  let nameState = typeof getSetupNameState === 'function'
-    ? getSetupNameState()
-    : null;
-  if (typeof getProjectAutoSaveOverrides === 'function') {
-    const overrides = getProjectAutoSaveOverrides();
-    if (overrides && typeof overrides === 'object' && overrides.setupNameState && typeof overrides.setupNameState === 'object') {
-      const normalize = (value) => (typeof value === 'string' ? value.trim() : '');
-      const rawOverride = overrides.setupNameState;
-      const overrideTyped = normalize(rawOverride.typedName);
-      const overrideSelected = normalize(rawOverride.selectedName);
-      const overrideStorage = normalize(
-        typeof rawOverride.storageKey === 'string'
-          ? rawOverride.storageKey
-          : (overrideSelected || overrideTyped),
-      );
-      const renameOverride = typeof rawOverride.renameInProgress === 'boolean'
-        ? rawOverride.renameInProgress
-        : Boolean(
-          overrideSelected
-          && overrideTyped
-          && overrideTyped !== overrideSelected,
+  isSavingGearList = true;
+  try {
+
+    console.log('DEBUG: saveCurrentGearList: collecting form data...');
+    const html = gearListGetCurrentHtmlImpl({ forPersistence: true });
+    const normalizedHtml = typeof html === 'string' ? html.trim() : '';
+    const gearListGenerated = Boolean(normalizedHtml);
+    const info = projectForm ? collectProjectFormData() : {};
+    info.sliderBowl = getSetupsCoreValue('getSliderBowlValue');
+    info.easyrig = getSetupsCoreValue('getEasyrigValue');
+    const previousProjectInfo = (currentProjectInfo && typeof currentProjectInfo === 'object')
+      ? currentProjectInfo
+      : null;
+    const requirementsVisible = Boolean(
+      projectRequirementsOutput
+      && typeof projectRequirementsOutput.querySelector === 'function'
+      && projectRequirementsOutput.querySelector('.requirement-box')
+    );
+    let pendingProjectInfo = deriveProjectInfo(info);
+    const powerSelectionSnapshot = getPowerSelectionSnapshot();
+    const gearSelectorsRaw = getGearListSelectors();
+    const gearSelectors = cloneGearListSelectors(gearSelectorsRaw);
+    const hasGearSelectors = Object.keys(gearSelectors).length > 0;
+    let nameState = typeof getSetupNameState === 'function'
+      ? getSetupNameState()
+      : null;
+    if (typeof getProjectAutoSaveOverrides === 'function') {
+      const overrides = getProjectAutoSaveOverrides();
+      if (overrides && typeof overrides === 'object' && overrides.setupNameState && typeof overrides.setupNameState === 'object') {
+        const normalize = (value) => (typeof value === 'string' ? value.trim() : '');
+        const rawOverride = overrides.setupNameState;
+        const overrideTyped = normalize(rawOverride.typedName);
+        const overrideSelected = normalize(rawOverride.selectedName);
+        const overrideStorage = normalize(
+          typeof rawOverride.storageKey === 'string'
+            ? rawOverride.storageKey
+            : (overrideSelected || overrideTyped),
         );
-      nameState = {
-        typedName: overrideTyped,
-        selectedName: overrideSelected,
-        storageKey: overrideStorage,
-        renameInProgress: renameOverride,
-        typedNameHasTrailingWhitespace: Boolean(
-          overrideTyped
-          && rawOverride
-          && typeof rawOverride.typedNameHasTrailingWhitespace === 'boolean'
-          && rawOverride.typedNameHasTrailingWhitespace,
-        ),
-      };
-    }
-  }
-  const fallbackNormalize = (value) => {
-    if (typeof value !== 'string') return '';
-    return value.trim();
-  };
-  const fallbackRawTypedName = setupNameInput && typeof setupNameInput.value === 'string'
-    ? setupNameInput.value
-    : '';
-  const fallbackTypedTrailingWhitespace = Boolean(
-    fallbackRawTypedName
-    && fallbackRawTypedName.trim()
-    && /\s$/.test(fallbackRawTypedName),
-  );
-  let selectedStorageKey = nameState
-    ? nameState.selectedName
-    : fallbackNormalize(setupSelect && typeof setupSelect.value === 'string' ? setupSelect.value : '');
-  let typedStorageKey = nameState
-    ? nameState.typedName
-    : fallbackNormalize(setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value : '');
-  let projectStorageKey = nameState
-    ? nameState.storageKey
-    : (selectedStorageKey || typedStorageKey);
-  const renameInProgress = nameState
-    ? nameState.renameInProgress
-    : Boolean(selectedStorageKey && typedStorageKey && selectedStorageKey !== typedStorageKey);
-  const typedNameHasTrailingWhitespace = nameState && typeof nameState === 'object'
-    ? Boolean(nameState.typedNameHasTrailingWhitespace && nameState.typedName)
-    : fallbackTypedTrailingWhitespace;
-  let effectiveStorageKey = renameInProgress
-    ? (selectedStorageKey || projectStorageKey)
-    : projectStorageKey;
-
-  console.log('DEBUG: saveCurrentGearList: effectiveStorageKey:', effectiveStorageKey);
-
-  const shouldDelayCollisionResolution = Boolean(
-    typedNameHasTrailingWhitespace
-    && !renameInProgress
-    && !selectedStorageKey
-    && typeof effectiveStorageKey === 'string'
-    && effectiveStorageKey
-    && doesProjectNameExist(effectiveStorageKey),
-  );
-
-  if (shouldDelayCollisionResolution) {
-    clearPendingProjectNameCollisionResolution(effectiveStorageKey);
-    return;
-  }
-
-  if (!renameInProgress && !selectedStorageKey && typeof effectiveStorageKey === 'string' && effectiveStorageKey) {
-    const pendingResolved = getPendingProjectNameCollisionResolution(effectiveStorageKey);
-    if (pendingResolved && pendingResolved !== effectiveStorageKey) {
-      effectiveStorageKey = pendingResolved;
-    } else if (!pendingResolved) {
-      let skipCollision = false;
-      if (sessionCreatedProjects.has(effectiveStorageKey)) {
-        skipCollision = true;
-      }
-      const resolved = skipCollision
-        ? { changed: false, name: effectiveStorageKey }
-        : resolveProjectStorageNameCollision(effectiveStorageKey);
-      if (resolved.changed && resolved.name && resolved.name !== effectiveStorageKey) {
-        rememberPendingProjectNameCollisionResolution(effectiveStorageKey, resolved.name);
-        effectiveStorageKey = resolved.name;
-      } else if (!resolved.changed) {
-        clearPendingProjectNameCollisionResolution(effectiveStorageKey);
+        const renameOverride = typeof rawOverride.renameInProgress === 'boolean'
+          ? rawOverride.renameInProgress
+          : Boolean(
+            overrideSelected
+            && overrideTyped
+            && overrideTyped !== overrideSelected,
+          );
+        nameState = {
+          typedName: overrideTyped,
+          selectedName: overrideSelected,
+          storageKey: overrideStorage,
+          renameInProgress: renameOverride,
+          typedNameHasTrailingWhitespace: Boolean(
+            overrideTyped
+            && rawOverride
+            && typeof rawOverride.typedNameHasTrailingWhitespace === 'boolean'
+            && rawOverride.typedNameHasTrailingWhitespace,
+          ),
+        };
       }
     }
-  } else {
-    clearPendingProjectNameCollisionResolution();
-  }
-  if (!pendingProjectInfo && requirementsVisible) {
-    if (previousProjectInfo && Object.keys(previousProjectInfo).length) {
-      pendingProjectInfo = previousProjectInfo;
-    } else if (typeof loadProject === 'function') {
-      const fallbackKey = (typeof effectiveStorageKey === 'string')
-        ? effectiveStorageKey
-        : (typeof projectStorageKey === 'string' && projectStorageKey)
-          ? projectStorageKey
-          : (typeof selectedStorageKey === 'string'
-            ? selectedStorageKey
-            : '');
-      if (typeof fallbackKey === 'string') {
-        const existingProject = loadProject(fallbackKey);
-        if (existingProject && existingProject.projectInfo && Object.keys(existingProject.projectInfo).length) {
-          pendingProjectInfo = cloneProjectInfoForStorage(existingProject.projectInfo);
+    const fallbackNormalize = (value) => {
+      if (typeof value !== 'string') return '';
+      return value.trim();
+    };
+    const fallbackRawTypedName = setupNameInput && typeof setupNameInput.value === 'string'
+      ? setupNameInput.value
+      : '';
+    const fallbackTypedTrailingWhitespace = Boolean(
+      fallbackRawTypedName
+      && fallbackRawTypedName.trim()
+      && /\s$/.test(fallbackRawTypedName),
+    );
+    let selectedStorageKey = nameState
+      ? nameState.selectedName
+      : fallbackNormalize(setupSelect && typeof setupSelect.value === 'string' ? setupSelect.value : '');
+    let typedStorageKey = nameState
+      ? nameState.typedName
+      : fallbackNormalize(setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value : '');
+    let projectStorageKey = nameState
+      ? nameState.storageKey
+      : (selectedStorageKey || typedStorageKey);
+    const renameInProgress = nameState
+      ? nameState.renameInProgress
+      : Boolean(selectedStorageKey && typedStorageKey && selectedStorageKey !== typedStorageKey);
+    const typedNameHasTrailingWhitespace = nameState && typeof nameState === 'object'
+      ? Boolean(nameState.typedNameHasTrailingWhitespace && nameState.typedName)
+      : fallbackTypedTrailingWhitespace;
+    let effectiveStorageKey = renameInProgress
+      ? (selectedStorageKey || projectStorageKey)
+      : projectStorageKey;
+
+    console.log('DEBUG: saveCurrentGearList: effectiveStorageKey:', effectiveStorageKey);
+
+    const shouldDelayCollisionResolution = Boolean(
+      typedNameHasTrailingWhitespace
+      && !renameInProgress
+      && !selectedStorageKey
+      && typeof effectiveStorageKey === 'string'
+      && effectiveStorageKey
+      && doesProjectNameExist(effectiveStorageKey),
+    );
+
+    if (shouldDelayCollisionResolution) {
+      clearPendingProjectNameCollisionResolution(effectiveStorageKey);
+      return;
+    }
+
+    if (!renameInProgress && !selectedStorageKey && typeof effectiveStorageKey === 'string' && effectiveStorageKey) {
+      const pendingResolved = getPendingProjectNameCollisionResolution(effectiveStorageKey);
+      if (pendingResolved && pendingResolved !== effectiveStorageKey) {
+        effectiveStorageKey = pendingResolved;
+      } else if (!pendingResolved) {
+        let skipCollision = false;
+        if (sessionCreatedProjects.has(effectiveStorageKey)) {
+          skipCollision = true;
+        }
+        const resolved = skipCollision
+          ? { changed: false, name: effectiveStorageKey }
+          : resolveProjectStorageNameCollision(effectiveStorageKey);
+        if (resolved.changed && resolved.name && resolved.name !== effectiveStorageKey) {
+          rememberPendingProjectNameCollisionResolution(effectiveStorageKey, resolved.name);
+          effectiveStorageKey = resolved.name;
+        } else if (!resolved.changed) {
+          clearPendingProjectNameCollisionResolution(effectiveStorageKey);
+        }
+      }
+    } else {
+      clearPendingProjectNameCollisionResolution();
+    }
+    if (!pendingProjectInfo && requirementsVisible) {
+      if (previousProjectInfo && Object.keys(previousProjectInfo).length) {
+        pendingProjectInfo = previousProjectInfo;
+      } else if (typeof loadProject === 'function') {
+        const fallbackKey = (typeof effectiveStorageKey === 'string')
+          ? effectiveStorageKey
+          : (typeof projectStorageKey === 'string' && projectStorageKey)
+            ? projectStorageKey
+            : (typeof selectedStorageKey === 'string'
+              ? selectedStorageKey
+              : '');
+        if (typeof fallbackKey === 'string') {
+          const existingProject = loadProject(fallbackKey);
+          if (existingProject && existingProject.projectInfo && Object.keys(existingProject.projectInfo).length) {
+            pendingProjectInfo = cloneProjectInfoForStorage(existingProject.projectInfo);
+          }
+        }
+      }
+      if (!pendingProjectInfo) {
+        const gridInfo = collectProjectInfoFromRequirementsGrid();
+        if (gridInfo) {
+          pendingProjectInfo = deriveProjectInfo(gridInfo) || gridInfo;
         }
       }
     }
-    if (!pendingProjectInfo) {
-      const gridInfo = collectProjectInfoFromRequirementsGrid();
-      if (gridInfo) {
-        pendingProjectInfo = deriveProjectInfo(gridInfo) || gridInfo;
+    currentProjectInfo = pendingProjectInfo;
+    const projectInfoForStorage = typeof createProjectInfoSnapshotForStorage === 'function'
+      ? createProjectInfoSnapshotForStorage(currentProjectInfo, {
+        projectNameOverride: renameInProgress ? (selectedStorageKey || projectStorageKey) : undefined,
+      })
+      : currentProjectInfo;
+    const projectInfoSnapshot = cloneProjectInfoForStorage(projectInfoForStorage);
+    const projectInfoSignature = projectInfoSnapshot ? stableStringify(projectInfoSnapshot) : '';
+    const projectInfoSnapshotForSetups = projectInfoSnapshot ? cloneProjectInfoForStorage(projectInfoSnapshot) : null;
+    const projectRulesRaw = getProjectScopedAutoGearRules();
+    const projectRulesSnapshot = projectRulesRaw && projectRulesRaw.length
+      ? cloneProjectInfoForStorage(projectRulesRaw)
+      : null;
+    const projectRulesSnapshotForSetups = projectRulesSnapshot
+      ? cloneProjectInfoForStorage(projectRulesSnapshot)
+      : null;
+    let diagramPositionsSnapshot = null;
+    let diagramPositionsSnapshotForSetups = null;
+    if (typeof getDiagramManualPositions === 'function') {
+      const positions = getDiagramManualPositions();
+      if (positions && Object.keys(positions).length) {
+        diagramPositionsSnapshot = cloneProjectInfoForStorage(positions);
+        diagramPositionsSnapshotForSetups = cloneProjectInfoForStorage(diagramPositionsSnapshot);
+      }
+
+    }
+    if (typeof saveProject === 'function' && typeof effectiveStorageKey === 'string') {
+      if (typeof setActiveProjectCompressionHold === 'function') {
+        setActiveProjectCompressionHold(effectiveStorageKey);
+      }
+      const payload = {
+        projectInfo: projectInfoSnapshot,
+        gearListAndProjectRequirementsGenerated: gearListGenerated
+      };
+      if (powerSelectionSnapshot) {
+        payload.powerSelection = powerSelectionSnapshot;
+      }
+      if (hasGearSelectors) {
+        payload.gearSelectors = gearSelectors;
+      }
+      if (diagramPositionsSnapshot) {
+        payload.diagramPositions = diagramPositionsSnapshot;
+      }
+      if (projectRulesSnapshot && projectRulesSnapshot.length) {
+        payload.autoGearRules = projectRulesSnapshot;
+      }
+
+      saveProject(effectiveStorageKey, payload, { skipOverwriteBackup: true });
+
+
+      sessionCreatedProjects.add(effectiveStorageKey);
+    }
+
+    const targetStorageKey = selectedStorageKey || effectiveStorageKey;
+    if (!targetStorageKey) return;
+
+    const setups = getSetups();
+    const existing = setups[targetStorageKey];
+    if (
+      !existing
+      && !html
+      && !currentProjectInfo
+      && !(projectRulesSnapshot && projectRulesSnapshot.length)
+      && !diagramPositionsSnapshot
+    ) {
+      return;
+    }
+
+    const setup = existing || {};
+    let changed = false;
+
+    if (setup.gearListAndProjectRequirementsGenerated !== gearListGenerated) {
+      setup.gearListAndProjectRequirementsGenerated = gearListGenerated;
+      changed = true;
+    }
+
+    if (setup.gearList !== normalizedHtml) {
+      setup.gearList = normalizedHtml;
+      changed = true;
+    }
+
+    if (projectInfoSignature) {
+      const existingInfo = setup.projectInfo;
+      const existingInfoSignature = existingInfo ? stableStringify(existingInfo) : '';
+      if (existingInfoSignature !== projectInfoSignature) {
+        setup.projectInfo = projectInfoSnapshotForSetups;
+        changed = true;
+      }
+    } else if (projectInfoSnapshot === null) {
+      if (setup.projectInfo !== null) {
+        setup.projectInfo = null;
+        changed = true;
+      }
+    } else if (Object.prototype.hasOwnProperty.call(setup, 'projectInfo')) {
+      delete setup.projectInfo;
+      changed = true;
+    }
+
+    if (diagramPositionsSnapshotForSetups) {
+      const existingDiagramSig = setup.diagramPositions
+        ? stableStringify(setup.diagramPositions)
+        : '';
+      const newDiagramSig = stableStringify(diagramPositionsSnapshotForSetups);
+      if (existingDiagramSig !== newDiagramSig) {
+        setup.diagramPositions = diagramPositionsSnapshotForSetups;
+        changed = true;
+      }
+    } else if (Object.prototype.hasOwnProperty.call(setup, 'diagramPositions')) {
+      delete setup.diagramPositions;
+      changed = true;
+    }
+
+    const existingRules = setup.autoGearRules;
+    const existingRulesSig = existingRules && existingRules.length ? stableStringify(existingRules) : '';
+    const newRulesSig = projectRulesSnapshot && projectRulesSnapshot.length ? stableStringify(projectRulesSnapshot) : '';
+    if (newRulesSig) {
+      if (existingRulesSig !== newRulesSig) {
+        setup.autoGearRules = projectRulesSnapshotForSetups;
+        changed = true;
+      }
+    } else if (Object.prototype.hasOwnProperty.call(setup, 'autoGearRules')) {
+      delete setup.autoGearRules;
+      changed = true;
+    }
+
+    const existingSelectors = setup.gearSelectors;
+    const existingSelectorsSig = existingSelectors ? stableStringify(existingSelectors) : '';
+    const newSelectorsSig = hasGearSelectors ? stableStringify(gearSelectors) : '';
+    if (newSelectorsSig) {
+      if (existingSelectorsSig !== newSelectorsSig) {
+        setup.gearSelectors = gearSelectors;
+        changed = true;
+      }
+    } else if (Object.prototype.hasOwnProperty.call(setup, 'gearSelectors')) {
+      delete setup.gearSelectors;
+      changed = true;
+    }
+    const existingPowerSelectionSig = setup.powerSelection ? stableStringify(setup.powerSelection) : '';
+    const newPowerSelectionSig = powerSelectionSnapshot ? stableStringify(powerSelectionSnapshot) : '';
+    if (newPowerSelectionSig) {
+      if (existingPowerSelectionSig !== newPowerSelectionSig) {
+        setup.powerSelection = powerSelectionSnapshot;
+        changed = true;
+      }
+    } else if (Object.prototype.hasOwnProperty.call(setup, 'powerSelection')) {
+      delete setup.powerSelection;
+      changed = true;
+    }
+
+    const setupStorageKey = selectedStorageKey || effectiveStorageKey;
+    if (setupStorageKey) {
+      if (!existing) {
+        setups[setupStorageKey] = setup;
+        storeSetups(setups);
+      } else if (changed) {
+        setups[setupStorageKey] = setup;
+        storeSetups(setups);
       }
     }
+    console.log('DEBUG: saveCurrentGearList EXIT: Success');
+    return changed;
+  } finally {
+    isSavingGearList = false;
   }
-  currentProjectInfo = pendingProjectInfo;
-  const projectInfoForStorage = typeof createProjectInfoSnapshotForStorage === 'function'
-    ? createProjectInfoSnapshotForStorage(currentProjectInfo, {
-      projectNameOverride: renameInProgress ? (selectedStorageKey || projectStorageKey) : undefined,
-    })
-    : currentProjectInfo;
-  const projectInfoSnapshot = cloneProjectInfoForStorage(projectInfoForStorage);
-  const projectInfoSignature = projectInfoSnapshot ? stableStringify(projectInfoSnapshot) : '';
-  const projectInfoSnapshotForSetups = projectInfoSnapshot ? cloneProjectInfoForStorage(projectInfoSnapshot) : null;
-  const projectRulesRaw = getProjectScopedAutoGearRules();
-  const projectRulesSnapshot = projectRulesRaw && projectRulesRaw.length
-    ? cloneProjectInfoForStorage(projectRulesRaw)
-    : null;
-  const projectRulesSnapshotForSetups = projectRulesSnapshot
-    ? cloneProjectInfoForStorage(projectRulesSnapshot)
-    : null;
-  let diagramPositionsSnapshot = null;
-  let diagramPositionsSnapshotForSetups = null;
-  if (typeof getDiagramManualPositions === 'function') {
-    const positions = getDiagramManualPositions();
-    if (positions && Object.keys(positions).length) {
-      diagramPositionsSnapshot = cloneProjectInfoForStorage(positions);
-      diagramPositionsSnapshotForSetups = cloneProjectInfoForStorage(diagramPositionsSnapshot);
-    }
-
-  }
-  if (typeof saveProject === 'function' && typeof effectiveStorageKey === 'string') {
-    if (typeof setActiveProjectCompressionHold === 'function') {
-      setActiveProjectCompressionHold(effectiveStorageKey);
-    }
-    const payload = {
-      projectInfo: projectInfoSnapshot,
-      gearListAndProjectRequirementsGenerated: gearListGenerated
-    };
-    if (powerSelectionSnapshot) {
-      payload.powerSelection = powerSelectionSnapshot;
-    }
-    if (hasGearSelectors) {
-      payload.gearSelectors = gearSelectors;
-    }
-    if (diagramPositionsSnapshot) {
-      payload.diagramPositions = diagramPositionsSnapshot;
-    }
-    if (projectRulesSnapshot && projectRulesSnapshot.length) {
-      payload.autoGearRules = projectRulesSnapshot;
-    }
-
-    saveProject(effectiveStorageKey, payload, { skipOverwriteBackup: true });
-
-
-    sessionCreatedProjects.add(effectiveStorageKey);
-  }
-
-  const targetStorageKey = selectedStorageKey || effectiveStorageKey;
-  if (!targetStorageKey) return;
-
-  const setups = getSetups();
-  const existing = setups[targetStorageKey];
-  if (
-    !existing
-    && !html
-    && !currentProjectInfo
-    && !(projectRulesSnapshot && projectRulesSnapshot.length)
-    && !diagramPositionsSnapshot
-  ) {
-    return;
-  }
-
-  const setup = existing || {};
-  let changed = false;
-
-  if (setup.gearListAndProjectRequirementsGenerated !== gearListGenerated) {
-    setup.gearListAndProjectRequirementsGenerated = gearListGenerated;
-    changed = true;
-  }
-
-  if (setup.gearList !== normalizedHtml) {
-    setup.gearList = normalizedHtml;
-    changed = true;
-  }
-
-  if (projectInfoSignature) {
-    const existingInfo = setup.projectInfo;
-    const existingInfoSignature = existingInfo ? stableStringify(existingInfo) : '';
-    if (existingInfoSignature !== projectInfoSignature) {
-      setup.projectInfo = projectInfoSnapshotForSetups;
-      changed = true;
-    }
-  } else if (projectInfoSnapshot === null) {
-    if (setup.projectInfo !== null) {
-      setup.projectInfo = null;
-      changed = true;
-    }
-  } else if (Object.prototype.hasOwnProperty.call(setup, 'projectInfo')) {
-    delete setup.projectInfo;
-    changed = true;
-  }
-
-  if (diagramPositionsSnapshotForSetups) {
-    const existingDiagramSig = setup.diagramPositions
-      ? stableStringify(setup.diagramPositions)
-      : '';
-    const newDiagramSig = stableStringify(diagramPositionsSnapshotForSetups);
-    if (existingDiagramSig !== newDiagramSig) {
-      setup.diagramPositions = diagramPositionsSnapshotForSetups;
-      changed = true;
-    }
-  } else if (Object.prototype.hasOwnProperty.call(setup, 'diagramPositions')) {
-    delete setup.diagramPositions;
-    changed = true;
-  }
-
-  const existingRules = setup.autoGearRules;
-  const existingRulesSig = existingRules && existingRules.length ? stableStringify(existingRules) : '';
-  const newRulesSig = projectRulesSnapshot && projectRulesSnapshot.length ? stableStringify(projectRulesSnapshot) : '';
-  if (newRulesSig) {
-    if (existingRulesSig !== newRulesSig) {
-      setup.autoGearRules = projectRulesSnapshotForSetups;
-      changed = true;
-    }
-  } else if (Object.prototype.hasOwnProperty.call(setup, 'autoGearRules')) {
-    delete setup.autoGearRules;
-    changed = true;
-  }
-
-  const existingSelectors = setup.gearSelectors;
-  const existingSelectorsSig = existingSelectors ? stableStringify(existingSelectors) : '';
-  const newSelectorsSig = hasGearSelectors ? stableStringify(gearSelectors) : '';
-  if (newSelectorsSig) {
-    if (existingSelectorsSig !== newSelectorsSig) {
-      setup.gearSelectors = gearSelectors;
-      changed = true;
-    }
-  } else if (Object.prototype.hasOwnProperty.call(setup, 'gearSelectors')) {
-    delete setup.gearSelectors;
-    changed = true;
-  }
-  const existingPowerSelectionSig = setup.powerSelection ? stableStringify(setup.powerSelection) : '';
-  const newPowerSelectionSig = powerSelectionSnapshot ? stableStringify(powerSelectionSnapshot) : '';
-  if (newPowerSelectionSig) {
-    if (existingPowerSelectionSig !== newPowerSelectionSig) {
-      setup.powerSelection = powerSelectionSnapshot;
-      changed = true;
-    }
-  } else if (Object.prototype.hasOwnProperty.call(setup, 'powerSelection')) {
-    delete setup.powerSelection;
-    changed = true;
-  }
-
-  const setupStorageKey = selectedStorageKey || effectiveStorageKey;
-  if (setupStorageKey) {
-    if (!existing) {
-      setups[setupStorageKey] = setup;
-      storeSetups(setups);
-    } else if (changed) {
-      setups[setupStorageKey] = setup;
-      storeSetups(setups);
-    }
-  }
-  console.log('DEBUG: saveCurrentGearList EXIT: Success');
-  return changed;
 }
 
 function deleteCurrentGearList() {

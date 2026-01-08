@@ -563,9 +563,32 @@
         });
     }
 
-    function openPreview() {
+    function openPreview(options) {
         if (!state.elements.modal) initializeDomReferences();
         if (!state.elements.modal) return;
+
+        // Apply options
+        if (options && typeof options === 'object') {
+            if (options.layout === 'rental') {
+                state.preferences.layout = 'rental';
+                if (state.elements.layoutToggle) {
+                    state.elements.layoutToggle.checked = true;
+                    // Trigger change logic to update sections
+                    state.elements.layoutToggle.dispatchEvent(new Event('change'));
+                } else {
+                    // Fallback if toggle not found (unlikely)
+                    state.preferences.sections.devices = false;
+                    state.preferences.sections.diagram = false;
+                    state.preferences.sections.battery = false;
+                }
+            } else if (options.layout === 'standard') {
+                state.preferences.layout = 'standard';
+                if (state.elements.layoutToggle) {
+                    state.elements.layoutToggle.checked = false;
+                    state.elements.layoutToggle.dispatchEvent(new Event('change'));
+                }
+            }
+        }
 
         // bindEvents() and localizeStaticContent() are called on init
         // We re-render content to ensure it's fresh

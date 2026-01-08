@@ -36,6 +36,7 @@
 .v2-sidebar-logo {
     width: 56px;
     height: 56px;
+    max-width: 100%;
     object-fit: contain;
 }
 

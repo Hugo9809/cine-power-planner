@@ -270,6 +270,16 @@
               <rect x="6" y="14" width="12" height="8"></rect>
             </svg>
           </button>
+          <button type="button" class="v2-btn v2-btn-ghost" id="v2GenerateReqsGearBtn" title="Generate Project Requirements and Gear List">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+               <polyline points="14 2 14 8 20 8"></polyline>
+               <line x1="16" y1="13" x2="8" y2="13"></line>
+               <line x1="16" y1="17" x2="8" y2="17"></line>
+               <line x1="10" y1="9" x2="8" y2="9"></line>
+            </svg>
+            <span class="v2-btn-label">Reqs & Gear</span>
+          </button>
           <button type="button" class="v2-btn v2-btn-ghost" id="v2ExportProjectBtn" title="Export Project">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
@@ -456,11 +466,19 @@
         // Ensure it's visible (legacy might hide it)
         legacyElement.style.display = 'block';
 
-        // Remove V2 Styling if present
-        legacyElement.classList.remove('v2-select-input');
+        // APPLY V2 STYLING
+        const tagName = legacyElement.tagName.toLowerCase();
+        if (tagName === 'select') {
+          legacyElement.classList.add('v2-select');
+        } else if (tagName === 'input') {
+          legacyElement.classList.add('v2-input');
+        } else if (tagName === 'textarea') {
+          legacyElement.classList.add('v2-input', 'v2-textarea');
+        }
 
-        // Reset styles that might have been set by V2 previously
-        legacyElement.style.width = '';
+        // Reset styles that might have been set by V2 previously or legacy inline styles
+        // We want to KEEP width if it's 100% or similar, but reset fixed pixel widths that break layout
+        legacyElement.style.width = '100%';
         legacyElement.style.height = '';
         legacyElement.style.minHeight = '';
         legacyElement.style.whiteSpace = '';
@@ -468,6 +486,12 @@
         // Check if the element has a wrapper (which holds the favorite button)
         const wrapper = legacyElement.closest('.select-wrapper');
         const elementToMove = wrapper || legacyElement;
+
+        // Ensure wrapper also behaves if present
+        if (wrapper) {
+          wrapper.classList.add('v2-select-container'); // Helper class if needed in CSS
+          wrapper.style.width = '100%';
+        }
 
         // Replace the placeholder container with the legitimate legacy wrapper/element
         // This ensures the DOM structure matches V1 exactly: .form-row > .select-wrapper > select
@@ -587,6 +611,20 @@
         if (global.cineLegacyShim && currentProject) {
           const legacySaveBtn = document.getElementById('saveSetupBtn');
           if (legacySaveBtn) legacySaveBtn.click();
+        }
+      });
+    }
+
+    // Generate Requirements & Gear List Button
+    const reqsGearBtn = view.querySelector('#v2GenerateReqsGearBtn');
+    if (reqsGearBtn) {
+      reqsGearBtn.addEventListener('click', () => {
+        console.log('[ProjectDetail] Triggering Requirements & Gear List Generation');
+        if (global.cineFeaturePrintPreview && typeof global.cineFeaturePrintPreview.open === 'function') {
+          global.cineFeaturePrintPreview.open({ layout: 'rental' });
+        } else {
+          console.warn('[ProjectDetail] Print Preview module not found');
+          alert('Feature not available: Print Preview module missing');
         }
       });
     }
@@ -836,6 +874,9 @@
 
     // Setup power observer
     setupPowerObserver();
+
+    // [Added by Agent] Initial sync to capture state that existed before observer started
+    syncLegacyResultsToV2();
 
     // Listen for view changes
     document.addEventListener('v2:viewchange', handleViewChange);

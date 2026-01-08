@@ -76,18 +76,30 @@
 /* =====================
  * GHOST BUTTON
  * ===================== */
+/* =====================
+ * GHOST BUTTON (Sidebar Link Style)
+ * ===================== */
 .v2-btn-ghost {
     background-color: transparent;
-    color: var(--v2-text-primary);
+    color: var(--v2-text-secondary);
+    /* Start secondary like links */
     border: 1px solid transparent;
+    font-weight: var(--v2-font-weight-medium);
 }
 
 .v2-btn-ghost:hover:not(:disabled) {
     background-color: var(--v2-surface-muted);
+    /* Premium light gray hover */
+    color: var(--v2-text-primary);
 }
 
 .v2-btn-ghost:active:not(:disabled) {
-    background-color: var(--v2-surface-sunken);
+    background-color: var(--v2-surface-sunken, #e5e5e5);
+}
+
+.v2-btn-ghost.active {
+    background-color: var(--v2-brand-blue);
+    color: var(--v2-text-inverse);
 }
 
 /* =====================

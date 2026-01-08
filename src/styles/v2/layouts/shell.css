@@ -9,7 +9,7 @@
  * ===================== */
 .v2-app {
     display: grid;
-    grid-template-columns: var(--v2-sidebar-width) 1fr;
+    grid-template-columns: var(--v2-sidebar-width) minmax(0, 1fr);
     grid-template-rows: 1fr;
     height: 100vh;
     overflow: hidden;
@@ -18,7 +18,7 @@
 
 /* Collapsed sidebar state */
 .v2-app.sidebar-collapsed {
-    grid-template-columns: var(--v2-sidebar-collapsed-width) 1fr;
+    grid-template-columns: var(--v2-sidebar-collapsed-width) minmax(0, 1fr);
 }
 
 /* =====================

@@ -72,7 +72,7 @@
             const contactsModule = global.cineFeaturesContacts;
             if (!contactsModule) {
                 this.container.innerHTML = `
-                    <div class="v2-empty-state">
+                    <div class="view-empty-state">
                         <p>Contacts module not loaded.</p>
                     </div>
                 `;
@@ -99,12 +99,16 @@
             let contentHtml = '<div class="view-content">';
 
             if (!contacts || contacts.length === 0) {
+                // Use Standard V2 Empty State Structure
                 contentHtml += `
-                    <div class="contacts-empty-state">
-                        <span class="icon">group</span>
-                        <h3>${_t('contactsEmptyTitle')}</h3>
-                        <p>${_t('contactsEmptyText')}</p>
+                    <div class="view-empty-state">
+                         <div class="view-empty-state-icon" style="font-size: 64px; opacity: 0.8; margin-bottom: 16px;">
+                            <span class="icon">group</span>
+                        </div>
+                        <h2>${_t('contactsEmptyTitle')}</h2>
+                        <p class="text-muted" style="margin-bottom: 24px;">${_t('contactsEmptyText')}</p>
                         <button class="v2-btn v2-btn-primary" id="btn-add-contact-empty">
+                            <span class="icon">add</span>
                             ${_t('buttonAddFirstContact')}
                         </button>
                     </div>
@@ -136,17 +140,10 @@
             const emailLink = contact.email ? `<a href="mailto:${escapeHtml(contact.email)}" onclick="event.stopPropagation()">${escapeHtml(contact.email)}</a>` : '';
             const websiteLink = contact.website ? `<a href="${escapeHtml(contact.website)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${_t('linkWebsite')}</a>` : '';
 
+            // Using V2 Card Structure
             return `
-                <div class="contact-card" data-contact-id="${escapeHtml(contact.id)}">
-                    <div class="contact-actions">
-                        <button class="v2-btn v2-btn-icon v2-btn-ghost btn-edit-contact" title="${_t('buttonEdit')}">
-                            <span class="icon">edit</span>
-                        </button>
-                        <button class="v2-btn v2-btn-icon v2-btn-ghost btn-delete-contact" title="${_t('buttonDelete')}">
-                            <span class="icon">delete</span>
-                        </button>
-                    </div>
-                    <div class="contact-header">
+                <div class="v2-card v2-card-interactive contact-card" data-contact-id="${escapeHtml(contact.id)}" tabindex="0" role="button">
+                    <div class="contact-card-header">
                         <div class="contact-avatar">
                             ${avatarHtml}
                         </div>
@@ -154,32 +151,43 @@
                             <div class="contact-name">${escapeHtml(contact.name || _t('contactUnnamed'))}</div>
                             <div class="contact-role">${escapeHtml(contact.role || _t('contactNoRole'))}</div>
                         </div>
+                        <div class="contact-card-actions">
+                            <button class="v2-btn v2-btn-icon v2-btn-ghost btn-edit-contact" title="${_t('buttonEdit')}">
+                                <span class="icon">edit</span>
+                            </button>
+                            <button class="v2-btn v2-btn-icon v2-btn-ghost btn-delete-contact" title="${_t('buttonDelete')}">
+                                <span class="icon">delete</span>
+                            </button>
+                        </div>
                     </div>
-                    <div class="contact-details">
-                        ${contact.phone ? `
-                            <div class="contact-detail-row">
-                                <span class="icon">call</span>
-                                ${phoneLink}
-                            </div>
-                        ` : ''}
-                        ${contact.email ? `
-                            <div class="contact-detail-row">
-                                <span class="icon">mail</span>
-                                ${emailLink}
-                            </div>
-                        ` : ''}
-                        ${contact.website ? `
-                            <div class="contact-detail-row">
-                                <span class="icon">language</span>
-                                ${websiteLink}
-                            </div>
-                        ` : ''}
-                         ${contact.notes ? `
-                            <div class="contact-detail-row" style="margin-top: 4px; font-style: italic; opacity: 0.8;">
-                                <span class="icon">description</span>
-                                <div>${escapeHtml(contact.notes)}</div>
-                            </div>
-                        ` : ''}
+                    
+                    <div class="v2-card-body" style="padding-top: 0; padding-bottom: 0;">
+                        <div class="contact-details">
+                            ${contact.phone ? `
+                                <div class="contact-detail-row">
+                                    <span class="icon">call</span>
+                                    ${phoneLink}
+                                </div>
+                            ` : ''}
+                            ${contact.email ? `
+                                <div class="contact-detail-row">
+                                    <span class="icon">mail</span>
+                                    ${emailLink}
+                                </div>
+                            ` : ''}
+                            ${contact.website ? `
+                                <div class="contact-detail-row">
+                                    <span class="icon">language</span>
+                                    ${websiteLink}
+                                </div>
+                            ` : ''}
+                             ${contact.notes ? `
+                                <div class="contact-detail-row" style="margin-top: 8px; font-style: italic; opacity: 0.8; align-items: flex-start;">
+                                    <span class="icon" style="margin-top:2px;">description</span>
+                                    <div>${escapeHtml(contact.notes)}</div>
+                                </div>
+                            ` : ''}
+                        </div>
                     </div>
                 </div>
             `;

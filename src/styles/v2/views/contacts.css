@@ -2,7 +2,8 @@
 
 #view-contacts .view-content {
     padding: 24px;
-    height: calc(100vh - 64px); /* Subtract header height */
+    height: calc(100vh - 64px);
+    /* Subtract header height */
     overflow-y: auto;
 }
 
@@ -14,60 +15,16 @@
     padding-bottom: 40px;
 }
 
-.contacts-empty-state {
-    grid-column: 1 / -1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 20px;
-    text-align: center;
-    background: var(--bg-surface);
-    border-radius: 8px;
-    border: 1px dashed var(--border-color);
-    color: var(--text-secondary);
-}
+/* 
+   Empty State - Now uses global .view-empty-state structure in HTML 
+   but specific overrides can go here if needed.
+*/
 
-.contacts-empty-state .icon {
-    font-size: 48px;
-    margin-bottom: 16px;
-    opacity: 0.5;
-}
+/* Contact Card Internals 
+   Note: The main card container uses .v2-card classes now.
+*/
 
-.contacts-empty-state h3 {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 8px;
-    color: var(--text-primary);
-}
-
-.contacts-empty-state p {
-    max-width: 400px;
-    margin-bottom: 24px;
-    font-size: 14px;
-}
-
-/* Contact Card */
-.contact-card {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    transition: all 0.2s ease;
-    position: relative;
-    cursor: pointer;
-}
-
-.contact-card:hover {
-    border-color: var(--primary-color);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
-}
-
-.contact-header {
+.contact-card-header {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -97,7 +54,8 @@
 
 .contact-info {
     flex: 1;
-    min-width: 0; /* Enable text truncation */
+    min-width: 0;
+    /* Enable text truncation */
 }
 
 .contact-name {
@@ -126,7 +84,7 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    margin-top: 4px;
+    margin-top: 12px;
     font-size: 13px;
     color: var(--text-secondary);
 }
@@ -155,35 +113,17 @@
     text-decoration: underline;
 }
 
-.contact-actions {
-    position: absolute;
-    top: 12px;
-    right: 12px;
+.contact-card-actions {
+    margin-left: auto;
     display: flex;
     gap: 4px;
-    opacity: 0;
-    transition: opacity 0.2s;
 }
 
-.contact-card:hover .contact-actions {
-    opacity: 1;
-}
-
-.contact-actions .v2-btn-icon {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-color);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.contact-actions .v2-btn-icon:hover {
-    background: var(--bg-surface-hover);
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-}
 
 /* Modal Styles */
 .contacts-modal-body {
-    padding: 24px;
+    padding: 0;
+    /* Let standard modal styles handle padding if possible, or keep minimal */
     display: flex;
     flex-direction: column;
     gap: 20px;

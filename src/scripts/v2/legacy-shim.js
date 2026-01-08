@@ -291,9 +291,11 @@
         const setupSelect = document.getElementById('setupSelect');
         if (!setupSelect) return [];
 
-        return Array.from(setupSelect.options)
+        const names = Array.from(setupSelect.options)
             .map(opt => opt.value)
             .filter(val => val !== ''); // Exclude "New Project" option
+
+        return [...new Set(names)]; // Deduplicate
     }
 
     // =====================

@@ -136,7 +136,7 @@
         // 2. Filter by Type (Placeholder for Archive logic)
         // if (currentFilter.type === 'archived') { ... }
 
-        return projects;
+        return [...new Set(projects)];
     }
 
     /**

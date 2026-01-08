@@ -15134,6 +15134,14 @@ if (powerWarningDialog) {
 }
 
 function drawPowerDiagram(availableWatt, segments, maxPinA) {
+  // [Added by Agent] Calculate total immediately to support V2 stats sync
+  const total = (segments || []).reduce((sum, s) => sum + s.power, 0);
+
+  // [Added by Agent] Update total draw text immediately so V2 observer picks it up
+  if (heroTotalDraw) {
+    heroTotalDraw.textContent = `${total.toFixed(0)} W`;
+  }
+
   // 1. Handle Hero Card Visibility
   if (!heroCard) return;
 
@@ -15153,13 +15161,12 @@ function drawPowerDiagram(availableWatt, segments, maxPinA) {
   if (powerDiagramBarElem) powerDiagramBarElem.innerHTML = "";
   if (powerDiagramLegendElem) powerDiagramLegendElem.innerHTML = "";
 
-  const total = segments.reduce((sum, s) => sum + s.power, 0);
   const ratio = total / availableWatt;
 
   // 2. Update Hero Metrics
   // Total / Available
   if (heroTotalDraw) {
-    heroTotalDraw.textContent = `${total.toFixed(0)} W`;
+    // Text updated above
 
     // Glow Effect
     heroTotalDraw.classList.remove('glow-safe', 'glow-warning', 'glow-danger');
