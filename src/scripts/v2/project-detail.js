@@ -282,10 +282,21 @@
           </button>
           <button type="button" class="v2-btn v2-btn-ghost" id="v2ExportProjectBtn" title="Export Project">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-               <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
+               <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
                <polyline points="16 6 12 2 8 6"/>
                <line x1="12" y1="2" x2="12" y2="15"/>
             </svg>
+            <span class="v2-btn-label">Export Project</span>
+          </button>
+          <button type="button" class="v2-btn v2-btn-ghost" id="v2GenerateOverviewBtn" title="Generate Overview">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+               <polyline points="14 2 14 8 20 8"></polyline>
+               <line x1="16" y1="13" x2="8" y2="13"></line>
+               <line x1="16" y1="17" x2="8" y2="17"></line>
+               <line x1="10" y1="9" x2="8" y2="9"></line>
+            </svg>
+            <span class="v2-btn-label">Generate Overview</span>
           </button>
           <button type="button" class="v2-btn v2-btn-secondary" id="v2SaveProjectBtn">
             Save
@@ -293,17 +304,7 @@
         </div>
       </header>
 
-      <!-- Project Actions Bar -->
-      <div class="v2-project-actions">
-        <button type="button" class="v2-action-btn" id="v2ExportProjectActionBtn">
-          <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7AB;</span>
-          <span class="v2-action-btn-label">Export Project</span>
-        </button>
-        <button type="button" class="v2-action-btn" id="v2GenerateOverviewBtn">
-          <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xF1F5;</span>
-          <span class="v2-action-btn-label">Generate Overview</span>
-        </button>
-      </div>
+
       
       <!-- Tab Navigation (Sticky Top) -->
       <nav class="v2-tabs-nav" role="tablist" aria-label="Project sections">
@@ -464,24 +465,32 @@
 
       if (legacyElement) {
         // Ensure it's visible (legacy might hide it)
-        legacyElement.style.display = 'block';
-
-        // APPLY V2 STYLING
+        // ONLY force display block for inputs/selects which are expected to be always visible in V2 forms.
+        // For dynamic containers (results), preserve their existing display state (handled by CSS/JS).
         const tagName = legacyElement.tagName.toLowerCase();
-        if (tagName === 'select') {
-          legacyElement.classList.add('v2-select');
-        } else if (tagName === 'input') {
-          legacyElement.classList.add('v2-input');
-        } else if (tagName === 'textarea') {
-          legacyElement.classList.add('v2-input', 'v2-textarea');
+        if (['select', 'input', 'textarea'].includes(tagName)) {
+          legacyElement.style.display = 'block';
+          legacyElement.classList.add('v2-' + tagName); // Add v2-input class etc
+
+          // For inputs, we generally want 100% width in V2 forms
+          legacyElement.style.width = '100%';
+          legacyElement.style.height = '';
+          legacyElement.style.minHeight = '';
+        } else {
+          // For divs, uls, etc., do NOT reset display or width blindly as it breaks flex layouts (hero card)
+          // Just ensure they aren't constrained by previous inline styles if reasonable, 
+          // but 'display' should be left to CSS classes (.hidden handling).
+
+          // Optional: if we want to ensure full width container:
+          // legacyElement.style.width = '100%'; 
+
+          // Check if it's one of the result elements? 
+          // Actually, for results we want them to behave naturally.
         }
 
-        // Reset styles that might have been set by V2 previously or legacy inline styles
-        // We want to KEEP width if it's 100% or similar, but reset fixed pixel widths that break layout
-        legacyElement.style.width = '100%';
-        legacyElement.style.height = '';
-        legacyElement.style.minHeight = '';
         legacyElement.style.whiteSpace = '';
+
+        // Check if the element has a wrapper (which holds the favorite button)
 
         // Check if the element has a wrapper (which holds the favorite button)
         const wrapper = legacyElement.closest('.select-wrapper');
@@ -510,36 +519,35 @@
   function renderPowerSummaryTab() {
     return `
       <div class="v2-power-grid">
-        <!-- Power Summary Hero Card -->
-        <div class="v2-power-hero v2-card v2-card-elevated">
-          <div class="v2-power-hero-main">
-            <div class="v2-power-stat v2-power-stat-primary">
-              <span class="v2-power-stat-value" id="v2TotalDraw">0W</span>
-              <span class="v2-power-stat-label">Total Draw</span>
-            </div>
-            <div class="v2-power-stat">
-              <span class="v2-power-stat-value" id="v2Runtime">--:--</span>
-              <span class="v2-power-stat-label">Runtime</span>
-            </div>
-            <div class="v2-power-stat">
-              <span class="v2-power-stat-value" id="v2BatteryCount">0</span>
-              <span class="v2-power-stat-label">Batteries</span>
-            </div>
-          </div>
-          <div class="v2-power-hero-details">
-            <div class="v2-power-detail">
-              <span class="v2-power-detail-label">14.4V Current</span>
-              <span class="v2-power-detail-value" id="v2Current144">0A</span>
-            </div>
-            <div class="v2-power-detail">
-              <span class="v2-power-detail-label">12V Current</span>
-              <span class="v2-power-detail-value" id="v2Current12">0A</span>
-            </div>
-          </div>
+        <!-- V1 Results Reparented -->
+        <div id="v2-results-legacy-wrapper" class="v2-results-reparented">
+          <!-- Hero Card -->
+          <div data-reparent="heroCard"></div>
+
+          <!-- Warnings -->
+          <div data-reparent="pinWarning"></div>
+          <div data-reparent="dtapWarning"></div>
+          <div data-reparent="hotswapWarning"></div>
+
+          <!-- Breakdown List -->
+          <ul data-reparent="breakdownList"></ul>
+
+          <!-- Power Diagram -->
+          <div data-reparent="powerDiagram"></div>
+
+          <!-- Plain Summary -->
+          <div data-reparent="resultsPlainSummary"></div>
+
+          <!-- Temperature Note -->
+          <div data-reparent="temperatureNote"></div>
+          
+          <!-- Feedback Button -->
+          <div data-reparent="runtimeFeedbackBtn"></div>
+          <div data-reparent="feedbackTableContainer"></div>
         </div>
 
-        <!-- Connection Diagram Card -->
-        <div class="v2-card v2-diagram-card">
+        <!-- Connection Diagram Card (V2 Wrapper) -->
+        <div class="v2-card v2-diagram-card" style="margin-top: var(--v2-space-lg);">
           <div class="v2-card-header v2-card-header-with-actions">
             <h3>Connection Diagram</h3>
             <div class="v2-diagram-toolbar">
@@ -563,16 +571,6 @@
             <div id="v2-diagram-legend" class="v2-diagram-legend"></div>
             <!-- Hidden containers required by module -->
             <div id="v2-diagram-hint" style="display:none;"></div>
-          </div>
-        </div>
-
-        <!-- Power Breakdown -->
-        <div class="v2-card" style="margin-top: var(--v2-space-lg);">
-          <div class="v2-card-header">
-            <h3>Consumption Breakdown</h3>
-          </div>
-          <div class="v2-card-body">
-             <p class="v2-text-muted">Breakdown visualization coming soon.</p>
           </div>
         </div>
       </div>
@@ -638,14 +636,7 @@
       });
     }
 
-    // Export Project Action Button (action bar)
-    const exportActionBtn = view.querySelector('#v2ExportProjectActionBtn');
-    if (exportActionBtn) {
-      exportActionBtn.addEventListener('click', () => {
-        const legacyExportBtn = document.getElementById('shareSetupBtn');
-        if (legacyExportBtn) legacyExportBtn.click();
-      });
-    }
+
 
     // Generate Overview Button (action bar)
     const generateOverviewBtn = view.querySelector('#v2GenerateOverviewBtn');

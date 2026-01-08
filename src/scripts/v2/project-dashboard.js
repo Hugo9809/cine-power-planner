@@ -345,14 +345,32 @@
      * - 'v2:viewchange' event (when switching to the Projects view)
      * - 'v2:search' event (real-time filtering from the Sidebar)
      */
-    function renderProjectGrid() {
+    function renderProjectGrid(isInitialLoad = false) {
         const container = document.getElementById(GRID_CONTAINER_ID);
         if (!container) return;
 
-        // Reset
+        // Show Loading State ONLY on initial load or explicit refresh
+        // For search filtering, we want instant feedback
+        if (isInitialLoad) {
+            renderLoadingState();
+
+            // Simulate network delay
+            setTimeout(() => {
+                _renderGridContent(container);
+            }, 800);
+        } else {
+            _renderGridContent(container);
+        }
+    }
+
+    /**
+     * Internal render logic
+     */
+    function _renderGridContent(container) {
+        // Reset container to be sure
         container.innerHTML = '';
-        container.className = 'v2-project-grid'; // Reset classes
-        container.style = ''; // Reset inline styles
+        container.className = 'v2-project-grid';
+        container.style = '';
 
         // Check if we have ANY projects at all (Global Empty State)
         const allProjects = getProjectNames();
@@ -428,6 +446,44 @@
 
         container.innerHTML = html;
         bindTileEvents(container);
+    }
+
+    /**
+     * Render Loading State (Skeleton Tiles)
+     */
+    function renderLoadingState() {
+        const container = document.getElementById(GRID_CONTAINER_ID);
+        if (!container) return;
+
+        // Reset
+        container.innerHTML = '';
+        container.className = 'v2-project-grid';
+        container.style = '';
+
+        const main = container.closest('.v2-main');
+        if (main) main.classList.remove('align-top');
+
+        let html = '';
+        // Render 5-8 skeleton tiles
+        for (let i = 0; i < 6; i++) {
+            html += `
+                <div class="v2-skeleton-tile">
+                    <div class="v2-skeleton-header">
+                        <div class="v2-skeleton-icon"></div>
+                        <div class="v2-skeleton-info">
+                            <div class="v2-skeleton-title"></div>
+                            <div class="v2-skeleton-meta"></div>
+                        </div>
+                    </div>
+                    <div class="v2-skeleton-periods">
+                         <div class="v2-skeleton-period" style="width: 80px;"></div>
+                         <div class="v2-skeleton-period" style="width: 50px;"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        container.innerHTML = html;
     }
 
     // =====================
@@ -1324,6 +1380,14 @@
       <header class="view-header">
         <h1>Projects</h1>
         <div class="view-header-actions">
+          <button type="button" class="v2-btn v2-btn-secondary" id="v2HeaderImportBtn" style="margin-right: 8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Import Project
+          </button>
           <button type="button" class="v2-btn v2-btn-primary" id="v2HeaderCreateBtn">
             + New Project
           </button>
@@ -1363,25 +1427,33 @@
 
         // Bind the header button event (Delegated for robustness)
         document.addEventListener('click', (e) => {
-            if (e.target && e.target.closest('#v2HeaderCreateBtn')) {
-                showCreateProjectDialog();
+            if (e.target) {
+                if (e.target.closest('#v2HeaderCreateBtn')) {
+                    showCreateProjectDialog();
+                } else if (e.target.closest('#v2HeaderImportBtn')) {
+                    // Trigger legacy import
+                    if (global.cineLegacyShim) {
+                        global.cineLegacyShim.triggerLegacyClick('applySharedLinkBtn');
+                    }
+                }
             }
         });
+
+        // If we are already on the projects view, render
+        const currentView = document.querySelector('.v2-view.active');
+        if (currentView && currentView.id === VIEW_ID) {
+            renderProjectGrid(true); // Pass true for initial load
+        }
 
         // Listen for view changes
-        document.addEventListener('v2:viewchange', (e) => {
-            if (e.detail && e.detail.view === 'projects') {
-                renderProjectGrid();
+        window.addEventListener('v2:viewchange', (e) => {
+            if (e.detail.viewId === VIEW_ID) {
+                // If switching to this view, treat as initial load
+                renderProjectGrid(true);
             }
         });
 
-        // Initial render
-        renderProjectGrid();
-
-        // Bind Search Events
         bindSearchEvents();
-
-        console.log('[ProjectDashboard] Initialized');
     }
 
     // =====================
