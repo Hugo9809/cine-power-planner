@@ -107,8 +107,8 @@
  * ===================== */
 .v2-select {
     width: 100%;
-    padding: 10px 14px;
-    padding-right: 32px;
+    padding: 12px 14px;
+    padding-right: 36px;
     /* Space for arrow */
     font-size: var(--v2-font-size-base);
     color: var(--v2-text-primary);
@@ -116,6 +116,7 @@
     border: 1px solid var(--v2-border-default);
     border-radius: var(--v2-radius-md, 8px);
     line-height: 1.5;
+    min-height: 44px;
 
     /* Custom Arrow */
     appearance: none;
@@ -127,11 +128,6 @@
 
     cursor: pointer;
     transition: all 0.2s ease;
-
-    /* Text Overflow Handling */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 /* Dark mode arrow adjustment logic handled via theme filter or specific override */

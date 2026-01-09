@@ -127,7 +127,17 @@
             buttonSaveGearItem: 'Save Item',
             alertSaveItemFailed: 'Failed to save item.',
             confirmDeleteGearItem: 'Delete this item?',
-            alertInvalidItemData: 'Invalid item data.'
+            alertInvalidItemData: 'Invalid item data.',
+
+            // Device Library
+            deviceLibraryTitle: 'Device Library',
+            deviceLibrarySubtitle: 'Add, edit, and manage devices in your local database',
+            tabAddDevice: 'Add Device',
+            tabBrowseLibrary: 'Browse Library',
+            addNewDeviceTitle: 'Add New Device',
+            addDeviceSubtitle: 'Create a custom device entry for your database',
+            existingDevicesTitle: 'Existing Devices',
+            existingDevicesSubtitle: 'Browse and manage devices in your library'
         }
     };
 

@@ -228,6 +228,9 @@
             case 'rules':
                 hash = '#/rules';
                 break;
+            case 'ownGear':
+                hash = '#/own-gear';
+                break;
             default:
                 hash = '#/projects';
         }

@@ -355,19 +355,21 @@
             ];
 
             backdrop.innerHTML = `
-                <div class="v2-modal">
+                <div class="v2-modal contact-modal">
                     <div class="v2-modal-header">
                         <h3 class="v2-modal-title">${isNew ? _t('modalTitleNewContact') : _t('modalTitleEditContact')}</h3>
                         <button type="button" class="v2-modal-close v2-btn v2-btn-ghost"><span class="icon">close</span></button>
                     </div>
                     <div class="v2-modal-body contacts-modal-body">
                         
-                        <div class="avatar-upload-section">
+                        <!-- Avatar Upload Section -->
+                        <div class="avatar-upload-section" id="avatarDropZone">
                             <div class="avatar-preview" id="modalAvatarPreview">
                                 ${contact.avatar ? `<img src="${contact.avatar}">` : '<span class="icon">person</span>'}
                             </div>
                             <div class="avatar-buttons">
                                 <label class="v2-btn v2-btn-sm v2-btn-secondary">
+                                    <span class="icon" style="font-size:14px; margin-right:4px;">upload</span>
                                     ${_t('buttonUploadPhoto')}
                                     <input type="file" id="avatarUploadInput" accept="image/*" hidden>
                                 </label>
@@ -375,38 +377,71 @@
                                     ${_t('buttonRemovePhoto')}
                                 </button>
                             </div>
+                            <div class="avatar-hint">${_t('avatarHint') || 'Drag & drop or click to upload'}</div>
                         </div>
 
-                        <div class="v2-form-group">
-                            <label class="v2-label">${_t('labelName')}</label>
-                            <input type="text" id="contactName" class="v2-input" value="${escapeHtml(contact.name)}" placeholder="${_t('placeholderFullName')}" required>
-                        </div>
-
-                        <div class="v2-form-group">
-                            <label class="v2-label">${_t('labelRole')}</label>
-                            <input type="text" id="contactRole" class="v2-input" value="${escapeHtml(contact.role)}" list="roleList" placeholder="${_t('placeholderRole')}">
-                            <datalist id="roleList">
-                                ${roles.map(r => `<option value="${r}">`).join('')}
-                            </datalist>
-                        </div>
-
-                        <div class="detail-row-group">
-                            <div class="v2-form-group">
-                                <label class="v2-label">${_t('labelPhone')}</label>
-                                <input type="tel" id="contactPhone" class="v2-input" value="${escapeHtml(contact.phone)}" placeholder="${_t('placeholderPhone')}">
+                        <!-- Basic Info Section -->
+                        <div class="contact-form-section">
+                            <div class="contact-form-section-title">
+                                <span class="icon">badge</span>
+                                ${_t('sectionBasicInfo') || 'Basic Information'}
                             </div>
                             
                             <div class="v2-form-group">
-                                <label class="v2-label">${_t('labelEmail')}</label>
-                                <input type="email" id="contactEmail" class="v2-input" value="${escapeHtml(contact.email)}" placeholder="${_t('placeholderEmail')}">
+                                <label class="v2-label">${_t('labelName')}</label>
+                                <div class="v2-input-group">
+                                    <span class="input-icon"><span class="icon">person</span></span>
+                                    <input type="text" id="contactName" class="v2-input" value="${escapeHtml(contact.name)}" placeholder="${_t('placeholderFullName')}" required>
+                                </div>
+                            </div>
+
+                            <div class="v2-form-group">
+                                <label class="v2-label">${_t('labelRole')}</label>
+                                <div class="v2-input-group">
+                                    <span class="input-icon"><span class="icon">work</span></span>
+                                    <input type="text" id="contactRole" class="v2-input" value="${escapeHtml(contact.role)}" list="roleList" placeholder="${_t('placeholderRole')}">
+                                </div>
+                                <datalist id="roleList">
+                                    ${roles.map(r => `<option value="${r}">`).join('')}
+                                </datalist>
                             </div>
                         </div>
 
-                        <div class="v2-form-group">
-                            <label class="v2-label">${_t('labelWebsite')}</label>
-                            <input type="url" id="contactWebsite" class="v2-input" value="${escapeHtml(contact.website)}" placeholder="${_t('placeholderWebsite')}">
+                        <!-- Contact Details Section -->
+                        <div class="contact-form-section">
+                            <div class="contact-form-section-title">
+                                <span class="icon">contacts</span>
+                                ${_t('sectionContactDetails') || 'Contact Details'}
+                            </div>
+
+                            <div class="detail-row-group">
+                                <div class="v2-form-group">
+                                    <label class="v2-label">${_t('labelPhone')}</label>
+                                    <div class="v2-input-group">
+                                        <span class="input-icon"><span class="icon">call</span></span>
+                                        <input type="tel" id="contactPhone" class="v2-input" value="${escapeHtml(contact.phone)}" placeholder="${_t('placeholderPhone')}">
+                                    </div>
+                                </div>
+                                
+                                <div class="v2-form-group">
+                                    <label class="v2-label">${_t('labelEmail')}</label>
+                                    <div class="v2-input-group">
+                                        <span class="input-icon"><span class="icon">mail</span></span>
+                                        <input type="email" id="contactEmail" class="v2-input" value="${escapeHtml(contact.email)}" placeholder="${_t('placeholderEmail')}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="v2-form-group">
+                                <label class="v2-label">${_t('labelWebsite')}</label>
+                                <div class="v2-input-group">
+                                    <span class="input-icon"><span class="icon">language</span></span>
+                                    <input type="url" id="contactWebsite" class="v2-input" value="${escapeHtml(contact.website)}" placeholder="${_t('placeholderWebsite')}">
+                                </div>
+                            </div>
                         </div>
 
+                        <!-- Notes Section -->
                         <div class="v2-form-group">
                             <label class="v2-label">${_t('labelNotes')}</label>
                             <textarea id="contactNotes" class="v2-input" rows="3" placeholder="${_t('placeholderNotes')}">${escapeHtml(contact.notes)}</textarea>
@@ -415,7 +450,10 @@
                     </div>
                     <div class="v2-modal-footer">
                         <button type="button" class="v2-btn v2-btn-secondary" id="btn-cancel-contact">${_t('buttonCancel')}</button>
-                        <button type="button" class="v2-btn v2-btn-primary" id="btn-save-contact">${_t('buttonSaveContact')}</button>
+                        <button type="button" class="v2-btn v2-btn-primary" id="btn-save-contact">
+                            <span class="icon" style="font-size:16px; margin-right:4px;">save</span>
+                            ${_t('buttonSaveContact')}
+                        </button>
                     </div>
                 </div>
             `;

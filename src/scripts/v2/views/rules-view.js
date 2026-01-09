@@ -98,9 +98,17 @@
                     }
                 });
 
-                // Also listen for a custom "ready" event from the main app if available, 
-                // or just rely on the user navigating to the view which usually happens after bootstrap.
-                // We can also retry ONCE if empty, but better to show a state.
+                // Listen for the 'cine:ready' event which fires when core modules are loaded
+                document.addEventListener('cine:ready', () => {
+                    console.log('[RulesView] cine:ready event received, re-rendering...');
+                    this.render();
+                });
+
+                // Also listen for loader completion signal (dispatched by loader.js)
+                document.addEventListener('cine-loader-complete', () => {
+                    console.log('[RulesView] cine-loader-complete event received, re-rendering...');
+                    this.render();
+                });
 
                 isInitialized = true;
                 console.log('[RulesView] Initialized');
@@ -117,7 +125,15 @@
             const rulesAvailable = (typeof window.getAutoGearRules === 'function');
 
             if (!rulesAvailable) {
-                // Instead of retrying indefinitely, show a helpful state
+                // Track retry attempts
+                if (typeof this._retryCount === 'undefined') {
+                    this._retryCount = 0;
+                }
+
+                const maxRetries = 10;
+                const isRetrying = this._retryCount < maxRetries;
+
+                // Show loading or error state depending on retry count
                 this.container.innerHTML = `
                     <div class="rules-header">
                         <div class="rules-title">
@@ -126,26 +142,37 @@
                         </div>
                     </div>
                     <div class="v2-empty-state">
-                        <div class="v2-spinner"></div>
-                        <p>${_t('loadingRules') || 'Loading rules system...'}</p>
-                        <p class="text-muted" style="font-size: 12px; margin-top: 8px;">Waiting for core modules...</p>
+                        ${isRetrying ? '<div class="v2-spinner"></div>' : '<span class="icon" style="font-size: 48px; color: var(--warning-color);">warning</span>'}
+                        <p>${isRetrying ? (_t('loadingRules') || 'Loading rules system...') : (_t('rulesLoadError') || 'Unable to load rules system')}</p>
+                        <p class="text-muted" style="font-size: 12px; margin-top: 8px;">${isRetrying ? 'Waiting for core modules...' : 'Please refresh the page to try again.'}</p>
+                        ${!isRetrying ? '<button class="v2-btn v2-btn-secondary" style="margin-top: 16px;" onclick="window.location.reload()">Refresh Page</button>' : ''}
                     </div>
                 `;
 
-                // One-time check in case it loads late (e.g. 1s later)
-                if (!this._loadCheckTimer) {
+                // Retry with increasing delays (exponential backoff with max 5s)
+                if (isRetrying && !this._loadCheckTimer) {
+                    const delay = Math.min(500 * Math.pow(1.5, this._retryCount), 5000);
+                    console.log(`[RulesView] Retry ${this._retryCount + 1}/${maxRetries} in ${delay}ms...`);
+
                     this._loadCheckTimer = setTimeout(() => {
                         this._loadCheckTimer = null;
+                        this._retryCount++;
                         if (typeof window.getAutoGearRules === 'function') {
+                            this._retryCount = 0; // Reset on success
                             this.render();
+                        } else if (this._retryCount < maxRetries) {
+                            this.render(); // Retry again
                         } else {
-                            // If still failing, show error? Or just leave loading.
-                            console.warn('[RulesView] Rules module still not ready.');
+                            console.error('[RulesView] Max retries reached. Rules module unavailable.');
+                            this.render(); // Show error state
                         }
-                    }, 1000);
+                    }, delay);
                 }
                 return;
             }
+
+            // Reset retry count on successful load
+            this._retryCount = 0;
 
             const header = `
                 <div class="rules-header">
