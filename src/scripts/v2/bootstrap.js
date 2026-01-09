@@ -136,9 +136,7 @@
                 if (typeof global.cineProjectDashboard.init === 'function') {
                     global.cineProjectDashboard.init();
                 }
-                if (typeof global.cineProjectDashboard.renderProjectGrid === 'function') {
-                    global.cineProjectDashboard.renderProjectGrid();
-                }
+                // renderProjectGrid handled by v2:viewchange event
             }
 
             // Initialize sidebar (search functionality)
@@ -302,11 +300,14 @@
             await loadStylesheet('src/styles/v2/views/rules-view.css');
             await loadStylesheet('src/styles/v2/views/contacts.css');
             await loadStylesheet('src/styles/v2/views/settings.css');
+            await loadStylesheet('src/styles/v2/views/owned-gear.css');
             console.log('[V2 Bootstrap] V2 CSS loaded');
 
             // Load V2 JS modules
             await loadScript('src/scripts/v2/view-manager.js?v=rules_1');
+            await loadScript('src/scripts/v2/translations.js'); // Load Translations Patch
             await loadScript('src/scripts/v2/legacy-shim.js');
+            await loadScript('src/scripts/modules/features/auto-gear-rules.js'); // Load Auto Gear Rules Logic
             await loadScript('src/scripts/v2/sidebar.js?v=final_sidebar'); // Load sidebar logic
             await loadScript('src/scripts/v2/views/rules-view.js'); // Load Rules View
             await loadScript('src/scripts/v2/views/device-library-view.js'); // Load Device Library View
@@ -315,6 +316,9 @@
             await loadScript('src/scripts/v2/views/contacts-view.js'); // Load Contacts View
             await loadScript('src/scripts/v2/views/settings-view.js'); // Load Settings View
             await loadScript('src/scripts/v2/views/owned-gear-view.js'); // Load Owned Gear View
+            await loadScript('src/scripts/v2/help-data.js'); // Load Help Data
+            await loadScript('src/scripts/v2/help-service.js'); // Load Help Service
+            await loadScript('src/scripts/v2/views/help-view.js'); // Load Help View
             console.log('[V2 Bootstrap] V2 JS modules loaded');
 
             // Initialize Sidebar
@@ -345,6 +349,11 @@
             // Initialize Owned Gear View
             if (global.cineOwnGearView && typeof global.cineOwnGearView.init === 'function') {
                 global.cineOwnGearView.init();
+            }
+
+            // Initialize Help View
+            if (global.cineHelpView && typeof global.cineHelpView.init === 'function') {
+                global.cineHelpView.init();
             }
 
             return true;

@@ -24,7 +24,10 @@
 @import url('./views/owned-gear.css');
 @import url('./views/settings.css');
 @import url('./views/project-detail.css');
+@import url('./views/project-dashboard.css');
 @import url('./views/rules-view.css');
+@import url('./views/device-library.css');
+@import url('./views/help.css');
 
 /* =====================
  * COMPONENTS

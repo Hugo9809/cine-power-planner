@@ -74,3 +74,21 @@ The application listens to Firestore `onSnapshot` updates when "Online Mode" is 
 
 ## Offline Capabilities
 Since the app is already offline-first, "offline" for Firebase just means the sync pauses. The Firebase SDK handles queueing offline writes (if enabled) but we primarily rely on our own LocalStorage logic as the robust offline layer to avoid complexity with Firebase's offline cache size limits.
+
+## V2 UI Integration
+
+The V2 interface integrates with Firebase through the following touchpoints:
+
+### Dashboard Sync
+- Project tiles on the V2 dashboard reflect cloud sync status when Firebase is connected.
+- The sidebar displays a sync indicator when Online Mode is active.
+- Project metadata (status, dates, colors) sync to Firestore alongside project data.
+
+### Project Status
+- Status changes (Draft → Planning → Approved → Shooting → Completed → Archived) sync to cloud.
+- Status updates trigger immediate Firestore writes when Online Mode is active.
+
+### Settings Integration
+- Firebase connection settings are accessible via **Settings → Cloud Sync**.
+- Users can toggle Online Mode, link anonymous accounts, and view sync status.
+- All cloud settings remain optional—the app defaults to local-only operation.

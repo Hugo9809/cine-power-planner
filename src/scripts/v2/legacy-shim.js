@@ -286,16 +286,41 @@
 
     /**
      * Get all saved project names
+     * Uses a fallback chain to ensure data availability even during initialization
      */
     function getProjectNames() {
+        // Priority 1: Use getSetups() if available (most authoritative source)
+        if (typeof window.getSetups === 'function') {
+            try {
+                const setups = window.getSetups() || {};
+                const names = Object.keys(setups).filter(name => name && !name.startsWith('auto-backup-'));
+                if (names.length > 0) return names;
+            } catch (e) {
+                console.warn('[LegacyShim] getSetups failed:', e);
+            }
+        }
+
+        // Priority 2: Read from setupSelect (if populated)
         const setupSelect = document.getElementById('setupSelect');
-        if (!setupSelect) return [];
+        if (setupSelect && setupSelect.options.length > 1) {
+            const names = Array.from(setupSelect.options)
+                .map(opt => opt.value)
+                .filter(val => val !== ''); // Exclude "New Project" option
+            if (names.length > 0) return [...new Set(names)]; // Deduplicate
+        }
 
-        const names = Array.from(setupSelect.options)
-            .map(opt => opt.value)
-            .filter(val => val !== ''); // Exclude "New Project" option
+        // Priority 3: Direct localStorage fallback for robustness
+        try {
+            const stored = localStorage.getItem('cameraPowerPlanner_setups');
+            if (stored) {
+                const data = JSON.parse(stored);
+                return Object.keys(data).filter(name => name && !name.startsWith('auto-backup-'));
+            }
+        } catch (e) {
+            console.warn('[LegacyShim] localStorage fallback failed:', e);
+        }
 
-        return [...new Set(names)]; // Deduplicate
+        return [];
     }
 
     // =====================

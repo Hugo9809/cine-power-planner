@@ -2346,7 +2346,105 @@
       "diagramHoverNotice": "Double click for details",
       "diagramDetailBackLabel": "Back",
       "diagramDetailDefaultHeading": "Diagram details",
-      "diagramMoveHint": "Drag nodes to rearrange; drag empty space to pan."
+      "diagramMoveHint": "Drag nodes to rearrange; drag empty space to pan.",
+      "v2": {
+        "dashboard": {
+          "projects": "Projects",
+          "newProject": "New Project",
+          "emptyState": {
+            "title": "No Projects Yet",
+            "subtitle": "Create your first power plan to get started.",
+            "help": "Need help getting started?",
+            "archiveTitle": "No Archived Projects",
+            "archiveSubtitle": "Projects you archive will appear here."
+          },
+          "search": {
+            "noResults": {
+              "title": "No Results",
+              "subtitle": "No projects match \"{query}\""
+            }
+          },
+          "projectTile": {
+            "prep": "Prep:",
+            "shoot": "Shoot:",
+            "return": "Return:",
+            "openProject": "Open Project",
+            "renameAndEdit": "Rename & Edit",
+            "moreOptions": "More options",
+            "actionsFor": "Actions for {project}"
+          },
+          "contextMenu": {
+            "open": "Open Project",
+            "rename": "Rename & Edit",
+            "duplicate": "Duplicate",
+            "archive": "Archive",
+            "unarchive": "Restore",
+            "delete": "Delete",
+            "print": "Print",
+            "pdf": "Export PDF"
+          },
+          "status": {
+            "draft": "Draft",
+            "planning": "Planning",
+            "waitingForApproval": "Waiting for Approval",
+            "approved": "Approved",
+            "shooting": "Shooting",
+            "completed": "Completed",
+            "archived": "Archived"
+          }
+        },
+        "sidebar": {
+          "nav": {
+            "allProjects": "All Projects",
+            "activeProjects": "Active Projects",
+            "archive": "Archive",
+            "autoBackups": "Auto Backups",
+            "deviceLibrary": "Device Library",
+            "contacts": "Contacts",
+            "autoGearRules": "Auto Gear Rules",
+            "ownedGear": "Owned Gear",
+            "createProject": "Create New Project",
+            "projectsSection": "Projects",
+            "toolsSection": "Tools",
+            "supportSection": "Support",
+            "help": "Help",
+            "settings": "Settings"
+          },
+          "search": {
+            "placeholder": "Search features..."
+          }
+        },
+        "detail": {
+          "backButton": "Back to Projects",
+          "header": {
+            "export": "Export Project",
+            "print": "Print / Export PDF",
+            "generateReqs": "Reqs & Gear",
+            "generateOverview": "Generate Overview",
+            "save": "Save"
+          },
+          "tabs": {
+            "cameraPackage": "Camera Package",
+            "powerSummary": "Power Summary",
+            "requirements": "Requirements",
+            "gearList": "Gear List"
+          },
+          "actions": {
+            "projectRequirements": "Project Requirements",
+            "generateRequirements": "Generate Requirements",
+            "generateRequirementsHelp": "Click \"Generate Requirements\" to create your production report.",
+            "gearList": "Gear List",
+            "generateGearList": "Generate Gear List",
+            "generateGearListHelp": "Click \"Generate Gear List\" to create your equipment list."
+          },
+          "diagram": {
+            "zoomIn": "Zoom In",
+            "zoomOut": "Zoom Out",
+            "resetView": "Reset View",
+            "download": "Download Diagram"
+          }
+        }
+      }
     },
     "categoryNames": {
       "cameras": "Camera",

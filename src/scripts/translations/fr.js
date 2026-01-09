@@ -2164,7 +2164,105 @@
       "diagramHoverNotice": "Cliquez pour en savoir plus !",
       "diagramDetailBackLabel": "Retour",
       "diagramDetailDefaultHeading": "Détails du diagramme",
-      "diagramMoveHint": "Déplacez les nœuds par glisser-déposer. Faites glisser un espace vide pour déplacer le diagramme."
+      "diagramMoveHint": "Déplacez les nœuds par glisser-déposer. Faites glisser un espace vide pour déplacer le diagramme.",
+      "v2": {
+        "dashboard": {
+          "projects": "Projets",
+          "newProject": "Nouveau projet",
+          "emptyState": {
+            "title": "Aucun projet pour l'instant",
+            "subtitle": "Créez votre premier plan d'alimentation pour commencer.",
+            "help": "Besoin d'aide pour démarrer ?",
+            "archiveTitle": "Aucun projet archivé",
+            "archiveSubtitle": "Les projets que vous archivez apparaîtront ici."
+          },
+          "search": {
+            "noResults": {
+              "title": "Aucun résultat",
+              "subtitle": "Aucun projet ne correspond à \"{query}\""
+            }
+          },
+          "projectTile": {
+            "prep": "Prépa :",
+            "shoot": "Tournage :",
+            "return": "Retour :",
+            "openProject": "Ouvrir le projet",
+            "renameAndEdit": "Renommer et modifier",
+            "moreOptions": "Plus d'options",
+            "actionsFor": "Actions pour {project}"
+          },
+          "contextMenu": {
+            "open": "Ouvrir le projet",
+            "rename": "Renommer et modifier",
+            "duplicate": "Dupliquer",
+            "archive": "Archiver",
+            "unarchive": "Restaurer",
+            "delete": "Supprimer",
+            "print": "Imprimer",
+            "pdf": "Exporter en PDF"
+          },
+          "status": {
+            "draft": "Brouillon",
+            "planning": "Planification",
+            "waitingForApproval": "En attente d'approbation",
+            "approved": "Approuvé",
+            "shooting": "En tournage",
+            "completed": "Terminé",
+            "archived": "Archivé"
+          }
+        },
+        "sidebar": {
+          "nav": {
+            "allProjects": "Tous les projets",
+            "activeProjects": "Projets actifs",
+            "archive": "Archives",
+            "autoBackups": "Sauvegardes auto",
+            "deviceLibrary": "Bibliothèque",
+            "contacts": "Contacts",
+            "autoGearRules": "Règles auto",
+            "ownedGear": "Mon matériel",
+            "createProject": "Créer un projet",
+            "projectsSection": "Projets",
+            "toolsSection": "Outils",
+            "supportSection": "Support",
+            "help": "Aide",
+            "settings": "Paramètres"
+          },
+          "search": {
+            "placeholder": "Rechercher des fonctionnalités..."
+          }
+        },
+        "detail": {
+          "backButton": "Retour aux projets",
+          "header": {
+            "export": "Exporter le projet",
+            "print": "Imprimer / Exporter PDF",
+            "generateReqs": "Exigences et matériel",
+            "generateOverview": "Générer l'aperçu",
+            "save": "Enregistrer"
+          },
+          "tabs": {
+            "cameraPackage": "Pack caméra",
+            "powerSummary": "Récapitulatif puissance",
+            "requirements": "Exigences",
+            "gearList": "Liste de kit"
+          },
+          "actions": {
+            "projectRequirements": "Exigences de production",
+            "generateRequirements": "Générer les exigences",
+            "generateRequirementsHelp": "Cliquez sur \"Générer les exigences\" pour créer votre rapport de production.",
+            "gearList": "Liste de kit",
+            "generateGearList": "Générer la liste de kit",
+            "generateGearListHelp": "Cliquez sur \"Générer la liste de kit\" pour créer votre liste d'équipement."
+          },
+          "diagram": {
+            "zoomIn": "Zoom avant",
+            "zoomOut": "Zoom arrière",
+            "resetView": "Réinitialiser la vue",
+            "download": "Télécharger le diagramme"
+          }
+        }
+      }
     },
     "categoryNames": {
       "cameras": "Caméra",

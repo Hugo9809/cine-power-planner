@@ -66,6 +66,31 @@ Routine nur einmal dokumentiert ist.
 - **Restore-Kompatibilitätsübersichten.** Jeder Restore listet fehlende
   Abschnitte und erstellt ein Sicherheits-Backup, bevor Daten übernommen werden.
 
+## Neu: V2-Benutzeroberfläche
+
+Die Anwendung verfügt jetzt über eine vollständig neugestaltete, responsive V2-Benutzeroberfläche.
+
+### Dashboard & Navigation
+- **Modernes Dashboard**: Verwalte alle Projekte in einer einheitlichen, durchsuchbaren Kachelansicht mit farbcodierten Kacheln, die Projektstatus, Daten und Schnellaktionen anzeigen.
+- **Sidebar-Navigation**: Greife schnell auf Projekte, Geräte-Bibliothek, Kontakte, Eigenes Equipment, Automatische Gear-Regeln, Einstellungen und Hilfe zu.
+- **Mobile-First-Design**: Vollständig responsives Layout mit mobilem Sidebar-Toggle und Touch-optimierten Steuerelementen.
+
+### Projektverwaltung
+- **Projektstatus-Tracking**: Verfolge Projekte durch Workflow-Phasen—Entwurf, Planung, Wartet auf Genehmigung, Genehmigt, Dreh, Abgeschlossen und Archiviert—mit farbcodierten Statusindikatoren.
+- **Tab-basierte Projektansichten**: Navigiere zwischen Kamera-Paket, Power-Zusammenfassung, Anforderungen und Gear-Liste innerhalb jedes Projekts.
+- **Kontextmenüs**: Rechtsklick auf Projektkacheln für Schnellaktionen wie Duplizieren, Archivieren, Exportieren oder Löschen.
+
+### Tools & Daten
+- **Geräte-Bibliothek**: Durchsuche und verwalte deine Ausrüstungsdatenbank mit Filter- und Suchfunktionen.
+- **Kontaktverwaltung**: Führe eine Crew-Liste mit Rollen, Kontaktinformationen und Profilfotos. Importiere Kontakte aus vCard-Dateien.
+- **Eigenes Equipment verfolgen**: Katalogisiere dein persönliches Equipment-Inventar mit Mengen und Beschaffungsnotizen.
+- **Automatische Gear-Regeln**: Konfiguriere szenengetriggerte Equipment-Ergänzungen oder -Entfernungen.
+
+### Visuelle Verbesserungen
+- **Verbesserter Dark Mode**: Verfeinertes dunkles Theme mit verbessertem Kontrast und Lesbarkeit.
+- **Pink Mode**: Lustiges Akzentthema mit animiertem „Icon-Regen"-Effekt.
+- **Theme-Steuerung**: Schnellzugriffs-Schalter in der Sidebar für Dark Mode, Pink Mode und Force Reload.
+
 ## Installation
 
 1. Klone oder lade dieses Repository auf ein vertrauenswürdiges Laufwerk:

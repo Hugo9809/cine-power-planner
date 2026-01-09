@@ -62,6 +62,12 @@
   --v2-surface-input: #ffffff;
   --v2-surface-inverse: #1a1a2e;
 
+  /* Refined Surface Palette (Settings Style) */
+  --v2-surface-0: #ffffff;
+  --v2-surface-1: #f9fafb;
+  --v2-surface-2: #f3f4f6;
+  --v2-surface-3: #e5e7eb;
+
   /* =====================
    * TEXT COLORS
    * ===================== */
@@ -78,6 +84,8 @@
   --v2-border-default: #dddddd;
   --v2-border-strong: #aaaaaa;
   --v2-border-muted: #eeeeee;
+  --v2-border-subtle: #e5e7eb;
+  --v2-border-hover: #9ca3af;
   --v2-border-focus: var(--v2-brand-blue);
 
   /* =====================

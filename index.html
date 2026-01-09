@@ -315,6 +315,13 @@
       <!-- Project Dashboard View -->
       <section id="view-projects" class="app-view active">
         <header class="view-header">
+          <button class="v2-mobile-menu-toggle" aria-label="Open menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
           <h1>Projects</h1>
           <div class="view-header-actions">
             <button type="button" class="v2-btn v2-btn-primary" id="v2HeaderCreateBtn">
@@ -337,6 +344,13 @@
       <!-- Auto Gear Rules View -->
       <div id="view-rules" class="app-view hidden">
         <header class="v2-view-header">
+          <button class="v2-mobile-menu-toggle" aria-label="Open menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
           <h1>Auto Gear Rules</h1>
         </header>
         <div class="v2-rules-content">
@@ -360,6 +374,13 @@
       <!-- Devices View (Device Library) -->
       <section id="view-devices" class="app-view">
         <header class="view-header">
+          <button class="v2-mobile-menu-toggle" aria-label="Open menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
           <h1>Device Library</h1>
         </header>
         <div class="view-content" id="v2-device-library-content">
@@ -367,9 +388,38 @@
         </div>
       </section>
 
-      <!-- Help View (placeholder) -->
+      <!-- Help View -->
       <section id="view-help" class="app-view">
-        <!-- To be implemented in Phase 5 -->
+        <header class="view-header">
+          <button class="v2-mobile-menu-toggle" aria-label="Open menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <h1>Help Center</h1>
+          <div class="view-header-actions">
+            <!-- Search will be injected here by JS or handled by global search -->
+          </div>
+        </header>
+        <div class="view-content v2-help-container">
+          <aside class="v2-help-sidebar">
+            <div class="v2-help-search-container">
+              <input type="text" id="v2HelpSearch" placeholder="Search help..." class="v2-input"
+                aria-label="Search help topics">
+            </div>
+            <nav id="v2HelpToc" class="v2-help-toc" aria-label="Help Table of Contents">
+              <!-- Populated by JS -->
+            </nav>
+          </aside>
+          <main class="v2-help-main" id="v2HelpContent">
+            <!-- Populated by JS from existing help content -->
+            <div class="v2-empty-state">
+              <p>Loading help content...</p>
+            </div>
+          </main>
+        </div>
       </section>
 
       <!-- Owned Gear View -->
@@ -6496,17 +6546,17 @@
       </footer>
     </form>
   </dialog>
-  <script src="app-version.js"></script>
-  <script src="src/scripts/emergency-modal-cleanup.js"></script>
+  <script src="app-version.js" defer></script>
+  <script src="src/scripts/emergency-modal-cleanup.js" defer></script>
 
-  <script src="src/scripts/shims/commonjs-shim.js"></script>
-  <script src="src/scripts/shims/globals-legacy-shim.js"></script>
-  <script src="src/scripts/globals-bootstrap.js"></script>
-  <script src="src/scripts/loading-indicator-bootstrap.js"></script>
+  <script src="src/scripts/shims/commonjs-shim.js" defer></script>
+  <script src="src/scripts/shims/globals-legacy-shim.js" defer></script>
+  <script src="src/scripts/globals-bootstrap.js" defer></script>
+  <script src="src/scripts/loading-indicator-bootstrap.js" defer></script>
   <script type="module" src="src/scripts/ui-feedback.js"></script>
-  <script src="src/scripts/modules/features/print-preview.js"></script>
-  <script src="src/scripts/loader.js?v=3"></script>
-  <script src="src/scripts/v2/bootstrap.js"></script>
+  <script src="src/scripts/modules/features/print-preview.js" defer></script>
+  <script src="src/scripts/loader.js?v=3" defer></script>
+  <script src="src/scripts/v2/bootstrap.js" defer></script>
 </body>
 
 </html>

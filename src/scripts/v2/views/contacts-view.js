@@ -31,10 +31,18 @@
 
     function _t(key) {
         if (typeof window !== 'undefined' && window.texts) {
-            return key.split('.').reduce((o, i) => (o ? o[i] : null), window.texts) || key;
+            const langSelect = document.getElementById('languageSelect');
+            const lang = (langSelect && langSelect.value) ||
+                (typeof window.currentLanguage === 'string' && window.currentLanguage) ||
+                'en';
+            const dict = window.texts[lang] || window.texts['en'];
+            if (dict) {
+                return dict[key] || key;
+            }
         }
         return key;
     }
+
 
     // =====================
     // PUBLIC API
@@ -43,88 +51,116 @@
         container: null,
 
         init() {
-            this.container = document.getElementById(VIEW_ID);
-            if (!this.container) {
-                console.error(`[ContactsView] Container element with ID '${VIEW_ID}' not found.`);
-                return;
-            }
+            try {
+                this.container = document.getElementById(VIEW_ID);
+                if (!this.container) {
+                    this.createViewContainer();
+                }
 
-            if (!isInitialized) {
-                console.log('[ContactsView] Initializing...');
-                document.addEventListener('v2:viewchange', (e) => {
-                    if (e.detail && e.detail.view === 'contacts') {
-                        this.render();
-                    }
-                });
-                isInitialized = true;
-                console.log('[ContactsView] Initialized');
+                if (!isInitialized) {
+                    console.log('[ContactsView] Initializing...');
+                    document.addEventListener('v2:viewchange', (e) => {
+                        if (e.detail && e.detail.view === 'contacts') {
+                            this.render();
+                        }
+                    });
+
+                    // Listen for language changes
+                    document.addEventListener('v2:languagechange', () => {
+                        if (this.isVisible()) this.render();
+                    });
+
+                    isInitialized = true;
+                    console.log('[ContactsView] Initialized');
+                }
+            } catch (e) {
+                console.error('[ContactsView] Init failed:', e);
             }
         },
 
+        isVisible() {
+            return this.container && !this.container.classList.contains('hidden') && this.container.style.display !== 'none';
+        },
+
+        createViewContainer() {
+            const app = document.querySelector('.v2-app') || document.body;
+            const view = document.createElement('div');
+            view.id = VIEW_ID;
+            view.className = 'app-view';
+            app.appendChild(view);
+            this.container = view;
+        },
+
         render() {
-            if (!this.container) {
-                this.init();
-                if (!this.container) return;
-            }
+            try {
+                if (!this.container) {
+                    this.init();
+                    if (!this.container) return;
+                }
 
-            // Load contacts using the existing module
-            // Make sure cineFeaturesContacts is available
-            const contactsModule = global.cineFeaturesContacts;
-            if (!contactsModule) {
-                this.container.innerHTML = `
-                    <div class="view-empty-state">
-                        <p>Contacts module not loaded.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            const contacts = contactsModule.loadStoredContacts();
-
-            const header = `
-                <header class="view-header">
-                    <div class="header-content">
-                        <h1>${_t('contactsViewTitle')}</h1>
-                        <p class="header-subtitle">${_t('contactsViewSubtitle')}</p>
-                    </div>
-                    <div class="view-header-actions">
-                        <button class="v2-btn v2-btn-primary" id="btn-add-contact">
-                            <span class="icon">add</span>
-                            <span>${_t('buttonAddContact')}</span>
-                        </button>
-                    </div>
-                </header>
-            `;
-
-            let contentHtml = '<div class="view-content">';
-
-            if (!contacts || contacts.length === 0) {
-                // Use Standard V2 Empty State Structure
-                contentHtml += `
-                    <div class="view-empty-state">
-                         <div class="view-empty-state-icon" style="font-size: 64px; opacity: 0.8; margin-bottom: 16px;">
-                            <span class="icon">group</span>
+                // Load contacts using the existing module
+                const contactsModule = global.cineFeaturesContacts;
+                if (!contactsModule) {
+                    this.container.innerHTML = `
+                        <div class="view-empty-state">
+                            <p>${_t('statusUnavailable') || 'Contacts module not loaded.'}</p>
                         </div>
-                        <h2>${_t('contactsEmptyTitle')}</h2>
-                        <p class="text-muted" style="margin-bottom: 24px;">${_t('contactsEmptyText')}</p>
-                        <button class="v2-btn v2-btn-primary" id="btn-add-contact-empty">
-                            <span class="icon">add</span>
-                            ${_t('buttonAddFirstContact')}
-                        </button>
-                    </div>
+                    `;
+                    return;
+                }
+
+                const contacts = contactsModule.loadStoredContacts();
+
+                const header = `
+                    <header class="view-header">
+                        <div class="header-content">
+                            <h1>${_t('contactsViewTitle')}</h1>
+                            <p class="header-subtitle">${_t('contactsViewSubtitle')}</p>
+                        </div>
+                        <div class="view-header-actions">
+                            <button class="v2-btn v2-btn-primary" id="btn-add-contact">
+                                <span class="icon">add</span>
+                                <span>${_t('buttonAddContact')}</span>
+                            </button>
+                        </div>
+                    </header>
                 `;
-            } else {
-                contentHtml += '<div class="contacts-grid">';
-                contacts.forEach(contact => {
-                    contentHtml += this.renderContactCard(contact);
-                });
-                contentHtml += '</div>';
+
+                let contentHtml = '<div class="view-content">';
+
+                if (!contacts || contacts.length === 0) {
+                    contentHtml += `
+                        <div class="view-empty-state">
+                             <div class="view-empty-state-icon">
+                                <span class="icon">group</span>
+                            </div>
+                            <h2>${_t('contactsEmptyTitle')}</h2>
+                            <p class="text-muted" style="margin-bottom: 24px;">${_t('contactsEmptyText')}</p>
+                            <button class="v2-btn v2-btn-primary" id="btn-add-contact-empty">
+                                <span class="icon">add</span>
+                                ${_t('buttonAddFirstContact')}
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    contentHtml += '<div class="contacts-grid">';
+                    contacts.forEach(contact => {
+                        contentHtml += this.renderContactCard(contact);
+                    });
+                    contentHtml += '</div>';
+                }
+
+                contentHtml += '</div>'; // End view-content
+
+                this.container.innerHTML = header + contentHtml;
+                this.attachListeners();
+
+            } catch (err) {
+                console.error('[ContactsView] Render failed', err);
+                if (this.container) {
+                    this.container.innerHTML = `<div class="v2-error-state"><p>Error loading view: ${err.message}</p></div>`;
+                }
             }
-
-            contentHtml += '</div>'; // End view-content
-
-            this.container.innerHTML = header + contentHtml;
-            this.attachListeners();
         },
 
         renderContactCard(contact) {
@@ -140,18 +176,18 @@
             const emailLink = contact.email ? `<a href="mailto:${escapeHtml(contact.email)}" onclick="event.stopPropagation()">${escapeHtml(contact.email)}</a>` : '';
             const websiteLink = contact.website ? `<a href="${escapeHtml(contact.website)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${_t('linkWebsite')}</a>` : '';
 
-            // Using V2 Card Structure
+            // Using Standard V2 Card Structure
             return `
                 <div class="v2-card v2-card-interactive contact-card" data-contact-id="${escapeHtml(contact.id)}" tabindex="0" role="button">
-                    <div class="contact-card-header">
+                    <div class="v2-card-header">
                         <div class="contact-avatar">
                             ${avatarHtml}
                         </div>
-                        <div class="contact-info">
-                            <div class="contact-name">${escapeHtml(contact.name || _t('contactUnnamed'))}</div>
-                            <div class="contact-role">${escapeHtml(contact.role || _t('contactNoRole'))}</div>
+                        <div class="v2-tile-info">
+                            <h3 class="v2-card-title">${escapeHtml(contact.name || _t('contactUnnamed'))}</h3>
+                            <div class="v2-card-subtitle">${escapeHtml(contact.role || _t('contactNoRole'))}</div>
                         </div>
-                        <div class="contact-card-actions">
+                        <div class="v2-card-actions">
                             <button class="v2-btn v2-btn-icon v2-btn-ghost btn-edit-contact" title="${_t('buttonEdit')}">
                                 <span class="icon">edit</span>
                             </button>
@@ -161,7 +197,7 @@
                         </div>
                     </div>
                     
-                    <div class="v2-card-body" style="padding-top: 0; padding-bottom: 0;">
+                    <div class="v2-card-body">
                         <div class="contact-details">
                             ${contact.phone ? `
                                 <div class="contact-detail-row">

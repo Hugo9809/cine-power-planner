@@ -50,6 +50,31 @@ workflow so each routine is documented once.
   [Development & Maintenance Guide](docs/dev/development.md) and the
   [Documentation Maintenance Guide](docs/dev/documentation-maintenance.md).
 
+## New: V2 User Interface
+
+The application now features a completely redesigned, responsive V2 User Interface.
+
+### Dashboard & Navigation
+- **Modern Dashboard**: Manage all your projects from a unified, searchable grid view with color-coded tiles showing project status, dates, and quick actions.
+- **Sidebar Navigation**: Quickly access Projects, Device Library, Contacts, Owned Gear, Automatic Gear Rules, Settings, and Help from a persistent, collapsible sidebar.
+- **Mobile-First Design**: Fully responsive layout with mobile sidebar toggle and touch-optimized controls.
+
+### Project Management
+- **Project Status Tracking**: Track projects through workflow stages—Draft, Planning, Waiting for Approval, Approved, Shooting, Completed, and Archived—with color-coded status indicators.
+- **Tabbed Project Views**: Navigate between Camera Package, Power Summary, Requirements, and Gear List tabs within each project.
+- **Context Menus**: Right-click project tiles for quick actions like duplicate, archive, export, or delete.
+
+### Tools & Data
+- **Device Library**: Browse and manage your equipment database with filtering and search.
+- **Contacts Management**: Maintain a crew roster with roles, contact details, and profile photos. Import contacts from vCard files.
+- **Owned Gear Tracking**: Catalog your personal equipment inventory with quantities and sourcing notes.
+- **Automatic Gear Rules**: Configure scenario-triggered equipment additions or removals.
+
+### Visual Enhancements
+- **Enhanced Dark Mode**: Refined dark theme with improved contrast and readability.
+- **Pink Mode**: Fun accent theme with animated "icon rain" effect.
+- **Theme Controls**: Quick-access toggles in the sidebar for dark mode, pink mode, and forced refresh.
+
 ## Key features
 
 - **Equipment power knowledge base.** Reference bundled draw figures or extend

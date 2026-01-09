@@ -112,8 +112,8 @@
 }
 
 .v2-btn-danger:hover:not(:disabled) {
-    background-color: #c82333;
-    border-color: #bd2130;
+    background-color: color-mix(in srgb, var(--v2-status-error), black 10%);
+    border-color: color-mix(in srgb, var(--v2-status-error), black 20%);
 }
 
 /* =====================

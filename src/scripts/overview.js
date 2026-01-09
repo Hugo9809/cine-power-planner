@@ -1945,32 +1945,44 @@ function generatePrintableOverview(config = {}) {
         return true;
     };
 
+    // Exposed for V2 UI to trigger the same dialog
+    const openLegacyPrintDialog = () => {
+        // New Print Preview Integration - check if we should be using the new module
+        // (Leaving this check if we ever want to switch back, but currently we want V1 dialog)
+        const globalScope = (typeof window !== 'undefined' ? window : this);
+        if (globalScope.cineFeaturePrintPreview && typeof globalScope.cineFeaturePrintPreview.open === 'function' && false) {
+            // Disabled for now to force V1 dialog as requested
+            globalScope.cineFeaturePrintPreview.open();
+            return;
+        }
+
+        const storedPreferences = loadPrintPreferences() || { sections: {}, layout: 'standard' };
+        const dialogContext = getPrintOptionsDialogContext();
+        const onConfirm = (result) => {
+            const confirmedMode = result && result.mode === 'print' ? 'print' : 'export';
+            const confirmedPreferences = result && result.preferences ? result.preferences : storedPreferences;
+            runConfiguredPrintWorkflow({
+                mode: confirmedMode,
+                preferences: confirmedPreferences,
+            });
+        };
+        if (dialogContext && dialogContext.dialog) {
+            populatePrintOptionsDialog(dialogContext, storedPreferences, onConfirm);
+            openDialog(dialogContext.dialog);
+        } else {
+            console.warn('Legacy print dialog not found in DOM');
+            onConfirm({ mode: 'export', preferences: storedPreferences });
+        }
+    };
+
+    if (typeof window !== 'undefined') {
+        window.openLegacyPrintDialog = openLegacyPrintDialog;
+    }
+
     const openOptionsBtn = overviewDialog.querySelector('#openPrintOptionsBtn');
     if (openOptionsBtn) {
         openOptionsBtn.addEventListener('click', () => {
-            // New Print Preview Integration
-            const globalScope = (typeof window !== 'undefined' ? window : this);
-            if (globalScope.cineFeaturePrintPreview && typeof globalScope.cineFeaturePrintPreview.open === 'function') {
-                globalScope.cineFeaturePrintPreview.open();
-                return;
-            }
-
-            const storedPreferences = loadPrintPreferences() || { sections: {}, layout: 'standard' };
-            const dialogContext = getPrintOptionsDialogContext();
-            const onConfirm = (result) => {
-                const confirmedMode = result && result.mode === 'print' ? 'print' : 'export';
-                const confirmedPreferences = result && result.preferences ? result.preferences : storedPreferences;
-                runConfiguredPrintWorkflow({
-                    mode: confirmedMode,
-                    preferences: confirmedPreferences,
-                });
-            };
-            if (dialogContext && dialogContext.dialog) {
-                populatePrintOptionsDialog(dialogContext, storedPreferences, onConfirm);
-                openDialog(dialogContext.dialog);
-            } else {
-                onConfirm({ mode: 'export', preferences: storedPreferences });
-            }
+            openLegacyPrintDialog();
         });
     }
 

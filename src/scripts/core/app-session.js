@@ -505,6 +505,41 @@ function reloadActiveProjectFromStorage(options = {}) {
     }
 
     if (!storedProject || typeof storedProject !== 'object') {
+      // [Bug Fix] The project was deleted or renamed in another tab.
+      // Refresh the setup list and reset to "New Project" to prevent
+      // stale state from being autosaved back (causing duplication/resurrection).
+      if (typeof populateSetupSelect === 'function') {
+        try {
+          populateSetupSelect();
+        } catch (populateError) {
+          void populateError;
+        }
+      }
+
+      // Reset UI to "New Project" state
+      if (setupSelect && typeof setupSelect.value !== 'undefined') {
+        setupSelect.value = '';
+        // Dispatch change event to trigger legacy handlers
+        try {
+          setupSelect.dispatchEvent(new Event('change', { bubbles: true }));
+        } catch (eventError) {
+          void eventError;
+        }
+      }
+
+      // Clear project info to prevent autosave of stale data
+      currentProjectInfo = null;
+      if (projectForm && typeof populateProjectForm === 'function') {
+        try {
+          populateProjectForm({});
+        } catch (formError) {
+          void formError;
+        }
+      }
+
+      if (!options.silent && typeof console !== 'undefined' && typeof console.info === 'function') {
+        console.info('[app-session] Project no longer exists, reset to New Project state');
+      }
       return false;
     }
 
@@ -614,6 +649,16 @@ function reloadActiveProjectFromStorage(options = {}) {
     if (typeof populateSetupSelect === 'function') {
       try {
         populateSetupSelect();
+        // [Bug Fix] Restore the selected project in the dropdown.
+        // populateSetupSelect resets the value to "" (New Project).
+        // If we don't restore it, subsequent autosaves will treat this as a new project
+        // and create duplicates (e.g., "Project (2)").
+        if (storageKey) {
+          const setupSelect = document.getElementById('setupSelect');
+          if (setupSelect) {
+            setupSelect.value = storageKey;
+          }
+        }
       } catch (populateError) {
         if (!options.silent && typeof console !== 'undefined' && typeof console.warn === 'function') {
           console.warn('Failed to refresh setup selector after external project update', populateError);

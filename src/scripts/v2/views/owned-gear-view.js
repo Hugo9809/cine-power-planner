@@ -86,11 +86,15 @@
         },
 
         createViewContainer() {
-            const app = document.querySelector('.v2-app') || document.body;
-            const view = document.createElement('div');
+            const container = document.querySelector('.v2-main') || document.querySelector('.v2-app') || document.body;
+            const view = document.createElement('section'); // Semantic HTML
             view.id = VIEW_ID;
             view.className = 'app-view';
-            app.appendChild(view);
+
+            // Should be hidden by default until activated
+            // CSS handles .app-view:not(.active) { display: none }
+
+            container.appendChild(view);
             this.container = view;
         },
 

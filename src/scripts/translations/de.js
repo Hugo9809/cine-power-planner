@@ -2195,7 +2195,105 @@
       "diagramHoverNotice": "Für weitere Infos anklicken!",
       "diagramDetailBackLabel": "Zurück",
       "diagramDetailDefaultHeading": "Diagrammdetails",
-      "diagramMoveHint": "Knoten per Drag & Drop verschieben. Leeren Bereich ziehen, um das Diagramm zu verschieben."
+      "diagramMoveHint": "Knoten per Drag & Drop verschieben. Leeren Bereich ziehen, um das Diagramm zu verschieben.",
+      "v2": {
+        "dashboard": {
+          "projects": "Projekte",
+          "newProject": "Neues Projekt",
+          "emptyState": {
+            "title": "Noch keine Projekte",
+            "subtitle": "Erstelle deinen ersten Stromplan, um loszulegen.",
+            "help": "Brauchst du Hilfe beim Einstieg?",
+            "archiveTitle": "Keine archivierten Projekte",
+            "archiveSubtitle": "Projekte, die du archivierst, erscheinen hier."
+          },
+          "search": {
+            "noResults": {
+              "title": "Keine Ergebnisse",
+              "subtitle": "Keine Projekte entsprechen \"{query}\""
+            }
+          },
+          "projectTile": {
+            "prep": "Prep:",
+            "shoot": "Dreh:",
+            "return": "Rückgabe:",
+            "openProject": "Projekt öffnen",
+            "renameAndEdit": "Umbenennen & Bearbeiten",
+            "moreOptions": "Weitere Optionen",
+            "actionsFor": "Aktionen für {project}"
+          },
+          "contextMenu": {
+            "open": "Projekt öffnen",
+            "rename": "Umbenennen & Bearbeiten",
+            "duplicate": "Duplizieren",
+            "archive": "Archivieren",
+            "unarchive": "Wiederherstellen",
+            "delete": "Löschen",
+            "print": "Drucken",
+            "pdf": "PDF exportieren"
+          },
+          "status": {
+            "draft": "Entwurf",
+            "planning": "Planung",
+            "waitingForApproval": "Auf Freigabe warten",
+            "approved": "Freigegeben",
+            "shooting": "Drehphase",
+            "completed": "Abgeschlossen",
+            "archived": "Archiviert"
+          }
+        },
+        "sidebar": {
+          "nav": {
+            "allProjects": "Alle Projekte",
+            "activeProjects": "Aktive Projekte",
+            "archive": "Archiv",
+            "autoBackups": "Auto-Backups",
+            "deviceLibrary": "Geräte-Bibliothek",
+            "contacts": "Kontakte",
+            "autoGearRules": "Auto-Gear Regeln",
+            "ownedGear": "Eigenes Equipment",
+            "createProject": "Neues Projekt erstellen",
+            "projectsSection": "Projekte",
+            "toolsSection": "Werkzeuge",
+            "supportSection": "Support",
+            "help": "Hilfe",
+            "settings": "Einstellungen"
+          },
+          "search": {
+            "placeholder": "Funktionen suchen..."
+          }
+        },
+        "detail": {
+          "backButton": "Zurück zu Projekten",
+          "header": {
+            "export": "Projekt exportieren",
+            "print": "Drucken / PDF exportieren",
+            "generateReqs": "Anford. & Gear",
+            "generateOverview": "Übersicht erstellen",
+            "save": "Speichern"
+          },
+          "tabs": {
+            "cameraPackage": "Kamera-Paket",
+            "powerSummary": "Leistungsübersicht",
+            "requirements": "Anforderungen",
+            "gearList": "Kit-Liste"
+          },
+          "actions": {
+            "projectRequirements": "Produktionsanforderungen",
+            "generateRequirements": "Anforderungen erstellen",
+            "generateRequirementsHelp": "Klicke auf \"Anforderungen erstellen\", um deinen Produktionsbericht zu generieren.",
+            "gearList": "Kit-Liste",
+            "generateGearList": "Kit-Liste erstellen",
+            "generateGearListHelp": "Klicke auf \"Kit-Liste erstellen\", um deine Ausrüstungsliste zu generieren."
+          },
+          "diagram": {
+            "zoomIn": "Hineinzoomen",
+            "zoomOut": "Herauszoomen",
+            "resetView": "Ansicht zurücksetzen",
+            "download": "Diagramm herunterladen"
+          }
+        }
+      }
     },
     "categoryNames": {
       "cameras": "Kamera",

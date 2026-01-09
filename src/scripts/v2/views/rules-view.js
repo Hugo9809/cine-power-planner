@@ -205,97 +205,95 @@
                     }
                 };
             });
-        };
-    });
 
-    // Defaults (using event delegation or direct bind since they are static in render)
-    this.container.querySelectorAll('.default-monitor-select').forEach(select => {
-        select.onchange = (e) => {
-            const key = e.target.dataset.key;
-            const val = e.target.value;
-            if (window.setAutoGearDefault) {
-                window.setAutoGearDefault(key, val);
+            // Defaults (using event delegation or direct bind since they are static in render)
+            this.container.querySelectorAll('.default-monitor-select').forEach(select => {
+                select.onchange = (e) => {
+                    const key = e.target.dataset.key;
+                    const val = e.target.value;
+                    if (window.setAutoGearDefault) {
+                        window.setAutoGearDefault(key, val);
+                    } else {
+                        localStorage.setItem('auto_gear_default_' + key, val);
+                    }
+                };
+            });
+
+            const exportBtn = this.container.querySelector('#btn-export-rules');
+            if (exportBtn) exportBtn.onclick = () => this.exportRules();
+
+            const importBtn = this.container.querySelector('#btn-import-rules');
+            if (importBtn) importBtn.onclick = () => this.triggerImport();
+
+            const resetBtn = this.container.querySelector('#btn-reset-rules');
+            if (resetBtn) resetBtn.onclick = () => this.resetRules();
+        },
+
+        exportRules() {
+            if (window.exportAutoGearPresets) {
+                window.exportAutoGearPresets();
             } else {
-                localStorage.setItem('auto_gear_default_' + key, val);
+                console.warn('[RulesView] Export helper not found');
             }
-        };
-    });
+        },
 
-    const exportBtn = this.container.querySelector('#btn-export-rules');
-    if (exportBtn) exportBtn.onclick = () => this.exportRules();
+        triggerImport() {
+            const input = document.getElementById('autoGearImportInput');
+            if (input) input.click();
+            else {
+                // Fallback: create temporary input
+                const tempInput = document.createElement('input');
+                tempInput.type = 'file';
+                tempInput.accept = '.json,application/json';
+                tempInput.onchange = (e) => this.handleImport(e.target.files[0]);
+                tempInput.click();
+            }
+        },
 
-    const importBtn = this.container.querySelector('#btn-import-rules');
-    if (importBtn) importBtn.onclick = () => this.triggerImport();
+        handleImport(file) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (window.importAutoGearRules) {
+                        window.importAutoGearRules(data);
+                        this.render();
+                    }
+                } catch (err) {
+                    console.error('Import failed', err);
+                    alert('Invalid rules file');
+                }
+            };
+            reader.readAsText(file);
+        },
 
-    const resetBtn = this.container.querySelector('#btn-reset-rules');
-    if (resetBtn) resetBtn.onclick = () => this.resetRules();
-},
+        resetRules() {
+            if (confirm(_t('confirmResetRules'))) {
+                if (window.clearAutoGearDefaultsSeeded) window.clearAutoGearDefaultsSeeded(); // Logic specific to app
+                // We might need to call a reset helper
+                if (typeof window.resetAutoGearRules === 'function') {
+                    window.resetAutoGearRules();
+                    this.render();
+                }
+            }
+        },
 
-    exportRules() {
-    if (window.exportAutoGearPresets) {
-        window.exportAutoGearPresets();
-    } else {
-        console.warn('[RulesView] Export helper not found');
-    }
-},
-
-triggerImport() {
-    const input = document.getElementById('autoGearImportInput');
-    if (input) input.click();
-    else {
-        // Fallback: create temporary input
-        const tempInput = document.createElement('input');
-        tempInput.type = 'file';
-        tempInput.accept = '.json,application/json';
-        tempInput.onchange = (e) => this.handleImport(e.target.files[0]);
-        tempInput.click();
-    }
-},
-
-handleImport(file) {
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        try {
-            const data = JSON.parse(e.target.result);
-            if (window.importAutoGearRules) {
-                window.importAutoGearRules(data);
+        deleteRule(id) {
+            if (window.getAutoGearRules && window.setAutoGearRules) {
+                const currentRules = window.getAutoGearRules();
+                const newRules = currentRules.filter(r => r.id !== id);
+                window.setAutoGearRules(newRules);
                 this.render();
             }
-        } catch (err) {
-            console.error('Import failed', err);
-            alert('Invalid rules file');
-        }
-    };
-    reader.readAsText(file);
-},
+        },
 
-resetRules() {
-    if (confirm(_t('confirmResetRules'))) {
-        if (window.clearAutoGearDefaultsSeeded) window.clearAutoGearDefaultsSeeded(); // Logic specific to app
-        // We might need to call a reset helper
-        if (typeof window.resetAutoGearRules === 'function') {
-            window.resetAutoGearRules();
-            this.render();
-        }
-    }
-},
+        showAddRuleModal() {
+            this.showEditRuleModal(null);
+        },
 
-deleteRule(id) {
-    if (window.getAutoGearRules && window.setAutoGearRules) {
-        const currentRules = window.getAutoGearRules();
-        const newRules = currentRules.filter(r => r.id !== id);
-        window.setAutoGearRules(newRules);
-        this.render();
-    }
-},
-
-showAddRuleModal() {
-    this.showEditRuleModal(null);
-},
-
-renderToolbar() {
-    return `
+        renderToolbar() {
+            return `
                 <div class="v2-toolbar-group">
                     <button class="v2-btn v2-btn-ghost" id="btn-export-rules" title="${_t('buttonExportRules')}">
                         <span class="icon">download</span>
@@ -308,27 +306,27 @@ renderToolbar() {
                     </button>
                 </div>
             `;
-},
+        },
 
-renderDefaultsSection() {
-    // Collect monitor options
-    const monitors = [...safeCollectCall('collectAutoGearMonitorNames', 'monitor'), ...safeCollectCall('collectAutoGearMonitorNames', 'directorMonitor')];
+        renderDefaultsSection() {
+            // Collect monitor options
+            const monitors = [...safeCollectCall('collectAutoGearMonitorNames', 'monitor'), ...safeCollectCall('collectAutoGearMonitorNames', 'directorMonitor')];
 
-    // Helper to render select options
-    const renderOptions = (selected) => {
-        return [
-            `<option value="">${_t('optionNone')}</option>`,
-            ...monitors.map(m => `<option value="${this.escapeHtml(m)}" ${m === selected ? 'selected' : ''}>${this.escapeHtml(m)}</option>`)
-        ].join('');
-    };
+            // Helper to render select options
+            const renderOptions = (selected) => {
+                return [
+                    `<option value="">${_t('optionNone')}</option>`,
+                    ...monitors.map(m => `<option value="${this.escapeHtml(m)}" ${m === selected ? 'selected' : ''}>${this.escapeHtml(m)}</option>`)
+                ].join('');
+            };
 
-    // Get current values (fallback to localStorage if global helper missing)
-    const getVal = (key) => {
-        if (window.getAutoGearDefault) return window.getAutoGearDefault(key);
-        return localStorage.getItem('auto_gear_default_' + key) || '';
-    };
+            // Get current values (fallback to localStorage if global helper missing)
+            const getVal = (key) => {
+                if (window.getAutoGearDefault) return window.getAutoGearDefault(key);
+                return localStorage.getItem('auto_gear_default_' + key) || '';
+            };
 
-    return `
+            return `
                 <div class="v2-card rules-defaults-card">
                     <div class="v2-card-header">
                         <h3>${_t('headingMonitorDefaults')}</h3>
@@ -363,105 +361,105 @@ renderDefaultsSection() {
                     </div>
                 </div>
             `;
-},
+        },
 
-// ============================================================
-//  EDIT MODAL (DEEP DIVE IMPLEMENTATION)
-// ============================================================
-showEditRuleModal(ruleId) {
-    let rule = null;
-    let isNew = true;
+        // ============================================================
+        //  EDIT MODAL (DEEP DIVE IMPLEMENTATION)
+        // ============================================================
+        showEditRuleModal(ruleId) {
+            let rule = null;
+            let isNew = true;
 
-    if (ruleId && window.getAutoGearRules) {
-        const rules = window.getAutoGearRules();
-        const found = rules.find(r => r.id === ruleId);
-        if (found) {
-            rule = JSON.parse(JSON.stringify(found));
-            isNew = false;
-        }
-    }
+            if (ruleId && window.getAutoGearRules) {
+                const rules = window.getAutoGearRules();
+                const found = rules.find(r => r.id === ruleId);
+                if (found) {
+                    rule = JSON.parse(JSON.stringify(found));
+                    isNew = false;
+                }
+            }
 
-    if (!rule) {
-        rule = {
-            id: 'rule_' + Date.now(),
-            label: '',
-            enabled: true,
-            always: false,
-            // Context
-            scenarios: [],
-            scenarioMode: 'all', // 'all', 'any', 'multiplier'
-            scenarioBase: '',
-            scenarioFactor: 1,
-            shootingDays: null,
-            shootingDaysMode: 'minimum', // 'minimum', 'maximum', 'every'
-            // Camera
-            camera: [],
-            mattebox: [],
-            viewfinderExtension: [],
-            // Monitor
-            monitor: [], // Includes director monitors in legacy model often mixed or separates? Legacy has separate `directorMonitor` in some places but rule object usually just `monitor`. We'll rely on collection logic.
-            videoDistribution: [],
-            wireless: [],
-            // Support
-            tripodHeadBrand: [],
-            tripodBowl: [],
-            tripodTypes: [],
-            tripodSpreader: [],
-            // Crew
-            crewPresent: [],
-            crewAbsent: [],
-            // Actions
-            add: [],
-            remove: []
-        };
-    }
+            if (!rule) {
+                rule = {
+                    id: 'rule_' + Date.now(),
+                    label: '',
+                    enabled: true,
+                    always: false,
+                    // Context
+                    scenarios: [],
+                    scenarioMode: 'all', // 'all', 'any', 'multiplier'
+                    scenarioBase: '',
+                    scenarioFactor: 1,
+                    shootingDays: null,
+                    shootingDaysMode: 'minimum', // 'minimum', 'maximum', 'every'
+                    // Camera
+                    camera: [],
+                    mattebox: [],
+                    viewfinderExtension: [],
+                    // Monitor
+                    monitor: [], // Includes director monitors in legacy model often mixed or separates? Legacy has separate `directorMonitor` in some places but rule object usually just `monitor`. We'll rely on collection logic.
+                    videoDistribution: [],
+                    wireless: [],
+                    // Support
+                    tripodHeadBrand: [],
+                    tripodBowl: [],
+                    tripodTypes: [],
+                    tripodSpreader: [],
+                    // Crew
+                    crewPresent: [],
+                    crewAbsent: [],
+                    // Actions
+                    add: [],
+                    remove: []
+                };
+            }
 
-    const existing = document.querySelector('.v2-modal-backdrop');
-    if (existing) existing.remove();
+            const existing = document.querySelector('.v2-modal-backdrop');
+            if (existing) existing.remove();
 
-    const backdrop = document.createElement('div');
-    backdrop.className = 'v2-modal-backdrop';
+            const backdrop = document.createElement('div');
+            backdrop.className = 'v2-modal-backdrop';
 
-    // --- DATA COLLECTION ---
-    const d = window.devices || {};
+            // --- DATA COLLECTION ---
+            const d = window.devices || {};
 
-    const data = {
-        // Context
-        scenarios: SCENARIOS,
+            const data = {
+                // Context
+                scenarios: SCENARIOS,
 
-        // Camera
-        cameras: safeCollectKeys(d.cameras),
-        matteboxes: safeCollectKeys(d.matteboxes), // Fallback if direct mapping exists
-        // If devices.matteboxes doesn't exist, try collect functions?
-        // Actually devices.accessories?.matteboxes is likely used if distinct?
-        // Let's assume devices.matteboxes might not exist. If so, leave empty for now or use `safeCollectKeys(d.accessories?.matteboxes)`.
-        viewfinders: safeCollectCall('getAllViewfinderTypes'),
+                // Camera
+                cameras: safeCollectKeys(d.cameras),
+                matteboxes: safeCollectKeys(d.matteboxes), // Fallback if direct mapping exists
+                // If devices.matteboxes doesn't exist, try collect functions?
+                // Actually devices.accessories?.matteboxes is likely used if distinct?
+                // Let's assume devices.matteboxes might not exist. If so, leave empty for now or use `safeCollectKeys(d.accessories?.matteboxes)`.
+                viewfinders: safeCollectCall('getAllViewfinderTypes'),
 
-        // Monitoring
-        monitors: [...safeCollectCall('collectAutoGearMonitorNames', 'monitor'), ...safeCollectCall('collectAutoGearMonitorNames', 'directorMonitor')],
-        wireless: safeCollectKeys(d.wireless), // or d.wirelessTransmitters?
+                // Monitoring
+                monitors: [...safeCollectCall('collectAutoGearMonitorNames', 'monitor'), ...safeCollectCall('collectAutoGearMonitorNames', 'directorMonitor')],
+                wireless: safeCollectKeys(d.wireless), // or d.wirelessTransmitters?
 
-        // Support
-        tripodHeads: safeCollectCall('collectAutoGearTripodNames', 'tripodHead'),
-        tripodBowls: safeCollectCall('collectAutoGearTripodNames', 'tripodBowl'),
-        tripodTypes: safeCollectCall('collectAutoGearTripodNames', 'tripodType'),
-        tripodSpreaders: safeCollectCall('collectAutoGearTripodNames', 'tripodSpreader'),
+                // Support
+                tripodHeads: safeCollectCall('collectAutoGearTripodNames', 'tripodHead'),
+                tripodBowls: safeCollectCall('collectAutoGearTripodNames', 'tripodBowl'),
+                tripodTypes: safeCollectCall('collectAutoGearTripodNames', 'tripodType'),
+                tripodSpreaders: safeCollectCall('collectAutoGearTripodNames', 'tripodSpreader'),
 
-        // Crew
-        crew: CREW_ROLES
-    };
+                // Crew
+                crew: CREW_ROLES
+            };
 
-    // Fix for Matteboxes if not found directly
-    if (data.matteboxes.length === 0 && d.matteboxes) data.matteboxes = Object.keys(d.matteboxes);
+            // Fix for Matteboxes if not found directly
+            if (data.matteboxes.length === 0 && d.matteboxes) data.matteboxes = Object.keys(d.matteboxes);
 
-    // Gear Catalog for Add Item
-    const gearNames = safeCollectCall('collectAutoGearCatalogNames');
-    const categories = safeCollectCall('collectDeviceManagerCategories');
-    if (!categories.length) categories.push('Power', 'Video', 'Support', 'Cabling', 'Accessories');
+            // Gear Catalog for Add Item
+            const gearNames = safeCollectCall('collectAutoGearCatalogNames');
+            const categories = safeCollectCall('collectDeviceManagerCategories');
+            if (!categories.length) categories.push('Power', 'Video', 'Support', 'Cabling', 'Accessories');
 
 
-    // --- HTML GENERATION ---
-    backdrop.innerHTML = `
+            // --- HTML GENERATION ---
+            backdrop.innerHTML = `
                 <div class="v2-modal v2-modal-lg">
                     <div class="v2-modal-header">
                         <h3 class="v2-modal-title">${isNew ? _t('modalTitleCreateRule') : _t('modalTitleEditRule')}</h3>
@@ -662,26 +660,26 @@ showEditRuleModal(ruleId) {
                 </div>
             `;
 
-    document.body.appendChild(backdrop);
-    requestAnimationFrame(() => backdrop.classList.add('open'));
-    this.bindModalEvents(backdrop, rule, isNew);
-},
+            document.body.appendChild(backdrop);
+            requestAnimationFrame(() => backdrop.classList.add('open'));
+            this.bindModalEvents(backdrop, rule, isNew);
+        },
 
-// --- RENDER HELPERS ---
-renderCheckboxGroup(items, selectedItems, groupName) {
-    const selectedSet = new Set(selectedItems || []);
-    if (!items || items.length === 0) return `<div class="v2-empty-text">${_t('textNoOptions')}</div>`;
+        // --- RENDER HELPERS ---
+        renderCheckboxGroup(items, selectedItems, groupName) {
+            const selectedSet = new Set(selectedItems || []);
+            if (!items || items.length === 0) return `<div class="v2-empty-text">${_t('textNoOptions')}</div>`;
 
-    return items.map(item => `
+            return items.map(item => `
                 <label class="condition-item">
                     <input type="checkbox" data-group="${groupName}" value="${this.escapeHtml(item)}" ${selectedSet.has(item) ? 'checked' : ''}>
                     <span>${this.escapeHtml(item)}</span>
                 </label>
             `).join('');
-},
+        },
 
-renderAddItemForm(type, categories) {
-    return `
+        renderAddItemForm(type, categories) {
+            return `
                  <div style="display: grid; grid-template-columns: 2fr 1fr 0.5fr auto; gap: 8px; align-items: end;">
                     <div>
                         <label class="v2-label" style="font-size: 11px;">${_t('labelItemName')}</label>
@@ -702,14 +700,14 @@ renderAddItemForm(type, categories) {
                     </div>
                 </div>
             `;
-},
+        },
 
-renderActionList(items, type) {
-    // Same as before
-    if (!items || !items.length) {
-        return `<div class="v2-empty-text">${_t('textNoItems')}</div>`;
-    }
-    return items.map((item, index) => `
+        renderActionList(items, type) {
+            // Same as before
+            if (!items || !items.length) {
+                return `<div class="v2-empty-text">${_t('textNoItems')}</div>`;
+            }
+            return items.map((item, index) => `
                 <div class="action-item-row">
                     <span style="font-weight: 500; flex: 1;">${this.escapeHtml(item.name)}</span>
                     <span class="v2-badge">${item.category}</span>
@@ -720,143 +718,143 @@ renderActionList(items, type) {
                     </button>
                 </div>
             `).join('');
-},
+        },
 
-// --- EVENT BINDING ---
-bindModalEvents(backdrop, rule, isNew) {
-    // 1. Tabs
-    backdrop.querySelectorAll('.rules-tab-btn').forEach(btn => {
-        btn.onclick = () => {
-            backdrop.querySelectorAll('.rules-tab-btn').forEach(b => b.classList.remove('active'));
-            backdrop.querySelectorAll('.rules-tab-content').forEach(c => c.classList.remove('active'));
-            btn.classList.add('active');
-            backdrop.querySelector(`#tab-${btn.dataset.tab}`).classList.add('active');
-        };
-    });
+        // --- EVENT BINDING ---
+        bindModalEvents(backdrop, rule, isNew) {
+            // 1. Tabs
+            backdrop.querySelectorAll('.rules-tab-btn').forEach(btn => {
+                btn.onclick = () => {
+                    backdrop.querySelectorAll('.rules-tab-btn').forEach(b => b.classList.remove('active'));
+                    backdrop.querySelectorAll('.rules-tab-content').forEach(c => c.classList.remove('active'));
+                    btn.classList.add('active');
+                    backdrop.querySelector(`#tab-${btn.dataset.tab}`).classList.add('active');
+                };
+            });
 
-    // 2. Action Items (Show/Add)
-    backdrop.querySelectorAll('.btn-show-add-item').forEach(btn => {
-        btn.onclick = () => {
-            const type = btn.dataset.type;
-            const form = backdrop.querySelector(`#add-item-form-${type}`);
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
-        };
-    });
+            // 2. Action Items (Show/Add)
+            backdrop.querySelectorAll('.btn-show-add-item').forEach(btn => {
+                btn.onclick = () => {
+                    const type = btn.dataset.type;
+                    const form = backdrop.querySelector(`#add-item-form-${type}`);
+                    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+                };
+            });
 
-    backdrop.querySelectorAll('.btn-confirm-add-item').forEach(btn => {
-        btn.onclick = () => {
-            const type = btn.dataset.type;
-            const container = backdrop.querySelector(`#add-item-form-${type}`);
-            const name = container.querySelector('.input-item-name').value.trim();
-            const category = container.querySelector('.select-item-category').value;
-            const quantity = parseInt(container.querySelector('.input-item-qty').value, 10) || 1;
+            backdrop.querySelectorAll('.btn-confirm-add-item').forEach(btn => {
+                btn.onclick = () => {
+                    const type = btn.dataset.type;
+                    const container = backdrop.querySelector(`#add-item-form-${type}`);
+                    const name = container.querySelector('.input-item-name').value.trim();
+                    const category = container.querySelector('.select-item-category').value;
+                    const quantity = parseInt(container.querySelector('.input-item-qty').value, 10) || 1;
 
-            if (!name) return;
+                    if (!name) return;
 
-            if (!rule[type]) rule[type] = [];
-            rule[type].push({ name, category, quantity });
+                    if (!rule[type]) rule[type] = [];
+                    rule[type].push({ name, category, quantity });
 
-            container.querySelector('.input-item-name').value = '';
-            container.style.display = 'none';
+                    container.querySelector('.input-item-name').value = '';
+                    container.style.display = 'none';
 
-            // Re-render
-            const listContainer = backdrop.querySelector(`#action-list-${type}`);
-            listContainer.innerHTML = this.renderActionList(rule[type], type);
-            bindDeleteActions();
-        };
-    });
-
-    // 3. Action Items (Delete)
-    const bindDeleteActions = () => {
-        backdrop.querySelectorAll('.btn-delete-action-item').forEach(btn => {
-            btn.onclick = (e) => {
-                e.stopPropagation();
-                const type = btn.dataset.type;
-                const index = parseInt(btn.dataset.index, 10);
-                if (rule[type]) {
-                    rule[type].splice(index, 1);
-                    backdrop.querySelector(`#action-list-${type}`).innerHTML = this.renderActionList(rule[type], type);
+                    // Re-render
+                    const listContainer = backdrop.querySelector(`#action-list-${type}`);
+                    listContainer.innerHTML = this.renderActionList(rule[type], type);
                     bindDeleteActions();
-                }
+                };
+            });
+
+            // 3. Action Items (Delete)
+            const bindDeleteActions = () => {
+                backdrop.querySelectorAll('.btn-delete-action-item').forEach(btn => {
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        const type = btn.dataset.type;
+                        const index = parseInt(btn.dataset.index, 10);
+                        if (rule[type]) {
+                            rule[type].splice(index, 1);
+                            backdrop.querySelector(`#action-list-${type}`).innerHTML = this.renderActionList(rule[type], type);
+                            bindDeleteActions();
+                        }
+                    };
+                });
             };
-        });
-    };
-    bindDeleteActions();
+            bindDeleteActions();
 
-    // 4. Save / Close
-    const close = () => {
-        backdrop.classList.remove('open');
-        setTimeout(() => backdrop.remove(), 200);
-    };
+            // 4. Save / Close
+            const close = () => {
+                backdrop.classList.remove('open');
+                setTimeout(() => backdrop.remove(), 200);
+            };
 
-    backdrop.querySelector('.v2-modal-close').onclick = close;
-    backdrop.querySelector('#btn-cancel-rule').onclick = close;
+            backdrop.querySelector('.v2-modal-close').onclick = close;
+            backdrop.querySelector('#btn-cancel-rule').onclick = close;
 
-    backdrop.querySelector('#btn-save-rule').onclick = () => {
-        // General
-        rule.label = backdrop.querySelector('#ruleLabel').value.trim();
-        rule.enabled = backdrop.querySelector('#ruleEnabled').checked;
-        rule.always = backdrop.querySelector('#ruleAlways').checked;
+            backdrop.querySelector('#btn-save-rule').onclick = () => {
+                // General
+                rule.label = backdrop.querySelector('#ruleLabel').value.trim();
+                rule.enabled = backdrop.querySelector('#ruleEnabled').checked;
+                rule.always = backdrop.querySelector('#ruleAlways').checked;
 
-        if (!rule.label) {
-            alert(_t('alertEnterRuleName'));
-            return;
+                if (!rule.label) {
+                    alert(_t('alertEnterRuleName'));
+                    return;
+                }
+
+                // Collect Checkboxes
+                const collect = (group) => {
+                    return Array.from(backdrop.querySelectorAll(`input[data-group="${group}"]:checked`)).map(cb => cb.value);
+                };
+
+                rule.scenarios = collect('scenarios');
+                rule.scenarioMode = backdrop.querySelector('#ruleScenarioMode').value;
+                rule.scenarioFactor = parseFloat(backdrop.querySelector('#ruleScenarioFactor').value) || 1;
+
+                rule.shootingDaysMode = backdrop.querySelector('#ruleShootingDaysMode').value;
+                const sDays = backdrop.querySelector('#ruleShootingDays').value;
+                rule.shootingDays = sDays !== '' ? parseInt(sDays, 10) : null;
+
+                rule.camera = collect('camera');
+                rule.mattebox = collect('mattebox');
+                rule.viewfinderExtension = collect('viewfinderExtension');
+                rule.monitor = collect('monitor');
+                rule.wireless = collect('wireless');
+                rule.tripodHeadBrand = collect('tripodHeadBrand');
+                rule.tripodBowl = collect('tripodBowl');
+                rule.tripodTypes = collect('tripodTypes');
+                rule.tripodSpreader = collect('tripodSpreader');
+                rule.crewPresent = collect('crewPresent');
+                rule.crewAbsent = collect('crewAbsent');
+
+                this.saveRule(rule, isNew);
+                close();
+            };
+        },
+
+        saveRule(rule, isNew) {
+            if (window.getAutoGearRules && window.setAutoGearRules) {
+                const currentRules = window.getAutoGearRules();
+                let newRules;
+                if (isNew) {
+                    newRules = [...currentRules, rule];
+                } else {
+                    newRules = currentRules.map(r => r.id === rule.id ? rule : r);
+                }
+                window.setAutoGearRules(newRules);
+                this.render();
+            }
+        },
+
+        escapeHtml(str) {
+            if (typeof str !== 'string') return '';
+            return str.replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
         }
-
-        // Collect Checkboxes
-        const collect = (group) => {
-            return Array.from(backdrop.querySelectorAll(`input[data-group="${group}"]:checked`)).map(cb => cb.value);
-        };
-
-        rule.scenarios = collect('scenarios');
-        rule.scenarioMode = backdrop.querySelector('#ruleScenarioMode').value;
-        rule.scenarioFactor = parseFloat(backdrop.querySelector('#ruleScenarioFactor').value) || 1;
-
-        rule.shootingDaysMode = backdrop.querySelector('#ruleShootingDaysMode').value;
-        const sDays = backdrop.querySelector('#ruleShootingDays').value;
-        rule.shootingDays = sDays !== '' ? parseInt(sDays, 10) : null;
-
-        rule.camera = collect('camera');
-        rule.mattebox = collect('mattebox');
-        rule.viewfinderExtension = collect('viewfinderExtension');
-        rule.monitor = collect('monitor');
-        rule.wireless = collect('wireless');
-        rule.tripodHeadBrand = collect('tripodHeadBrand');
-        rule.tripodBowl = collect('tripodBowl');
-        rule.tripodTypes = collect('tripodTypes');
-        rule.tripodSpreader = collect('tripodSpreader');
-        rule.crewPresent = collect('crewPresent');
-        rule.crewAbsent = collect('crewAbsent');
-
-        this.saveRule(rule, isNew);
-        close();
-    };
-},
-
-saveRule(rule, isNew) {
-    if (window.getAutoGearRules && window.setAutoGearRules) {
-        const currentRules = window.getAutoGearRules();
-        let newRules;
-        if (isNew) {
-            newRules = [...currentRules, rule];
-        } else {
-            newRules = currentRules.map(r => r.id === rule.id ? rule : r);
-        }
-        window.setAutoGearRules(newRules);
-        this.render();
-    }
-},
-
-escapeHtml(str) {
-    if (typeof str !== 'string') return '';
-    return str.replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-}
     };
 
-global.cineRulesView = RulesView;
+    global.cineRulesView = RulesView;
 
-}) (typeof window !== 'undefined' ? window : this);
+})(typeof window !== 'undefined' ? window : this);

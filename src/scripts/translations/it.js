@@ -2189,7 +2189,105 @@
       "diagramHoverNotice": "Clicca per maggiori informazioni!",
       "diagramDetailBackLabel": "Indietro",
       "diagramDetailDefaultHeading": "Dettagli del diagramma",
-      "diagramMoveHint": "Trascina i nodi per spostarli. Trascina uno spazio vuoto per spostare il diagramma."
+      "diagramMoveHint": "Trascina i nodi per spostarli. Trascina uno spazio vuoto per spostare il diagramma.",
+      "v2": {
+        "dashboard": {
+          "projects": "Progetti",
+          "newProject": "Nuovo progetto",
+          "emptyState": {
+            "title": "Nessun progetto ancora",
+            "subtitle": "Crea il tuo primo piano energetico per iniziare.",
+            "help": "Hai bisogno di aiuto per iniziare?",
+            "archiveTitle": "Nessun progetto archiviato",
+            "archiveSubtitle": "I progetti che archivi appariranno qui."
+          },
+          "search": {
+            "noResults": {
+              "title": "Nessun risultato",
+              "subtitle": "Nessun progetto corrisponde a \"{query}\""
+            }
+          },
+          "projectTile": {
+            "prep": "Prep:",
+            "shoot": "Riprese:",
+            "return": "Restituzione:",
+            "openProject": "Apri progetto",
+            "renameAndEdit": "Rinomina e modifica",
+            "moreOptions": "Altre opzioni",
+            "actionsFor": "Azioni per {project}"
+          },
+          "contextMenu": {
+            "open": "Apri progetto",
+            "rename": "Rinomina e modifica",
+            "duplicate": "Duplica",
+            "archive": "Archivia",
+            "unarchive": "Ripristina",
+            "delete": "Elimina",
+            "print": "Stampa",
+            "pdf": "Esporta PDF"
+          },
+          "status": {
+            "draft": "Bozza",
+            "planning": "Pianificazione",
+            "waitingForApproval": "In attesa di approvazione",
+            "approved": "Approvato",
+            "shooting": "In ripresa",
+            "completed": "Completato",
+            "archived": "Archiviato"
+          }
+        },
+        "sidebar": {
+          "nav": {
+            "allProjects": "Tutti i progetti",
+            "activeProjects": "Progetti attivi",
+            "archive": "Archivio",
+            "autoBackups": "Backup auto",
+            "deviceLibrary": "Libreria",
+            "contacts": "Contatti",
+            "autoGearRules": "Regole auto",
+            "ownedGear": "Attrezzatura",
+            "createProject": "Nuovo progetto",
+            "projectsSection": "Progetti",
+            "toolsSection": "Strumenti",
+            "supportSection": "Supporto",
+            "help": "Aiuto",
+            "settings": "Impostazioni"
+          },
+          "search": {
+            "placeholder": "Cerca funzioni..."
+          }
+        },
+        "detail": {
+          "backButton": "Torna ai progetti",
+          "header": {
+            "export": "Esporta progetto",
+            "print": "Stampa / Esporta PDF",
+            "generateReqs": "Requisiti e attrezzatura",
+            "generateOverview": "Genera panoramica",
+            "save": "Salva"
+          },
+          "tabs": {
+            "cameraPackage": "Pacchetto camera",
+            "powerSummary": "Riepilogo potenza",
+            "requirements": "Requisiti",
+            "gearList": "Lista kit"
+          },
+          "actions": {
+            "projectRequirements": "Requisiti di produzione",
+            "generateRequirements": "Genera requisiti",
+            "generateRequirementsHelp": "Clicca su \"Genera requisiti\" per creare il tuo report di produzione.",
+            "gearList": "Lista kit",
+            "generateGearList": "Genera lista kit",
+            "generateGearListHelp": "Clicca su \"Genera lista kit\" per creare la tua lista di attrezzatura."
+          },
+          "diagram": {
+            "zoomIn": "Ingrandisci",
+            "zoomOut": "Riduci",
+            "resetView": "Reimposta vista",
+            "download": "Scarica diagramma"
+          }
+        }
+      }
     },
     "categoryNames": {
       "cameras": "Camera",

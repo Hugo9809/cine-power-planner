@@ -75,3 +75,24 @@ Keep brand connector names (D‑Tap, B‑Mount) unchanged and hyphenated.
 - Ensure translation keeps keyboard shortcut references accurate (`Ctrl+S`, `⌘S`).
 - Validate service worker and offline instructions remain clear in each language.
 - Record any locale-specific layout adjustments in `review-findings.md`.
+
+## V2 UI terminology
+
+When translating V2 interface elements, use these consistent terms:
+
+| English term | German (de) | Spanish (es) | French (fr) | Italian (it) |
+| --- | --- | --- | --- | --- |
+| Dashboard | Dashboard | Dashboard | Tableau de bord | Dashboard |
+| Sidebar | Sidebar | Barra lateral | Barre latérale | Sidebar |
+| Device Library | Geräte-Bibliothek | Biblioteca de Dispositivos | Bibliothèque d'équipements | Libreria Dispositivi |
+| Owned Gear | Eigenes Equipment | Equipo Propio | Équipement personnel | Attrezzatura Propria |
+| Project Status | Projektstatus | Estado del Proyecto | Statut de projet | Stato Progetto |
+| Draft | Entwurf | Borrador | Brouillon | Bozza |
+| Planning | Planung | Planificación | Planification | Pianificazione |
+| Waiting for Approval | Wartet auf Genehmigung | Esperando Aprobación | En attente d'approbation | In Attesa di Approvazione |
+| Approved | Genehmigt | Aprobado | Approuvé | Approvato |
+| Shooting | Dreh | Rodaje | Tournage | Riprese |
+| Completed | Abgeschlossen | Completado | Terminé | Completato |
+| Archived | Archiviert | Archivado | Archivé | Archiviato |
+
+V2-specific translation keys are located in `src/scripts/translations/*.js` under the `v2` section.

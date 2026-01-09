@@ -1,0 +1,184 @@
+/*
+ * Cine Power Planner V2 - Device Library View
+ * ===========================================
+ * Styles for the device library view, specifically for adapting
+ * legacy form elements to the V2 design system.
+ */
+
+#v2-device-library-content {
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+    animation: v2-fade-in 0.3s ease-out;
+}
+
+/* Card Improvements */
+.v2-device-library-card {
+    border: 1px solid var(--v2-border-default);
+    background-color: var(--v2-surface-base);
+    box-shadow: var(--v2-shadow-sm);
+    border-radius: var(--v2-radius-xl);
+}
+
+/* Form Layout Overrides for Legacy Structure */
+.v2-device-library-card .v2-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--v2-space-lg);
+    padding: var(--v2-space-xl);
+}
+
+@media (max-width: 600px) {
+    .v2-device-library-card .v2-card-body {
+        padding: var(--v2-space-md);
+    }
+}
+
+/* The legacy form often nests things deeply. We try to flatten visual spacing. */
+.v2-device-library-card .button-group {
+    display: flex;
+    flex-direction: row;
+    gap: var(--v2-space-md);
+    padding-top: var(--v2-space-md);
+    border-top: 1px solid var(--v2-border-muted);
+}
+
+/* Headings inside the form */
+.v2-device-library-card h4 {
+    font-size: var(--v2-font-size-base);
+    font-weight: var(--v2-font-weight-semibold);
+    color: var(--v2-text-primary);
+    margin-top: var(--v2-space-lg);
+    margin-bottom: var(--v2-space-md);
+    border-bottom: 1px solid var(--v2-border-muted);
+    padding-bottom: var(--v2-space-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--v2-space-sm);
+}
+
+/* Hide legacy specific elements that might pop up unwanted */
+.v2-device-library-card .hidden {
+    display: none !important;
+}
+
+
+/* Subsections (Camera specifics etc) */
+.camera-subsection,
+.monitor-subsection,
+.lens-subsection {
+    background-color: var(--v2-surface-elevated);
+    border: 1px solid var(--v2-border-muted);
+    border-radius: var(--v2-radius-md);
+    padding: var(--v2-space-lg);
+    margin-bottom: var(--v2-space-md);
+}
+
+/* Flex containers in legacy */
+.v2-device-library-card .flex-1 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--v2-space-md);
+}
+
+/* Checkboxes in legacy might need specific alignment */
+.v2-device-library-card input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--v2-brand-blue);
+    cursor: pointer;
+}
+
+.v2-device-library-card label {
+    display: flex;
+    align-items: center;
+    gap: var(--v2-space-sm);
+    font-size: var(--v2-font-size-sm);
+    color: var(--v2-text-primary);
+}
+
+.v2-device-library-card .v2-btn {
+    min-width: 100px;
+    justify-content: center;
+}
+
+/* Form row layout for legacy device inputs */
+.v2-device-library-card .v2-form-row,
+.v2-device-library-card .form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    /* Increased min-width for better spacing */
+    gap: var(--v2-space-md);
+    align-items: end;
+    margin-bottom: var(--v2-space-md);
+}
+
+/* Ensure inputs have proper sizing */
+.v2-device-library-card .v2-input,
+.v2-device-library-card .v2-select,
+.v2-device-library-card input[type="text"],
+.v2-device-library-card input[type="number"],
+.v2-device-library-card select {
+    width: 100%;
+    min-height: 42px;
+    /* Standardize height */
+    box-sizing: border-box;
+    padding: 8px 12px;
+    font-size: var(--v2-font-size-base);
+    border: 1px solid var(--v2-border-default);
+    border-radius: var(--v2-radius-md);
+    background-color: var(--v2-background-element);
+    color: var(--v2-text-primary);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.v2-device-library-card input:focus,
+.v2-device-library-card select:focus {
+    border-color: var(--v2-brand-blue);
+    outline: none;
+    box-shadow: 0 0 0 2px var(--v2-focus-ring);
+}
+
+/* Fix flex container overflow */
+.v2-device-library-card .flex-1 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--v2-space-md);
+    overflow: visible;
+}
+
+/* specific fixes for narrow fields like "watt" or "capacity" */
+.v2-device-library-card .form-row .small-input,
+.v2-device-library-card .form-row input[name="watt"],
+.v2-device-library-card .form-row input[name="capacity"],
+.v2-device-library-card .form-row input[name="pin"],
+.v2-device-library-card .form-row input[name="dtap"] {
+    min-width: 80px;
+}
+
+/* Ensure fieldsets and legends are styled properly */
+.v2-device-library-card fieldset {
+    border: 1px solid var(--v2-border-muted);
+    border-radius: var(--v2-radius-md);
+    padding: var(--v2-space-lg);
+    margin-bottom: var(--v2-space-lg);
+    background-color: var(--v2-surface-base);
+    /* Ensure it sits well on elevated if needed */
+}
+
+.v2-device-library-card legend {
+    font-weight: var(--v2-font-weight-semibold);
+    color: var(--v2-text-primary);
+    padding: 0 var(--v2-space-sm);
+    font-size: var(--v2-font-size-md);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+
+    .v2-device-library-card .v2-form-row,
+    .v2-device-library-card .form-row {
+        grid-template-columns: 1fr;
+        /* Stack on mobile */
+    }
+}

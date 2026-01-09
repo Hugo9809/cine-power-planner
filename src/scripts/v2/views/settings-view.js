@@ -181,7 +181,7 @@
                 <h2>${_t('settingsTabGeneral')}</h2>
                 
                 <div class="v2-settings-card">
-                    <h3>${_t('generalSectionLanguageHeading')}</h3>
+                    <h3><span class="icon">language</span> ${_t('generalSectionLanguageHeading')}</h3>
                     <div class="v2-form-grid">
                         <div class="v2-form-group">
                             <label class="v2-label">${_t('languageSetting')}</label>
@@ -211,7 +211,7 @@
                 </div>
 
                 <div class="v2-settings-card">
-                    <h3>${_t('generalSectionAppearanceHeading')}</h3>
+                    <h3><span class="icon">palette</span> ${_t('generalSectionAppearanceHeading')}</h3>
                     <div class="v2-checkbox-group">
                         <label class="v2-toggle-row">
                             <span class="v2-toggle-label">${_t('darkModeSetting')}</span>
@@ -238,7 +238,7 @@
                 </div>
 
                 <div class="v2-settings-card">
-                    <h3>${_t('mountVoltageSettingsHeading')}</h3>
+                    <h3><span class="icon">battery_charging_full</span> ${_t('mountVoltageSettingsHeading')}</h3>
                     <p>${_t('mountVoltageDescription')}</p>
                     
                     <div class="v2-form-grid v2-voltage-grid">
@@ -288,7 +288,7 @@
                 </div>
 
                 <div class="v2-settings-card">
-                    <h3>${_t('generalSectionCameraColorsHeading')}</h3>
+                    <h3><span class="icon">color_lens</span> ${_t('generalSectionCameraColorsHeading')}</h3>
                     <p>${_t('cameraColorSettingDescription')}</p>
                     <div class="v2-camera-colors-grid">
                         <div class="v2-color-field">
@@ -315,7 +315,7 @@
                 </div>
 
                 <div class="v2-settings-card">
-                    <h3>${_t('generalSectionInterfaceHeading')}</h3>
+                    <h3><span class="icon">tune</span> ${_t('generalSectionInterfaceHeading')}</h3>
                     <p>${_t('generalSectionInterfaceHelp')}</p>
                     <div class="v2-checkbox-group">
                         <label class="v2-toggle-row">
@@ -364,7 +364,7 @@
                 </div>
 
                 <div class="v2-settings-card">
-                    <h3>${_t('generalSectionBrandingHeading')}</h3>
+                    <h3><span class="icon">verified</span> ${_t('generalSectionBrandingHeading')}</h3>
                     <p>${_t('logoSettingHelp')}</p>
                     <div class="v2-branding-preview" id="v2-branding-preview" style="margin-bottom: 1rem; padding: 1rem; border: 1px dashed var(--v2-border-default); border-radius: var(--v2-radius-sm); text-align: center;">
                         <span style="color: var(--v2-text-muted);">${_t('brandingNoLogo')}</span>
@@ -376,7 +376,7 @@
                 </div>
 
                 <div class="v2-settings-card">
-                    <h3>${_t('documentationTrackerHeading')}</h3>
+                    <h3><span class="icon">history_edu</span> ${_t('documentationTrackerHeading')}</h3>
                     <p>${_t('documentationTrackerDescription')}</p>
                     <div class="v2-doc-tracker-list" id="v2-doc-tracker-list" style="margin: 1rem 0; border: 1px solid var(--v2-border-default); border-radius: var(--v2-radius-sm); min-height: 50px;">
                         <!-- Mirrored Items -->
@@ -396,7 +396,7 @@
                 <h2>${_t('settingsTabBackup')}</h2>
                 
                 <div class="v2-settings-card">
-                    <h3>${_t('settingsBackupAutomatedHeading')}</h3>
+                    <h3><span class="icon">cloud_sync</span> ${_t('settingsBackupAutomatedHeading')}</h3>
                     <div class="v2-form-group">
                         <label class="v2-toggle-row">
                             <span class="v2-toggle-label">${_t('checkboxAutoBackupList')}</span>
@@ -420,7 +420,7 @@
                 </div>
 
                 <div class="v2-settings-card">
-                    <h3>${_t('settingsBackupManualHeading')}</h3>
+                    <h3><span class="icon">save</span> ${_t('settingsBackupManualHeading')}</h3>
                     <div class="v2-form-row-inline">
                         <button class="v2-btn v2-btn-primary" id="v2-btn-backup">
                             <span class="icon">download</span>
@@ -438,7 +438,7 @@
                 </div>
 
                 <div class="v2-settings-card" style="border-color: var(--v2-status-error);">
-                    <h3 style="color: var(--v2-status-error);">${_t('settingsBackupDangerHeading')}</h3>
+                    <h3 style="color: var(--v2-status-error);"><span class="icon">warning</span> ${_t('settingsBackupDangerHeading')}</h3>
                     <p>${_t('settingsFactoryResetHelp')}</p>
                     <button class="v2-btn v2-btn-danger" id="v2-btn-factory-reset">
                         <span class="icon">delete_forever</span>
@@ -503,7 +503,7 @@
                 <h2>${_t('settingsTabData')}</h2>
                 
                 <div class="v2-settings-card">
-                    <h3>${_t('settingsDataStorageStatusHeading')}</h3>
+                    <h3><span class="icon">storage</span> ${_t('settingsDataStorageStatusHeading')}</h3>
                     <div class="v2-key-value-list">
                          <div class="v2-kv-item">
                             <span class="v2-kv-label">${_t('labelLatestProjectSave')}</span>
@@ -521,7 +521,7 @@
                 </div>
 
                 <div class="v2-settings-card">
-                    <h3>${_t('settingsDataPersistenceHeading')}</h3>
+                    <h3><span class="icon">sd_storage</span> ${_t('settingsDataPersistenceHeading')}</h3>
                     <p>${_t('textManageLocalData')}</p>
                     <div class="v2-form-row-inline" style="margin-bottom: 1rem;">
                         <button class="v2-btn v2-btn-primary" id="v2-btn-data-backup">
@@ -539,7 +539,7 @@
                 </div>
 
                 <div class="v2-settings-card">
-                    <h3>${_t('settingsDataLoggingHeading')}</h3>
+                    <h3><span class="icon">terminal</span> ${_t('settingsDataLoggingHeading')}</h3>
                     <div class="v2-form-grid">
                         <div class="v2-form-group">
                             <label class="v2-label">${_t('labelLogLevel')}</label>
@@ -614,7 +614,7 @@
             <div class="v2-settings-panel" id="v2-panel-about" hidden>
                 <h2>${_t('settingsTabAbout')}</h2>
                 <div class="v2-settings-card">
-                    <h3>${_t('appTitle')}</h3>
+                    <h3><span class="icon">info</span> ${_t('appTitle')}</h3>
                     <p class="v2-text-lead" style="font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem;">${legacyVersion}</p>
                     <p>${_t('appCreator')}</p>
                     

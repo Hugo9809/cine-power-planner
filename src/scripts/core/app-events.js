@@ -3101,6 +3101,17 @@ function populateSetupSelect() {
     opt.textContent = name;
     setupSelectTarget.appendChild(opt);
   }
+
+  // Dispatch ready event so V2 components know the dropdown is populated
+  if (typeof document !== 'undefined' && document.dispatchEvent && typeof CustomEvent === 'function') {
+    try {
+      document.dispatchEvent(new CustomEvent('cine:setupselect:populated', {
+        detail: { count: names.length, timestamp: Date.now() }
+      }));
+    } catch (eventError) {
+      void eventError;
+    }
+  }
 }
 if (typeof EVENTS_UI_HELPERS.whenElementAvailable === 'function') {
   EVENTS_UI_HELPERS.whenElementAvailable('setupSelect', () => {

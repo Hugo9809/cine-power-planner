@@ -367,6 +367,61 @@
         `;
     }
 
+    function convertFormElementsToText(root) {
+        if (!root) return;
+
+        // 1. Inputs
+        const inputs = root.querySelectorAll('input, textarea');
+        inputs.forEach(input => {
+            if (input.type === 'hidden') return;
+
+            const value = input.value;
+            let displayValue = value;
+
+            if (input.type === 'date' && value) {
+                // Use V2 formatter if available
+                if (GLOBAL_SCOPE.cineProjectDashboard && typeof GLOBAL_SCOPE.cineProjectDashboard.formatDate === 'function') {
+                    displayValue = GLOBAL_SCOPE.cineProjectDashboard.formatDate(value);
+                }
+            }
+
+            const span = document.createElement('span');
+            span.className = 'print-value';
+            span.textContent = displayValue;
+
+            // Copy relevant classes for styling
+            if (input.classList.contains('prep-start')) span.classList.add('prep-start');
+            if (input.classList.contains('prep-end')) span.classList.add('prep-end');
+            if (input.classList.contains('shoot-start')) span.classList.add('shoot-start');
+            if (input.classList.contains('shoot-end')) span.classList.add('shoot-end');
+            if (input.classList.contains('return-start')) span.classList.add('return-start');
+            if (input.classList.contains('return-end')) span.classList.add('return-end');
+
+            if (input.parentNode) {
+                input.parentNode.replaceChild(span, input);
+            }
+        });
+
+        // 2. Selects
+        const selects = root.querySelectorAll('select');
+        selects.forEach(select => {
+            const selected = select.options[select.selectedIndex];
+            const displayValue = selected ? selected.text : '';
+
+            const span = document.createElement('span');
+            span.className = 'print-value';
+            span.textContent = displayValue;
+
+            if (select.parentNode) {
+                select.parentNode.replaceChild(span, select);
+            }
+        });
+
+        // 3. Remove buttons
+        const buttons = root.querySelectorAll('button');
+        buttons.forEach(btn => btn.remove());
+    }
+
     // --- Rendering Logic ---
 
     function renderPreviewContent() {
@@ -397,7 +452,10 @@
         reqSection.className = 'print-section project-requirements-section';
         const sourceReq = document.getElementById('projectRequirementsOutput');
         if (sourceReq) {
-            reqSection.innerHTML = sourceReq.innerHTML;
+            // Clone and convert inputs to text for persistent display
+            const clone = sourceReq.cloneNode(true);
+            convertFormElementsToText(clone);
+            reqSection.appendChild(clone);
         } else reqSection.innerHTML = '<p><em>' + getText('printPreview.generatedNoProjectRequirements', 'No project requirements data.') + '</em></p>';
         paper.appendChild(reqSection);
 

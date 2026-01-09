@@ -63,14 +63,14 @@
  * ===================== */
 .v2-input {
     width: 100%;
-    padding: var(--v2-space-sm) var(--v2-space-md);
+    padding: 10px 14px;
     font-size: var(--v2-font-size-base);
     color: var(--v2-text-primary);
-    background-color: var(--v2-surface-elevated);
-    /* Match select */
+    background-color: var(--v2-surface-0);
     border: 1px solid var(--v2-border-default);
-    border-radius: var(--v2-radius-md);
-    transition: border-color var(--v2-transition-fast), box-shadow var(--v2-transition-fast);
+    border-radius: var(--v2-radius-md, 8px);
+    transition: all 0.2s ease;
+    line-height: 1.5;
 }
 
 .v2-input::placeholder {
@@ -78,13 +78,14 @@
 }
 
 .v2-input:hover:not(:disabled):not(:focus) {
-    border-color: var(--v2-border-strong);
+    border-color: var(--v2-border-hover, #9ca3af);
 }
 
 .v2-input:focus {
     outline: none;
     border-color: var(--v2-brand-blue);
-    box-shadow: 0 0 0 2px rgba(0, 21, 137, 0.1);
+    background-color: var(--v2-surface-1);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--v2-brand-blue) 15%, transparent);
 }
 
 .v2-input:disabled {
@@ -104,56 +105,112 @@
 /* =====================
  * SELECT
  * ===================== */
-/* =====================
- * SELECT
- * ===================== */
 .v2-select {
     width: 100%;
-    padding: var(--v2-space-sm) var(--v2-space-md);
-    padding-right: 30px;
+    padding: 10px 14px;
+    padding-right: 32px;
     /* Space for arrow */
     font-size: var(--v2-font-size-base);
     color: var(--v2-text-primary);
-    background-color: var(--v2-surface-elevated);
-    /* Match detail.css */
+    background-color: var(--v2-surface-0);
     border: 1px solid var(--v2-border-default);
-    border-radius: var(--v2-radius-md);
+    border-radius: var(--v2-radius-md, 8px);
+    line-height: 1.5;
 
     /* Custom Arrow */
     appearance: none;
     -webkit-appearance: none;
-    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23131313%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 12px top 50%;
-    background-size: 10px auto;
+    background-position: right 10px center;
+    background-size: 16px;
 
     cursor: pointer;
-    transition: border-color var(--v2-transition-fast), box-shadow var(--v2-transition-fast);
+    transition: all 0.2s ease;
 }
 
-/* Dark mode arrow adjustment */
+/* Dark mode arrow adjustment logic handled via theme filter or specific override */
 body.dark-mode .v2-select {
-    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
 }
+
 
 .v2-select:hover:not(:disabled):not(:focus) {
-    border-color: var(--v2-border-strong);
+    border-color: var(--v2-border-hover, #9ca3af);
 }
 
 .v2-select:focus {
     outline: none;
     border-color: var(--v2-brand-blue);
-    box-shadow: 0 0 0 2px rgba(0, 21, 137, 0.1);
+    background-color: var(--v2-surface-1);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--v2-brand-blue) 15%, transparent);
 }
 
 .v2-select:disabled {
     background-color: var(--v2-surface-muted);
     color: var(--v2-text-muted);
     cursor: not-allowed;
-    background-image: none;
-    /* Hide arrow on disabled? Or just dim it */
     opacity: 0.6;
 }
+
+/* =====================
+ * CHECKBOX & RADIO
+ * ===================== */
+/* =====================
+ * TOGGLES (Switch)
+ * ===================== */
+.v2-toggle-switch {
+    position: relative;
+    width: 48px;
+    height: 26px;
+    flex-shrink: 0;
+}
+
+.v2-toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.v2-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--v2-surface-3, #e5e7eb);
+    transition: 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    border-radius: var(--v2-radius-full);
+}
+
+.v2-toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+/* Checked State */
+input:checked+.v2-toggle-slider {
+    background-color: var(--v2-brand-blue);
+}
+
+input:checked+.v2-toggle-slider:before {
+    transform: translateX(22px);
+}
+
+/* Focus State */
+input:focus-visible+.v2-toggle-slider {
+    box-shadow: 0 0 0 2px var(--v2-surface-1), 0 0 0 4px var(--v2-brand-blue);
+}
+
 
 /* =====================
  * CHECKBOX & RADIO

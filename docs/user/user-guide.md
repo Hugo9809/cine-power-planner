@@ -701,6 +701,51 @@ Use Cine Power Planner end-to-end with the following routine:
 - Star icons pin favorite devices so they stay at the top of selectors and
   persist across sessions and backups.
 
+### V2 Interface
+
+The application features a modern V2 interface with improved navigation and project management.
+
+**Dashboard View**
+- Access the project dashboard via the sidebar or by navigating to `#/projects`.
+- Projects appear as color-coded tiles showing status, dates, and quick actions.
+- Search projects using the sidebar search input; filters apply in real-time.
+- Right-click tiles for context menu actions: Edit, Duplicate, Archive, Export, Print, or Delete.
+- Create new projects using the "+" tile or sidebar button.
+
+**Sidebar Navigation**
+- The persistent sidebar provides quick access to all major sections:
+  - **Projects** – Dashboard with all your saved projects.
+  - **Device Library** – Browse and search the equipment database.
+  - **Contacts** – Manage crew roster with vCard import support.
+  - **Owned Gear** – Track your personal equipment inventory.
+  - **Automatic Gear Rules** – Configure scenario-triggered equipment.
+  - **Settings** – Preferences, backups, and app configuration.
+  - **Help** – Searchable documentation and guides.
+- Theme controls (dark mode, pink mode) and language selector appear at the sidebar bottom.
+- On mobile, toggle the sidebar with the hamburger menu.
+
+**Project Detail View**
+- Opening a project reveals a tabbed interface:
+  - **Camera Package** – Equipment selection and configuration.
+  - **Power Summary** – Draw calculations and battery planning.
+  - **Requirements** – Production details and crew information.
+  - **Gear List** – Generated equipment lists for export.
+- The project header displays status (Draft, Planning, Approved, Shooting, etc.) with a dropdown to change it.
+- Use the back arrow or sidebar to return to the dashboard.
+
+**Project Status Workflow**
+Track projects through production stages with color-coded status indicators:
+| Status | Description |
+| --- | --- |
+| Draft | Initial planning phase |
+| Planning | Active prep work |
+| Waiting for Approval | Sent for review |
+| Approved | Ready for production |
+| Shooting | In production |
+| Completed | Wrapped |
+| Archived | Stored for reference |
+
+
 
 ## Customization & Accessibility
 

@@ -62,6 +62,31 @@ workflow para que cada rutina se documente una sola vez.
 - **Resúmenes de compatibilidad al restaurar.** Cada restauración muestra
   secciones faltantes y crea un backup previo para verificar cambios.
 
+## Nuevo: Interfaz de Usuario V2
+
+La aplicación ahora cuenta con una interfaz de usuario V2 completamente rediseñada y responsiva.
+
+### Dashboard y Navegación
+- **Dashboard Moderno**: Gestiona todos tus proyectos desde una vista de cuadrícula unificada y buscable con fichas codificadas por color que muestran el estado del proyecto, fechas y acciones rápidas.
+- **Barra Lateral de Navegación**: Accede rápidamente a Proyectos, Biblioteca de Dispositivos, Contactos, Equipo Propio, Reglas Automáticas de Equipo, Configuración y Ayuda desde una barra lateral persistente y colapsable.
+- **Diseño Mobile-First**: Diseño completamente responsivo con toggle de barra lateral móvil y controles optimizados para táctil.
+
+### Gestión de Proyectos
+- **Seguimiento de Estado del Proyecto**: Rastrea proyectos a través de etapas del flujo de trabajo—Borrador, Planificación, Esperando Aprobación, Aprobado, Rodaje, Completado y Archivado—con indicadores de estado codificados por color.
+- **Vistas de Proyecto por Pestañas**: Navega entre Paquete de Cámara, Resumen de Potencia, Requisitos y Lista de Equipo dentro de cada proyecto.
+- **Menús Contextuales**: Haz clic derecho en las fichas de proyecto para acciones rápidas como duplicar, archivar, exportar o eliminar.
+
+### Herramientas y Datos
+- **Biblioteca de Dispositivos**: Navega y gestiona tu base de datos de equipos con filtrado y búsqueda.
+- **Gestión de Contactos**: Mantén un directorio de equipo con roles, datos de contacto y fotos de perfil. Importa contactos desde archivos vCard.
+- **Seguimiento de Equipo Propio**: Cataloga tu inventario personal de equipos con cantidades y notas de origen.
+- **Reglas Automáticas de Equipo**: Configura adiciones o eliminaciones de equipos activadas por escenario.
+
+### Mejoras Visuales
+- **Modo Oscuro Mejorado**: Tema oscuro refinado con mejor contraste y legibilidad.
+- **Modo Rosa**: Tema de acento divertido con efecto animado de "lluvia de iconos".
+- **Controles de Tema**: Botones de acceso rápido en la barra lateral para modo oscuro, modo rosa y recarga forzada.
+
 ## Instalación
 
 1. Clona o descarga este repositorio en un disco confiable:

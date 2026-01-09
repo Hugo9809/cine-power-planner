@@ -62,6 +62,31 @@ workflow così ogni routine è documentata una sola volta.
 - **Riepiloghi di compatibilità al ripristino.** Ogni ripristino elenca le
   sezioni mancanti e crea un backup di sicurezza prima della promozione.
 
+## Nuovo: Interfaccia Utente V2
+
+L'applicazione ora dispone di un'interfaccia utente V2 completamente riprogettata e responsive.
+
+### Dashboard e Navigazione
+- **Dashboard Moderno**: Gestisci tutti i tuoi progetti da una vista a griglia unificata e ricercabile con tile codificati per colore che mostrano stato del progetto, date e azioni rapide.
+- **Navigazione con Sidebar**: Accedi rapidamente a Progetti, Libreria Dispositivi, Contatti, Attrezzatura Propria, Regole Automatiche Attrezzatura, Impostazioni e Aiuto da una sidebar persistente e comprimibile.
+- **Design Mobile-First**: Layout completamente responsive con toggle sidebar mobile e controlli ottimizzati per il touch.
+
+### Gestione Progetti
+- **Tracciamento Stato Progetto**: Segui i progetti attraverso le fasi del workflow—Bozza, Pianificazione, In Attesa di Approvazione, Approvato, Riprese, Completato e Archiviato—con indicatori di stato codificati per colore.
+- **Viste Progetto a Schede**: Naviga tra Pacchetto Camera, Riepilogo Potenza, Requisiti e Lista Attrezzatura in ogni progetto.
+- **Menu Contestuali**: Fai clic destro sui tile del progetto per azioni rapide come duplicare, archiviare, esportare o eliminare.
+
+### Strumenti e Dati
+- **Libreria Dispositivi**: Sfoglia e gestisci il tuo database attrezzature con filtri e ricerca.
+- **Gestione Contatti**: Mantieni un elenco del team con ruoli, dettagli di contatto e foto profilo. Importa contatti da file vCard.
+- **Tracciamento Attrezzatura Propria**: Cataloga il tuo inventario personale di attrezzature con quantità e note di approvvigionamento.
+- **Regole Automatiche Attrezzatura**: Configura aggiunte o rimozioni di attrezzature attivate da scenario.
+
+### Miglioramenti Visivi
+- **Modalità Scura Migliorata**: Tema scuro raffinato con contrasto e leggibilità migliorati.
+- **Modalità Rosa**: Tema accent divertente con effetto animato di "pioggia di icone".
+- **Controlli Tema**: Pulsanti di accesso rapido nella sidebar per modalità scura, modalità rosa e ricarica forzata.
+
 ## Installazione
 
 1. Clona o scarica questo repository su un disco fidato:

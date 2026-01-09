@@ -1,0 +1,325 @@
+/* Help View Styles */
+.v2-help-container {
+    display: flex;
+    height: calc(100vh - var(--v2-header-height));
+    gap: 0;
+    overflow: hidden;
+    animation: v2-fade-in 0.3s ease-out;
+    background-color: var(--v2-surface-app-bg);
+}
+
+/* Sidebar */
+.v2-help-sidebar {
+    width: 280px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--v2-border-default);
+    background-color: var(--v2-surface-elevated);
+    display: flex;
+    flex-direction: column;
+    overflow-y: hidden;
+    /* Changed to hidden to let inner TOC scroll if needed, or handle main scroll */
+}
+
+
+.v2-help-search-container {
+    padding: var(--v2-space-md);
+    border-bottom: 1px solid var(--v2-border-muted);
+    position: sticky;
+    top: 0;
+    background-color: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    position: relative;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* Ensure input takes available space */
+.v2-help-search-container input {
+    flex: 1;
+    padding-right: 30px;
+    /* Space for clear button */
+}
+
+.v2-help-search-clear {
+    position: absolute;
+    right: 24px;
+    /* Adjust based on padding */
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--v2-text-muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.v2-help-search-clear:hover {
+    color: var(--v2-text-primary);
+    background-color: var(--v2-surface-action-hover);
+}
+
+[data-theme="dark"] .v2-help-search-container {
+    background-color: rgba(30, 30, 30, 0.8);
+}
+
+.v2-help-toc {
+    padding: var(--v2-space-md);
+    /* Add padding to container */
+    flex: 1;
+    overflow-y: auto;
+}
+
+.v2-help-toc-header {
+    font-size: var(--v2-font-size-xs);
+    text-transform: uppercase;
+    color: var(--v2-text-muted);
+    margin-top: var(--v2-space-lg);
+    margin-bottom: var(--v2-space-xs);
+    font-weight: var(--v2-font-weight-bold);
+    padding-left: var(--v2-space-md);
+    letter-spacing: 0.05em;
+}
+
+.v2-help-toc-header:first-child {
+    margin-top: var(--v2-space-xs);
+}
+
+.v2-help-toc ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.v2-help-toc li {
+    margin-bottom: 2px;
+}
+
+.v2-help-toc-link {
+    display: flex;
+    align-items: center;
+    padding: var(--v2-space-sm) var(--v2-space-md);
+    color: var(--v2-text-secondary);
+    text-decoration: none;
+    border-radius: var(--v2-radius-sm);
+    font-size: var(--v2-font-size-sm);
+    transition: all var(--v2-transition-fast);
+    cursor: pointer;
+    border-left: 3px solid transparent;
+}
+
+.v2-help-toc-link:hover {
+    background-color: var(--v2-surface-muted);
+    color: var(--v2-text-primary);
+    transform: translateX(4px);
+}
+
+.v2-help-toc-link.active {
+    background-color: var(--v2-surface-active);
+    color: var(--v2-brand-primary);
+    font-weight: var(--v2-font-weight-medium);
+    border-left-color: var(--v2-brand-primary);
+}
+
+.v2-toc-icon {
+    margin-right: var(--v2-space-sm);
+    font-size: 1.1em;
+    opacity: 0.8;
+}
+
+/* Main Content */
+.v2-help-main {
+    flex: 1;
+    padding: var(--v2-space-xl);
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    position: relative;
+}
+
+.v2-help-divider {
+    border: 0;
+    height: 1px;
+    background-color: var(--v2-border-muted);
+    margin: var(--v2-space-3xl) 0;
+}
+
+.v2-help-section {
+    max-width: 800px;
+    margin-bottom: var(--v2-space-3xl);
+    background: var(--v2-surface-base);
+    padding: var(--v2-space-xl);
+    border-radius: var(--v2-radius-lg);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--v2-border-subtle);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.v2-help-section:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-color: var(--v2-border-default);
+}
+
+.v2-help-section h2 {
+    font-size: var(--v2-font-size-2xl);
+    color: var(--v2-text-primary);
+    margin-bottom: var(--v2-space-lg);
+    padding-bottom: var(--v2-space-md);
+    border-bottom: 1px solid var(--v2-border-muted);
+    display: flex;
+    align-items: center;
+    gap: var(--v2-space-sm);
+}
+
+.v2-help-icon {
+    font-size: 1em;
+}
+
+.v2-help-section h3 {
+    font-size: var(--v2-font-size-lg);
+    color: var(--v2-text-primary);
+    margin-top: var(--v2-space-2xl);
+    /* More breathing room */
+    margin-bottom: var(--v2-space-md);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.v2-help-section h4 {
+    font-size: var(--v2-font-size-base);
+    color: var(--v2-text-primary);
+    margin-top: var(--v2-space-lg);
+    margin-bottom: var(--v2-space-sm);
+    font-weight: var(--v2-font-weight-semibold);
+}
+
+.v2-help-section p {
+    margin-bottom: var(--v2-space-md);
+    line-height: var(--v2-line-height-relaxed);
+    color: var(--v2-text-secondary);
+}
+
+.v2-help-section ul,
+.v2-help-section ol {
+    margin-bottom: var(--v2-space-md);
+    padding-left: var(--v2-space-lg);
+    color: var(--v2-text-secondary);
+}
+
+.v2-help-section li {
+    margin-bottom: var(--v2-space-xs);
+    line-height: var(--v2-line-height-normal);
+}
+
+/* Ensure nested lists indentation */
+.v2-help-section ul ul,
+.v2-help-section ol ul,
+.v2-help-section ul ol,
+.v2-help-section ol ol {
+    margin-bottom: 0;
+}
+
+.v2-help-section code,
+.v2-help-section kbd {
+    background-color: var(--v2-surface-muted);
+    padding: 2px 6px;
+    border-radius: var(--v2-radius-sm);
+    font-family: var(--v2-font-family-mono);
+    font-size: 0.9em;
+    border: 1px solid var(--v2-border-muted);
+    color: var(--v2-text-primary);
+}
+
+.v2-help-callout {
+    background-color: var(--v2-surface-info-subtle);
+    border-left: 4px solid var(--v2-status-info);
+    padding: var(--v2-space-md) var(--v2-space-lg);
+    border-radius: var(--v2-radius-sm);
+    margin: var(--v2-space-lg) 0;
+}
+
+.v2-help-callout h4 {
+    margin-top: 0;
+    color: var(--v2-status-info);
+}
+
+/* No Results State */
+.v2-help-no-results {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--v2-space-3xl);
+    text-align: center;
+    color: var(--v2-text-muted);
+    min-height: 200px;
+}
+
+.v2-help-no-results-icon {
+    font-size: 3rem;
+    margin-bottom: var(--v2-space-md);
+    opacity: 0.5;
+}
+
+.v2-help-no-results h3 {
+    margin: 0 0 var(--v2-space-xs);
+    color: var(--v2-text-secondary);
+}
+
+.v2-help-no-results p {
+    margin: 0;
+    font-size: var(--v2-font-size-sm);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .v2-help-container {
+        flex-direction: column;
+        height: auto;
+        /* Allow full height on mobile */
+        overflow: visible;
+    }
+
+    .v2-help-sidebar {
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--v2-border-default);
+        position: sticky;
+        top: 0;
+        /* Sticky sidebar/toc on mobile */
+        z-index: 20;
+    }
+
+    .v2-help-toc {
+        display: none;
+        /* Hide full TOC on mobile by default to save space? Or collapse? */
+        /* For now let's keep showing but maybe max-height */
+        max-height: 200px;
+        display: block;
+        padding: var(--v2-space-sm);
+    }
+
+    .v2-help-search-container {
+        position: static;
+        /* Let it flow in sidebar */
+    }
+
+    .v2-help-main {
+        padding: var(--v2-space-md);
+    }
+
+    .v2-help-section {
+        padding: var(--v2-space-lg);
+    }
+}

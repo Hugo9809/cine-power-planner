@@ -64,6 +64,31 @@ routine soit documentée une seule fois.
 - **Résumé de compatibilité de restauration.** Chaque restauration liste les
   sections manquantes et crée un backup préalable pour vérifier les changements.
 
+## Nouveau : Interface Utilisateur V2
+
+L'application dispose désormais d'une interface utilisateur V2 entièrement repensée et responsive.
+
+### Tableau de bord et Navigation
+- **Tableau de bord moderne** : Gérez tous vos projets depuis une vue grille unifiée et consultable avec des tuiles colorées affichant le statut du projet, les dates et les actions rapides.
+- **Navigation par barre latérale** : Accédez rapidement aux Projets, à la Bibliothèque d'équipements, aux Contacts, à l'Équipement personnel, aux Règles automatiques d'équipement, aux Paramètres et à l'Aide depuis une barre latérale persistante et repliable.
+- **Design Mobile-First** : Mise en page entièrement responsive avec toggle de barre latérale mobile et contrôles optimisés pour le tactile.
+
+### Gestion de projets
+- **Suivi du statut de projet** : Suivez les projets à travers les étapes du workflow—Brouillon, Planification, En attente d'approbation, Approuvé, Tournage, Terminé et Archivé—avec des indicateurs de statut colorés.
+- **Vues projet par onglets** : Naviguez entre Package Caméra, Résumé Puissance, Exigences et Liste d'équipement dans chaque projet.
+- **Menus contextuels** : Clic droit sur les tuiles de projet pour des actions rapides comme dupliquer, archiver, exporter ou supprimer.
+
+### Outils et Données
+- **Bibliothèque d'équipements** : Parcourez et gérez votre base de données d'équipements avec filtrage et recherche.
+- **Gestion des contacts** : Maintenez un répertoire d'équipe avec rôles, coordonnées et photos de profil. Importez des contacts depuis des fichiers vCard.
+- **Suivi de l'équipement personnel** : Cataloguez votre inventaire d'équipement personnel avec quantités et notes d'approvisionnement.
+- **Règles automatiques d'équipement** : Configurez des ajouts ou suppressions d'équipements déclenchés par scénario.
+
+### Améliorations visuelles
+- **Mode sombre amélioré** : Thème sombre affiné avec un meilleur contraste et lisibilité.
+- **Mode rose** : Thème d'accent ludique avec effet animé de « pluie d'icônes ».
+- **Contrôles de thème** : Boutons d'accès rapide dans la barre latérale pour le mode sombre, le mode rose et le rechargement forcé.
+
 ## Installation
 
 1. Clonez ou téléchargez ce dépôt sur un disque fiable :

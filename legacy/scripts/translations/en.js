@@ -2062,7 +2062,44 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "diagramHoverNotice": "Double click for details",
       "diagramDetailBackLabel": "Back",
       "diagramDetailDefaultHeading": "Diagram details",
-      "diagramMoveHint": "Drag nodes to rearrange; drag empty space to pan."
+      "diagramMoveHint": "Drag nodes to rearrange; drag empty space to pan.",
+      "v2": {
+        "sidebar": {
+          "nav": {
+            "allProjects": "All Projects",
+            "activeProjects": "Active Projects",
+            "archive": "Archive",
+            "autoBackups": "Auto Backups",
+            "deviceLibrary": "Device Library",
+            "contacts": "Contacts",
+            "autoGearRules": "Auto Gear Rules",
+            "ownedGear": "Owned Gear",
+            "createProject": "Create New Project",
+            "projectsSection": "Projects",
+            "toolsSection": "Tools",
+            "supportSection": "Support",
+            "help": "Help",
+            "settings": "Settings",
+            "search": {
+              "placeholder": "Search..."
+            }
+          }
+        },
+        "dashboard": {
+          "emptyState": {
+            "title": "No projects yet",
+            "description": "Create your first project to get started."
+          },
+          "contextMenu": {
+            "open": "Open",
+            "edit": "Edit",
+            "duplicate": "Duplicate",
+            "delete": "Delete",
+            "archive": "Archive",
+            "restore": "Restore"
+          }
+        }
+      }
     },
     "categoryNames": {
       "cameras": "Camera",

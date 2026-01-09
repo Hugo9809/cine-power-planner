@@ -28,10 +28,23 @@ Implements the core business logic of the application. These modules are respons
 
 ### `src/scripts/v2`
 Contains the View layer for the V2 UI (the modern interface).
-- **`project-dashboard.js`**: Renders the main dashboard view.
-- **`sidebar.js`**: Manages the sidebar navigation and state.
-- **`view-manager.js`**: Handles switching between different views (Dashboard, Settings, etc.).
 - **`bootstrap.js`**: Entry point for V2 UI initialization (Hybrid Swap pattern).
+- **`project-dashboard.js`**: Renders the main dashboard view with project tiles, filtering, context menus, and project CRUD operations.
+- **`project-detail.js`**: Handles the project detail view with tabs (Camera Package, Power Summary, Requirements, Gear List), status dropdown, and legacy element re-parenting.
+- **`sidebar.js`**: Manages the sidebar navigation, search proxy to legacy search, theme toggles (dark/pink mode), mobile toggle, and language selector.
+- **`view-manager.js`**: Handles view routing, hash-based navigation, and switching between different views.
+- **`help-data.js`**: Static V2-specific help content definitions.
+- **`help-service.js`**: Merges V2 help data with legacy localized help topics.
+- **`legacy-shim.js`**: Bridges V2 components with legacy V1 functionality.
+
+### `src/scripts/v2/views`
+Specialized view components for specific application sections:
+- **`contacts-view.js`**: Crew contact management with vCard import support.
+- **`device-library-view.js`**: Equipment database browser wrapping legacy device manager.
+- **`help-view.js`**: In-app help center with TOC, search, and content display.
+- **`owned-gear-view.js`**: Personal equipment inventory tracking.
+- **`rules-view.js`**: Automatic gear rule configuration and coverage dashboard.
+- **`settings-view.js`**: Application settings, preferences, and backup/restore controls.
 
 ## Key Files & Responsibilities
 
@@ -104,4 +117,35 @@ flowchart LR
     D --> F[Calculate Effective Capacity]
     E & F --> G[Compute Runtime]
     G --> H[Update UI DOM]
+```
+
+### V2 View Architecture
+
+```mermaid
+flowchart TD
+    subgraph Bootstrap
+        B[bootstrap.js] --> VM[view-manager.js]
+        B --> SB[sidebar.js]
+    end
+    
+    subgraph Views
+        VM --> PD[project-dashboard.js]
+        VM --> PDT[project-detail.js]
+        VM --> V[views/]
+    end
+    
+    subgraph Specialized Views
+        V --> CV[contacts-view.js]
+        V --> DV[device-library-view.js]
+        V --> HV[help-view.js]
+        V --> OV[owned-gear-view.js]
+        V --> RV[rules-view.js]
+        V --> SV[settings-view.js]
+    end
+    
+    subgraph Services
+        HS[help-service.js] --> HV
+        HD[help-data.js] --> HS
+        LS[legacy-shim.js] --> VM
+    end
 ```

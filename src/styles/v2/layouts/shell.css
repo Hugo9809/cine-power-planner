@@ -14,6 +14,8 @@
     height: 100vh;
     overflow: hidden;
     transition: grid-template-columns var(--v2-transition-normal);
+    width: 100%;
+    max-width: 100vw;
 }
 
 /* Collapsed sidebar state */
@@ -70,6 +72,7 @@
         z-index: var(--v2-z-fixed);
         transform: translateX(-100%);
         transition: transform var(--v2-transition-normal);
+        box-shadow: var(--v2-shadow-xl);
     }
 
     .v2-app.sidebar-open .v2-sidebar {
@@ -83,10 +86,13 @@
         inset: 0;
         background-color: rgba(0, 0, 0, 0.5);
         z-index: calc(var(--v2-z-fixed) - 1);
+        opacity: 0;
+        transition: opacity var(--v2-transition-normal);
     }
 
     .v2-app.sidebar-open .v2-sidebar-overlay {
         display: block;
+        opacity: 1;
     }
 }
 

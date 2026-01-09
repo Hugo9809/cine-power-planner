@@ -186,3 +186,58 @@
 .v2-select-container .select-wrapper .favorite-toggle.favorited {
     color: var(--v2-brand-yellow, #f59e0b);
 }
+
+/* =====================
+ * RESPONSIVE BEHAVIOR
+ * ===================== */
+@media (max-width: 768px) {
+    .v2-header-periods {
+        margin-right: var(--v2-space-md);
+    }
+
+    .v2-header-badge {
+        padding: 3px 8px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 600px) {
+    .view-header-with-back {
+        flex-wrap: wrap;
+        gap: var(--v2-space-sm);
+    }
+
+    .v2-back-btn {
+        padding: var(--v2-space-xs) var(--v2-space-sm);
+    }
+
+    .view-header-title {
+        font-size: var(--v2-font-size-lg);
+        flex-basis: 100%;
+        order: 2;
+    }
+
+    .v2-header-periods {
+        flex-basis: 100%;
+        order: 3;
+        margin-right: 0;
+        justify-content: flex-start;
+    }
+
+    .v2-header-badge {
+        padding: 2px 6px;
+        font-size: 11px;
+        gap: 4px;
+    }
+
+    .v2-project-actions {
+        padding: var(--v2-space-sm) var(--v2-space-md);
+        flex-wrap: wrap;
+    }
+
+    .v2-action-btn {
+        flex: 1 1 auto;
+        justify-content: center;
+        min-width: 0;
+    }
+}

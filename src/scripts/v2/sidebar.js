@@ -16,6 +16,51 @@
     const PINK_MODE_KEY = 'cameraPowerPlanner_pinkMode';
     const FALLBACK_PINK_KEY = 'pinkMode';
 
+    const TEXT_TO_KEY_MAP = {
+        'All Projects': 'v2.sidebar.nav.allProjects',
+        'Active Projects': 'v2.sidebar.nav.activeProjects',
+        'Archive': 'v2.sidebar.nav.archive',
+        'Auto Backups': 'v2.sidebar.nav.autoBackups',
+        'Device Library': 'v2.sidebar.nav.deviceLibrary',
+        'Contacts': 'v2.sidebar.nav.contacts',
+        'Auto Gear Rules': 'v2.sidebar.nav.autoGearRules',
+        'Owned Gear': 'v2.sidebar.nav.ownedGear',
+        'Create New Project': 'v2.sidebar.nav.createProject',
+        'Projects': 'v2.sidebar.nav.projectsSection',
+        'Tools': 'v2.sidebar.nav.toolsSection',
+        'Support': 'v2.sidebar.nav.supportSection',
+        'Help': 'v2.sidebar.nav.help',
+        'Settings': 'v2.sidebar.nav.settings'
+    };
+
+    /**
+     * Translation Helper
+     */
+    function _t(path, params = {}, lang = null) {
+        const currentLang = lang || document.documentElement.lang || 'en';
+        let root = (window.texts && window.texts[currentLang]) ? window.texts[currentLang] : null;
+        if (!root && window.texts) root = window.texts['en'];
+
+        // Simple resolve
+        const resolve = (obj, p) => p.split('.').reduce((o, i) => o ? o[i] : null, obj);
+
+        let val = root ? resolve(root, path) : null;
+
+        // Fallback to English if missing in current lang
+        if (!val && currentLang !== 'en' && window.texts && window.texts['en']) {
+            val = resolve(window.texts['en'], path);
+        }
+
+        if (!val) return path;
+
+        if (typeof val === 'string') {
+            for (const [k, v] of Object.entries(params)) {
+                val = val.replace(`{${k}}`, v);
+            }
+        }
+        return val;
+    }
+
     function initSidebar() {
         console.log('[V2 Sidebar] Initializing...');
 
@@ -41,7 +86,9 @@
         // 3. Initialize Logic
         initThemes();
         initNavigationLogic();
+        initMobileToggle(); // [New] Mobile Toggle
         forceHelpCloseBinding();
+        interceptLegacyHelp(); // [New] Redirect Legacy Help
 
         // 4. Initial Translation
         const legacySelect = document.getElementById('languageSelect');
@@ -196,7 +243,7 @@
                 <svg class="v2-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                <input type="text" id="${SEARCH_INPUT_ID}" class="v2-search-input" placeholder="Search features..." aria-label="Search features">
+                <input type="text" id="${SEARCH_INPUT_ID}" class="v2-search-input" placeholder="${_t('v2.sidebar.search.placeholder')}" aria-label="Search features">
             </div>
         `;
 
@@ -259,6 +306,46 @@
     }
 
     /**
+     * [New] Intercept Legacy Help Triggers
+     * Redirects legacy help button and shortcuts to V2 Help
+     */
+    function interceptLegacyHelp() {
+        // 1. Header Button
+        const helpBtn = document.getElementById('helpButton');
+        // 2. Sidebar Button
+        const v1HelpNav = document.querySelector('[data-nav-key="openHelpNav"]');
+
+        const redirect = (e) => {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            window.location.hash = '/help';
+        };
+
+        if (helpBtn) {
+            helpBtn.addEventListener('click', redirect);
+        }
+
+        if (v1HelpNav) {
+            v1HelpNav.addEventListener('click', redirect);
+        }
+
+        // 3. Global Keyboard Shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ignore if in input
+            if (e.target.matches('input, textarea, [contenteditable]')) return;
+
+            // Shift+? or H or F1
+            if ((e.key === '?' && e.shiftKey) || e.key === 'H' || e.key === 'h' || e.key === 'F1') {
+                redirect(e);
+            }
+            // Ctrl+/ (Cmd+/)
+            if (e.key === '/' && (e.ctrlKey || e.metaKey)) {
+                redirect(e);
+            }
+        }, true); // Capture phase to beat legacy listeners
+    }
+
+    /**
      * [Fix 1.8] Navigation Logic
      *
      * DEEP DIVE: Navigation State Management
@@ -296,6 +383,59 @@
                     link.classList.add('active');
                 }
             });
+        }
+    }
+
+    /**
+     * [New] Mobile Sidebar Toggle
+     * Handles opening/closing sidebar on mobile
+     */
+    function initMobileToggle() {
+        const triggers = document.querySelectorAll('.v2-mobile-menu-toggle');
+        const app = document.getElementById('v2-app');
+        const overlay = document.querySelector('.v2-sidebar-overlay');
+        const sidebar = document.querySelector('.v2-sidebar');
+
+        if (!app) return;
+
+        function openSidebar() {
+            app.classList.add('sidebar-open');
+        }
+
+        function closeSidebar() {
+            app.classList.remove('sidebar-open');
+        }
+
+        // 1. Bind Triggers (Hamburger Buttons)
+        triggers.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                openSidebar();
+            });
+        });
+
+        // 2. Bind Overlay (Close on click)
+        if (overlay) {
+            overlay.addEventListener('click', closeSidebar);
+        }
+
+        // 3. Close on Navigation
+        // When a nav link is clicked (and we are on mobile), close sidebar
+        const navLinks = document.querySelectorAll('.v2-sidebar-nav .v2-sidebar-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                // Determine if we are on mobile (check if overlay is visible or check window width)
+                if (window.innerWidth <= 768) {
+                    closeSidebar();
+                }
+            });
+        });
+
+        // 4. Close on Exit V2
+        const exitBtn = document.getElementById('v2ExitBtn');
+        if (exitBtn) {
+            exitBtn.addEventListener('click', closeSidebar);
         }
     }
 
@@ -389,103 +529,24 @@
      * Updates sidebar text based on current language
      */
     function updateSidebarTranslations(lang) {
-        // 1. Try Global Translations first
-        const t = (key) => {
-            if (window.texts && window.texts[key]) return window.texts[key];
-            return null;
-        };
-
-        const translations = {
-            'de': {
-                'All Projects': 'Alle Projekte',
-                'Active Projects': 'Aktive Projekte',
-                'Archive': 'Archiv',
-                'Auto Backups': 'Auto-Backups',
-                'Device Library': 'Geräte-Bibliothek',
-                'Contacts': 'Kontakte',
-                'Auto Gear Rules': 'Auto-Gear Regeln',
-                'Owned Gear': 'Eigenes Equipment',
-                'Create New Project': 'Neues Projekt erstellen',
-                'Projects': 'Projekte',
-                'Tools': 'Werkzeuge',
-                'Support': 'Support',
-                'Help': 'Hilfe',
-                'Settings': 'Einstellungen'
-            },
-            'es': {
-                'All Projects': 'Todos los proyectos',
-                'Active Projects': 'Proyectos activos',
-                'Archive': 'Archivo',
-                'Auto Backups': 'Copias de seguridad',
-                'Device Library': 'Biblioteca de dispositivos',
-                'Contacts': 'Contacts',
-                'Auto Gear Rules': 'Reglas automáticas',
-                'Owned Gear': 'Equipo propio',
-                'Create New Project': 'Crear nuevo proyecto',
-                'Projects': 'Proyectos',
-                'Tools': 'Herramientas',
-                'Support': 'Soporte',
-                'Help': 'Ayuda',
-                'Settings': 'Configuración'
-            },
-            'fr': {
-                'All Projects': 'Tous les projets',
-                'Active Projects': 'Projets actifs',
-                'Archive': 'Archives',
-                'Auto Backups': 'Sauvegardes auto',
-                'Device Library': 'Bibliothèque',
-                'Contacts': 'Contacts',
-                'Auto Gear Rules': 'Règles auto',
-                'Owned Gear': 'Mon matériel',
-                'Create New Project': 'Créer un projet',
-                'Projects': 'Projets',
-                'Tools': 'Outils',
-                'Support': 'Support',
-                'Help': 'Aide',
-                'Settings': 'Paramètres'
-            },
-            'it': {
-                'All Projects': 'Tutti i progetti',
-                'Active Projects': 'Progetti attivi',
-                'Archive': 'Archivio',
-                'Auto Backups': 'Backup auto',
-                'Device Library': 'Libreria',
-                'Contacts': 'Contatti',
-                'Auto Gear Rules': 'Regole auto',
-                'Owned Gear': 'Attrezzatura',
-                'Create New Project': 'Nuovo progetto',
-                'Projects': 'Progetti',
-                'Tools': 'Strumenti',
-                'Support': 'Supporto',
-                'Help': 'Aiuto',
-                'Settings': 'Impostazioni'
-            }
-        };
-
-        const map = translations[lang];
+        // Update Nav Links
         const textElements = document.querySelectorAll('.v2-sidebar-link-text, .v2-sidebar-section-title');
 
         textElements.forEach(el => {
             if (!el.dataset.key) el.dataset.key = el.textContent.trim();
-            const key = el.dataset.key; // e.g. "Settings"
+            const originalText = el.dataset.key; // e.g. "Settings" or "All Projects"
 
-            // Try explicit V2 key if mapped, or constructing one
-            // Ideally we'd map "Settings" -> "sidebarSettings" but let's see if we can just use the map for now 
-            // OR use window.texts directly if keys match.
-            // Since we don't have perfect key mapping, we'll stick to the map as primary for sidebar 
-            // BUT check if a global override exists.
-
-            // Actually, for consistency with the rest of V2, let's prioritize the map 
-            // UNLESS we want to move sidebar trans to en.js completely.
-            // For now, let's just make sure it triggers correctly.
-
-            if (map && map[key]) {
-                el.textContent = map[key];
-            } else if (key) {
-                // Formatting fallback or English
-                el.textContent = key;
+            const translationKey = TEXT_TO_KEY_MAP[originalText];
+            if (translationKey) {
+                el.textContent = _t(translationKey, {}, lang);
             }
         });
+
+        // Update Search Placeholder
+        const searchInput = document.getElementById(SEARCH_INPUT_ID);
+        if (searchInput) {
+            searchInput.placeholder = _t('v2.sidebar.search.placeholder', {}, lang);
+        }
     }
 
     // Expose for external calls

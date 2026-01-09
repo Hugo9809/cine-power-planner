@@ -52,29 +52,89 @@
             return;
         }
 
-        // 1. Move all children from Legacy to V2
-        // We use a document fragment to minimize reflows, though dealing with live nodes means
-        // they are moved immediately.
+        // Create a V2 Card Wrapper
+        const cardWrapper = document.createElement('div');
+        cardWrapper.className = 'v2-card v2-device-library-card';
+
+        const cardHeader = document.createElement('div');
+        cardHeader.className = 'v2-card-header';
+        cardHeader.innerHTML = `
+            <div>
+                <h3 class="v2-card-title">Device Manager</h3>
+                <p class="v2-card-subtitle">
+                    Add or edit devices in your local library. 
+                    <a href="#/help" class="v2-link-subtle" style="font-size: 0.9em; margin-left: 8px;">Learn more</a>
+                </p>
+            </div>
+        `;
+
+        const cardBody = document.createElement('div');
+        cardBody.className = 'v2-card-body';
+
+        // Move legacy children into card body
         while (legacyContainer.firstChild) {
-            v2Container.appendChild(legacyContainer.firstChild);
+            // Check if it's the heading (we replaced it)
+            if (legacyContainer.firstChild.id === 'deviceManagerHeading') {
+                legacyContainer.removeChild(legacyContainer.firstChild); // Remove duplicative heading
+                continue;
+            }
+            if (legacyContainer.firstChild.id === 'addDeviceHeading') {
+                legacyContainer.removeChild(legacyContainer.firstChild); // Remove duplicative heading
+                continue;
+            }
+            cardBody.appendChild(legacyContainer.firstChild);
         }
 
-        // 2. Ensure visible
-        // The legacy styles might have `display: none` or `.hidden` classes on children
-        // We might need to clean those up.
-        // For now, removing the `.hidden` class from the reparented structure is usually key.
-        // BUT: The legacy logic might rely on toggling the #device-manager itself.
-        // Since we moved the *children*, #device-manager is now empty.
+        cardWrapper.appendChild(cardHeader);
+        cardWrapper.appendChild(cardBody);
+        v2Container.appendChild(cardWrapper);
 
-        // We need to make sure the children themselves are visible.
-        // The legacy app uses `section.hidden` to toggle views. 
-        // Inside #device-manager, the content is just forms and lists.
-
-        // Let's add a class to v2Container to help with styling if needed
-        v2Container.classList.add('v2-legacy-content-wrapper');
+        // Apply V2 Classes to Legacy Elements
+        applyV2Styles(cardBody);
 
         isReparented = true;
         console.log('[DeviceLibraryView] Reparenting complete.');
+    }
+
+    /**
+     * Apply V2 classes to legacy elements
+     * @param {HTMLElement} container 
+     */
+    function applyV2Styles(container) {
+        // Inputs
+        const inputs = container.querySelectorAll('input[type="text"], input[type="number"]');
+        inputs.forEach(el => el.classList.add('v2-input'));
+
+        // Selects
+        const selects = container.querySelectorAll('select');
+        selects.forEach(el => el.classList.add('v2-select'));
+
+        // Buttons
+        // Legacy buttons often have no class or specific classes. 
+        // We'll target them by tag or common legacy classes if known. Since we don't have many, just buttons.
+        const buttons = container.querySelectorAll('button');
+        buttons.forEach(btn => {
+            // Distinguish types if possible. V2 default is secondary/ghost usually unless strictly primary.
+            // Let's make them default buttons for now.
+            btn.classList.add('v2-btn');
+
+            // If it's the "Add Device" button (often implied by context or specific ID logic in legacy),
+            // We might want to make it primary. 
+            // Checking text content is risky but effective for legacy shims.
+            if (btn.textContent.toLowerCase().includes('add') || btn.textContent.toLowerCase().includes('save')) {
+                btn.classList.add('v2-btn-primary');
+            }
+        });
+
+        // Form Rows
+        // Legacy uses .form-row. We can map this to .v2-form-row via CSS or add the class.
+        // Adding class is safer for scoping.
+        const rows = container.querySelectorAll('.form-row');
+        rows.forEach(row => row.classList.add('v2-form-row'));
+
+        // Labels
+        const labels = container.querySelectorAll('label');
+        labels.forEach(label => label.classList.add('v2-label'));
     }
 
     /**
@@ -88,9 +148,25 @@
         const legacyContainer = document.getElementById(LEGACY_CONTAINER_ID);
 
         if (v2Container && legacyContainer) {
-            while (v2Container.firstChild) {
-                legacyContainer.appendChild(v2Container.firstChild);
+            // In V2 we wrapped everything in a .v2-card-body inside a .v2-card
+            const cardBody = v2Container.querySelector('.v2-card-body');
+
+            if (cardBody) {
+                while (cardBody.firstChild) {
+                    // Remove V2 classes before returning? 
+                    // Might be safer to leave them or strip them if they cause legacy issues.
+                    // Legacy CSS shouldn't care about extra classes usually.
+                    legacyContainer.appendChild(cardBody.firstChild);
+                }
+            } else {
+                // Fallback if structure is weird
+                while (v2Container.firstChild) {
+                    legacyContainer.appendChild(v2Container.firstChild);
+                }
             }
+
+            // Clear the wrapper
+            v2Container.innerHTML = '';
         }
 
         isReparented = false;

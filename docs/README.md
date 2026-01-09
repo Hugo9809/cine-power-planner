@@ -67,6 +67,9 @@ services, and no dependencies beyond this repository.
   - [Review Findings](dev/reviews/review-findings.md)
   - [Review Tasks (2025-02-07)](dev/reviews/review-tasks-2025-02-07.md)
   - [Translation Review (2025-03-10)](dev/reviews/translation-review-2025-03-10.md)
+  - V2 UI References:
+    - [V2 View Logic](../src/scripts/v2/view-manager.js) - Hash-based routing and view switching
+    - [V2 Bootstrap](../src/scripts/v2/bootstrap.js) - V2 UI initialization pattern
 
 ## By workflow
 

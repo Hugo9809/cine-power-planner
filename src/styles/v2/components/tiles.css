@@ -306,12 +306,67 @@
     font-size: 11px;
     padding: 3px 8px;
     border-radius: 12px;
-    /* Pill shape */
     font-weight: 500;
-    line-height: 1.2;
+    line-height: normal;
+    /* Fix alignment */
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
+    margin-top: 2px;
+}
+
+/* Status Badge Styles */
+.v2-status-badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1;
+}
+
+.v2-status-badge.draft {
+    background-color: var(--v2-color-slate);
+    color: white;
+}
+
+.v2-status-badge.planning {
+    background-color: color-mix(in srgb, var(--v2-color-blue) 15%, transparent);
+    color: var(--v2-color-blue);
+    border: 1px solid color-mix(in srgb, var(--v2-color-blue) 30%, transparent);
+}
+
+.v2-status-badge.waiting-for-approval {
+    background-color: color-mix(in srgb, var(--v2-color-amber) 15%, transparent);
+    color: var(--v2-color-amber);
+    border: 1px solid color-mix(in srgb, var(--v2-color-amber) 30%, transparent);
+}
+
+.v2-status-badge.approved {
+    background-color: color-mix(in srgb, var(--v2-color-green) 15%, transparent);
+    color: var(--v2-color-green);
+    border: 1px solid color-mix(in srgb, var(--v2-color-green) 30%, transparent);
+}
+
+.v2-status-badge.shooting {
+    background-color: color-mix(in srgb, var(--v2-color-red) 15%, transparent);
+    color: var(--v2-color-red);
+    border: 1px solid color-mix(in srgb, var(--v2-color-red) 30%, transparent);
+}
+
+.v2-status-badge.completed {
+    background-color: color-mix(in srgb, var(--v2-color-purple) 15%, transparent);
+    color: var(--v2-color-purple);
+    border: 1px solid color-mix(in srgb, var(--v2-color-purple) 30%, transparent);
+}
+
+.v2-status-badge.archived {
+    background-color: color-mix(in srgb, var(--v2-color-stone) 15%, transparent);
+    color: var(--v2-color-stone);
+    border: 1px solid color-mix(in srgb, var(--v2-color-stone) 30%, transparent);
 }
 
 .period-icon {
@@ -386,7 +441,7 @@
     position: fixed;
     z-index: 9999;
     min-width: 180px;
-    background-color: var(--v2-surface-elevated, #fff);
+    background-color: var(--v2-surface-elevated);
     border: 1px solid var(--v2-border-default);
     border-radius: var(--v2-radius-md);
     box-shadow: var(--v2-shadow-lg);
@@ -411,7 +466,7 @@
 }
 
 .v2-context-menu-item:hover {
-    background-color: var(--v2-surface-hover, rgba(0, 0, 0, 0.05));
+    background-color: var(--v2-surface-muted);
     text-decoration: none;
 }
 
@@ -452,9 +507,11 @@
     0% {
         opacity: 0.6;
     }
+
     50% {
         opacity: 0.3;
     }
+
     100% {
         opacity: 0.6;
     }
@@ -467,7 +524,8 @@
     border: 1px solid var(--v2-border-muted);
     border-radius: var(--v2-radius-lg);
     padding: var(--v2-space-lg);
-    height: 180px; /* Approximate height of a standard tile */
+    height: 180px;
+    /* Approximate height of a standard tile */
 }
 
 .v2-skeleton-header {
@@ -511,9 +569,9 @@
 }
 
 .v2-skeleton-periods {
-     display: flex;
-     gap: 6px;
-     margin-top: 12px;
+    display: flex;
+    gap: 6px;
+    margin-top: 12px;
 }
 
 .v2-skeleton-period {

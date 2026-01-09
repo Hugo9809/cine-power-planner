@@ -18,7 +18,7 @@
 .v2-tabs-nav {
     display: flex;
     align-items: flex-end;
-    gap: 2px;
+    gap: var(--v2-space-lg);
     padding: 0 var(--v2-space-lg);
     padding-top: var(--v2-space-sm);
     background-color: var(--v2-surface-app-bg);
@@ -50,19 +50,16 @@
 /* =====================
  * TAB BUTTON
  * ===================== */
-/* =====================
- * TAB BUTTON
- * ===================== */
 .v2-tab-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: var(--v2-space-sm);
-    padding: 12px 24px;
+    padding: 12px 4px;
 
     /* Typography */
     font-size: 1rem;
-    font-weight: 500;
+    font-weight: var(--v2-font-weight-medium);
     color: var(--v2-text-secondary);
     letter-spacing: 0.01em;
 
@@ -70,29 +67,25 @@
     background: transparent;
     border: none;
     border-bottom: 2px solid transparent;
-    /* Settings style indicator */
-    border-radius: var(--v2-radius-sm) var(--v2-radius-sm) 0 0;
+    border-radius: 0;
 
     cursor: pointer;
     white-space: nowrap;
     transition: all 0.2s;
     position: relative;
-    /* top: 1px; removed to avoid jumpiness */
-    /* margin-bottom: -1px; removed */
 }
 
 /* Hover state */
 .v2-tab-btn:hover:not(:disabled):not(.active) {
-    background-color: var(--v2-surface-2, #f5f5f5);
-    /* Fallback to light gray */
+    background-color: transparent;
     color: var(--v2-text-primary);
 }
 
 /* Active State - Settings Look */
 .v2-tab-btn.active {
-    background-color: var(--v2-surface-1, #ffffff);
+    background-color: transparent;
     color: var(--v2-brand-blue);
-    font-weight: 600;
+    font-weight: var(--v2-font-weight-semibold);
     border-bottom-color: var(--v2-brand-blue);
     z-index: 2;
 }
@@ -208,14 +201,6 @@
     border: none;
 }
 
-.v2-tabs-pills .v2-tab-btn.active::after {
-    display: none;
-}
-
-.v2-tabs-pills .v2-tab-btn.active::before {
-    display: none;
-}
-
 /* =====================
  * VERTICAL TABS (Preserved)
  * ===================== */
@@ -252,14 +237,6 @@
     border-bottom: none;
 }
 
-.v2-tabs-vertical .v2-tab-btn.active::after {
-    display: none;
-}
-
-.v2-tabs-vertical .v2-tab-btn.active::before {
-    display: none;
-}
-
 /* =====================
  * DARK MODE THEME
  * ===================== */
@@ -273,23 +250,15 @@ body.dark-mode .v2-tab-btn {
 }
 
 body.dark-mode .v2-tab-btn:hover:not(:disabled):not(.active) {
-    background-color: var(--v2-surface-muted);
+    background-color: transparent;
     color: var(--v2-text-primary);
 }
 
 body.dark-mode .v2-tab-btn.active {
-    background-color: var(--v2-surface-elevated);
+    background-color: transparent;
     color: #5c7cfa;
-    border-color: var(--v2-border-default);
-    border-bottom-color: var(--v2-surface-elevated);
-}
-
-body.dark-mode .v2-tab-btn.active::before {
-    background-color: #5c7cfa;
-}
-
-body.dark-mode .v2-tab-btn.active::after {
-    background-color: var(--v2-surface-elevated);
+    border-color: transparent;
+    border-bottom-color: #5c7cfa;
 }
 
 body.dark-mode .v2-tab-btn:focus-visible {
@@ -309,28 +278,19 @@ body.dark-mode .v2-tabs-content {
  * ===================== */
 body.pink-mode .v2-tabs-nav {
     background-color: #fff9fc;
-    /* Very light pink background */
     border-bottom-color: rgba(255, 105, 180, 0.2);
 }
 
 body.pink-mode .v2-tab-btn:hover:not(:disabled):not(.active) {
-    background-color: rgba(255, 105, 180, 0.05);
+    background-color: transparent;
     color: var(--v2-text-primary);
 }
 
 body.pink-mode .v2-tab-btn.active {
-    background-color: var(--v2-brand-blue);
-    color: var(--v2-text-inverse);
-    border-color: var(--v2-brand-blue);
-    border-bottom-color: var(--v2-brand-blue);
-}
-
-body.pink-mode .v2-tab-btn.active::before {
-    background-color: #ff69b4;
-}
-
-body.pink-mode .v2-tab-btn.active::after {
-    background-color: var(--v2-surface-base);
+    background-color: transparent;
+    color: #DB2777;
+    border-color: transparent;
+    border-bottom-color: #DB2777;
 }
 
 body.pink-mode .v2-tab-badge {
@@ -342,30 +302,78 @@ body.pink-mode .v2-tab-badge {
  * ===================== */
 body.dark-mode.pink-mode .v2-tabs-nav {
     background-color: #1a1015;
-    /* Dark pinkish background */
     border-bottom-color: rgba(255, 105, 180, 0.3);
 }
 
 body.dark-mode.pink-mode .v2-tab-btn:hover:not(:disabled):not(.active) {
-    background-color: rgba(255, 105, 180, 0.1);
+    background-color: transparent;
     color: #ffdce8;
 }
 
 body.dark-mode.pink-mode .v2-tab-btn.active {
-    background-color: var(--v2-surface-elevated);
+    background-color: transparent;
     color: #ff80c0;
-    border-color: rgba(255, 105, 180, 0.4);
-    border-bottom-color: var(--v2-surface-elevated);
-}
-
-body.dark-mode.pink-mode .v2-tab-btn.active::before {
-    background-color: #ff69b4;
-}
-
-body.dark-mode.pink-mode .v2-tab-btn.active::after {
-    background-color: var(--v2-surface-elevated);
+    border-color: transparent;
+    border-bottom-color: #ff80c0;
 }
 
 body.dark-mode.pink-mode .v2-tab-badge {
     background-color: #ff69b4;
+}
+
+/* =====================
+ * RESPONSIVE BEHAVIOR
+ * ===================== */
+@media (max-width: 768px) {
+    .v2-tabs-nav {
+        gap: var(--v2-space-md);
+        padding: 0 var(--v2-space-md);
+        padding-top: var(--v2-space-xs);
+        min-height: 44px;
+        /* Scroll fade indicators */
+        -webkit-mask-image: linear-gradient(to right,
+                transparent 0,
+                black 16px,
+                black calc(100% - 16px),
+                transparent 100%);
+        mask-image: linear-gradient(to right,
+                transparent 0,
+                black 16px,
+                black calc(100% - 16px),
+                transparent 100%);
+    }
+
+    .v2-tab-btn {
+        padding: 10px 2px;
+        font-size: 0.9rem;
+    }
+
+    .v2-tab-btn .icon {
+        width: 14px;
+        height: 14px;
+    }
+
+    .v2-tab-badge {
+        min-width: 16px;
+        height: 16px;
+        font-size: 10px;
+        padding: 0 4px;
+    }
+
+    .v2-tab-pane {
+        padding: var(--v2-space-md);
+    }
+}
+
+@media (max-width: 480px) {
+    .v2-tabs-nav {
+        gap: var(--v2-space-sm);
+        padding: 0 var(--v2-space-sm);
+    }
+
+    .v2-tab-btn {
+        padding: 8px 0;
+        font-size: 0.85rem;
+        gap: var(--v2-space-xs);
+    }
 }

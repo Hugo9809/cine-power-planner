@@ -16,7 +16,7 @@
     display: flex;
     flex-direction: column;
     height: 600px;
-    /* Fixed height for diagram area */
+    /* Fixed height for diagram area on desktop */
     overflow: hidden;
     padding: 0;
     background-color: var(--v2-surface-base);
@@ -123,6 +123,82 @@ body.dark-mode .v2-diagram-legend {
 }
 
 /* =====================
+ * HEADER STATUS DROPDOWN
+ * ===================== */
+.v2-header-status {
+    margin-left: var(--v2-space-md);
+}
+
+.v2-status-select {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 1px solid transparent;
+    border-radius: var(--v2-radius-md);
+    padding: 6px 12px;
+    padding-right: 28px;
+    font-size: var(--v2-font-size-sm);
+    font-weight: var(--v2-font-weight-semibold);
+    cursor: pointer;
+    transition: all var(--v2-transition-fast);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 12px;
+    line-height: normal;
+}
+
+.v2-status-select:hover {
+    filter: brightness(0.95);
+}
+
+.v2-status-select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--v2-border-focus);
+}
+
+/* Status variants for select */
+.v2-status-select.draft {
+    background-color: var(--v2-color-slate);
+    color: white;
+}
+
+.v2-status-select.planning {
+    background-color: color-mix(in srgb, var(--v2-color-blue) 15%, transparent);
+    color: var(--v2-color-blue);
+    border-color: color-mix(in srgb, var(--v2-color-blue) 30%, transparent);
+}
+
+.v2-status-select.waiting-for-approval {
+    background-color: color-mix(in srgb, var(--v2-color-amber) 15%, transparent);
+    color: var(--v2-color-amber);
+    border-color: color-mix(in srgb, var(--v2-color-amber) 30%, transparent);
+}
+
+.v2-status-select.approved {
+    background-color: color-mix(in srgb, var(--v2-color-green) 15%, transparent);
+    color: var(--v2-color-green);
+    border-color: color-mix(in srgb, var(--v2-color-green) 30%, transparent);
+}
+
+.v2-status-select.shooting {
+    background-color: color-mix(in srgb, var(--v2-color-red) 15%, transparent);
+    color: var(--v2-color-red);
+    border-color: color-mix(in srgb, var(--v2-color-red) 30%, transparent);
+}
+
+.v2-status-select.completed {
+    background-color: color-mix(in srgb, var(--v2-color-purple) 15%, transparent);
+    color: var(--v2-color-purple);
+    border-color: color-mix(in srgb, var(--v2-color-purple) 30%, transparent);
+}
+
+.v2-status-select.archived {
+    background-color: color-mix(in srgb, var(--v2-color-stone) 15%, transparent);
+    color: var(--v2-color-stone);
+    border-color: color-mix(in srgb, var(--v2-color-stone) 30%, transparent);
+}
+
+/* =====================
  * V2 SETUP CONFIG (V1 REPLICA)
  * ===================== */
 #v2-setup-config .form-row {
@@ -155,34 +231,76 @@ body.dark-mode .v2-diagram-legend {
     margin-top: 0;
 }
 
-/* Increase dropdown height and apply V2 styling to preventing text cutoff and match V2 design */
-#v2-setup-config select,
-#v2-setup-config .select-wrapper select {
-    appearance: none !important;
-    -webkit-appearance: none !important;
-    min-height: 44px !important;
-    height: auto !important;
-    padding: 10px 12px !important;
-    padding-right: 32px !important;
-    /* Space for arrow */
-    line-height: 1.5 !important;
-    font-size: var(--v2-font-size-base) !important;
-    border: 1px solid var(--v2-border-default) !important;
-    border-radius: var(--v2-radius-md) !important;
-    background-color: var(--v2-surface-elevated) !important;
-    color: var(--v2-text-primary) !important;
-
-    /* Custom Arrow */
-    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23131313%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E") !important;
-    background-repeat: no-repeat !important;
-    background-position: right 12px center !important;
-    background-size: 10px auto !important;
+/* =====================
+ * REPARENTED ELEMENTS
+ * ===================== */
+.v2-reparent-full-width {
+    width: 100%;
 }
 
-@media (prefers-color-scheme: dark) {
+/* Ensure battery comparison table takes full width */
+.v2-reparent-full-width #batteryComparison {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: var(--v2-space-md) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+}
 
-    #v2-setup-config select,
-    #v2-setup-config .select-wrapper select {
-        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E") !important;
+.v2-reparent-full-width #batteryComparison h2 {
+    font-size: var(--v2-font-size-lg);
+    font-weight: var(--v2-font-weight-semibold);
+    margin-bottom: var(--v2-space-md);
+    color: var(--v2-text-primary);
+}
+
+.v2-reparent-full-width #batteryTableContainer {
+    overflow-x: auto;
+}
+
+.v2-reparent-full-width #batteryTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* =====================
+ * RESPONSIVE BEHAVIOR
+ * ===================== */
+@media (max-width: 768px) {
+    .v2-diagram-body {
+        height: 50vh;
+        min-height: 400px;
+    }
+
+    .v2-diagram-legend {
+        position: relative;
+        bottom: auto;
+        left: auto;
+        margin: var(--v2-space-md);
+        margin-top: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    #v2-setup-config .form-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--v2-space-sm);
+    }
+
+    #v2-setup-config .form-row label,
+    #v2-setup-config .form-row .form-row-label {
+        width: 100%;
+        margin-bottom: 2px;
+    }
+
+    #v2-setup-config .form-row input {
+        width: 100%;
+    }
+
+    #v2-setup-config .select-wrapper,
+    #v2-setup-config .form-row select {
+        width: 100%;
     }
 }

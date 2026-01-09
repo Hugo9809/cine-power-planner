@@ -166,3 +166,39 @@
 .v2-stat-change.negative {
     color: var(--v2-status-error);
 }
+
+/* =====================
+ * LISTS & KEY-VALUE PAIRS
+ * ===================== */
+.v2-key-value-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--v2-border-default);
+    border-radius: var(--v2-radius-md);
+    overflow: hidden;
+}
+
+.v2-kv-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: var(--v2-surface-0);
+    border-bottom: 1px solid var(--v2-border-subtle);
+}
+
+.v2-kv-item:last-child {
+    border-bottom: none;
+}
+
+.v2-kv-label {
+    font-weight: var(--v2-font-weight-medium);
+    color: var(--v2-text-primary);
+}
+
+.v2-kv-value {
+    color: var(--v2-text-secondary);
+    font-family: var(--v2-font-family-mono, monospace);
+    font-size: 0.9em;
+}

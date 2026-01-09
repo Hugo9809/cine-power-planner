@@ -25,6 +25,7 @@
   let currentProject = null;
   let currentTab = DEFAULT_TAB;
   let isInitialized = false;
+  let _cachedProjectData = null; // Cache for current project data
 
   // =====================
   // TAB MANAGEMENT
@@ -111,26 +112,105 @@
   }
 
   /**
+   * Translation Helper
+   */
+  function _t(path, params = {}) {
+    const lang = document.documentElement.lang || 'en';
+    let root = (window.texts && window.texts[lang]) ? window.texts[lang] : null;
+    if (!root && window.texts) root = window.texts['en'];
+
+    const resolve = (obj, p) => p.split('.').reduce((o, i) => o ? o[i] : null, obj);
+
+    let val = root ? resolve(root, path) : null;
+
+    if (!val && lang !== 'en' && window.texts && window.texts['en']) {
+      val = resolve(window.texts['en'], path);
+    }
+
+    if (!val) return path;
+
+    if (typeof val === 'string') {
+      for (const [k, v] of Object.entries(params)) {
+        val = val.replace(`{${k}}`, v);
+      }
+    }
+    return val;
+  }
+
+  /**
    * Get project data from storage
    */
-  function getProjectData(projectName) {
+  /**
+   * Refresh the project data cache
+   */
+  function refreshProjectDataCache() {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
-        const data = JSON.parse(stored);
-        if (data && data[projectName]) {
-          const project = data[projectName];
-          return {
-            prepDays: project.prepDays || [],
-            shootingDays: project.shootingDays || [],
-            returnDays: project.returnDays || []
-          };
-        }
+        _cachedProjectData = JSON.parse(stored);
+      } else {
+        _cachedProjectData = {};
       }
-    } catch (_e) {
-      void _e;
+    } catch (e) {
+      console.error('[ProjectDetail] Failed to parse project data:', e);
+      _cachedProjectData = {};
     }
-    return { prepDays: [], shootingDays: [], returnDays: [] };
+  }
+
+  /**
+   * Get project data from storage (via cache)
+   */
+  function getProjectData(projectName) {
+    if (_cachedProjectData === null) {
+      refreshProjectDataCache();
+    }
+
+    if (_cachedProjectData && _cachedProjectData[projectName]) {
+      const project = _cachedProjectData[projectName];
+      return {
+        prepDays: project.prepDays || [],
+        shootingDays: project.shootingDays || [],
+        returnDays: project.returnDays || [],
+        status: project.status || (project.archived ? 'Archived' : 'Planning')
+      };
+    }
+
+    return { prepDays: [], shootingDays: [], returnDays: [], status: 'Planning' };
+  }
+
+  /**
+   * Update project status
+   */
+  /**
+   * Update project status
+   */
+  function updateProjectStatus(projectName, status) {
+    try {
+      // Ensure cache is fresh
+      refreshProjectDataCache();
+      const data = _cachedProjectData || {};
+
+      if (data && data[projectName]) {
+        data[projectName].status = status;
+
+        // Sync archived flag
+        if (status === 'Archived') {
+          data[projectName].archived = true;
+        } else {
+          data[projectName].archived = false;
+        }
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+        // Update cache - strictly not needed as we modified the object in place, but safe
+        _cachedProjectData = data;
+
+        return true;
+      }
+    } catch (e) {
+      console.error('[ProjectDetail] Failed to update status:', e);
+    }
+    return false;
   }
 
   // =====================
@@ -145,6 +225,9 @@
       console.warn('[ProjectDetail] No project name provided');
       return false;
     }
+
+    // Force refresh cache to ensure we have the latest data from persistence
+    refreshProjectDataCache();
 
     currentProject = projectName;
 
@@ -162,6 +245,26 @@
     // Update Project Periods in Header
     const projectData = getProjectData(projectName);
     const periodsContainer = document.getElementById('v2ProjectPeriods');
+    const statusSelect = document.getElementById('v2ProjectStatus');
+
+    // Update Status Select
+    if (statusSelect) {
+      statusSelect.value = projectData.status;
+      updateStatusSelectStyle(statusSelect);
+
+      // Remove old listeners to prevent duplicates (cloning is a quick hack)
+      const newSelect = statusSelect.cloneNode(true);
+      statusSelect.parentNode.replaceChild(newSelect, statusSelect);
+
+      newSelect.addEventListener('change', (e) => {
+        const newStatus = e.target.value;
+        updateProjectStatus(projectName, newStatus);
+        updateStatusSelectStyle(newSelect);
+
+        // If archived, maybe we should warn or just do it?
+        // For now just do it.
+      });
+    }
 
     if (periodsContainer) {
       let html = '';
@@ -254,23 +357,34 @@
 
     view.innerHTML = `
       <header class="view-header view-header-with-back">
-        <button type="button" class="v2-back-btn" id="v2BackToProjects" aria-label="Back to projects">
+        <button type="button" class="v2-back-btn" id="v2BackToProjects" aria-label="${_t('v2.detail.backButton')}">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M15 18l-6-6 6-6"/>
           </svg>
-          <span>Projects</span>
+          <span>${_t('v2.detail.backButton')}</span>
         </button>
         <h1 id="v2ProjectName" class="view-header-title">Project</h1>
+        <div class="v2-header-status">
+            <select id="v2ProjectStatus" class="v2-status-select">
+                <option value="Draft">${_t('v2.dashboard.status.draft')}</option>
+                <option value="Planning">${_t('v2.dashboard.status.planning')}</option>
+                <option value="Waiting for Approval">${_t('v2.dashboard.status.waitingForApproval')}</option>
+                <option value="Approved">${_t('v2.dashboard.status.approved')}</option>
+                <option value="Shooting">${_t('v2.dashboard.status.shooting')}</option>
+                <option value="Completed">${_t('v2.dashboard.status.completed')}</option>
+                <option value="Archived">${_t('v2.dashboard.status.archived')}</option>
+            </select>
+        </div>
         <div id="v2ProjectPeriods" class="v2-header-periods" style="display: none;"></div>
         <div class="view-header-actions">
-          <button type="button" class="v2-btn v2-btn-ghost" id="v2PrintProjectBtn" title="Print / Export PDF">
+          <button type="button" class="v2-btn v2-btn-ghost" id="v2PrintProjectBtn" title="${_t('v2.detail.header.print')}">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="6 9 6 2 18 2 18 9"></polyline>
               <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
               <rect x="6" y="14" width="12" height="8"></rect>
             </svg>
           </button>
-          <button type="button" class="v2-btn v2-btn-ghost" id="v2GenerateReqsGearBtn" title="Generate Project Requirements and Gear List">
+          <button type="button" class="v2-btn v2-btn-ghost" id="v2GenerateReqsGearBtn" title="${_t('v2.detail.header.generateReqs')}">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                <polyline points="14 2 14 8 20 8"></polyline>
@@ -278,17 +392,17 @@
                <line x1="16" y1="17" x2="8" y2="17"></line>
                <line x1="10" y1="9" x2="8" y2="9"></line>
             </svg>
-            <span class="v2-btn-label">Reqs & Gear</span>
+            <span class="v2-btn-label">${_t('v2.detail.header.generateReqs')}</span>
           </button>
-          <button type="button" class="v2-btn v2-btn-ghost" id="v2ExportProjectBtn" title="Export Project">
+          <button type="button" class="v2-btn v2-btn-ghost" id="v2ExportProjectBtn" title="${_t('v2.detail.header.export')}">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
                <polyline points="16 6 12 2 8 6"/>
                <line x1="12" y1="2" x2="12" y2="15"/>
             </svg>
-            <span class="v2-btn-label">Export Project</span>
+            <span class="v2-btn-label">${_t('v2.detail.header.export')}</span>
           </button>
-          <button type="button" class="v2-btn v2-btn-ghost" id="v2GenerateOverviewBtn" title="Generate Overview">
+          <button type="button" class="v2-btn v2-btn-ghost" id="v2GenerateOverviewBtn" title="${_t('v2.detail.header.generateOverview')}">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                <polyline points="14 2 14 8 20 8"></polyline>
@@ -296,10 +410,10 @@
                <line x1="16" y1="17" x2="8" y2="17"></line>
                <line x1="10" y1="9" x2="8" y2="9"></line>
             </svg>
-            <span class="v2-btn-label">Generate Overview</span>
+            <span class="v2-btn-label">${_t('v2.detail.header.generateOverview')}</span>
           </button>
           <button type="button" class="v2-btn v2-btn-secondary" id="v2SaveProjectBtn">
-            Save
+            ${_t('v2.detail.header.save')}
           </button>
         </div>
       </header>
@@ -309,16 +423,16 @@
       <!-- Tab Navigation (Sticky Top) -->
       <nav class="v2-tabs-nav" role="tablist" aria-label="Project sections">
         <button type="button" class="v2-tab-btn active" data-tab="camera" role="tab" aria-selected="true" aria-controls="tab-camera">
-          Camera Package
+          ${_t('v2.detail.tabs.cameraPackage')}
         </button>
         <button type="button" class="v2-tab-btn" data-tab="power" role="tab" aria-selected="false" aria-controls="tab-power">
-          Power Summary
+          ${_t('v2.detail.tabs.powerSummary')}
         </button>
         <button type="button" class="v2-tab-btn" data-tab="requirements" role="tab" aria-selected="false" aria-controls="tab-requirements">
-          Requirements
+          ${_t('v2.detail.tabs.requirements')}
         </button>
         <button type="button" class="v2-tab-btn" data-tab="kit" role="tab" aria-selected="false" aria-controls="tab-kit">
-          Gear List
+          ${_t('v2.detail.tabs.gearList')}
         </button>
       </nav>
 
@@ -339,13 +453,13 @@
           <section id="tab-requirements" class="v2-tab-pane" role="tabpanel" aria-labelledby="tab-requirements-btn" hidden>
             <div class="v2-card">
               <div class="v2-card-header">
-                <h2>Project Requirements</h2>
+                <h2>${_t('v2.detail.actions.projectRequirements')}</h2>
                 <button type="button" class="v2-btn v2-btn-primary" id="v2GenerateRequirementsBtn">
-                  Generate Requirements
+                  ${_t('v2.detail.actions.generateRequirements')}
                 </button>
               </div>
               <div class="v2-card-body" id="v2RequirementsContainer">
-                <p class="v2-text-muted">Click "Generate Requirements" to create your production report.</p>
+                <p class="v2-text-muted">${_t('v2.detail.actions.generateRequirementsHelp')}</p>
               </div>
             </div>
           </section>
@@ -354,13 +468,13 @@
           <section id="tab-kit" class="v2-tab-pane" role="tabpanel" aria-labelledby="tab-kit-btn" hidden>
             <div class="v2-card">
               <div class="v2-card-header">
-                <h2>Gear List</h2>
+                <h2>${_t('v2.detail.actions.gearList')}</h2>
                 <button type="button" class="v2-btn v2-btn-primary" id="v2GenerateGearListBtn">
-                  Generate Gear List
+                  ${_t('v2.detail.actions.generateGearList')}
                 </button>
               </div>
               <div class="v2-card-body" id="v2KitListContainer">
-                <p class="v2-text-muted">Click "Generate Gear List" to create your equipment list.</p>
+                <p class="v2-text-muted">${_t('v2.detail.actions.generateGearListHelp')}</p>
               </div>
             </div>
           </section>
@@ -551,17 +665,17 @@
           <div class="v2-card-header v2-card-header-with-actions">
             <h3>Connection Diagram</h3>
             <div class="v2-diagram-toolbar">
-               <button type="button" class="v2-btn v2-btn-sm v2-btn-ghost" id="v2ZoomOut" title="Zoom Out">
+               <button type="button" class="v2-btn v2-btn-sm v2-btn-ghost" id="v2ZoomOut" title="${_t('v2.detail.diagram.zoomOut')}">
                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                </button>
-               <button type="button" class="v2-btn v2-btn-sm v2-btn-ghost" id="v2ResetView" title="Reset View">
+               <button type="button" class="v2-btn v2-btn-sm v2-btn-ghost" id="v2ResetView" title="${_t('v2.detail.diagram.resetView')}">
                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                </button>
-               <button type="button" class="v2-btn v2-btn-sm v2-btn-ghost" id="v2ZoomIn" title="Zoom In">
+               <button type="button" class="v2-btn v2-btn-sm v2-btn-ghost" id="v2ZoomIn" title="${_t('v2.detail.diagram.zoomIn')}">
                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                </button>
                <div class="v2-vr"></div>
-               <button type="button" class="v2-btn v2-btn-sm v2-btn-ghost" id="v2DownloadDiagram" title="Download Diagram">
+               <button type="button" class="v2-btn v2-btn-sm v2-btn-ghost" id="v2DownloadDiagram" title="${_t('v2.detail.diagram.download')}">
                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                </button>
             </div>
@@ -571,6 +685,13 @@
             <div id="v2-diagram-legend" class="v2-diagram-legend"></div>
             <!-- Hidden containers required by module -->
             <div id="v2-diagram-hint" style="display:none;"></div>
+          </div>
+        </div>
+
+        <!-- Battery Comparison -->
+        <div class="v2-card" style="margin-top: var(--v2-space-lg);">
+          <div class="v2-card-body" style="padding: 0;">
+             <div data-reparent="batteryComparison" class="v2-reparent-full-width"></div>
           </div>
         </div>
       </div>
@@ -591,7 +712,23 @@
     const printBtn = view.querySelector('#v2PrintProjectBtn');
     if (printBtn) {
       printBtn.addEventListener('click', () => {
+        // Intercept for Status Check
+        if (confirm('Do you want to set the project status to "Waiting for Approval"?')) {
+          updateProjectStatus(currentProject, 'Waiting for Approval');
+          const statusSelect = document.getElementById('v2ProjectStatus');
+          if (statusSelect) {
+            statusSelect.value = 'Waiting for Approval';
+            updateStatusSelectStyle(statusSelect);
+          }
+        }
+
         console.log('[ProjectDetail] Triggering Print/Export');
+        if (typeof window.openLegacyPrintDialog === 'function') {
+          window.openLegacyPrintDialog();
+          return;
+        }
+
+        // Fallback
         if (global.cineFeaturePrint && typeof global.cineFeaturePrint.triggerOverviewPrintWorkflow === 'function') {
           global.cineFeaturePrint.triggerOverviewPrintWorkflow({}, { reason: 'export' });
         } else if (typeof global.triggerOverviewPrintWorkflow === 'function') {
@@ -791,6 +928,20 @@
     }
   }
 
+  /**
+   * Helper to update status select style
+   */
+  function updateStatusSelectStyle(selectElement) {
+    const status = selectElement.value;
+    const statusClass = status.toLowerCase().replace(/\s+/g, '-');
+
+    // Remove all status classes
+    selectElement.classList.remove('draft', 'planning', 'waiting-for-approval', 'approved', 'shooting', 'completed', 'archived');
+
+    // Add current
+    selectElement.classList.add(statusClass);
+  }
+
   // =====================
   // DATA SYNC
   // =====================
@@ -916,6 +1067,20 @@
       // Switch to the requested tab if provided
       if (params.tab) {
         switchTab(params.tab);
+      }
+
+      // Handle specific actions (e.g. print)
+      if (params.action === 'print') {
+        console.log('[ProjectDetail] Auto-triggering print workflow');
+        setTimeout(() => {
+          if (global.cineFeaturePrint && typeof global.cineFeaturePrint.triggerOverviewPrintWorkflow === 'function') {
+            global.cineFeaturePrint.triggerOverviewPrintWorkflow({}, { reason: 'export' });
+          } else if (typeof global.triggerOverviewPrintWorkflow === 'function') {
+            global.triggerOverviewPrintWorkflow({}, { reason: 'export' });
+          } else {
+            window.print();
+          }
+        }, 800); // Wait for transitions/render
       }
     }
   }
