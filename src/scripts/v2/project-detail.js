@@ -854,7 +854,7 @@
   // DIAGRAM RENDERING
   // =====================
 
-  let diagramInstance = null;
+
 
   /**
    * Initialize and render the Connection Diagram in V2 container
@@ -922,7 +922,7 @@
     }
 
     try {
-      diagramInstance = global.cineFeaturesConnectionDiagram.createConnectionDiagram(context);
+      global.cineFeaturesConnectionDiagram.createConnectionDiagram(context);
     } catch (e) {
       console.error('[ProjectDetail] Error rendering diagram:', e);
     }

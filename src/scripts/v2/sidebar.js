@@ -394,7 +394,7 @@
         const triggers = document.querySelectorAll('.v2-mobile-menu-toggle');
         const app = document.getElementById('v2-app');
         const overlay = document.querySelector('.v2-sidebar-overlay');
-        const sidebar = document.querySelector('.v2-sidebar');
+
 
         if (!app) return;
 

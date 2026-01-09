@@ -1949,12 +1949,14 @@ function generatePrintableOverview(config = {}) {
     const openLegacyPrintDialog = () => {
         // New Print Preview Integration - check if we should be using the new module
         // (Leaving this check if we ever want to switch back, but currently we want V1 dialog)
+        /*
         const globalScope = (typeof window !== 'undefined' ? window : this);
         if (globalScope.cineFeaturePrintPreview && typeof globalScope.cineFeaturePrintPreview.open === 'function' && false) {
             // Disabled for now to force V1 dialog as requested
             globalScope.cineFeaturePrintPreview.open();
             return;
         }
+        */
 
         const storedPreferences = loadPrintPreferences() || { sections: {}, layout: 'standard' };
         const dialogContext = getPrintOptionsDialogContext();

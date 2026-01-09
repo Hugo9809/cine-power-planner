@@ -108,7 +108,6 @@
             textNoOptions: 'No options available.',
             textNoItems: 'No items configured.',
             buttonSaveRule: 'Save Rule',
-            buttonCancel: 'Cancel',
 
             // Owned Gear
             ownGearViewTitle: 'Owned Gear',
@@ -148,13 +147,13 @@
                         writable: true,
                         value: source[key]
                     });
-                } catch (e) {
+                } catch (_e) { // eslint-disable-line no-unused-vars
                     // Property is truly immutable - skip silently
                 }
             } else {
                 try {
                     target[key] = source[key];
-                } catch (e) {
+                } catch (_e) { // eslint-disable-line no-unused-vars
                     // Assignment failed - skip silently
                 }
             }

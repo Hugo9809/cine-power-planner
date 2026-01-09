@@ -7,7 +7,7 @@
 (function (global) {
     'use strict';
 
-    const VIEW_ID = 'view-help';
+
     const TOC_ID = 'v2HelpToc';
     const CONTENT_ID = 'v2HelpContent';
     const SEARCH_ID = 'v2HelpSearch';
@@ -39,7 +39,7 @@
 
         // 1. Render Getting Started (Guide)
         if (grouped.guide && grouped.guide.items.length > 0) {
-            renderCategory(target, grouped.guide.title, grouped.guide.items, tocInfo, 'guide');
+            renderCategory(target, grouped.guide.title, grouped.guide.items, tocInfo);
         }
 
         // Divider if both exist
@@ -52,7 +52,7 @@
 
         // 2. Render Reference
         if (grouped.reference && grouped.reference.items.length > 0) {
-            renderCategory(target, grouped.reference.title, grouped.reference.items, tocInfo, 'reference');
+            renderCategory(target, grouped.reference.title, grouped.reference.items, tocInfo);
         }
 
         // Add Empty State container for Search
@@ -75,7 +75,7 @@
     /**
      * Helper to render a category of topics
      */
-    function renderCategory(container, title, items, tocList, categoryKey) {
+    function renderCategory(container, title, items, tocList) {
         // Add Category info to TOC list for headers
         tocList.push({ type: 'header', title: title });
 

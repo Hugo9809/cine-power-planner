@@ -133,11 +133,21 @@
     // =====================
 
     /**
-     * Refresh the project data cache from localStorage
-     * This is an O(1) operation relative to the number of tiles rendered,
-     * replacing the O(N) operations previously used.
+     * Refresh the project data cache.
+     * Uses the optimized loadProjectMetadata API from storage.js if available.
      */
     function refreshProjectDataCache() {
+        // [New V2] Use optimized metadata loader from storage.js
+        if (typeof window.loadProjectMetadata === 'function') {
+            try {
+                _cachedProjectData = window.loadProjectMetadata();
+                return;
+            } catch (e) {
+                console.warn('[V2] Failed to load project metadata via storage API:', e);
+            }
+        }
+
+        // [Fallback] Legacy direct read
         try {
             const stored = localStorage.getItem(STORAGE_KEY);
             if (stored) {
@@ -156,24 +166,24 @@
      * Uses a fallback chain to ensure data availability even during initialization
      */
     function getProjectNames() {
-        // Priority 1: Use legacy shim if available
+        // Priority 1: Read from cached project data (Fastest & Most Accurate)
+        if (_cachedProjectData) {
+            return Object.keys(_cachedProjectData).filter(name => name && !name.startsWith('auto-backup-'));
+        }
+
+        // Priority 2: Use legacy shim if available
         if (global.cineLegacyShim && typeof global.cineLegacyShim.getProjectNames === 'function') {
             const names = global.cineLegacyShim.getProjectNames();
             if (names.length > 0) return names;
         }
 
-        // Priority 2: Read from setupSelect (if populated)
+        // Priority 3: Read from setupSelect (if populated)
         const setupSelect = document.getElementById('setupSelect');
         if (setupSelect && setupSelect.options.length > 1) {
             const names = Array.from(setupSelect.options)
                 .map(opt => opt.value)
                 .filter(val => val !== '');
             if (names.length > 0) return [...new Set(names)];
-        }
-
-        // Priority 3: Read from cached project data
-        if (_cachedProjectData && Object.keys(_cachedProjectData).length > 0) {
-            return Object.keys(_cachedProjectData).filter(name => name && !name.startsWith('auto-backup-'));
         }
 
         // Priority 4: Direct localStorage fallback
@@ -247,6 +257,34 @@
      * Update project metadata (color, icon, dates)
      */
     function updateProjectMetadata(projectName, metadata = {}) {
+        // [New V2] Use storage API to safely update project shards
+        if (typeof window.loadProject === 'function' && typeof window.saveProject === 'function') {
+            try {
+                const project = window.loadProject(projectName);
+                if (project) {
+                    if (metadata.color) project.color = metadata.color;
+                    if (metadata.icon) project.icon = metadata.icon;
+                    if (metadata.prepDays) project.prepDays = metadata.prepDays;
+                    if (metadata.shootingDays) project.shootingDays = metadata.shootingDays;
+                    if (metadata.returnDays) project.returnDays = metadata.returnDays;
+                    if (typeof metadata.archived !== 'undefined') project.archived = metadata.archived;
+                    if (metadata.status) project.status = metadata.status;
+
+                    window.saveProject(projectName, project);
+
+                    // Update cache manually to reflect changes immediately in UI
+                    if (_cachedProjectData && _cachedProjectData[projectName]) {
+                        Object.assign(_cachedProjectData[projectName], metadata);
+                    }
+                    return true;
+                }
+            } catch (e) {
+                console.error('[V2] Failed to update project via storage API:', e);
+                return false;
+            }
+        }
+
+        // [Legacy Fallback] - ONLY use if storage API is missing
         try {
             // Ensure cache is fresh before read-modify-write
             refreshProjectDataCache();
@@ -265,7 +303,7 @@
                 // Persist
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
-                // Update cache reference (not strictly necessary since we modified it in place, but good practice)
+                // Update cache reference
                 _cachedProjectData = data;
 
                 return true;
@@ -389,24 +427,7 @@
     /**
      * Create Empty State HTML (No Projects)
      */
-    function createEmptyStateHtml() {
-        return `
-      <div class="view-empty-state">
-        <div class="view-empty-state-icon" style="font-size: 64px; opacity: 0.8; margin-bottom: 16px;">
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-            <line x1="12" y1="22.08" x2="12" y2="12"/>
-          </svg>
-        </div>
-        <h2>No Projects Yet</h2>
-        <p class="text-muted">Create your first power plan to get started.</p>
-        <button id="v2EmptyStateCreateBtn" class="v2-btn-primary">
-          + Create Project
-        </button>
-      </div>
-    `;
-    }
+
 
     /**
      * Create No Results HTML (Search)
@@ -447,7 +468,7 @@
      * - 'v2:viewchange' event (when switching to the Projects view)
      * - 'v2:search' event (real-time filtering from the Sidebar)
      */
-    function renderProjectGrid(isInitialLoad = false) {
+    function renderProjectGrid() {
         const container = document.getElementById(GRID_CONTAINER_ID);
         if (!container) return;
 
@@ -544,43 +565,7 @@
         bindTileEvents(container);
     }
 
-    /**
-     * Render Loading State (Skeleton Tiles)
-     */
-    function renderLoadingState() {
-        const container = document.getElementById(GRID_CONTAINER_ID);
-        if (!container) return;
 
-        // Reset
-        container.innerHTML = '';
-        container.className = 'v2-project-grid';
-        container.style = '';
-
-        const main = container.closest('.v2-main');
-        if (main) main.classList.remove('align-top');
-
-        let html = '';
-        // Render 5-8 skeleton tiles
-        for (let i = 0; i < 6; i++) {
-            html += `
-                <div class="v2-skeleton-tile">
-                    <div class="v2-skeleton-header">
-                        <div class="v2-skeleton-icon"></div>
-                        <div class="v2-skeleton-info">
-                            <div class="v2-skeleton-title"></div>
-                            <div class="v2-skeleton-meta"></div>
-                        </div>
-                    </div>
-                    <div class="v2-skeleton-periods">
-                         <div class="v2-skeleton-period" style="width: 80px;"></div>
-                         <div class="v2-skeleton-period" style="width: 50px;"></div>
-                    </div>
-                </div>
-            `;
-        }
-
-        container.innerHTML = html;
-    }
 
     // =====================
     // EVENT HANDLING

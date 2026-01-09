@@ -12619,6 +12619,33 @@ console.log('DEBUG: storage.js execution started');
     return null;
   }
 
+  function loadProjectMetadata() {
+    const loaded = readAllProjectsFromStorage({ forMutation: false });
+    const result = {};
+
+    if (loaded && loaded.projects) {
+      const keys = Object.keys(loaded.projects);
+      for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        const project = loaded.projects[key];
+        if (!project) continue;
+
+        // Optimized metadata extraction
+        result[key] = {
+          color: project.color,
+          icon: project.icon,
+          lastModified: project.lastModified,
+          prepDays: project.prepDays,
+          shootingDays: project.shootingDays,
+          returnDays: project.returnDays,
+          archived: project.archived,
+          status: project.status
+        };
+      }
+    }
+    return result;
+  }
+
   function sanitizeProjectNameForBackup(name) {
     if (typeof name !== 'string') {
       return '';
@@ -17331,6 +17358,7 @@ console.log('DEBUG: storage.js execution started');
     getProjectStorageRevisionKeyName,
     loadProjectStorageRevision,
     loadProject,
+    loadProjectMetadata,
     saveProject,
     deleteProject,
     renameProject,
