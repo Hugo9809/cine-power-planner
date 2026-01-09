@@ -855,26 +855,44 @@
     /**
      * Delete a project
      */
+    /**
+     * Delete a project
+     */
     function deleteProject(projectName) {
-        // Use the legacy delete flow which includes confirmation
-        const setupSelect = document.getElementById('setupSelect');
-        if (setupSelect) {
-            setupSelect.value = projectName;
-            // Trigger the legacy change event first
-            if (global.cineLegacyShim) {
-                global.cineLegacyShim.dispatchNativeEvent(setupSelect, 'change');
+        if (!confirm(_t('v2.dashboard.confirmDelete', { project: projectName }) || `Are you sure you want to delete project "${projectName}"?`)) {
+            return;
+        }
+
+        try {
+            // 1. Delete from storage
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                const data = JSON.parse(stored);
+                if (data[projectName]) {
+                    delete data[projectName];
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+                    // UPDATE REVISION for cross-tab sync
+                    updateProjectRevision();
+                }
             }
-        }
 
-        // Then trigger delete
-        if (global.cineLegacyShim) {
-            global.cineLegacyShim.deleteProject();
-        }
+            // 2. Notify legacy shim if available (to clean up its internal state if any)
+            if (global.cineLegacyShim && typeof global.cineLegacyShim.deleteProject === 'function') {
+                // We typically just need to refresh, but if the shim has specific delete logic, call it.
+                // However, since we manually deleted from storage, we might just need to refresh.
+                if (typeof global.cineLegacyShim.refreshProjects === 'function') {
+                    global.cineLegacyShim.refreshProjects();
+                }
+            }
 
-        // Refresh the grid after a short delay (to allow confirmation)
-        setTimeout(() => {
+            // 3. Update UI
             renderProjectGrid();
-        }, 500);
+
+        } catch (e) {
+            console.error('[V2] Failed to delete project:', e);
+            alert(_t('v2.common.error') || 'An error occurred.');
+        }
     }
 
     /**

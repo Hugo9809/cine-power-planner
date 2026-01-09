@@ -90,11 +90,18 @@
 
             if (!isInitialized) {
                 console.log('[RulesView] Initializing...');
+
+                // Render on view change
                 document.addEventListener('v2:viewchange', (e) => {
                     if (e.detail && e.detail.view === 'rules') {
                         this.render();
                     }
                 });
+
+                // Also listen for a custom "ready" event from the main app if available, 
+                // or just rely on the user navigating to the view which usually happens after bootstrap.
+                // We can also retry ONCE if empty, but better to show a state.
+
                 isInitialized = true;
                 console.log('[RulesView] Initialized');
             }
@@ -107,35 +114,37 @@
             }
 
             // Check if global function is available
-            if (!window.getAutoGearRules || typeof window.getAutoGearRules !== 'function') {
-                if (!this.retryCount) this.retryCount = 0;
+            const rulesAvailable = (typeof window.getAutoGearRules === 'function');
 
-                if (this.retryCount < 20) { // Retry for ~4 seconds
-                    this.retryCount++;
-
-                    const loadingHtml = `
-                        <div class="rules-header">
-                            <div class="rules-title">
-                                <h1>${_t('rulesViewTitle')}</h1>
-                                <p>${_t('rulesViewSubtitle')}</p>
-                            </div>
+            if (!rulesAvailable) {
+                // Instead of retrying indefinitely, show a helpful state
+                this.container.innerHTML = `
+                    <div class="rules-header">
+                        <div class="rules-title">
+                            <h1>${_t('rulesViewTitle')}</h1>
+                            <p>${_t('rulesViewSubtitle')}</p>
                         </div>
-                        <div class="v2-loading-state">
-                            <div class="v2-spinner"></div>
-                            <p>Loading rules...</p>
-                        </div>
-                    `;
-                    this.container.innerHTML = loadingHtml;
+                    </div>
+                    <div class="v2-empty-state">
+                        <div class="v2-spinner"></div>
+                        <p>${_t('loadingRules') || 'Loading rules system...'}</p>
+                        <p class="text-muted" style="font-size: 12px; margin-top: 8px;">Waiting for core modules...</p>
+                    </div>
+                `;
 
-                    setTimeout(() => this.render(), 200);
-                    return;
+                // One-time check in case it loads late (e.g. 1s later)
+                if (!this._loadCheckTimer) {
+                    this._loadCheckTimer = setTimeout(() => {
+                        this._loadCheckTimer = null;
+                        if (typeof window.getAutoGearRules === 'function') {
+                            this.render();
+                        } else {
+                            // If still failing, show error? Or just leave loading.
+                            console.warn('[RulesView] Rules module still not ready.');
+                        }
+                    }, 1000);
                 }
-
-                // If max retries reached, show error (or proceed with empty)
-                console.warn('[RulesView] getAutoGearRules not found after retries.');
-            } else {
-                // Reset retry count on success
-                this.retryCount = 0;
+                return;
             }
 
             const header = `
@@ -156,9 +165,7 @@
             `;
 
             let rulesHtml = '<div class="rules-list">';
-            const rules = (window.getAutoGearRules && typeof window.getAutoGearRules === 'function')
-                ? window.getAutoGearRules()
-                : [];
+            const rules = window.getAutoGearRules();
 
             if (rules.length === 0) {
                 rulesHtml += `
