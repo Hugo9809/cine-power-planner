@@ -106,6 +106,38 @@
                 if (!this.container) return;
             }
 
+            // Check if global function is available
+            if (!window.getAutoGearRules || typeof window.getAutoGearRules !== 'function') {
+                if (!this.retryCount) this.retryCount = 0;
+
+                if (this.retryCount < 20) { // Retry for ~4 seconds
+                    this.retryCount++;
+
+                    const loadingHtml = `
+                        <div class="rules-header">
+                            <div class="rules-title">
+                                <h1>${_t('rulesViewTitle')}</h1>
+                                <p>${_t('rulesViewSubtitle')}</p>
+                            </div>
+                        </div>
+                        <div class="v2-loading-state">
+                            <div class="v2-spinner"></div>
+                            <p>Loading rules...</p>
+                        </div>
+                    `;
+                    this.container.innerHTML = loadingHtml;
+
+                    setTimeout(() => this.render(), 200);
+                    return;
+                }
+
+                // If max retries reached, show error (or proceed with empty)
+                console.warn('[RulesView] getAutoGearRules not found after retries.');
+            } else {
+                // Reset retry count on success
+                this.retryCount = 0;
+            }
+
             const header = `
                 <div class="rules-header">
                     <div class="rules-title">

@@ -750,17 +750,94 @@
       });
     }
 
-    // Generate Requirements & Gear List Button
+
+    /**
+     * Generate V2 Gear List Content
+     * Merges V2 dates into legacy project info, generates HTML, and updates UI containers.
+     */
+    function generateV2GearListContent() {
+      if (!currentProject) {
+        console.warn('[ProjectDetail] No current project to generate gear list for.');
+        return;
+      }
+
+      console.log('[ProjectDetail] Generating Gear List content...');
+
+      // 1. Get V2 Project Data (dates & status)
+      const v2Data = getProjectData(currentProject);
+
+      // 2. Get Legacy Project Info (setups, rental house, etc.)
+      // Ensure we have the latest info loaded in the global scope
+      let legacyInfo = {};
+      if (global.getCurrentProjectInfo && typeof global.getCurrentProjectInfo === 'function') {
+        legacyInfo = global.getCurrentProjectInfo();
+      } else {
+        console.warn('[ProjectDetail] global.getCurrentProjectInfo not found. Using empty object.');
+      }
+
+      // Clone to avoid mutating global state unexpectedly, though deeply merging dates is safe enough
+      // We want to force the V2 dates onto the object passed to the generator
+      const mergedInfo = Object.assign({}, legacyInfo, {
+        prepDays: v2Data.prepDays || [],
+        shootingDays: v2Data.shootingDays || [],
+        returnDays: v2Data.returnDays || []
+      });
+
+      // Also ensure project name is synced if missing
+      if (!mergedInfo.projectName) {
+        mergedInfo.projectName = currentProject;
+      }
+
+      // 3. Generate HTML
+      let generatedHtml = '';
+      if (global.generateGearListHtml && typeof global.generateGearListHtml === 'function') {
+        generatedHtml = global.generateGearListHtml(mergedInfo);
+      } else {
+        console.error('[ProjectDetail] global.generateGearListHtml function not found!');
+        alert('Error: Gear list generator module not loaded.');
+        return;
+      }
+
+      // 4. Split and Inject
+      if (global.getSafeGearListHtmlSections && typeof global.getSafeGearListHtmlSections === 'function') {
+        const parts = global.getSafeGearListHtmlSections(generatedHtml);
+
+        // Inject Project Requirements
+        const reqContainer = document.getElementById('v2RequirementsContainer');
+        if (reqContainer && parts.projectHtml) {
+          reqContainer.innerHTML = parts.projectHtml;
+          // Re-apply any necessary V2 styling adjustments to the injected content here if needed
+        } else if (reqContainer) {
+          reqContainer.innerHTML = `<p class="v2-text-muted">No requirements data generated. Check your setup configuration.</p>`;
+        }
+
+        // Inject Gear List
+        const kitContainer = document.getElementById('v2KitListContainer');
+        if (kitContainer && parts.gearHtml) {
+          kitContainer.innerHTML = parts.gearHtml;
+        } else if (kitContainer) {
+          kitContainer.innerHTML = `<p class="v2-text-muted">No gear list items generated.</p>`;
+        }
+
+        // Show success feedback
+        // simple toast-like log for now
+        console.info('[ProjectDetail] content generated successfully');
+
+      } else {
+        console.error('[ProjectDetail] global.getSafeGearListHtmlSections not found!');
+      }
+    }
+
+    // Generate Requirements & Gear List Button (Header)
     const reqsGearBtn = view.querySelector('#v2GenerateReqsGearBtn');
     if (reqsGearBtn) {
       reqsGearBtn.addEventListener('click', () => {
-        console.log('[ProjectDetail] Triggering Requirements & Gear List Generation');
-        if (global.cineFeaturePrintPreview && typeof global.cineFeaturePrintPreview.open === 'function') {
-          global.cineFeaturePrintPreview.open({ layout: 'rental' });
-        } else {
-          console.warn('[ProjectDetail] Print Preview module not found');
-          alert('Feature not available: Print Preview module missing');
-        }
+        generateV2GearListContent();
+
+        // Switch to Requirements tab as primary action result
+        switchTab('requirements');
+
+        // Optional: Scroll to top of content if needed
       });
     }
 
@@ -784,38 +861,26 @@
       });
     }
 
-    // Generate Gear List button
-    const gearListBtn = view.querySelector('#v2GenerateGearListBtn');
-    if (gearListBtn) {
-      gearListBtn.addEventListener('click', () => {
-        console.log('[ProjectDetail] Triggering Legacy Gear List');
-        // Legacy ID found via app-events.js analysis
-        const legacyBtn = document.getElementById('generateGearListBtn');
-        if (legacyBtn) {
-          legacyBtn.click();
-        } else {
-          // Fallback if ID differs in runtime
-          console.warn('[ProjectDetail] #generateGearListBtn not found');
-          alert('Feature migration in progress: Gear List');
-        }
+    // Requirements Tab "Generate" Button
+    const tabReqBtn = view.querySelector('#v2GenerateRequirementsBtn');
+    if (tabReqBtn) {
+      tabReqBtn.addEventListener('click', () => {
+        generateV2GearListContent();
       });
     }
 
-    // Generate Requirements button
-    const reqBtn = view.querySelector('#v2GenerateRequirementsBtn');
-    if (reqBtn) {
-      reqBtn.addEventListener('click', () => {
-        console.log('[ProjectDetail] Triggering Legacy Requirements');
-        // Likely 'generateOverviewBtn' based on en.js 'projectRequirementsNav' and app-events
-        const legacyBtn = document.getElementById('generateOverviewBtn') || document.getElementById('generateTotalReqs');
-        if (legacyBtn) {
-          legacyBtn.click();
-        } else {
-          console.warn('[ProjectDetail] Legacy Requirements button not found');
-          alert('Feature migration in progress: Requirements');
-        }
+    // Gear List Tab "Generate" Button
+    const gearListBtn = view.querySelector('#v2GenerateGearListBtn');
+    if (gearListBtn) {
+      gearListBtn.addEventListener('click', () => {
+        generateV2GearListContent();
+        // Ensure we stay on or switch to kit tab
+        switchTab('kit');
       });
     }
+
+
+
 
     // Tab buttons
     const tabBtns = view.querySelectorAll('.v2-tab-btn');

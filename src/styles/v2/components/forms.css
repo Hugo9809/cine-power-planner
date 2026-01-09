@@ -127,6 +127,11 @@
 
     cursor: pointer;
     transition: all 0.2s ease;
+
+    /* Text Overflow Handling */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Dark mode arrow adjustment logic handled via theme filter or specific override */

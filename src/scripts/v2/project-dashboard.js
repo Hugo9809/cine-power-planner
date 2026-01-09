@@ -469,6 +469,11 @@
      * - 'v2:search' event (real-time filtering from the Sidebar)
      */
     function renderProjectGrid() {
+        // Release any held project lock when returning to dashboard
+        if (global.cineProjectLockManager) {
+            global.cineProjectLockManager.releaseLock();
+        }
+
         const container = document.getElementById(GRID_CONTAINER_ID);
         if (!container) return;
 
@@ -779,7 +784,16 @@
     /**
      * Open a project (navigate to detail view)
      */
-    function openProject(projectName, options = {}) {
+    async function openProject(projectName, options = {}) {
+        // Check for cross-tab lock
+        if (global.cineProjectLockManager) {
+            const locked = await global.cineProjectLockManager.requestLock(projectName);
+            if (!locked) {
+                alert(_t('v2.dashboard.projectLocked', { projectName: projectName }));
+                return;
+            }
+        }
+
         // Load the project via legacy shim
         if (global.cineLegacyShim) {
             global.cineLegacyShim.loadProject(projectName);

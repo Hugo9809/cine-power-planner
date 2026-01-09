@@ -145,6 +145,11 @@ body.dark-mode .v2-diagram-legend {
     background-position: right 8px center;
     background-size: 12px;
     line-height: normal;
+
+    /* Text Overflow Handling */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .v2-status-select:hover {

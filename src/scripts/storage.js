@@ -541,6 +541,7 @@ console.log('DEBUG: storage.js execution started');
   var MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK = 'cameraPowerPlanner_mountVoltages';
   var CAMERA_COLOR_STORAGE_KEY = 'cameraPowerPlanner_cameraColors';
   var PRINT_PREFERENCES_STORAGE_KEY = 'cineRentalPrintSections';
+  var PROJECT_INDEX_KEY = 'cameraPowerPlanner_projectIndex';
   var MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL =
     typeof Symbol === 'function'
       ? Symbol.for('cinePowerPlanner.mountVoltageKey')
@@ -12559,6 +12560,14 @@ console.log('DEBUG: storage.js execution started');
     cleanupMonolithicProjectStorage(safeStorage);
 
     bumpProjectStorageRevision(safeStorage);
+
+    // [Performance] Update the Project Index
+    try {
+      updateProjectIndex(projects, safeStorage);
+    } catch (indexError) {
+      console.warn('Failed to update project index', indexError);
+    }
+
     invalidateProjectReadCache();
     if (lifecycleChannel) {
       try {
@@ -12566,6 +12575,60 @@ console.log('DEBUG: storage.js execution started');
       } catch (e) {
         void e;
       }
+    }
+  }
+
+  /**
+   * Reads, validates, and returns the project index from storage.
+   * Returns null if missing or invalid.
+   */
+  function readProjectIndex() {
+    const safeStorage = getSafeLocalStorage();
+    if (!safeStorage || typeof safeStorage.getItem !== 'function') return null;
+
+    try {
+      const raw = safeStorage.getItem(PROJECT_INDEX_KEY);
+      if (!raw) return null;
+
+      const index = JSON.parse(raw);
+      if (index && typeof index === 'object') return index;
+    } catch (e) {
+      console.warn('Failed to read project index', e);
+    }
+    return null;
+  }
+
+  /**
+   * Updates the persisted project index based on the full projects map.
+   */
+  function updateProjectIndex(projects, safeStorage) {
+    if (!safeStorage || typeof safeStorage.setItem !== 'function') return;
+    if (!projects || typeof projects !== 'object') return;
+
+    const index = {};
+    Object.keys(projects).forEach(key => {
+      // Skip auto-backups in the index to keep it small
+      if (isAutoBackupStorageKey(key)) return;
+
+      const project = projects[key];
+      if (!project) return;
+
+      index[key] = {
+        color: project.color,
+        icon: project.icon,
+        lastModified: project.lastModified,
+        prepDays: project.prepDays,
+        shootingDays: project.shootingDays,
+        returnDays: project.returnDays,
+        archived: project.archived,
+        status: project.status
+      };
+    });
+
+    try {
+      safeStorage.setItem(PROJECT_INDEX_KEY, JSON.stringify(index));
+    } catch (e) {
+      console.warn('Failed to write project index', e);
     }
   }
 
@@ -12620,13 +12683,25 @@ console.log('DEBUG: storage.js execution started');
   }
 
   function loadProjectMetadata() {
-    const loaded = readAllProjectsFromStorage({ forMutation: false });
+    // 1. Try to load from optimized Index
+    const cachedIndex = readProjectIndex();
+    if (cachedIndex) {
+      return cachedIndex;
+    }
+
+    // 2. Fallback: Full Load (Slow)
+    // We also skip auto-backup expansion here to save memory/time
+    const loaded = readAllProjectsFromStorage({ forMutation: false, skipAutoBackupExpansion: true });
     const result = {};
 
     if (loaded && loaded.projects) {
       const keys = Object.keys(loaded.projects);
       for (let i = 0; i < keys.length; i++) {
         const key = keys[i];
+
+        // Skip auto-backups if they leaked through
+        if (isAutoBackupStorageKey(key)) continue;
+
         const project = loaded.projects[key];
         if (!project) continue;
 
@@ -12641,6 +12716,16 @@ console.log('DEBUG: storage.js execution started');
           archived: project.archived,
           status: project.status
         };
+      }
+
+      // 3. Self-Heal: Create the index for next time
+      const safeStorage = getSafeLocalStorage();
+      if (safeStorage) {
+        try {
+          updateProjectIndex(loaded.projects, safeStorage);
+        } catch (e) {
+          void e;
+        }
       }
     }
     return result;

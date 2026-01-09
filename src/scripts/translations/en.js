@@ -2351,6 +2351,7 @@
         "dashboard": {
           "projects": "Projects",
           "newProject": "New Project",
+          "projectLocked": "The project '{projectName}' is already open in another tab.",
           "emptyState": {
             "title": "No Projects Yet",
             "subtitle": "Create your first power plan to get started.",
