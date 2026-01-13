@@ -38,11 +38,42 @@ import { CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED, resolvedCollectCoreRuntimeCandi
 const resolvedCollectCoreRuntimeCandidateScopes = importedResolvedCollectCoreRuntimeCandidateScopes;
 import { getCoreGlobalObject, ensureCoreGlobalValue, CORE_DEEP_CLONE } from './app-core-runtime-global-tools.js';
 import { CORE_SHARED, CORE_TEMPERATURE_QUEUE_KEY, CORE_TEMPERATURE_RENDER_NAME, CORE_RUNTIME_STATE_SUPPORT_PART2 as CORE_RUNTIME_STATE_SUPPORT_IMPORTED } from './app-core-environment.js';
-let createDeferredAutoGearRefresher = typeof window !== 'undefined' ? window.createDeferredAutoGearRefresher : undefined;
-let focusAutoGearConditionPicker = typeof window !== 'undefined' ? window.focusAutoGearConditionPicker : undefined;
-let configureAutoGearConditionButtons = typeof window !== 'undefined' ? window.configureAutoGearConditionButtons : undefined;
-let AUTO_GEAR_MONITOR_DEFAULT_LABEL_KEYS = typeof window !== 'undefined' ? window.AUTO_GEAR_MONITOR_DEFAULT_LABEL_KEYS : undefined;
-let AUTO_GEAR_MONITOR_DEFAULT_TYPES = typeof window !== 'undefined' ? window.AUTO_GEAR_MONITOR_DEFAULT_TYPES : {
+
+// Helper to resolve auto-gear UI functions from various possible locations
+function resolveAutoGearUIHelper(name) {
+  // Try window directly first
+  if (typeof window !== 'undefined' && typeof window[name] === 'function') {
+    return window[name];
+  }
+  // Try AUTO_GEAR_UI_HELPERS global object
+  const helpers = (typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_UI_HELPERS)
+    || (typeof window !== 'undefined' && window.AUTO_GEAR_UI_HELPERS)
+    || null;
+  if (helpers && typeof helpers[name] === 'function') {
+    return helpers[name];
+  }
+  return undefined;
+}
+
+// Fallback implementation matching the signature in auto-gear/ui.js
+function createDeferredAutoGearRefresherFallback(functionName) {
+  return function (selected) {
+    if (typeof callCoreFunctionIfAvailable === 'function') {
+      return callCoreFunctionIfAvailable(functionName, [selected], { defer: true });
+    }
+    return undefined;
+  };
+}
+
+let createDeferredAutoGearRefresher = resolveAutoGearUIHelper('createDeferredAutoGearRefresher') || createDeferredAutoGearRefresherFallback;
+let focusAutoGearConditionPicker = resolveAutoGearUIHelper('focusAutoGearConditionPicker') || function () { };
+let configureAutoGearConditionButtons = resolveAutoGearUIHelper('configureAutoGearConditionButtons') || function () { };
+let AUTO_GEAR_MONITOR_DEFAULT_LABEL_KEYS = (typeof window !== 'undefined' && window.AUTO_GEAR_MONITOR_DEFAULT_LABEL_KEYS)
+  || (typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_MONITOR_DEFAULT_LABEL_KEYS)
+  || {};
+let AUTO_GEAR_MONITOR_DEFAULT_TYPES = (typeof window !== 'undefined' && window.AUTO_GEAR_MONITOR_DEFAULT_TYPES)
+  || (typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_MONITOR_DEFAULT_TYPES)
+  || {
   'on-camera': 'On-Camera',
   'director': 'Director',
   'video-village': 'Video Village',
@@ -3355,14 +3386,30 @@ var autoGearRules = (typeof readAutoGearRulesFromStorage === 'function')
   : [];
 var baseAutoGearRulesState = autoGearRules.slice();
 var projectScopedAutoGearRules = null;
-var autoGearBackupRetention = readAutoGearBackupRetentionFromStorage();
-var autoGearBackups = readAutoGearBackupsFromStorage(autoGearBackupRetention);
-var autoGearPresets = readAutoGearPresetsFromStorage();
-var activeAutoGearPresetId = readActiveAutoGearPresetIdFromStorage();
-var autoGearAutoPresetIdState = readAutoGearAutoPresetIdFromStorage();
-var autoGearBackupsVisible = readAutoGearBackupVisibilityFromStorage();
-var autoGearMonitorDefaults = readAutoGearMonitorDefaultsFromStorage();
-persistAutoGearBackupRetention(autoGearBackupRetention);
+var autoGearBackupRetention = (typeof readAutoGearBackupRetentionFromStorage === 'function')
+  ? readAutoGearBackupRetentionFromStorage()
+  : AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
+var autoGearBackups = (typeof readAutoGearBackupsFromStorage === 'function')
+  ? readAutoGearBackupsFromStorage(autoGearBackupRetention)
+  : [];
+var autoGearPresets = (typeof readAutoGearPresetsFromStorage === 'function')
+  ? readAutoGearPresetsFromStorage()
+  : [];
+var activeAutoGearPresetId = (typeof readActiveAutoGearPresetIdFromStorage === 'function')
+  ? readActiveAutoGearPresetIdFromStorage()
+  : '';
+var autoGearAutoPresetIdState = (typeof readAutoGearAutoPresetIdFromStorage === 'function')
+  ? readAutoGearAutoPresetIdFromStorage()
+  : '';
+var autoGearBackupsVisible = (typeof readAutoGearBackupVisibilityFromStorage === 'function')
+  ? readAutoGearBackupVisibilityFromStorage()
+  : false;
+var autoGearMonitorDefaults = (typeof readAutoGearMonitorDefaultsFromStorage === 'function')
+  ? readAutoGearMonitorDefaultsFromStorage()
+  : {};
+if (typeof persistAutoGearBackupRetention === 'function') {
+  persistAutoGearBackupRetention(autoGearBackupRetention);
+}
 var autoGearBackupRetentionWarningText = '';
 var autoGearEditorDraft = null;
 var autoGearEditorActiveItem = null;
@@ -3551,18 +3598,34 @@ function syncAutoGearRulesFromStorage(rules) {
   if (Array.isArray(rules)) {
     setAutoGearRules(rules);
   } else {
-    baseAutoGearRulesState = readAutoGearRulesFromStorage();
+    baseAutoGearRulesState = (typeof readAutoGearRulesFromStorage === 'function')
+      ? readAutoGearRulesFromStorage()
+      : [];
     projectScopedAutoGearRules = null;
     assignAutoGearRules(baseAutoGearRulesState);
     syncBaseAutoGearRulesState();
   }
-  autoGearBackupRetention = readAutoGearBackupRetentionFromStorage();
-  autoGearBackups = readAutoGearBackupsFromStorage(autoGearBackupRetention);
-  autoGearPresets = readAutoGearPresetsFromStorage();
-  activeAutoGearPresetId = readActiveAutoGearPresetIdFromStorage();
-  autoGearAutoPresetIdState = readAutoGearAutoPresetIdFromStorage();
-  autoGearBackupsVisible = readAutoGearBackupVisibilityFromStorage();
-  autoGearMonitorDefaults = readAutoGearMonitorDefaultsFromStorage();
+  autoGearBackupRetention = (typeof readAutoGearBackupRetentionFromStorage === 'function')
+    ? readAutoGearBackupRetentionFromStorage()
+    : AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
+  autoGearBackups = (typeof readAutoGearBackupsFromStorage === 'function')
+    ? readAutoGearBackupsFromStorage(autoGearBackupRetention)
+    : [];
+  autoGearPresets = (typeof readAutoGearPresetsFromStorage === 'function')
+    ? readAutoGearPresetsFromStorage()
+    : [];
+  activeAutoGearPresetId = (typeof readActiveAutoGearPresetIdFromStorage === 'function')
+    ? readActiveAutoGearPresetIdFromStorage()
+    : '';
+  autoGearAutoPresetIdState = (typeof readAutoGearAutoPresetIdFromStorage === 'function')
+    ? readAutoGearAutoPresetIdFromStorage()
+    : '';
+  autoGearBackupsVisible = (typeof readAutoGearBackupVisibilityFromStorage === 'function')
+    ? readAutoGearBackupVisibilityFromStorage()
+    : false;
+  autoGearMonitorDefaults = (typeof readAutoGearMonitorDefaultsFromStorage === 'function')
+    ? readAutoGearMonitorDefaultsFromStorage()
+    : {};
   autoGearRulesLastBackupSignature = autoGearBackups.length
     ? getAutoGearConfigurationSignature(autoGearBackups[0].rules, autoGearBackups[0].monitorDefaults)
     : getAutoGearConfigurationSignature();
@@ -16498,6 +16561,8 @@ function syncDeviceManagerCategories() {
   });
   updateDeviceManagerLocalization(currentLang);
 }
+
+exposeCoreRuntimeConstant('syncDeviceManagerCategories', syncDeviceManagerCategories);
 
 function getCurrentProjectName() {
   const typedName =

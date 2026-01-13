@@ -32,7 +32,7 @@
       try {
         window.safeSetLocalStorage(key, value);
         return;
-      } catch (e) {
+      } catch {
         // Fallback to direct write if helper fails
       }
     }

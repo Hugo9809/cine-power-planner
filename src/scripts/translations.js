@@ -60,7 +60,7 @@ function freezeTranslationTree(value, seen = new WeakMap()) {
 
   try {
     if (!Object.isFrozen(value)) Object.freeze(value);
-  } catch (e) { /* ignore */ }
+  } catch { /* ignore */ }
 
   return value;
 }

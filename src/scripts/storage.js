@@ -199,7 +199,7 @@ const FORCE_STORAGE_REINITIALIZE =
   process.env &&
   (process.env.JEST_WORKER_ID || process.env.CINE_FORCE_STORAGE_REINIT);
 
-(process.env.JEST_WORKER_ID || process.env.CINE_FORCE_STORAGE_REINIT);
+
 
 const FACTORY_RESET_LOCK_KEY = 'cine_factory_reset_lock';
 
@@ -16068,7 +16068,7 @@ function readLocalStorageValue(key) {
   if (key === CONTACTS_STORAGE_KEY && contactsCache) return contactsCache;
   if (key === OWN_GEAR_STORAGE_KEY && ownGearCache) return ownGearCache;
   if (key === USER_PROFILE_STORAGE_KEY && userProfileCache) return userProfileCache;
-  if (key === USER_PROFILE_STORAGE_KEY && userProfileCache) return userProfileCache;
+
   if (key === FAVORITES_STORAGE_KEY && favoritesCache) return favoritesCache;
   if (key === TEMPERATURE_UNIT_STORAGE_KEY_NAME && temperatureUnitCache) return temperatureUnitCache;
   if (key === FOCUS_SCALE_STORAGE_KEY_NAME && focusScaleCache) return focusScaleCache;

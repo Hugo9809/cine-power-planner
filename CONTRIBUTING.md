@@ -75,6 +75,24 @@ src/
 
 See [Codebase Overview](docs/dev/codebase-overview.md) for detailed architecture docs.
 
+## TypeScript Guidelines
+
+The `src/scripts/auto-gear/` directory contains TypeScript modules. When contributing to these:
+
+1. **Compile before committing**:
+   ```bash
+   npm run build:auto-gear
+   ```
+
+2. **Follow existing patterns**: Review `normalizers.ts`, `storage.ts`, and `ui.ts` for examples
+
+3. **Type exports**: Ensure all public functions have explicit type annotations
+
+4. **Configuration**: TypeScript settings are in `tsconfig.auto-gear.json`
+
+> [!TIP]
+> Run `npm run build:auto-gear` after modifying any `.ts` files in `src/scripts/auto-gear/` to regenerate the JavaScript output.
+
 ## Development Setup
 
 Interested in hacking on the code? Great! Follow these steps to set up a local development environment:

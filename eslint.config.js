@@ -136,13 +136,19 @@ export default [
     // ESM files - vite config, tools, v2 modules, storage modules
     {
         files: [
+            'eslint.config.js',
             'vite.config.js',
             'tools/**/*.js',
+            'src/main.js',
+            'src/debug-imports.js',
+            'src/data/**/*.js',
+            'src/modules/**/*.js',
             'src/scripts/*.js',
             'src/scripts/main.js',
             'src/scripts/v2/**/*.js',
             'src/scripts/modules/**/*.js',
             'src/scripts/core/modules/**/*.js',
+            'src/scripts/core/*.js',
             'src/scripts/contacts/**/*.js',
             'src/scripts/own-gear/**/*.js',
             'src/scripts/translations/**/*.js',

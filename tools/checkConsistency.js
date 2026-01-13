@@ -1,11 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createRequire } from 'module';
+// import { createRequire } from 'module';
 import { collectServiceWorkerAssets } from './serviceWorkerAssetManifest.js';
 import devices from '../src/data/index.js';
 
-const require = createRequire(import.meta.url);
+// const require = createRequire(import.meta.url);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 

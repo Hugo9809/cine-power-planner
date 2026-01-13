@@ -1,6 +1,6 @@
-# Security Policy — camera-power-planner
+# Security Policy — cine-power-planner
 
-We take the security of camera-power-planner seriously and appreciate responsible disclosures from the community.
+We take the security of cine-power-planner seriously and appreciate responsible disclosures from the community.
 
 ## Supported Versions
 
@@ -74,4 +74,4 @@ Preferred-Languages: en, de
 
 ---
 
-Thank you for helping keep camera-power-planner and its users safe.
+Thank you for helping keep cine-power-planner and its users safe.

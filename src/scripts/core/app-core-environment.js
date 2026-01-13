@@ -619,7 +619,7 @@ export var CORE_SAFE_FREEZE_REGISTRY = (function resolveCoreSafeFreezeRegistry()
   return typeof WeakSet === 'function' ? new WeakSet() : [];
 })();
 
-function coreSafeFreezeRegistryHas(value) {
+export function coreSafeFreezeRegistryHas(value) {
   if (!value || !CORE_SAFE_FREEZE_REGISTRY) {
     return false;
   }
@@ -656,7 +656,7 @@ function coreSafeFreezeRegistryHas(value) {
   return false;
 }
 
-function coreSafeFreezeRegistryAdd(value) {
+export function coreSafeFreezeRegistryAdd(value) {
   if (!value || !CORE_SAFE_FREEZE_REGISTRY) {
     return;
   }
@@ -1129,7 +1129,7 @@ function assignCoreTemperatureNoteRenderer(renderer) {
   CORE_RUNTIME_STATE.assignTemperatureRenderer(renderer);
 }
 
-function readGlobalScopeValue(name) {
+export function readGlobalScopeValue(name) {
   if (
     CORE_RUNTIME_SHARED &&
     typeof CORE_RUNTIME_SHARED.readValue === 'function'
@@ -1169,6 +1169,58 @@ function readGlobalScopeValue(name) {
   }
 
   return undefined;
+}
+
+/**
+ * Writes a value to the global scope.
+ * Counterpart to readGlobalScopeValue for setting values across runtime scopes.
+ * @param {string} name - The name of the global variable to write.
+ * @param {*} value - The value to assign.
+ * @returns {boolean} True if the write was successful, false otherwise.
+ */
+export function writeGlobalScopeValue(name, value) {
+  if (
+    CORE_RUNTIME_SHARED &&
+    typeof CORE_RUNTIME_SHARED.writeValue === 'function'
+  ) {
+    try {
+      CORE_RUNTIME_SHARED.writeValue(
+        CORE_RUNTIME_STATE,
+        name,
+        value,
+        getCoreRuntimeScopesSnapshot()
+      );
+      return true;
+    } catch (sharedWriteError) {
+      void sharedWriteError;
+    }
+  }
+
+  if (CORE_RUNTIME_STATE && typeof CORE_RUNTIME_STATE.writeValue === 'function') {
+    try {
+      CORE_RUNTIME_STATE.writeValue(name, value);
+      return true;
+    } catch (stateWriteError) {
+      void stateWriteError;
+    }
+  }
+
+  var scopes = getCoreRuntimeScopesSnapshot();
+  for (var index = 0; index < scopes.length; index += 1) {
+    var scope = scopes[index];
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+
+    try {
+      scope[name] = value;
+      return true;
+    } catch (writeError) {
+      void writeError;
+    }
+  }
+
+  return false;
 }
 
 function ensureGlobalFallback(name, fallbackValue) {
@@ -1432,6 +1484,10 @@ ensureGlobalFallback('createFallbackSafeGenerateConnectorSummary', function () {
 
 ensureGlobalFallback('safeGenerateConnectorSummary', function () {
   return createFallbackSafeGenerateConnectorSummary();
+});
+
+ensureGlobalFallback('readGlobalScopeValue', function () {
+  return readGlobalScopeValue;
 });
 
 normaliseGlobalValue(
@@ -1898,3 +1954,14 @@ function generateSafeConnectorSummary(device) {
 
 
 export const CORE_SHARED = {};
+
+// Expose coreSafeFreezeRegistry functions globally for app-core-new-2.js
+if (typeof globalThis !== 'undefined') {
+  globalThis.coreSafeFreezeRegistryHas = coreSafeFreezeRegistryHas;
+  globalThis.coreSafeFreezeRegistryAdd = coreSafeFreezeRegistryAdd;
+  globalThis.generateSafeConnectorSummary = generateSafeConnectorSummary;
+  globalThis.readGlobalScopeValue = readGlobalScopeValue;
+  globalThis.writeGlobalScopeValue = writeGlobalScopeValue;
+  globalThis.collectEnvironmentRuntimeCandidateScopes = collectEnvironmentRuntimeCandidateScopes;
+  globalThis.createLocalRuntimeStateFallback = createLocalRuntimeStateFallback;
+}

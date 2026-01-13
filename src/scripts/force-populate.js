@@ -46,7 +46,7 @@ import { V2Bootstrap } from './v2/bootstrap.js';
             console.warn('[ForcePopulate] processCoreBootQueue not found, manually draining queue...');
             const queue = window.CORE_BOOT_QUEUE;
             const snapshot = queue.splice(0, queue.length);
-            snapshot.forEach(t => { try { t() } catch (e) { } });
+            snapshot.forEach(t => { try { t() } catch { /* ignore */ } });
         }
 
         // Force dismiss overlay

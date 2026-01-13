@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import { resolve, join, relative, extname } from 'path';
-import { readdirSync, statSync, writeFileSync, copyFileSync, existsSync } from 'fs';
+import { readdirSync, writeFileSync, copyFileSync, existsSync } from 'fs';
 
 /**
  * File extensions to include in the service worker cache.

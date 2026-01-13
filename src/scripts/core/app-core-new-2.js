@@ -394,6 +394,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const defaultValue = fallback;
       let candidate = readCoreScopeValue(name);
 
+
       if (typeof candidate === 'undefined' || candidate === null) {
         try {
           const globalScope =
@@ -1731,10 +1732,21 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }
 
-      autoGearBackupDateFormatter = null;
-      autoGearBackupDateFormatterLocale = '';
       return null;
     }
+
+    // These declarations must be at the outer scope for access by other functions
+    // Note: autoGearAutoPresetIdState is already declared at line 720 with var.
+    // Active preset variables below should be used from global scope.
+    let autoGearBackupRetentionWarningText = '';
+    // Note: autoGearAutoPresetIdState is declared at line ~720 with declareCoreFallbackBinding
+    let activeAutoGearPresetId = null;
+    let autoGearPresets = [];
+    let autoGearPresetNameDialog = null;
+    let autoGearPresetNameForm = null;
+    let autoGearPresetNameLabel = null;
+    let autoGearPresetNameInput = null;
+    let autoGearPresetNameError = null;
 
     function formatAutoGearBackupCount(count) {
       const langTexts = texts[currentLang] || texts.en || {};
@@ -2042,16 +2054,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     }
 
-    let autoGearPresetNameDialog = null;
-    let autoGearPresetNameForm = null;
-    let autoGearPresetNameLabel = null;
-    let autoGearPresetNameInput = null;
-    let autoGearPresetNameError = null;
+    // Note: autoGearPresetNameDialog, autoGearPresetNameForm, autoGearPresetNameLabel, 
+    // autoGearPresetNameInput, autoGearPresetNameError are already declared above (~line 1743-1747)
     let autoGearPresetNameCancelButton = null;
     let autoGearPresetNameConfirmButton = null;
-    let autoGearPresetNamePending = null;
-    let autoGearPresetNamePreviousFocus = null;
     let autoGearPresetNameRequiredMessage = '';
+    let autoGearPresetNamePreviousFocus = null;
+    let autoGearPresetNamePending = null;
+    let autoGearBackupsVisible = false;
+    let sharedImportProjectPresetActive = false;
+    let sharedImportPreviousPresetId = '';
+    let autoGearSummaryLast = '';
 
     function ensureAutoGearPresetNameDialog() {
       if (autoGearPresetNameDialog) {
@@ -7295,6 +7308,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
     }
 
+    function updateInstallBannerPosition() {
+      if (!installPromptBanner) return;
+      // Placeholder for banner positioning logic - ensures no ReferenceError
+      // Future logic can handle keyboard overlap or footer collision here
+    }
+
     function renderInstallGuideContent(platform, lang = currentLang) {
       if (!installGuideDialog) return;
       const fallbackTexts = texts.en || {};
@@ -9399,7 +9418,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     const STORAGE_STATUS_STALE_PROJECT_MS = 1000 * 60 * 60 * 48;
     const STORAGE_STATUS_STALE_AUTO_MS = 1000 * 60 * 60 * 12;
     const STORAGE_STATUS_STALE_FULL_MS = 1000 * 60 * 60 * 24 * 7;
-    const storageStatusReminderElement =
+    let storageStatusReminderElement =
       typeof storageStatusReminder !== 'undefined'
         ? storageStatusReminder
         : typeof document !== 'undefined'
@@ -9848,62 +9867,115 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     // --- Lazy DOM Initialization ---
     // Initialize variables to null/empty to prevent reference errors before DOM is ready
-    settingsLogoInput = null;
-    settingsHighContrast = null;
-    settingsReduceMotion = null;
-    settingsRelaxedSpacing = null;
-    backupSettings = null;
-    restoreSettings = null;
-    factoryResetButton = null;
-    restoreSettingsInput = null;
-    restoreRehearsalButton = null;
-    restoreRehearsalSection = null;
-    restoreRehearsalHeading = null;
-    restoreRehearsalIntro = null;
-    restoreRehearsalModeLabel = null;
-    restoreRehearsalModeBackupText = null;
-    restoreRehearsalModeProjectText = null;
-    restoreRehearsalFileLabel = null;
-    restoreRehearsalBrowse = null;
-    restoreRehearsalFileName = null;
-    restoreRehearsalStatus = null;
-    restoreRehearsalRuleHeading = null;
-    restoreRehearsalRuleIntro = null;
-    restoreRehearsalRuleEmpty = null;
-    restoreRehearsalProceedButton = null;
-    restoreRehearsalAbortButton = null;
-    restoreRehearsalTable = null;
-    restoreRehearsalTableCaption = null;
-    restoreRehearsalMetricHeader = null;
-    restoreRehearsalLiveHeader = null;
-    restoreRehearsalSandboxHeader = null;
-    restoreRehearsalDifferenceHeader = null;
-    restoreRehearsalCloseButton = null;
-    projectBackupsHeading = null;
-    projectBackupsDescription = null;
-    settingsShowAutoBackups = null;
-    backupDiffToggleButton = null;
-    backupDiffSection = null;
-    backupDiffHeading = null;
-    backupDiffIntro = null;
-    backupDiffPrimaryLabel = null;
-    backupDiffSecondaryLabel = null;
-    backupDiffPrimarySelect = null;
-    backupDiffSecondarySelect = null;
-    backupDiffEmptyState = null;
-    backupDiffSummary = null;
-    backupDiffList = null;
-    backupDiffListContainer = null;
-    backupDiffNotesLabel = null;
-    backupDiffNotes = null;
-    backupDiffExportButton = null;
-    backupDiffCloseButton = null;
-    aboutVersionElem = null;
-    supportLink = null;
-    settingsSave = null;
-    settingsCancel = null;
-    featureSearch = null;
-    featureSearchDropdown = null;
+    let settingsLogoInput = null;
+    let settingsHighContrast = null;
+    let settingsReduceMotion = null;
+    let settingsRelaxedSpacing = null;
+    let backupSettings = null;
+    let restoreSettings = null;
+    let factoryResetButton = null;
+    let restoreSettingsInput = null;
+    let restoreRehearsalButton = null;
+    let restoreRehearsalSection = null;
+    let restoreRehearsalHeading = null;
+    let restoreRehearsalIntro = null;
+    let restoreRehearsalModeLabel = null;
+    let restoreRehearsalModeBackupText = null;
+    let restoreRehearsalModeProjectText = null;
+    let restoreRehearsalFileLabel = null;
+    let restoreRehearsalBrowse = null;
+    let restoreRehearsalFileName = null;
+    let restoreRehearsalStatus = null;
+    let restoreRehearsalRuleHeading = null;
+    let restoreRehearsalRuleIntro = null;
+    let restoreRehearsalRuleEmpty = null;
+    let restoreRehearsalProceedButton = null;
+    let restoreRehearsalAbortButton = null;
+    let restoreRehearsalTable = null;
+    let restoreRehearsalTableCaption = null;
+    let restoreRehearsalMetricHeader = null;
+    let restoreRehearsalLiveHeader = null;
+    let restoreRehearsalSandboxHeader = null;
+    let restoreRehearsalDifferenceHeader = null;
+    let restoreRehearsalCloseButton = null;
+    let projectBackupsHeading = null;
+    let projectBackupsDescription = null;
+    let settingsShowAutoBackups = null;
+    let backupDiffToggleButton = null;
+    let backupDiffSection = null;
+    let backupDiffHeading = null;
+    let backupDiffIntro = null;
+    let backupDiffPrimaryLabel = null;
+    let backupDiffSecondaryLabel = null;
+    let backupDiffPrimarySelect = null;
+    let backupDiffSecondarySelect = null;
+    let backupDiffEmptyState = null;
+    let backupDiffSummary = null;
+    let backupDiffList = null;
+    let backupDiffListContainer = null;
+    let backupDiffNotesLabel = null;
+    let backupDiffNotes = null;
+    let backupDiffExportButton = null;
+    let backupDiffCloseButton = null;
+    let aboutVersionElem = null;
+    let supportLink = null;
+    let settingsSave = null;
+    let settingsCancel = null;
+    let featureSearch = null;
+    let featureSearchDropdown = null;
+
+    // Added missing UI declarations
+    let projectDialog = null;
+    let projectForm = null;
+    let filterSelectElem = null;
+    let filterDetailsStorage = null;
+    let matteboxSelect = null;
+    let projectCancelBtn = null;
+    let projectDialogCloseBtn = null;
+    let feedbackDialog = null;
+    let feedbackForm = null;
+    let feedbackCancelBtn = null;
+    let feedbackUseLocationBtn = null;
+    let setupDiagramContainer = null;
+    let downloadDiagramBtn = null;
+    let gridSnapToggleBtn = null;
+    let generateOverviewBtn = null;
+    let videoPowerInputsContainer = null;
+    let setupNameInput = null;
+
+    // Second wave fixed variables
+    let motorConnectorInput = null;
+    let controllerConnectorInput = null;
+    // Controller inputs fixed
+    let controllerPowerInput = null;
+    let controllerBatteryInput = null;
+    let controllerConnectivityInput = null;
+
+    let fizConnectorInput = null;
+    let distanceConnectionInput = null;
+    let distanceMethodInput = null;
+    let autoGearShootingDaysMode = null;
+    let cameraPortTypeInput = null;
+    let monitorPortTypeInput = null;
+    let autoGearShootingDaysInput = null;
+    let autoGearItemCatalog = null;
+    let autoGearBackupRestoreButton = null;
+    let autoGearBackupSelect = null;
+    let autoGearRemoveItemButton = null;
+    let autoGearAddItemButton = null;
+
+    let autoGearEditorDraft = null;
+    let autoGearMonitorDefaultControls = [];
+
+    // Bulk fix: remaining undeclared Input variables
+    let distanceOutputInput = null;
+    let autoGearBackupRetentionInput = null;
+    let autoGearCameraWeightValueInput = null;
+    let autoGearCameraWeightModeSelect = null;
+    let autoGearScenarioFactorInput = null;
+    let autoGearRuleNameInput = null;
+    let autoGearSearchInput = null;
+
 
     function initAppCorePart2DomReferences() {
       if (typeof document === 'undefined') return;
@@ -9954,6 +10026,41 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       restoreRehearsalProceedButton = document.getElementById("restoreRehearsalProceed");
       restoreRehearsalAbortButton = document.getElementById("restoreRehearsalAbort");
       restoreRehearsalTable = document.getElementById("restoreRehearsalTable");
+
+      // Initialize second wave variables
+      motorConnectorInput = document.getElementById('motorConnectorInput');
+      controllerConnectorInput = document.getElementById('controllerConnectorInput');
+      controllerPowerInput = document.getElementById('controllerPowerInput');
+      controllerBatteryInput = document.getElementById('controllerBatteryInput');
+      controllerConnectivityInput = document.getElementById('controllerConnectivityInput');
+
+      fizConnectorInput = document.getElementById('fizConnectorInput');
+      distanceConnectionInput = document.getElementById('distanceConnectionInput');
+      distanceMethodInput = document.getElementById('distanceMethodInput');
+      autoGearShootingDaysMode = document.getElementById('autoGearShootingDaysMode');
+      cameraPortTypeInput = document.getElementById('cameraPortTypeInput');
+      monitorPortTypeInput = document.getElementById('monitorPortTypeInput');
+      autoGearShootingDaysInput = document.getElementById('autoGearShootingDaysInput');
+      autoGearItemCatalog = document.getElementById('autoGearItemCatalog');
+      autoGearBackupRestoreButton = document.getElementById('autoGearBackupRestoreButton');
+      autoGearBackupSelect = document.getElementById('autoGearBackupSelect');
+      autoGearRemoveItemButton = document.getElementById('autoGearRemoveItemButton');
+      autoGearAddItemButton = document.getElementById('autoGearAddItemButton');
+
+      // Bulk fix: remaining undeclared Input variables
+      distanceOutputInput = document.getElementById('distanceOutputInput');
+      autoGearBackupRetentionInput = document.getElementById('autoGearBackupRetentionInput');
+      autoGearCameraWeightValueInput = document.getElementById('autoGearCameraWeightValueInput');
+      autoGearCameraWeightModeSelect = document.getElementById('autoGearCameraWeightModeSelect');
+      autoGearScenarioFactorInput = document.getElementById('autoGearScenarioFactorInput');
+      autoGearRuleNameInput = document.getElementById('autoGearRuleNameInput');
+      autoGearSearchInput = document.getElementById('autoGearSearchInput');
+      storageStatusReminderElement = document.getElementById('storageStatusReminder');
+
+      // Initialize draft object
+      if (!autoGearEditorDraft) {
+        autoGearEditorDraft = { add: [], remove: [], cameraWeight: null, shootingDays: null };
+      }
       restoreRehearsalTableCaption = document.getElementById("restoreRehearsalTableCaption");
       restoreRehearsalMetricHeader = document.getElementById("restoreRehearsalMetricHeader");
       restoreRehearsalLiveHeader = document.getElementById("restoreRehearsalLiveHeader");
@@ -12091,17 +12198,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         void exposeError;
       }
     }
-    runtimeFeedbackBtn = document.getElementById("runtimeFeedbackBtn");
-    generateGearListBtn = document.getElementById("generateGearListBtn");
-    deleteGearListProjectBtn = document.getElementById('deleteGearListProjectBtn');
-    gearListOutput = document.getElementById("gearListOutput");
-    projectRequirementsOutput = document.getElementById("projectRequirementsOutput");
+    let runtimeFeedbackBtn = document.getElementById("runtimeFeedbackBtn");
+    let generateGearListBtn = document.getElementById("generateGearListBtn");
+    let deleteGearListProjectBtn = document.getElementById('deleteGearListProjectBtn');
+    let gearListOutput = document.getElementById("gearListOutput");
+    let projectRequirementsOutput = document.getElementById("projectRequirementsOutput");
 
     // Load accent color from localStorage
-    DEFAULT_ACCENT_COLOR = '#001589';
-    accentColor = DEFAULT_ACCENT_COLOR;
-    prevAccentColor = accentColor;
-    HIGH_CONTRAST_ACCENT_COLOR = '#ffffff';
+    const DEFAULT_ACCENT_COLOR = '#001589';
+    let accentColor = DEFAULT_ACCENT_COLOR;
+    let prevAccentColor = accentColor;
+    const HIGH_CONTRAST_ACCENT_COLOR = '#ffffff';
     const DEFAULT_ACCENT_NORMALIZED = DEFAULT_ACCENT_COLOR.toLowerCase();
 
     const normalizeAccentValue = value =>
@@ -16756,6 +16863,31 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       window.clearBatteryPlates = clearBatteryPlates;
     }
 
+
+    function updateBatteryPlateVisibility() {
+      if (!batterySelect || !batteryPlatesContainer) return;
+      const batId = batterySelect.value;
+      const bat = (devices.batteries || {})[batId];
+      // Show plates if battery is gold mount or v-mount
+      if (bat && (bat.mount === 'gold-mount' || bat.mount === 'v-mount')) {
+        batteryPlatesContainer.closest('.form-section')?.removeAttribute('hidden');
+        batteryPlatesContainer.removeAttribute('hidden');
+      } else {
+        batteryPlatesContainer.closest('.form-section')?.setAttribute('hidden', '');
+        batteryPlatesContainer.setAttribute('hidden', '');
+      }
+    }
+    writeCoreScopeValue('updateBatteryPlateVisibility', updateBatteryPlateVisibility);
+    ensureGlobalFunctionBinding('updateBatteryPlateVisibility', updateBatteryPlateVisibility);
+
+    function updateBatteryOptions() {
+      if (typeof updateBatteryPlateVisibility === 'function') {
+        updateBatteryPlateVisibility();
+      }
+    }
+    writeCoreScopeValue('updateBatteryOptions', updateBatteryOptions);
+    ensureGlobalFunctionBinding('updateBatteryOptions', updateBatteryOptions);
+
     function getAllViewfinderTypes() {
       const types = new Set();
       Object.values(devices.cameras || {}).forEach(cam => {
@@ -19447,22 +19579,28 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
       if (moduleBase && typeof moduleBase.freezeDeep === 'function' && !alreadyWrapped) {
         const originalFreezeDeep = moduleBase.freezeDeep;
-        moduleBase.freezeDeep = function safeFreezeDeep(value, seen) {
-          try {
-            return originalFreezeDeep(value, seen);
-          } catch (freezeError) {
+        // Guard against frozen moduleBase object
+        try {
+          moduleBase.freezeDeep = function safeFreezeDeep(value, seen) {
             try {
-              if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-                console.warn('cineModuleBase.freezeDeep fallback triggered for core module export.', freezeError);
+              return originalFreezeDeep(value, seen);
+            } catch (freezeError) {
+              try {
+                if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+                  console.warn('cineModuleBase.freezeDeep fallback triggered for core module export.', freezeError);
+                }
+              } catch (warnError) {
+                void warnError;
               }
-            } catch (warnError) {
-              void warnError;
+              return value;
             }
-            return value;
-          }
-        };
+          };
 
-        coreSafeFreezeRegistryAdd(moduleBase);
+          coreSafeFreezeRegistryAdd(moduleBase);
+        } catch (assignFreezeDeepError) {
+          // moduleBase is frozen, skip wrapping
+          void assignFreezeDeepError;
+        }
 
         let marked = false;
         const markerKey = '__cineSafeFreezeWrapped';

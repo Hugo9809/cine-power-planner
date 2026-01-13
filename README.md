@@ -1,5 +1,9 @@
 # Cine Power Planner
 
+![Version](https://img.shields.io/badge/version-1.0.52-blue)
+![License](https://img.shields.io/badge/license-ISC-green)
+![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen)
+
 <img src="src/icons/app-icon.png" alt="Cine Power Planner icon" width="160">
 
 Cine Power Planner is a standalone web app for building, auditing, and sharing
