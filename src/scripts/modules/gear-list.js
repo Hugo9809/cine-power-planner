@@ -53,68 +53,68 @@
 
   var freezeDeep = typeof MODULE_BASE.freezeDeep === 'function'
     ? function freezeWithBase(value) {
-        try {
-          return MODULE_BASE.freezeDeep(value);
-        } catch (error) {
-          void error;
-        }
-        return value;
+      try {
+        return MODULE_BASE.freezeDeep(value);
+      } catch (error) {
+        void error;
       }
+      return value;
+    }
     : function identity(value) {
-        return value;
-      };
+      return value;
+    };
 
   var exposeGlobal = typeof MODULE_BASE.exposeGlobal === 'function'
     ? function expose(name, value, options) {
-        return MODULE_BASE.exposeGlobal(name, value, GLOBAL_SCOPE, options || {});
-      }
+      return MODULE_BASE.exposeGlobal(name, value, GLOBAL_SCOPE, options || {});
+    }
     : function fallbackExpose(name, value) {
-        try {
-          GLOBAL_SCOPE[name] = value;
-          return true;
-        } catch (error) {
-          void error;
-        }
-        return false;
-      };
+      try {
+        GLOBAL_SCOPE[name] = value;
+        return true;
+      } catch (error) {
+        void error;
+      }
+      return false;
+    };
 
   var registerOrQueueModule = typeof MODULE_BASE.registerOrQueueModule === 'function'
     ? function register(name, api, options, onError) {
-        return MODULE_BASE.registerOrQueueModule(
-          name,
-          api,
-          options,
-          onError,
-          GLOBAL_SCOPE,
-          moduleRegistry
-        );
-      }
+      return MODULE_BASE.registerOrQueueModule(
+        name,
+        api,
+        options,
+        onError,
+        GLOBAL_SCOPE,
+        moduleRegistry
+      );
+    }
     : function fallbackRegister() {
-        return false;
-      };
+      return false;
+    };
 
   var safeWarn = typeof MODULE_BASE.safeWarn === 'function'
     ? function warn(message, detail) {
-        try {
-          MODULE_BASE.safeWarn(message, detail);
-        } catch (error) {
-          void error;
-        }
+      try {
+        MODULE_BASE.safeWarn(message, detail);
+      } catch (error) {
+        void error;
       }
+    }
     : function fallbackWarn(message, detail) {
-        if (typeof console === 'undefined' || !console || typeof console.warn !== 'function') {
-          return;
+      if (typeof console === 'undefined' || !console || typeof console.warn !== 'function') {
+        return;
+      }
+      try {
+        if (typeof detail === 'undefined') {
+          console.warn(message);
+        } else {
+          console.warn(message, detail);
         }
-        try {
-          if (typeof detail === 'undefined') {
-            console.warn(message);
-          } else {
-            console.warn(message, detail);
-          }
-        } catch (error) {
-          void error;
-        }
-      };
+      } catch (error) {
+        void error;
+      }
+    };
 
   var implementationState = {
     generateGearListHtml: null,
@@ -361,3 +361,6 @@
   }
 })();
 
+
+// Export via global reference for ESM consumers
+export const generateGearListHtml = (typeof window !== 'undefined' ? window : globalThis).generateGearListHtml;

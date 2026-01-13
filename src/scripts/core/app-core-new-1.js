@@ -3843,6 +3843,7 @@ if (typeof window !== 'undefined') {
     'gearItemTranslations',
     'openDialog',
     'isDialogOpen',
+    'scheduleSettingsTabsOverflowUpdate',
     'clearAllAutoGearConditions',
     'callCoreFunctionIfAvailable',
     'autoGearCameraSelect',
@@ -4967,16 +4968,13 @@ function closeSideMenu() {
   const body = typeof document !== 'undefined' ? document.body : null;
   if (!menu || !overlay || !toggle) return;
   menu.classList.remove('open');
-  menu.scrollTop = 0;
   menu.setAttribute('hidden', '');
-  const menuLabel = toggle.dataset?.menuLabel || 'Menu';
-  const menuHelp = toggle.dataset?.menuHelp || menuLabel;
   toggle.setAttribute('aria-expanded', 'false');
-  toggle.setAttribute('aria-label', menuLabel);
-  toggle.setAttribute('title', menuLabel);
-  toggle.setAttribute('data-help', menuHelp);
-  body?.classList.remove('menu-open');
+  if (body) body.classList.remove('menu-open');
+  toggle.focus();
 }
+if (typeof window !== 'undefined') window.closeSideMenu = closeSideMenu;
+
 
 /**
  * Open the sidebar menu if it is currently closed.
@@ -5001,10 +4999,10 @@ function openSideMenu() {
     closeButton?.getAttribute('data-help') ||
     closeLabel;
   toggle.setAttribute('aria-label', closeLabel);
-  toggle.setAttribute('title', closeLabel);
   toggle.setAttribute('data-help', closeHelp);
   body?.classList.add('menu-open');
 }
+if (typeof window !== 'undefined') window.openSideMenu = openSideMenu;
 
 /**
  * Initialize sidebar menu toggle.
@@ -5086,10 +5084,10 @@ function setupSideMenu() {
     button.addEventListener('click', event => {
       event.preventDefault();
       triggerSidebarAction(button.dataset.sidebarAction);
-      closeSideMenu();
     });
   });
 }
+if (typeof window !== 'undefined') window.setupSideMenu = setupSideMenu;
 
 function setupResponsiveControls() {
   const topBar = document.getElementById('topBar');
@@ -5127,6 +5125,7 @@ function setupResponsiveControls() {
   mql.addEventListener('change', relocate);
   relocate();
 }
+if (typeof window !== 'undefined') window.setupResponsiveControls = setupResponsiveControls;
 
 var OWN_GEAR_SOURCE_CATALOG = 'catalog';
 var OWN_GEAR_SOURCE_CUSTOM = 'custom';
@@ -11195,6 +11194,7 @@ async function setLanguage(lang) {
       closeMenuLabel.textContent = closeLabel;
     }
   }
+  if (typeof window !== 'undefined') window.openSideMenu = openSideMenu;
   if (reloadButton) {
     const reloadLabel = texts[lang].reloadAppLabel;
     const reloadHelp = texts[lang].reloadAppHelp || reloadLabel;
@@ -12058,13 +12058,23 @@ var requiredScenariosSelect = document.getElementById("requiredScenarios");
 var requiredScenariosSummary = document.getElementById("requiredScenariosSummary");
 var remoteHeadOption = requiredScenariosSelect ?
   requiredScenariosSelect.querySelector('option[value="Remote Head"]') : null;
+if (typeof window !== 'undefined') window.remoteHeadOption = remoteHeadOption;
+
 var tripodPreferencesSection = document.getElementById("tripodPreferencesSection");
 var tripodPreferencesRow = document.getElementById("tripodPreferencesRow");
 var tripodPreferencesHeading = document.getElementById("tripodPreferencesHeading");
 var tripodHeadBrandSelect = document.getElementById("tripodHeadBrand");
+if (typeof window !== 'undefined') window.tripodHeadBrandSelect = tripodHeadBrandSelect;
+
 var tripodBowlSelect = document.getElementById("tripodBowl");
+if (typeof window !== 'undefined') window.tripodBowlSelect = tripodBowlSelect;
+
 var tripodTypesSelect = document.getElementById("tripodTypes");
+if (typeof window !== 'undefined') window.tripodTypesSelect = tripodTypesSelect;
+
 var tripodSpreaderSelect = document.getElementById("tripodSpreader");
+if (typeof window !== 'undefined') window.tripodSpreaderSelect = tripodSpreaderSelect;
+
 var monitoringConfigurationSelect = document.getElementById("monitoringConfiguration");
 const viewfinderSettingsRow = document.getElementById("viewfinderSettingsRow");
 const viewfinderExtensionRow = document.getElementById("viewfinderExtensionRow");
@@ -12764,11 +12774,13 @@ function ensureContactForImportedOwner(ownerName, options = {}) {
   if (typeof updateContactPickers === 'function') {
     updateContactPickers();
   }
+  if (typeof updateCalculations === 'function') updateCalculations();
   const label = typeof getContactDisplayLabel === 'function'
     ? getContactDisplayLabel(contact) || baseName
     : baseName;
   return { value: `contact:${contact.id} `, label, contact };
 }
+if (typeof window !== 'undefined') window.updateTripodOptions = updateTripodOptions;
 
 function setContactSelectOptions(select, selectedId) {
   if (!select) return;
@@ -15428,6 +15440,7 @@ function updateTripodOptions() {
     if (tripodHeadBrandSelect.value === 'Sachtler') tripodHeadBrandSelect.value = '';
   }
 }
+if (typeof window !== 'undefined') window.updateTripodOptions = updateTripodOptions;
 
 var totalPowerElem = document.getElementById("totalPower") || document.getElementById("heroTotalDraw");
 var totalCurrent144Elem = document.getElementById("totalCurrent144") || document.getElementById("heroCurrent144");
@@ -21694,3 +21707,13 @@ if (typeof document !== 'undefined') {
 
 if (typeof window !== 'undefined') window.AppCore = AppCore;
 console.log('DEBUG: app-core-new-1.js FINISHED');
+
+export {
+  encodeSharedSetup,
+  decodeSharedSetup,
+  closeSideMenu,
+  openSideMenu,
+  setupSideMenu,
+  setupResponsiveControls,
+  updateTripodOptions
+};

@@ -3,6 +3,46 @@ import { cineCoreUiHelpers } from './app-core-ui-helpers.js';
 import cineFeaturesConnectionDiagram from '../modules/features/connection-diagram.js';
 import cineFeatureBackup from '../modules/features/backup.js';
 import { cineLoggingResolver } from '../modules/logging-resolver.js';
+import { cineCoreMountVoltage } from './modules/core/mount-voltage.js';
+import { generatePrintableOverview } from '../overview.js';
+// Import globals available from other scripts (via Window usually, but explicitly needed for ESM)
+// Note: Some of these might be available on window, but we import them to be explicit and avoid lint/runtime errors if window is not ready.
+// However, since app-core-new-2.js exports to window/global, we might not be able to import strictly if it's not an ESM export.
+// Wait, I am modifying app-core-new-2.js to add to CORE_PART2_GLOBAL_EXPORTS which ends up on window.
+// So in app-session.js I might need to access them via window. or use a shim.
+// But valid imports are better.
+// Except app-core-new-2.js is NOT exporting via ESM syntax "export ...". It uses IFFE.
+// So "import { adjustGearListSelectWidths } from ..." will FAIL if the file is not an ESM module that exports it.
+
+// Correct approach for app-core-new-2.js: It is NOT an ESM module.
+// So I cannot import from it using named imports.
+// I must access it via `window.adjustGearListSelectWidths` or define it as a const from window.
+
+// But app-core-new-1.js I modified to have "export". So I CAN import from it.
+// app-setups.js I modified to have "export". So I CAN import from it.
+
+// So for adjustGearListSelectWidths, I will use window.
+// For updateTripodOptions and saveCurrentGearList, I will import.
+
+import { generateGearListHtml } from '../modules/gear-list.js';
+import { ensureZoomRemoteSetup, saveCurrentGearList } from './app-setups.js';
+import {
+  encodeSharedSetup,
+  decodeSharedSetup,
+  closeSideMenu,
+  openSideMenu,
+  setupSideMenu,
+  setupResponsiveControls,
+  updateTripodOptions
+} from './app-core-new-1.js';
+
+// Fallack for non-ESM globals
+const adjustGearListSelectWidths = (typeof window !== 'undefined' ? window.adjustGearListSelectWidths : null) || (() => { });
+
+
+// Alias for session usage
+const applySessionMountVoltagePreferences = cineCoreMountVoltage.applyMountVoltagePreferences;
+if (typeof window !== 'undefined') window.applySessionMountVoltagePreferences = applySessionMountVoltagePreferences;
 
 console.log('app-session.js: Starting execution (ESM)');
 if (typeof window !== 'undefined') {
@@ -21094,7 +21134,6 @@ function syncGearListFilterValue(storageId, value, isSelected) {
     if (typeof markProjectFormDataDirty === 'function') {
       markProjectFormDataDirty();
     }
-    storageSelect.dispatchEvent(new Event('change'));
   }
 }
 
@@ -21134,8 +21173,8 @@ function renderFilterDetails(providedTokens) {
     const needsSize = type !== 'Diopter';
     const needsValues = filterTypeNeedsValueSelect(type);
     const { label, gearName, hideDetails } = resolveFilterDisplayInfo(type, size);
-    let entryId = `filter-${filterId(type)}`;
-    if (type === 'Diopter') entryId = `${entryId}-set`;
+    let entryId = `filter - ${filterId(type)} `;
+    if (type === 'Diopter') entryId = `${entryId} -set`;
     return {
       type,
       label,
@@ -21171,6 +21210,7 @@ function renderFilterDetails(providedTokens) {
     if (needsSwing) matteboxTarget.value = 'Swing Away';
   }
 }
+if (typeof window !== 'undefined') window.renderFilterDetails = renderFilterDetails;
 
 function handleFilterDetailChange() {
   if (!resolveFilterSelectElement()) return;
@@ -21215,8 +21255,8 @@ function collectFilterSelections() {
   }
 
   const selectedTokens = selected.map(type => {
-    const sizeSel = document.getElementById(`filter-size-${filterId(type)}`);
-    const valSel = document.getElementById(`filter-values-${filterId(type)}`);
+    const sizeSel = document.getElementById(`filter - size - ${filterId(type)} `);
+    const valSel = document.getElementById(`filter - values - ${filterId(type)} `);
     const prev = existingMap[type] || {};
     const size = sizeSel ? sizeSel.value : (prev.size || SESSION_DEFAULT_FILTER_SIZE);
     let vals;
@@ -21230,9 +21270,9 @@ function collectFilterSelections() {
     }
     let valueSegment = '';
     if (needsValues) {
-      valueSegment = vals.length ? `:${vals.join('|')}` : ':!';
+      valueSegment = vals.length ? `:${vals.join('|')} ` : ':!';
     }
-    return `${type}:${size}${valueSegment}`;
+    return `${type}:${size}${valueSegment} `;
   });
 
   const availableTypes = new Set(
@@ -21253,9 +21293,9 @@ function collectFilterSelections() {
         const values = Array.isArray(token.values) ? token.values.filter(Boolean) : [];
         let segment = '';
         if (filterTypeNeedsValueSelect(token.type)) {
-          segment = values.length ? `:${values.join('|')}` : ':!';
+          segment = values.length ? `:${values.join('|')} ` : ':!';
         }
-        return `${token.type}:${size}${segment}`;
+        return `${token.type}:${size}${segment} `;
       })();
     selectedTokens.push(preserved);
   });

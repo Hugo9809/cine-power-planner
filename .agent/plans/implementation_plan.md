@@ -1,45 +1,34 @@
-# Implementation Plan - Improve Codebase Comments
+# Fix ReferenceError: bindGearListCageListener is not defined
 
-This plan outlines the approach to enhance the quality and depth of comments across the Cine Power Planner codebase, specifically focusing on the core runtime and storage orchestration. The goal is to adhere to the **Semantic Code Mandate**, prioritizing "why" over "what" and documenting complex logic and public interfaces.
+## Goal Description
+The application fails to initialize with a `ReferenceError: bindGearListCageListener is not defined` in `app-session.js`. This is because `bindGearListCageListener` and related event listeners are defined locally in `app-setups.js` but are not exposed to the global scope, while `app-session.js` attempts to call them directly.
+
+This plan involves exposing these functions globally in `app-setups.js` so they can be accessed by `app-session.js`.
 
 ## Proposed Changes
 
-### Core Runtime Layer
-Enhance documentation for the dual-part core architecture, specifically explaining the resolution strategies and ESM/legacy compatibility layers.
-
-#### [MODIFY] [app-core-new-1.js](file:///Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/core/app-core-new-1.js)
-- Add comprehensive module-level documentation explaining Part 1's role in the bootstrap process.
-- Document the `resolveAutoGearUIHelper` and `createSafeShim` patterns, explaining why they are used to prevent recursion and handle dynamic resolution.
-- Enhance comments for the `TEMPERATURE_SCENARIOS` and `focusScaleValues` resolution logic.
-
-#### [MODIFY] [app-core-new-2.js](file:///Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/core/app-core-new-2.js)
-- Add module-level documentation explaining Part 2's role in UI orchestration and event handling.
-- Document the `resolveRuntimeScopeFunction` and `createDynamicScopeFunctionResolver` patterns, explaining how they facilitate a flexible event-driven architecture.
-- Explain the `declareCoreFallbackBinding` mechanism and its importance for resilience.
-
-### Storage and Persistence Layer
-Improve documentation for the storage orchestration, including the migration path from LocalStorage to IndexedDB and the cache hydration strategy.
-
-#### [MODIFY] [storage.js](file:///Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js)
-- Document the hybrid storage architecture (Synchronous Cache + Asynchronous IDB).
-- Explain the rationale behind the `hydrateProjectCache` logic and its deterministic ordering.
-- Add intent-based comments to the `LIFECYCLE_CHANNEL` logic for cross-tab coordination.
-- Document the resilient deep clone strategy and why multiple fallbacks are necessary.
-
-### Other Modules
-Minor improvements to smaller, yet critical modules.
-
-#### [MODIFY] [globals-bootstrap.js](file:///Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/globals-bootstrap.js)
-- Document the global initialization sequence and its impact on the rest of the application.
+### Core Logic
+#### [MODIFY] [app-setups.js](file:///Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/core/app-setups.js)
+-   Expose the following functions to `window` (and `globalThis`):
+    -   `bindGearListCageListener`
+    -   `bindGearListEasyrigListener`
+    -   `bindGearListSliderBowlListener`
+    -   `bindGearListEyeLeatherListener`
+    -   `bindGearListProGaffTapeListener`
+    -   `bindGearListDirectorMonitorListener`
 
 ## Verification Plan
 
 ### Automated Tests
-I will run existing unit and integration tests to ensure that the added comments do not introduce any syntax errors or regressions (via accidental edits).
-- `npm run test` or `npx jest tests/unit/storage.test.js`
-- `npx jest tests/unit/runtimeModule.test.js`
+-   **Build Check**: Run `npm run build` to ensure no build errors.
+-   **Lint Check**: Run `npm run lint` to check for new lint errors.
 
 ### Manual Verification
-- Start the development server using `npm run dev`.
-- Verify the application boots without errors in the browser console.
-- Perform basic storage operations (save/load project) to ensure persistence logic remains sound.
+1.  **Start Server**: Run `npm run dev`.
+2.  **Browser Check**: Open the application in the browser (http://localhost:3000).
+3.  **Console Check**: Verify that the `ReferenceError: bindGearListCageListener is not defined` is gone.
+4.  **Functionality Check**:
+    -   Load a project or ensure the gear list is visible.
+    -   INTERACT with the "Camera Cage" dropdown in the gear list.
+    -   Verify that changes are reflected (e.g. valid selection persists).
+    -   Check other exposed listeners (Easyrig, Slider Bowl, etc.) if possible.

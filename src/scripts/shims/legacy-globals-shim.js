@@ -216,9 +216,13 @@
     if (typeof window.autoGearEditor === "undefined") window.autoGearEditor = document.getElementById('autoGearEditor');
 
     if (typeof window.applyFilterSelectionsToGearList !== 'function') window.applyFilterSelectionsToGearList = function () { };
+    if (typeof window.renderFilterDetails !== 'function') window.renderFilterDetails = function () { };
     if (typeof window.openDialog !== 'function') window.openDialog = function () { };
     if (typeof window.isDialogOpen !== 'function') window.isDialogOpen = function () { return false; };
+    if (typeof window.scheduleSettingsTabsOverflowUpdate !== 'function') window.scheduleSettingsTabsOverflowUpdate = function () { };
+    if (typeof window.applySessionMountVoltagePreferences !== 'function') window.applySessionMountVoltagePreferences = function () { };
 
+    // Auto-Gear DOM Elements
     // Categorized Auto-Gear Selectors
     var autoGearSelectors = [
         'autoGearCameraSelect', 'autoGearOwnGearSelect', 'autoGearMonitorSelect',

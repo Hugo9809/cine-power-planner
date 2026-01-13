@@ -73,6 +73,20 @@ let currentView = null;
 let currentParams = {};
 let viewHistory = [];
 let isV2Active = false;
+const viewHandlers = {};
+
+/**
+ * Register lifecycle handlers for a view
+ * @param {string} viewName - The name of the view (must match VIEWS keys)
+ * @param {object} handlers - Object containing onEnter/onLeave methods
+ */
+function registerView(viewName, handlers) {
+    if (!VIEWS[viewName]) {
+        console.warn(`[ViewManager] Cannot register handlers for unknown view: ${viewName}`);
+        return;
+    }
+    viewHandlers[viewName] = handlers;
+}
 
 // =====================
 // DOM HELPERS
@@ -138,6 +152,18 @@ function showView(viewName, params = {}) {
         return false;
     }
 
+    // --- LIFECYCLE: onLeave previous ---
+    if (currentView && currentView !== viewName) {
+        const oldHandlers = viewHandlers[currentView];
+        if (oldHandlers && typeof oldHandlers.onLeave === 'function') {
+            try {
+                oldHandlers.onLeave();
+            } catch (e) {
+                console.error(`[ViewManager] Error in onLeave for ${currentView}:`, e);
+            }
+        }
+    }
+
     // Hide all views
     getAllViews().forEach(view => {
         view.classList.remove(ACTIVE_CLASS);
@@ -163,6 +189,16 @@ function showView(viewName, params = {}) {
 
     // Update document title
     updateDocumentTitle(viewConfig.title, params);
+
+    // --- LIFECYCLE: onEnter new ---
+    const newHandlers = viewHandlers[viewName];
+    if (newHandlers && typeof newHandlers.onEnter === 'function') {
+        try {
+            newHandlers.onEnter(params);
+        } catch (e) {
+            console.error(`[ViewManager] Error in onEnter for ${viewName}:`, e);
+        }
+    }
 
     return true;
 }
@@ -205,6 +241,9 @@ function getCurrentParams() {
 function updateHash(viewName, params) {
     let hash = '';
 
+    // Dynamic pattern matching for registered views
+    const viewConfig = VIEWS[viewName];
+
     switch (viewName) {
         case 'projects':
             hash = '#/projects';
@@ -234,7 +273,16 @@ function updateHash(viewName, params) {
             hash = '#/own-gear';
             break;
         default:
-            hash = '#/projects';
+            // Generic hash generation for standard views
+            if (VIEWS[viewName]) {
+                // Convert camelCase to kebab-case or just use viewName
+                // Simple fallback: #/viewName
+                // Adjust specifically for known ones if needed
+                if (viewName === 'ownGear') hash = '#/own-gear';
+                else hash = `#/${viewName}`;
+            } else {
+                hash = '#/projects';
+            }
     }
 
     // Update hash without triggering navigation
@@ -416,21 +464,13 @@ function init() {
     // BUT do not auto-enable here if we want to wait for bootstrap.
     // If bootstrap is controlling, it will call enableV2().
     // If standard legacy load (where bootstrap might be missing or different), we might need it.
-    // However, since bootstrap.js is the one loading this file now (mostly), 
+    // However, since bootstrap.js is the one loading this file now (mostly),
     // we should defer to it to avoid race conditions with view containers being created.
 
     // If we are NOT in the bootstrap flow (e.g. standalone dev), we might want to check.
-    // But for safe integration, let's trust the bootstrap process will call enableV2() when ready.
-
-    // Only if we are already in V2 mode in DOM (unlikely on reload unless persistent state is handled by bootstrap first),
-    // we might want to sync.
-
-    // Better: Just set listener. Logic:
-    // 1. bootstrap calls loadV2Assets
-    // 2. bootstrap calls viewManager.enableV2()
-    // 3. viewManager.enableV2() -> handleHashChange() -> showView()
-
-    // So we remove the auto-call here.
+    // But usually bootstrap defines itself before loading assets?
+    // Actually assets are loaded async.
+    // Let's safe: Just don't auto-enable. bootstrap will do it.
     if (isV2Enabled() && !global.cineV2Bootstrap) {
         // Fallback: If no bootstrap global found, maybe we want to try?
         // But usually bootstrap defines itself before loading assets?
@@ -450,6 +490,7 @@ export const ViewManager = {
     goBack,
     getCurrentView,
     getCurrentParams,
+    registerView, // Exported
 
     // Hash routing
     parseHash,

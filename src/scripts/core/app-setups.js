@@ -16164,6 +16164,20 @@ function getSetupSelectElement() {
 // Expose to global scope for app-events.js
 if (typeof globalThis !== 'undefined') {
   globalThis.getSetups = getSetups;
+  globalThis.bindGearListCageListener = bindGearListCageListener;
+  globalThis.bindGearListEasyrigListener = bindGearListEasyrigListener;
+  globalThis.bindGearListSliderBowlListener = bindGearListSliderBowlListener;
+  globalThis.bindGearListEyeLeatherListener = bindGearListEyeLeatherListener;
+  globalThis.bindGearListProGaffTapeListener = bindGearListProGaffTapeListener;
+  globalThis.bindGearListDirectorMonitorListener = bindGearListDirectorMonitorListener;
 }
 window.getSetups = getSetups;
 window.normalizeBatteryPlateValue = normalizeBatteryPlateValue;
+window.bindGearListCageListener = bindGearListCageListener;
+window.bindGearListEasyrigListener = bindGearListEasyrigListener;
+window.bindGearListSliderBowlListener = bindGearListSliderBowlListener;
+window.bindGearListEyeLeatherListener = bindGearListEyeLeatherListener;
+window.bindGearListProGaffTapeListener = bindGearListProGaffTapeListener;
+window.bindGearListDirectorMonitorListener = bindGearListDirectorMonitorListener;
+
+export { ensureZoomRemoteSetup, saveCurrentGearList };
