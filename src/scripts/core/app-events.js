@@ -1,4 +1,10 @@
 /* global getSchemaAttributesForCategory */
+import { cineCoreUiHelpers } from './app-core-ui-helpers.js';
+import { cineUiCache } from './modules/ui-cache.js';
+import * as cineStorage from '../storage.js';
+import { cineFeatureBackup } from '../modules/features/backup.js';
+import { cineLoggingResolver } from '../modules/logging-resolver.js';
+
 // --- EVENT LISTENERS ---
 console.log('DEBUG: app-events.js START');
 
@@ -18,79 +24,13 @@ console.log('DEBUG: app-events.js START');
           applyPendingProjectNameCollisionResolution,
           SAFE_LOCAL_STORAGE */
 
-const EVENTS_UI_HELPERS = (function resolveUiHelpersForEvents() {
-  if (typeof require === 'function') {
-    try {
-      const required = require('./app-core-ui-helpers.js');
-      if (required && typeof required === 'object') {
-        return required;
-      }
-    } catch (uiHelpersError) {
-      void uiHelpersError;
-    }
-  }
+const EVENTS_UI_HELPERS = cineCoreUiHelpers || {};
 
-  const scopes = [];
-  try {
-    if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
-      scopes.push(CORE_GLOBAL_SCOPE);
-    }
-  } catch (coreScopeError) {
-    void coreScopeError;
+const UI_CACHE = cineUiCache || {
+  getElement: function (id) {
+    return typeof document !== 'undefined' ? document.getElementById(id) : null;
   }
-
-  if (typeof globalThis !== 'undefined' && globalThis) {
-    scopes.push(globalThis);
-  }
-
-  if (typeof window !== 'undefined' && window) {
-    scopes.push(window);
-  }
-
-  if (typeof self !== 'undefined' && self) {
-    scopes.push(self);
-  }
-
-  if (typeof global !== 'undefined' && global) {
-    scopes.push(global);
-  }
-
-  for (let index = 0; index < scopes.length; index += 1) {
-    const scope = scopes[index];
-    if (!scope) {
-      continue;
-    }
-    try {
-      const helpers = scope.cineCoreUiHelpers;
-      if (helpers && typeof helpers === 'object') {
-        return helpers;
-      }
-    } catch (scopeLookupError) {
-      void scopeLookupError;
-    }
-  }
-
-  return {};
-})();
-
-const UI_CACHE = (function resolveUiCache() {
-  if (typeof cineUiCache !== 'undefined') {
-    return cineUiCache;
-  }
-  if (typeof require === 'function') {
-    try {
-      return require('./modules/ui-cache.js');
-    } catch (e) {
-      // Fallback or ignore
-    }
-  }
-  // Ultimate fallback if module not loaded
-  return {
-    getElement: function (id) {
-      return typeof document !== 'undefined' ? document.getElementById(id) : null;
-    }
-  };
-})();
+};
 
 // Helper to define global getters for UI elements
 function defineUiGetter(name, id) {
@@ -865,11 +805,16 @@ const APP_EVENTS_AUTO_BACKUP_RENAMED_FLAG =
 // Some editor update routines depend on cached option lists. In legacy builds
 // these lived in the global scope, so we eagerly create the arrays here to
 // avoid ReferenceErrors while the modern modules initialise.
-if (typeof viewfinderTypeOptions === 'undefined' || !Array.isArray(viewfinderTypeOptions)) {
-  viewfinderTypeOptions = [];
+const _globalScope = typeof globalThis !== 'undefined' ? globalThis :
+  typeof window !== 'undefined' ? window :
+    typeof self !== 'undefined' ? self :
+      typeof global !== 'undefined' ? global : {};
+
+if (!_globalScope.viewfinderTypeOptions || !Array.isArray(_globalScope.viewfinderTypeOptions)) {
+  _globalScope.viewfinderTypeOptions = [];
 }
-if (typeof viewfinderConnectorOptions === 'undefined' || !Array.isArray(viewfinderConnectorOptions)) {
-  viewfinderConnectorOptions = [];
+if (!_globalScope.viewfinderConnectorOptions || !Array.isArray(_globalScope.viewfinderConnectorOptions)) {
+  _globalScope.viewfinderConnectorOptions = [];
 }
 
 // We frequently need a safe reference to the global scope to access runtime
@@ -927,6 +872,7 @@ function resolveNewCategorySelect() {
 // user data safe even if the browser throttles timers or the tab goes idle.
 const AUTO_BACKUP_CHANGE_THRESHOLD = 50;
 const AUTO_BACKUP_INTERVAL_MS = 10 * 60 * 1000;
+const AUTO_GEAR_BACKUP_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes for auto gear backups
 // A whitelist of contexts that may trigger an auto backup. Restricting the
 // reasons prevents accidental writes when unrelated systems emit noise.
 const AUTO_BACKUP_ALLOWED_REASONS = [
@@ -2149,6 +2095,8 @@ addSafeEventListener('skipLink', "click", () => {
 // Setup management
 function handleSaveSetupClickInternal(optionsOrEvent) {
   const isSilent = optionsOrEvent && optionsOrEvent.silent === true;
+  const langTexts = texts[currentLang] || {};
+  const fallbackTexts = texts.en || {};
 
   if (typeof applyPendingProjectNameCollisionResolution === 'function') {
     try {
@@ -2172,8 +2120,6 @@ function handleSaveSetupClickInternal(optionsOrEvent) {
     return;
   }
   const currentSetup = { ...getCurrentSetupState() };
-  const langTexts = texts[currentLang] || {};
-  const fallbackTexts = texts.en || {};
   const hasDeviceSelection = hasAnyDeviceSelectionSafe(currentSetup);
   const gearListHtml = getCurrentGearListHtml();
   if (gearListHtml) {
@@ -3071,7 +3017,9 @@ function populateSetupSelect() {
   const setups = setupsProvider ? setupsProvider() || {} : {};
   setupSelectTarget.innerHTML = `<option value="">${newSetupOptionLabel}</option>`;
   let includeAutoBackups = false;
-  if (typeof showAutoBackups === 'boolean') {
+  if (typeof loadAutoGearBackupVisibility === 'function') {
+    includeAutoBackups = loadAutoGearBackupVisibility();
+  } else if (typeof showAutoBackups === 'boolean') {
     includeAutoBackups = showAutoBackups;
   } else if (typeof localStorage !== 'undefined') {
     try {
@@ -3116,11 +3064,11 @@ function populateSetupSelect() {
 if (typeof EVENTS_UI_HELPERS.whenElementAvailable === 'function') {
   EVENTS_UI_HELPERS.whenElementAvailable('setupSelect', () => {
     populateSetupSelect();
-    checkSetupChanged();
+    if (typeof checkSetupChanged === 'function') checkSetupChanged();
   });
 } else {
   populateSetupSelect(); // Initial populate of setups
-  checkSetupChanged();
+  if (typeof checkSetupChanged === 'function') checkSetupChanged();
 }
 
 function notifyAutoSaveFromBackup(message, backupName, severity) {
@@ -6419,4 +6367,11 @@ function updateRecordingFrameRateHint() {
 
   // Initial check
   setTimeout(updateRecordingFrameRateHint, 500);
+  // Initial check
+  setTimeout(updateRecordingFrameRateHint, 500);
 })();
+
+
+if (typeof window !== 'undefined') {
+  window.populateSetupSelect = populateSetupSelect;
+}

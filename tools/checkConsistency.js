@@ -1,8 +1,15 @@
-const fs = require('fs');
-const path = require('path');
-const { collectServiceWorkerAssets } = require('./serviceWorkerAssetManifest');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
+import { collectServiceWorkerAssets } from './serviceWorkerAssetManifest.js';
+import devices from '../src/data/index.js';
 
-function checkConsistency(devices = require('../src/data')) {
+const require = createRequire(import.meta.url);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+function checkConsistency(deviceData = devices) {
   const rules = {
     cameras: [
       'powerDrawWatts',
@@ -20,7 +27,7 @@ function checkConsistency(devices = require('../src/data')) {
   const inconsistent = [];
 
   for (const [category, fields] of Object.entries(rules)) {
-    const collection = devices[category] || {};
+    const collection = deviceData[category] || {};
     for (const [name, device] of Object.entries(collection)) {
       if (name === 'None') continue;
       const missing = fields.filter(f => device[f] == null);
@@ -38,8 +45,18 @@ function loadManifestAssets(manifestPath) {
   }
 
   try {
-    delete require.cache[require.resolve(resolvedPath)];
-    const assets = require(resolvedPath);
+    // Clear any existing cached value from previous runs
+    if (Object.prototype.hasOwnProperty.call(globalThis, 'SERVICE_WORKER_ASSETS')) {
+      delete globalThis.SERVICE_WORKER_ASSETS;
+    }
+
+    // Read and execute the manifest IIFE - it sets globalThis.SERVICE_WORKER_ASSETS
+    const manifestSource = fs.readFileSync(resolvedPath, 'utf8');
+    // Use indirect eval to run in global scope
+    const indirectEval = eval;
+    indirectEval(manifestSource);
+
+    const assets = globalThis.SERVICE_WORKER_ASSETS;
     if (!Array.isArray(assets)) {
       return { error: new Error('Manifest did not export an array of asset URLs.') };
     }
@@ -107,7 +124,8 @@ function runAllConsistencyChecks() {
   return { deviceIssues, manifestCheck };
 }
 
-if (require.main === module) {
+// ESM main check
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const args = process.argv.slice(2);
   if (args.includes('--help') || args.includes('-h')) {
     console.log(
@@ -181,7 +199,7 @@ if (require.main === module) {
   process.exitCode = exitCode;
 }
 
-module.exports = Object.assign(checkConsistency, {
+export default Object.assign(checkConsistency, {
   checkServiceWorkerManifest,
   diffManifestAssets,
   runAllConsistencyChecks,

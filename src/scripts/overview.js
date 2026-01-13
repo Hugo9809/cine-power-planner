@@ -1,60 +1,10 @@
 /* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, lensSelect, overviewSectionIcons, breakdownListElem, pinWarnElem, dtapWarnElem, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, getDiagramCss, openDialog, closeDialog, splitGearListHtml, getSafeGearListHtmlSections, iconMarkup, ICON_GLYPHS, deleteCurrentGearList, focusScalePreference, resolveOverviewGearListSections, cineFeaturesConnectionDiagram */
 
-let createOverviewPrintWorkflowModule = null;
-let triggerOverviewPrintWorkflowModule = null;
+import { createOverviewPrintWorkflow, triggerOverviewPrintWorkflow } from './modules/features/print-workflow.js';
+import { cineLoggingResolver } from './modules/logging-resolver.js';
 
-(function resolveOverviewPrintWorkflowModule() {
-    // The overview dialog can run inside different boot contexts (browser,
-    // service worker driven print view, unit tests). To keep the behaviour
-    // predictable we probe every known namespace for the print workflow module
-    // and record whichever implementation we find first. The explicit comments
-    // below document the discovery order so future refactors keep the
-    // experience identical for end users.
-    const globalScope = (typeof globalThis !== 'undefined' && globalThis)
-        || (typeof window !== 'undefined' && window)
-        || (typeof self !== 'undefined' && self)
-        || (typeof global !== 'undefined' && global)
-        || null;
-
-    const candidates = [];
-
-    if (typeof require === 'function') {
-        // Node based environments (for example Jest) rely on the CommonJS path
-        // so we try that first when available. Any failure is ignored because
-        // browser bundles will provide the module through the global scope.
-        try {
-            const required = require('./modules/features/print-workflow.js');
-            if (required && typeof required === 'object') {
-                candidates.push(required);
-            }
-        } catch (error) {
-            void error;
-        }
-    }
-
-    if (globalScope && typeof globalScope.cineFeaturePrint === 'object' && globalScope.cineFeaturePrint) {
-        // When running in the production bundle the loader already exposed the
-        // module on the global scope. Reusing that instance keeps shared state
-        // such as queued print jobs intact.
-        candidates.push(globalScope.cineFeaturePrint);
-    }
-
-    for (let index = 0; index < candidates.length; index += 1) {
-        const candidate = candidates[index];
-        if (!candidate || typeof candidate !== 'object') {
-            continue;
-        }
-        if (!createOverviewPrintWorkflowModule && typeof candidate.createOverviewPrintWorkflow === 'function') {
-            createOverviewPrintWorkflowModule = candidate.createOverviewPrintWorkflow;
-        }
-        if (!triggerOverviewPrintWorkflowModule && typeof candidate.triggerOverviewPrintWorkflow === 'function') {
-            triggerOverviewPrintWorkflowModule = candidate.triggerOverviewPrintWorkflow;
-        }
-        if (createOverviewPrintWorkflowModule && triggerOverviewPrintWorkflowModule) {
-            break;
-        }
-    }
-})();
+const createOverviewPrintWorkflowModule = createOverviewPrintWorkflow;
+const triggerOverviewPrintWorkflowModule = triggerOverviewPrintWorkflow;
 
 function collectOverviewLoggingScopes() {
     const scopes = [];
@@ -68,35 +18,7 @@ function collectOverviewLoggingScopes() {
 }
 
 function resolveOverviewLoggingResolver() {
-    if (typeof require === 'function') {
-        try {
-            const required = require('./modules/logging-resolver.js');
-            if (required && typeof required.resolveLogger === 'function') {
-                return required;
-            }
-        } catch (error) {
-            void error;
-        }
-    }
-
-    const scopes = collectOverviewLoggingScopes();
-    for (let index = 0; index < scopes.length; index += 1) {
-        const scope = scopes[index];
-        if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
-            continue;
-        }
-
-        try {
-            const resolver = scope.cineLoggingResolver;
-            if (resolver && typeof resolver.resolveLogger === 'function') {
-                return resolver;
-            }
-        } catch (resolveError) {
-            void resolveError;
-        }
-    }
-
-    return null;
+    return cineLoggingResolver;
 }
 
 function resolveLegacyOverviewLogger() {
@@ -2512,6 +2434,9 @@ ${fallbackRoot.outerHTML}
     afterPrintRegistered = true;
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { generatePrintableOverview };
-}
+const openLegacyPrintDialog = function () {
+    generatePrintableOverview(true);
+};
+
+export { openLegacyPrintDialog, generatePrintableOverview };
+console.log('✅ Overview module loaded (ESM)');

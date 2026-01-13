@@ -34,6 +34,121 @@ available scripts.
 > **Lens catalog expansion.** The lens database now includes Sirui 1.33x & 1.6x Anamorphics, NiSi Athena Cine Primes, Kinefinity Mavo Primes, Spirit Lab Pure Primes, Ancient Optics & Petzval Rehousings, and Zero Optik Canon Dream Primes (Rehoused) so cinematographers can plan with an even wider range of modern glass.
 
 
+## Vite Build System
+
+The project uses [Vite](https://vite.dev) as its build tool and development server, providing:
+
+- **Hot Module Replacement (HMR)**: Changes reflect instantly in the browser
+- **ES Module support**: Native ESM imports during development
+- **Optimized production builds**: Code-splitting and tree-shaking for the `dist/` output
+- **Path aliases**: Clean imports using `@/`, `@scripts/`, `@styles/`, `@data/`
+
+### Development Commands
+
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start Vite dev server at `http://localhost:3000` |
+| `npm run build` | Build production bundle to `dist/` |
+| `npm run preview` | Preview the production build locally |
+| `npm run serve` | (Legacy) Simple static server at port 8000 |
+
+### All Available Scripts
+
+| Command | Description | Notes |
+| --- | --- | --- |
+| **Development** | | |
+| `npm run dev` | Start Vite dev server with HMR | Primary development workflow |
+| `npm run build` | Production build to `dist/` | Run before deployment |
+| `npm run preview` | Preview production build | Test after `npm run build` |
+| `npm run serve` | Legacy http-server at port 8000 | For testing without Vite |
+| **Testing** | | |
+| `npm test` | Full test suite (lint + checks + Jest) | Runs sequentially to limit memory |
+| `npm run test:jest` | Jest only (3 GB heap cap) | All Jest projects |
+| `npm run test:unit` | Unit tests only (1 GB heap cap) | Module-level logic tests |
+| `npm run test:data` | Data validation tests (1 GB heap cap) | Device catalog checks |
+| `npm run test:dom` | DOM utility tests (1.5 GB heap cap) | Lightweight DOM tests |
+| `npm run test:script` | Script integration tests (3 GB heap cap) | Requires `RUN_HEAVY_TESTS=true` |
+| **Linting** | | |
+| `npm run lint` | Run ESLint on all files | Enforces code style |
+| **Data Maintenance** | | |
+| `npm run normalize` | Clean and normalize device data | Standardizes connector names |
+| `npm run unify-ports` | Standardize connector labels | Port naming consistency |
+| `npm run check-consistency` | Validate device catalog integrity | Also checks SW manifest |
+| `npm run generate-schema` | Rebuild `schema.json` | After device data changes |
+| **Build Tools** | | |
+| `npm run generate:sw-assets` | Regenerate service worker manifest | After adding cached assets |
+| `npm run generate:pink-mode-icons` | Generate pink mode icon data | For animated icon updates |
+| `npm run check:pink-mode-icons` | Verify pink mode icon consistency | Part of `npm test` |
+| `npm run build:legacy` | Transpile ES5 legacy bundle | For older browser support |
+| `npm run build:auto-gear` | Compile TypeScript auto-gear modules | Run after `.ts` changes |
+| **Help** | | |
+| `npm run help` | Print summary of all scripts | Quick reference |
+
+### Build Configuration
+
+The Vite configuration (`vite.config.js`) includes:
+
+- **Service Worker plugin**: Automatically copies and generates service worker assets during build
+- **Code splitting**: Separates V2 UI, data layer, core modules, and vendor code
+- **Path aliases**: `@/` → `src/`, `@scripts/` → `src/scripts/`, etc.
+
+### Module Architecture
+
+The codebase uses ES Modules:
+
+| Directory | Module Type | Notes |
+| --- | --- | --- |
+| `src/main.js` | ESM entry point | Vite's application entry |
+| `src/scripts/modules/` | ESM | Core modules with global fallbacks |
+| `src/scripts/v2/` | ESM | V2 UI components |
+| `src/scripts/core/` | IIFE (legacy) | Legacy runtime modules |
+| `src/scripts/runtime/` | ESM | Shared runtime bootstrap |
+| `src/scripts/auto-gear/` | ESM + TypeScript | Automatic gear features |
+
+### Troubleshooting Common Issues
+
+#### "SyntaxError: Cannot use import statement outside a module"
+
+**Cause:** A file using `import` was loaded via a standard `<script>` tag.
+
+**Fix:** Ensure the file is imported via `src/main.js` or another ESM file. Don't add ESM files directly to `index.html` with regular script tags.
+
+#### "ReferenceError: myFunction is not defined"
+
+**Cause:** Legacy code tried to access a function before its module loaded.
+
+**Fix:** 
+1. Check module loading order in the loader.
+2. Ensure the function is exposed globally via `window.myFunction = myFunction`.
+3. Consider using the boot queue (`enqueueCoreBootTask`) for deferred initialization.
+
+#### Jest Tests Failing with Memory Errors
+
+**Cause:** Large test suites exceeding Node's default heap limit.
+
+**Fix:** Use the appropriate heap-limited test command:
+```bash
+npm run test:unit   # 1 GB cap
+npm run test:data   # 1 GB cap  
+npm run test:dom    # 1.5 GB cap
+npm run test:script # 3 GB cap
+```
+
+#### ESLint Errors on Configuration Files
+
+**Cause:** ESLint trying to parse CommonJS files (`.cjs`) as ESM.
+
+**Fix:** Ensure `.cjs` files are excluded or use the correct parser. Check `eslint.config.js` for the ignore patterns.
+
+#### Service Worker Not Updating
+
+**Cause:** Browser caching the old service worker.
+
+**Fix:**
+1. Use the in-app **Force reload** button
+2. Or manually unregister via DevTools > Application > Service Workers
+3. Run `npm run generate:sw-assets` if assets changed
+
 ## Repository Layout & Offline Assets
 
 Every asset the planner needs to run offline lives in this repository. When you
@@ -172,18 +287,22 @@ protect user data, documentation and translations:
 
 ## Development
 
-Set up with Node.js 18 or later. After cloning the repository:
+Set up with Node.js 18 or later.
 
 > [!IMPORTANT]
-> [!IMPORTANT]
-> **Use a local server for development.** While the app fully supports `file://` protocol for end-users (offline usage), Service Workers and PWA features **require** a secure context (`https://` or `http://localhost`). Developing on `file://` will disable these features and may mask bugs.
-> Use `npm run serve` or `python3 -m http.server`.
-
+> **Use Vite for development.** The codebase uses ES Modules which require a proper HTTP context.
+> Service Workers, PWA features, and HMR all require the Vite dev server.
 
 ```bash
 npm install
-npm run lint     # run ESLint alone
-npm test
+npm run dev      # start Vite dev server with HMR
+```
+
+Run linting and tests separately:
+
+```bash
+npm run lint     # run ESLint
+npm test         # full test suite (lint + data checks + Jest)
 ```
 
 `npm test` runs ESLint, data consistency checks and the Jest suite sequentially
@@ -241,31 +360,40 @@ For a high-level map of the code, see [Codebase Overview](codebase-overview.md).
 
 ### Legacy browser bundle
 
+> [!NOTE]
+> The legacy build is primarily for backward compatibility with older browsers.
+> For modern browsers, Vite handles the build process via `npm run build`.
+
 Run `npm run build:legacy` after modifying files in `src/scripts/` or `src/data/`
 to regenerate the transpiled ES5 bundle served to older browsers. The command
 rebuilds everything inside `legacy/` and refreshes the local polyfill copies so
-offline usage stays reliable. It also mirrors JSON artifacts (for example,
-`src/data/schema.json`) into `legacy/data/` so the legacy `require()` paths keep
-working offline and in tests.
+offline usage stays reliable.
 
 ### File structure
 
 ```
-index.html                 # Main HTML layout
-src/styles/style.css       # Core styles and layout
-src/styles/overview.css    # Printable overview styling
+index.html                    # Main HTML layout
+vite.config.js                # Vite build configuration
+src/main.js                   # Vite entry point (ESM)
+src/modules/                  # ESM shim modules for migration
+src/styles/style.css          # Core styles and layout
+src/styles/overview.css       # Printable overview styling
 src/styles/overview-print.css # Print overrides for the overview dialog
-src/scripts/script.js        # Application logic
-src/scripts/storage.js       # Local storage helpers
-src/scripts/static-theme.js  # Shared theme logic for legal pages
-src/scripts/modules/        # Frozen runtime modules registered in cineModules
-src/data/index.js       # Default device list
-src/data/devices/       # Device catalogs by category
-src/data/schema.json    # Schema used for validation
-src/vendor/             # Bundled third-party libraries
-legal/                     # Offline legal documents
-tools/                     # Data maintenance scripts
-tests/                     # Jest test suites
+src/scripts/script.js         # Legacy script aggregator
+src/scripts/loader.js         # Legacy module loader
+src/scripts/storage.js        # Local storage helpers
+src/scripts/static-theme.js   # Shared theme logic for legal pages
+src/scripts/modules/          # Core modules (ESM)
+src/scripts/v2/               # V2 UI components (ESM)
+src/scripts/core/             # Core runtime modules
+src/data/index.js             # Default device list
+src/data/devices/             # Device catalogs by category
+src/data/schema.json          # Schema used for validation
+src/vendor/                   # Bundled third-party libraries
+legal/                        # Offline legal documents
+tools/                        # Data maintenance scripts
+tests/                        # Jest test suites
+dist/                         # Production build output (gitignored)
 ```
 
 

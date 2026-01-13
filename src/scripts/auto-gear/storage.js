@@ -121,10 +121,10 @@ function readAutoGearBackupsFromStorage(retentionLimit) {
         .map(normalizeAutoGearBackupEntry)
         .filter(Boolean)
         .sort(function (a, b) {
-        if (a.createdAt === b.createdAt)
-            return 0;
-        return a.createdAt > b.createdAt ? -1 : 1;
-    })
+            if (a.createdAt === b.createdAt)
+                return 0;
+            return a.createdAt > b.createdAt ? -1 : 1;
+        })
         .slice(0, limit);
 }
 function sortAutoGearPresets(list) {
@@ -157,11 +157,13 @@ function readAutoGearPresetsFromStorage() {
 }
 function persistAutoGearPresets(presets) {
     var payload = Array.isArray(presets)
-        ? presets.map(function (preset) { return ({
-            id: preset.id,
-            label: preset.label,
-            rules: Array.isArray(preset.rules) ? preset.rules : [],
-        }); })
+        ? presets.map(function (preset) {
+            return ({
+                id: preset.id,
+                label: preset.label,
+                rules: Array.isArray(preset.rules) ? preset.rules : [],
+            });
+        })
         : [];
     if (typeof saveAutoGearPresets === 'function') {
         try {
@@ -441,13 +443,15 @@ function persistAutoGearBackupRetention(retention) {
 }
 function persistAutoGearBackups(backups) {
     var payload = Array.isArray(backups)
-        ? backups.map(function (entry) { return ({
-            id: entry.id,
-            createdAt: entry.createdAt,
-            rules: Array.isArray(entry.rules) ? entry.rules : [],
-            monitorDefaults: normalizeAutoGearMonitorDefaults(entry.monitorDefaults),
-            note: typeof entry.note === 'string' ? entry.note : undefined,
-        }); })
+        ? backups.map(function (entry) {
+            return ({
+                id: entry.id,
+                createdAt: entry.createdAt,
+                rules: Array.isArray(entry.rules) ? entry.rules : [],
+                monitorDefaults: normalizeAutoGearMonitorDefaults(entry.monitorDefaults),
+                note: typeof entry.note === 'string' ? entry.note : undefined,
+            });
+        })
         : [];
     if (typeof saveAutoGearBackups === 'function') {
         var storedPayload = saveAutoGearBackups(payload);
@@ -581,4 +585,6 @@ if (typeof globalThis !== 'undefined') {
         ? globalThis.AUTO_GEAR_STORAGE_EXPORTS
         : (globalThis.AUTO_GEAR_STORAGE_EXPORTS = {});
     Object.assign(target, AUTO_GEAR_STORAGE_EXPORTS);
+    // [Agent Fix] Expose flatly to global scope for legacy compatibility
+    Object.assign(globalThis, AUTO_GEAR_STORAGE_EXPORTS);
 }

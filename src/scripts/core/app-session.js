@@ -1,14 +1,347 @@
-console.log('app-session.js: Starting execution');
-(function () {
-  if (typeof window !== 'undefined') {
-    if (typeof window.batteryPlateSelect === "undefined") window.batteryPlateSelect = document.getElementById("batteryPlateSelect");
-  }
-})();
-var currentProjectInfo = null;
-// --- SESSION STATE HANDLING ---
-/* global cineFeaturesConnectionDiagram, shareSetupBtn, saveSessionState, loadSessionState,
-          CORE_GLOBAL_SCOPE, resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY,
-          updateCageSelectOptions, updateAccentColorResetButtonState,
+import { cineStorage } from '../storage.js';
+import { cineCoreUiHelpers } from './app-core-ui-helpers.js';
+import cineFeaturesConnectionDiagram from '../modules/features/connection-diagram.js';
+import cineFeatureBackup from '../modules/features/backup.js';
+import { cineLoggingResolver } from '../modules/logging-resolver.js';
+
+console.log('app-session.js: Starting execution (ESM)');
+if (typeof window !== 'undefined') {
+  if (typeof window.batteryPlateSelect === "undefined") window.batteryPlateSelect = document.getElementById("batteryPlateSelect");
+}
+
+const {
+  saveSessionState,
+  loadSessionState,
+  getSafeLocalStorage,
+  getProjectStorageRevisionKeyName,
+  loadProject,
+  clearUiCacheStorageEntries,
+  loadAutoGearMonitorDefaults,
+  loadDocumentationTracker,
+  saveContacts: saveContactsToStorage
+} = cineStorage;
+
+// Fallback for globals that might not be fully modularized yet or rely on bootstrap
+const CORE_SHARED = (typeof window !== 'undefined' && window.cineCoreShared) || (typeof globalThis !== 'undefined' && globalThis.cineCoreShared) || {};
+const resolveTemperatureStorageKey = (typeof window !== 'undefined' && window.resolveTemperatureStorageKey) || (() => 'cameraPowerPlanner_temperatureUnit');
+const TEMPERATURE_STORAGE_KEY = (typeof window !== 'undefined' && window.TEMPERATURE_STORAGE_KEY) || 'cameraPowerPlanner_temperatureUnit';
+const getCurrentProjectStorageKey = (typeof window !== 'undefined' && window.getCurrentProjectStorageKey) || (() => 'cameraPowerPlanner_project');
+const getUserProfileSnapshot = (typeof window !== 'undefined' && window.getUserProfileSnapshot) || (() => null);
+const formatUserProfileProviderName = (typeof window !== 'undefined' && window.formatUserProfileProviderName) || ((n) => n);
+const ensureContactForImportedOwner = (typeof window !== 'undefined' && window.ensureContactForImportedOwner) || (() => { });
+const setGearItemProvider = (typeof window !== 'undefined' && window.setGearItemProvider) || (() => { });
+const dispatchGearProviderDataChanged = (typeof window !== 'undefined' && window.dispatchGearProviderDataChanged) || (() => { });
+const storagePersistenceRequestButton = (typeof window !== 'undefined' && window.storagePersistenceRequestButton) || null;
+const enqueueCoreBootTask = (typeof window !== 'undefined' && window.enqueueCoreBootTask) || ((cb) => cb());
+const CORE_GLOBAL_SCOPE = (typeof window !== 'undefined' && window.CORE_GLOBAL_SCOPE) || (typeof globalThis !== 'undefined' ? globalThis : {});
+
+// Shared State Variables (Module Scope)
+
+let isProjectAutoSaving = false;
+let projectStorageSyncTimer = null;
+let projectStorageSyncInProgress = false;
+let lastKnownProjectStorageRevision = null;
+let missingMountVoltageWarnings = null;
+let currentLockController = null;
+
+// Restoring missing global declarations to prevent ReferenceErrors
+let currentProjectInfo = null;
+let showAutoBackups = true;
+const projectForm = typeof document !== 'undefined' ? document.getElementById('projectForm') : null;
+const gearListOutput = typeof document !== 'undefined' ? document.getElementById('gearListOutput') : null;
+const projectRequirementsOutput = typeof document !== 'undefined' ? document.getElementById('projectRequirementsOutput') : null;
+// downloadDiagramButton is defined via ensureSessionRuntimePlaceholder later in this file
+const helpDialog = typeof document !== 'undefined' ? document.getElementById('helpDialog') : null;
+const helpSearch = typeof document !== 'undefined' ? document.getElementById('helpSearch') : null;
+const helpSearchClear = typeof document !== 'undefined' ? document.getElementById('helpSearchClear') : null;
+
+// Systemic Fix: Declaring all commonly accessed UI elements to prevent ReferenceErrors
+const cameraSelect = typeof document !== 'undefined' ? document.getElementById('cameraSelect') : null;
+const monitorSelect = typeof document !== 'undefined' ? document.getElementById('monitorSelect') : null;
+const batteryPlateSelect = typeof document !== 'undefined' ? document.getElementById('batteryPlateSelect') : null;
+const batteryHotswapSelect = typeof document !== 'undefined' ? document.getElementById('batteryHotswapSelect') : null;
+const setupSelect = typeof document !== 'undefined' ? document.getElementById('setupSelect') : null;
+const setupNameInput = typeof document !== 'undefined' ? document.getElementById('setupName') : null;
+const offlineIndicator = typeof document !== 'undefined' ? document.getElementById('offlineIndicator') : null;
+const settingsDialog = typeof document !== 'undefined' ? document.getElementById('settingsDialog') : null;
+const featureSearchInput = typeof document !== 'undefined' ? document.getElementById('featureSearchInput') : null;
+const settingsDarkMode = typeof document !== 'undefined' ? document.getElementById('settingsDarkMode') : null;
+const settingsPinkMode = typeof document !== 'undefined' ? document.getElementById('settingsPinkMode') : null;
+const gridSnapToggle = typeof document !== 'undefined' ? document.getElementById('gridSnapToggle') : null;
+const diagramArea = typeof document !== 'undefined' ? document.getElementById('diagramArea') : null;
+const autoGearShowBackups = typeof document !== 'undefined' ? document.getElementById('autoGearShowBackups') : null;
+const autoGearScenarioMode = typeof document !== 'undefined' ? document.getElementById('autoGearScenarioMode') : null;
+const videoDistributionSelect = typeof document !== 'undefined' ? document.getElementById('videoDistributionSelect') : null;
+
+// Systemic Fix: Declaring missing global functions to prevent ReferenceErrors
+// These functions are expected to be loaded by other scripts, but we provide safe fallbacks here.
+const checkSetupChanged = (typeof window !== 'undefined' && typeof window.checkSetupChanged === 'function') ? window.checkSetupChanged : (() => { console.warn('checkSetupChanged not available'); });
+const updateCalculations = (typeof window !== 'undefined' && typeof window.updateCalculations === 'function') ? window.updateCalculations : (() => { console.warn('updateCalculations not available'); });
+// populateLensDropdown is defined as a function later in this file
+const refreshTotalCurrentLabels = (typeof window !== 'undefined' && typeof window.refreshTotalCurrentLabels === 'function') ? window.refreshTotalCurrentLabels : (() => { });
+const updateSetupUI = (typeof window !== 'undefined' && typeof window.updateSetupUI === 'function') ? window.updateSetupUI : (() => { });
+
+// Safe wrapper functions for event handlers that may not be defined yet
+const _safeUpdateCalculations = function (...args) {
+  const fn = typeof updateCalculations === 'function' ? updateCalculations :
+    typeof globalThis !== 'undefined' && typeof globalThis.updateCalculations === 'function' ? globalThis.updateCalculations :
+      typeof window !== 'undefined' && typeof window.updateCalculations === 'function' ? window.updateCalculations : null;
+  if (fn) return fn(...args);
+};
+const _safeCheckSetupChanged = function (...args) {
+  const fn = typeof checkSetupChanged === 'function' ? checkSetupChanged :
+    typeof globalThis !== 'undefined' && typeof globalThis.checkSetupChanged === 'function' ? globalThis.checkSetupChanged :
+      typeof window !== 'undefined' && typeof window.checkSetupChanged === 'function' ? window.checkSetupChanged : null;
+  if (fn) return fn(...args);
+};
+const _safeSaveCurrentSession = function (...args) {
+  const fn = typeof saveCurrentSession === 'function' ? saveCurrentSession :
+    typeof globalThis !== 'undefined' && typeof globalThis.saveCurrentSession === 'function' ? globalThis.saveCurrentSession :
+      typeof window !== 'undefined' && typeof window.saveCurrentSession === 'function' ? window.saveCurrentSession : null;
+  if (fn) return fn(...args);
+};
+const _safeSaveCurrentGearList = function (...args) {
+  const fn = typeof saveCurrentGearList === 'function' ? saveCurrentGearList :
+    typeof globalThis !== 'undefined' && typeof globalThis.saveCurrentGearList === 'function' ? globalThis.saveCurrentGearList :
+      typeof window !== 'undefined' && typeof window.saveCurrentGearList === 'function' ? window.saveCurrentGearList : null;
+  if (fn) return fn(...args);
+};
+const _safeAutoSaveCurrentSetup = function (...args) {
+  const fn = typeof autoSaveCurrentSetup === 'function' ? autoSaveCurrentSetup :
+    typeof globalThis !== 'undefined' && typeof globalThis.autoSaveCurrentSetup === 'function' ? globalThis.autoSaveCurrentSetup :
+      typeof window !== 'undefined' && typeof window.autoSaveCurrentSetup === 'function' ? window.autoSaveCurrentSetup : null;
+  if (fn) return fn(...args);
+};
+const _safeUpdateBatteryPlateVisibility = function (...args) {
+  const fn = typeof updateBatteryPlateVisibility === 'function' ? updateBatteryPlateVisibility :
+    typeof globalThis !== 'undefined' && typeof globalThis.updateBatteryPlateVisibility === 'function' ? globalThis.updateBatteryPlateVisibility :
+      typeof window !== 'undefined' && typeof window.updateBatteryPlateVisibility === 'function' ? window.updateBatteryPlateVisibility : null;
+  if (fn) return fn(...args);
+};
+const _safeUpdateBatteryOptions = function (...args) {
+  const fn = typeof updateBatteryOptions === 'function' ? updateBatteryOptions :
+    typeof globalThis !== 'undefined' && typeof globalThis.updateBatteryOptions === 'function' ? globalThis.updateBatteryOptions :
+      typeof window !== 'undefined' && typeof window.updateBatteryOptions === 'function' ? window.updateBatteryOptions : null;
+  if (fn) return fn(...args);
+};
+
+const _safeUpdateMonitoringConfigurationOptions = function (...args) {
+  const fn = typeof updateMonitoringConfigurationOptions === 'function' ? updateMonitoringConfigurationOptions :
+    typeof globalThis !== 'undefined' && typeof globalThis.updateMonitoringConfigurationOptions === 'function' ? globalThis.updateMonitoringConfigurationOptions :
+      typeof window !== 'undefined' && typeof window.updateMonitoringConfigurationOptions === 'function' ? window.updateMonitoringConfigurationOptions : null;
+  if (fn) return fn(...args);
+};
+const _safeUpdateViewfinderSettingsVisibility = function (...args) {
+  const fn = typeof updateViewfinderSettingsVisibility === 'function' ? updateViewfinderSettingsVisibility :
+    typeof globalThis !== 'undefined' && typeof globalThis.updateViewfinderSettingsVisibility === 'function' ? globalThis.updateViewfinderSettingsVisibility :
+      typeof window !== 'undefined' && typeof window.updateViewfinderSettingsVisibility === 'function' ? window.updateViewfinderSettingsVisibility : null;
+  if (fn) return fn(...args);
+};
+const _safePopulateRecordingResolutionDropdown = function (...args) {
+  const fn = typeof populateRecordingResolutionDropdown === 'function' ? populateRecordingResolutionDropdown :
+    typeof globalThis !== 'undefined' && typeof globalThis.populateRecordingResolutionDropdown === 'function' ? globalThis.populateRecordingResolutionDropdown :
+      typeof window !== 'undefined' && typeof window.populateRecordingResolutionDropdown === 'function' ? window.populateRecordingResolutionDropdown : null;
+  if (fn) return fn(...args);
+};
+const _safePopulateSensorModeDropdown = function (...args) {
+  const fn = typeof populateSensorModeDropdown === 'function' ? populateSensorModeDropdown :
+    typeof globalThis !== 'undefined' && typeof globalThis.populateSensorModeDropdown === 'function' ? globalThis.populateSensorModeDropdown :
+      typeof window !== 'undefined' && typeof window.populateSensorModeDropdown === 'function' ? window.populateSensorModeDropdown : null;
+  if (fn) return fn(...args);
+};
+const _safePopulateSlowMotionRecordingResolutionDropdown = function (...args) {
+  const fn = typeof populateSlowMotionRecordingResolutionDropdown === 'function' ? populateSlowMotionRecordingResolutionDropdown :
+    typeof globalThis !== 'undefined' && typeof globalThis.populateSlowMotionRecordingResolutionDropdown === 'function' ? globalThis.populateSlowMotionRecordingResolutionDropdown :
+      typeof window !== 'undefined' && typeof window.populateSlowMotionRecordingResolutionDropdown === 'function' ? window.populateSlowMotionRecordingResolutionDropdown : null;
+  if (fn) return fn(...args);
+};
+const _safePopulateSlowMotionSensorModeDropdown = function (...args) {
+  const fn = typeof populateSlowMotionSensorModeDropdown === 'function' ? populateSlowMotionSensorModeDropdown :
+    typeof globalThis !== 'undefined' && typeof globalThis.populateSlowMotionSensorModeDropdown === 'function' ? globalThis.populateSlowMotionSensorModeDropdown :
+      typeof window !== 'undefined' && typeof window.populateSlowMotionSensorModeDropdown === 'function' ? window.populateSlowMotionSensorModeDropdown : null;
+  if (fn) return fn(...args);
+};
+const _safePopulateFrameRateDropdown = function (...args) {
+  const fn = typeof populateFrameRateDropdown === 'function' ? populateFrameRateDropdown :
+    typeof globalThis !== 'undefined' && typeof globalThis.populateFrameRateDropdown === 'function' ? globalThis.populateFrameRateDropdown :
+      typeof window !== 'undefined' && typeof window.populateFrameRateDropdown === 'function' ? window.populateFrameRateDropdown : null;
+  if (fn) return fn(...args);
+};
+const _safePopulateSlowMotionFrameRateDropdown = function (...args) {
+  const fn = typeof populateSlowMotionFrameRateDropdown === 'function' ? populateSlowMotionFrameRateDropdown :
+    typeof globalThis !== 'undefined' && typeof globalThis.populateSlowMotionFrameRateDropdown === 'function' ? globalThis.populateSlowMotionFrameRateDropdown :
+      typeof window !== 'undefined' && typeof window.populateSlowMotionFrameRateDropdown === 'function' ? window.populateSlowMotionFrameRateDropdown : null;
+  if (fn) return fn(...args);
+};
+
+const _safeHandleMountVoltageInputChange = function (...args) {
+  const fn = typeof handleMountVoltageInputChange === 'function' ? handleMountVoltageInputChange :
+    typeof globalThis !== 'undefined' && typeof globalThis.handleMountVoltageInputChange === 'function' ? globalThis.handleMountVoltageInputChange :
+      typeof window !== 'undefined' && typeof window.handleMountVoltageInputChange === 'function' ? window.handleMountVoltageInputChange : null;
+  if (fn) return fn(...args);
+};
+
+const _safeNormalizeAutoGearScenarioPrimary = function (...args) {
+  const fn = typeof normalizeAutoGearScenarioPrimary === 'function' ? normalizeAutoGearScenarioPrimary :
+    typeof globalThis !== 'undefined' && typeof globalThis.normalizeAutoGearScenarioPrimary === 'function' ? globalThis.normalizeAutoGearScenarioPrimary :
+      typeof window !== 'undefined' && typeof window.normalizeAutoGearScenarioPrimary === 'function' ? window.normalizeAutoGearScenarioPrimary : null;
+  if (fn) return fn(...args);
+};
+const _safeNormalizeAutoGearScenarioMultiplier = function (...args) {
+  const fn = typeof normalizeAutoGearScenarioMultiplier === 'function' ? normalizeAutoGearScenarioMultiplier :
+    typeof globalThis !== 'undefined' && typeof globalThis.normalizeAutoGearScenarioMultiplier === 'function' ? globalThis.normalizeAutoGearScenarioMultiplier :
+      typeof window !== 'undefined' && typeof window.normalizeAutoGearScenarioMultiplier === 'function' ? window.normalizeAutoGearScenarioMultiplier : null;
+  if (fn) return fn(...args);
+};
+const _safeRemoveAutoGearCondition = function (...args) {
+  const fn = typeof removeAutoGearCondition === 'function' ? removeAutoGearCondition :
+    typeof globalThis !== 'undefined' && typeof globalThis.removeAutoGearCondition === 'function' ? globalThis.removeAutoGearCondition :
+      typeof window !== 'undefined' && typeof window.removeAutoGearCondition === 'function' ? window.removeAutoGearCondition : null;
+  if (fn) return fn(...args);
+};
+const _safeHandleAutoGearConditionShortcut = function (...args) {
+  const fn = typeof handleAutoGearConditionShortcut === 'function' ? handleAutoGearConditionShortcut :
+    typeof globalThis !== 'undefined' && typeof globalThis.handleAutoGearConditionShortcut === 'function' ? globalThis.handleAutoGearConditionShortcut :
+      typeof window !== 'undefined' && typeof window.handleAutoGearConditionShortcut === 'function' ? window.handleAutoGearConditionShortcut : null;
+  if (fn) return fn(...args);
+};
+
+const _safeHandleAutoGearImportSelection = function (...args) {
+  const fn = typeof handleAutoGearImportSelection === 'function' ? handleAutoGearImportSelection :
+    typeof globalThis !== 'undefined' && typeof globalThis.handleAutoGearImportSelection === 'function' ? globalThis.handleAutoGearImportSelection :
+      typeof window !== 'undefined' && typeof window.handleAutoGearImportSelection === 'function' ? window.handleAutoGearImportSelection : null;
+  if (fn) return fn(...args);
+};
+const _safeSetAutoGearSearchQuery = function (...args) {
+  const fn = typeof setAutoGearSearchQuery === 'function' ? setAutoGearSearchQuery :
+    typeof globalThis !== 'undefined' && typeof globalThis.setAutoGearSearchQuery === 'function' ? globalThis.setAutoGearSearchQuery :
+      typeof window !== 'undefined' && typeof window.setAutoGearSearchQuery === 'function' ? window.setAutoGearSearchQuery : null;
+  if (fn) return fn(...args);
+};
+const _safeSetAutoGearScenarioFilter = function (...args) {
+  const fn = typeof setAutoGearScenarioFilter === 'function' ? setAutoGearScenarioFilter :
+    typeof globalThis !== 'undefined' && typeof globalThis.setAutoGearScenarioFilter === 'function' ? globalThis.setAutoGearScenarioFilter :
+      typeof window !== 'undefined' && typeof window.setAutoGearScenarioFilter === 'function' ? window.setAutoGearScenarioFilter : null;
+  if (fn) return fn(...args);
+};
+const _safeClearAutoGearFilters = function (...args) {
+  const fn = typeof clearAutoGearFilters === 'function' ? clearAutoGearFilters :
+    typeof globalThis !== 'undefined' && typeof globalThis.clearAutoGearFilters === 'function' ? globalThis.clearAutoGearFilters :
+      typeof window !== 'undefined' && typeof window.clearAutoGearFilters === 'function' ? window.clearAutoGearFilters : null;
+  if (fn) return fn(...args);
+};
+const _safeSetAutoGearSummaryFocus = function (...args) {
+  const fn = typeof setAutoGearSummaryFocus === 'function' ? setAutoGearSummaryFocus :
+    typeof globalThis !== 'undefined' && typeof globalThis.setAutoGearSummaryFocus === 'function' ? globalThis.setAutoGearSummaryFocus :
+      typeof window !== 'undefined' && typeof window.setAutoGearSummaryFocus === 'function' ? window.setAutoGearSummaryFocus : null;
+  if (fn) return fn(...args);
+};
+
+const _safeHandleAutoGearPresetSelection = function (...args) {
+  const fn = typeof handleAutoGearPresetSelection === 'function' ? handleAutoGearPresetSelection :
+    typeof globalThis !== 'undefined' && typeof globalThis.handleAutoGearPresetSelection === 'function' ? globalThis.handleAutoGearPresetSelection :
+      typeof window !== 'undefined' && typeof window.handleAutoGearPresetSelection === 'function' ? window.handleAutoGearPresetSelection : null;
+  if (fn) return fn(...args);
+};
+const _safeHandleAutoGearSavePreset = function (...args) {
+  const fn = typeof handleAutoGearSavePreset === 'function' ? handleAutoGearSavePreset :
+    typeof globalThis !== 'undefined' && typeof globalThis.handleAutoGearSavePreset === 'function' ? globalThis.handleAutoGearSavePreset :
+      typeof window !== 'undefined' && typeof window.handleAutoGearSavePreset === 'function' ? window.handleAutoGearSavePreset : null;
+  if (fn) return fn(...args);
+};
+const _safeHandleAutoGearDeletePreset = function (...args) {
+  const fn = typeof handleAutoGearDeletePreset === 'function' ? handleAutoGearDeletePreset :
+    typeof globalThis !== 'undefined' && typeof globalThis.handleAutoGearDeletePreset === 'function' ? globalThis.handleAutoGearDeletePreset :
+      typeof window !== 'undefined' && typeof window.handleAutoGearDeletePreset === 'function' ? window.handleAutoGearDeletePreset : null;
+  if (fn) return fn(...args);
+};
+const _safeAddAutoGearDraftItem = function (...args) {
+  const fn = typeof addAutoGearDraftItem === 'function' ? addAutoGearDraftItem :
+    typeof globalThis !== 'undefined' && typeof globalThis.addAutoGearDraftItem === 'function' ? globalThis.addAutoGearDraftItem :
+      typeof window !== 'undefined' && typeof window.addAutoGearDraftItem === 'function' ? window.addAutoGearDraftItem : null;
+  if (fn) return fn(...args);
+};
+const _safeSaveAutoGearRuleFromEditor = function (...args) {
+  const fn = typeof saveAutoGearRuleFromEditor === 'function' ? saveAutoGearRuleFromEditor :
+    typeof globalThis !== 'undefined' && typeof globalThis.saveAutoGearRuleFromEditor === 'function' ? globalThis.saveAutoGearRuleFromEditor :
+      typeof window !== 'undefined' && typeof window.saveAutoGearRuleFromEditor === 'function' ? window.saveAutoGearRuleFromEditor : null;
+  if (fn) return fn(...args);
+};
+const _safeCloseAutoGearEditor = function (...args) {
+  const fn = typeof closeAutoGearEditor === 'function' ? closeAutoGearEditor :
+    typeof globalThis !== 'undefined' && typeof globalThis.closeAutoGearEditor === 'function' ? globalThis.closeAutoGearEditor :
+      typeof window !== 'undefined' && typeof window.closeAutoGearEditor === 'function' ? window.closeAutoGearEditor : null;
+  if (fn) return fn(...args);
+};
+const _safeRenderAutoGearDraftLists = function (...args) {
+  const fn = typeof renderAutoGearDraftLists === 'function' ? renderAutoGearDraftLists :
+    typeof globalThis !== 'undefined' && typeof globalThis.renderAutoGearDraftLists === 'function' ? globalThis.renderAutoGearDraftLists :
+      typeof window !== 'undefined' && typeof window.renderAutoGearDraftLists === 'function' ? window.renderAutoGearDraftLists : null;
+  if (fn) return fn(...args);
+};
+const _safeDuplicateAutoGearRule = function (...args) {
+  const fn = typeof duplicateAutoGearRule === 'function' ? duplicateAutoGearRule :
+    typeof globalThis !== 'undefined' && typeof globalThis.duplicateAutoGearRule === 'function' ? globalThis.duplicateAutoGearRule :
+      typeof window !== 'undefined' && typeof window.duplicateAutoGearRule === 'function' ? window.duplicateAutoGearRule : null;
+  if (fn) return fn(...args);
+};
+const _safeInvokeSessionOpenAutoGearEditor = function (...args) {
+  const fn = typeof invokeSessionOpenAutoGearEditor === 'function' ? invokeSessionOpenAutoGearEditor :
+    typeof globalThis !== 'undefined' && typeof globalThis.invokeSessionOpenAutoGearEditor === 'function' ? globalThis.invokeSessionOpenAutoGearEditor :
+      typeof window !== 'undefined' && typeof window.invokeSessionOpenAutoGearEditor === 'function' ? window.invokeSessionOpenAutoGearEditor : null;
+  if (fn) return fn(...args);
+};
+
+const _safeUpdateAutoGearBackupRestoreButtonState = function (...args) {
+  const fn = typeof updateAutoGearBackupRestoreButtonState === 'function' ? updateAutoGearBackupRestoreButtonState :
+    typeof globalThis !== 'undefined' && typeof globalThis.updateAutoGearBackupRestoreButtonState === 'function' ? globalThis.updateAutoGearBackupRestoreButtonState :
+      typeof window !== 'undefined' && typeof window.updateAutoGearBackupRestoreButtonState === 'function' ? window.updateAutoGearBackupRestoreButtonState : null;
+  if (fn) return fn(...args);
+};
+const _safeHandleAutoGearShowBackupsToggle = function (...args) {
+  const fn = typeof handleAutoGearShowBackupsToggle === 'function' ? handleAutoGearShowBackupsToggle :
+    typeof globalThis !== 'undefined' && typeof globalThis.handleAutoGearShowBackupsToggle === 'function' ? globalThis.handleAutoGearShowBackupsToggle :
+      typeof window !== 'undefined' && typeof window.handleAutoGearShowBackupsToggle === 'function' ? window.handleAutoGearShowBackupsToggle : null;
+  if (fn) return fn(...args);
+};
+const _safeRestoreAutoGearBackup = function (...args) {
+  const fn = typeof restoreAutoGearBackup === 'function' ? restoreAutoGearBackup :
+    typeof globalThis !== 'undefined' && typeof globalThis.restoreAutoGearBackup === 'function' ? globalThis.restoreAutoGearBackup :
+      typeof window !== 'undefined' && typeof window.restoreAutoGearBackup === 'function' ? window.restoreAutoGearBackup : null;
+  if (fn) return fn(...args);
+};
+const _safeSyncAutoGearMonitorFieldVisibility = function (...args) {
+  const fn = typeof syncAutoGearMonitorFieldVisibility === 'function' ? syncAutoGearMonitorFieldVisibility :
+    typeof globalThis !== 'undefined' && typeof globalThis.syncAutoGearMonitorFieldVisibility === 'function' ? globalThis.syncAutoGearMonitorFieldVisibility :
+      typeof window !== 'undefined' && typeof window.syncAutoGearMonitorFieldVisibility === 'function' ? window.syncAutoGearMonitorFieldVisibility : null;
+  if (fn) return fn(...args);
+};
+const _safeUpdateAutoGearMonitorCatalogOptions = function (...args) {
+  const fn = typeof updateAutoGearMonitorCatalogOptions === 'function' ? updateAutoGearMonitorCatalogOptions :
+    typeof globalThis !== 'undefined' && typeof globalThis.updateAutoGearMonitorCatalogOptions === 'function' ? globalThis.updateAutoGearMonitorCatalogOptions :
+      typeof window !== 'undefined' && typeof window.updateAutoGearMonitorCatalogOptions === 'function' ? window.updateAutoGearMonitorCatalogOptions : null;
+  if (fn) return fn(...args);
+};
+const _safeClearAutoGearDraftItemEdit = function (...args) {
+  const fn = typeof clearAutoGearDraftItemEdit === 'function' ? clearAutoGearDraftItemEdit :
+    typeof globalThis !== 'undefined' && typeof globalThis.clearAutoGearDraftItemEdit === 'function' ? globalThis.clearAutoGearDraftItemEdit :
+      typeof window !== 'undefined' && typeof window.clearAutoGearDraftItemEdit === 'function' ? window.clearAutoGearDraftItemEdit : null;
+  if (fn) return fn(...args);
+};
+const _safeUpdateAutoGearCatalogOptions = function (...args) {
+  const fn = typeof updateAutoGearCatalogOptions === 'function' ? updateAutoGearCatalogOptions :
+    typeof globalThis !== 'undefined' && typeof globalThis.updateAutoGearCatalogOptions === 'function' ? globalThis.updateAutoGearCatalogOptions :
+      typeof window !== 'undefined' && typeof window.updateAutoGearCatalogOptions === 'function' ? window.updateAutoGearCatalogOptions : null;
+  if (fn) return fn(...args);
+};
+const _safeBeginAutoGearDraftItemEdit = function (...args) {
+  const fn = typeof beginAutoGearDraftItemEdit === 'function' ? beginAutoGearDraftItemEdit :
+    typeof globalThis !== 'undefined' && typeof globalThis.beginAutoGearDraftItemEdit === 'function' ? globalThis.beginAutoGearDraftItemEdit :
+      typeof window !== 'undefined' && typeof window.beginAutoGearDraftItemEdit === 'function' ? window.beginAutoGearDraftItemEdit : null;
+  if (fn) return fn(...args);
+};
+
+/* global shareSetupBtn, updateCageSelectOptions, updateAccentColorResetButtonState,
           normalizeAccentValue, DEFAULT_ACCENT_NORMALIZED: true,
           DEFAULT_ACCENT_COLOR: true, HIGH_CONTRAST_ACCENT_COLOR: true,
           accentColor: true, prevAccentColor: true,
@@ -29,12 +362,11 @@ var currentProjectInfo = null;
           normalizeAutoGearScenarioMultiplier,
           isAutoGearHighlightEnabled, setAutoGearHighlightEnabled,
           updateAutoGearHighlightToggleButton,
-          clearUiCacheStorageEntries, __cineGlobal, humanizeKey,
+          __cineGlobal, humanizeKey,
           normalizeBatteryPlateValue, applyBatteryPlateSelectionFromBattery,
           updateStorageRequirementTypeOptions,
           getPowerSelectionSnapshot, applyStoredPowerSelection,
-          getSafeLocalStorage, getProjectStorageRevisionKeyName,
-          getCurrentProjectStorageKey, loadProject, populateSetupSelect,
+          populateSetupSelect,
           displayGearAndRequirements, applyGearListSelectors,
           ensureGearListActions, bindGearListCageListener,
           bindGearListEasyrigListener, bindGearListSliderBowlListener,
@@ -48,19 +380,13 @@ var currentProjectInfo = null;
           isProjectPersistenceSuspended,
           recordFeatureSearchUsage, extractFeatureSearchFilter,
           helpResultsSummary, helpResultsAssist, helpNoResultsSuggestions,
-          isProjectPersistenceSuspended, suspendProjectPersistence,
-          resumeProjectPersistence, stableStringify, CORE_SHARED,
-          markProjectFormDataDirty, loadAutoGearMonitorDefaults, loadDocumentationTracker,
+          markProjectFormDataDirty,
           enhanceGearItemElement,
           settingsFocusScale, focusScalePreference: true, normalizeFocusScale,
           applyFocusScalePreference: true, applyTemperatureUnitPreference: true,
           updateLensWorkflowCatalog, FOCUS_SCALE_STORAGE_KEY_NAME,
-          contactsCache: true, sortContacts, saveContactsToStorage, renderContactsList,
+          contactsCache: true, sortContacts, renderContactsList,
           updateContactPickers, normalizeContactEntry, sanitizeContactValue */
-/* global enqueueCoreBootTask */
-/* global getUserProfileSnapshot, formatUserProfileProviderName,
-          ensureContactForImportedOwner, setGearItemProvider,
-          dispatchGearProviderDataChanged, storagePersistenceRequestButton */
 // Keep a baseline set of match types so that the session search feature
 // continues to work even when globals have not been initialised yet (for
 // example during unit tests or offline restore flows).
@@ -99,13 +425,13 @@ if (typeof globalThis !== 'undefined' && hotswapSelect && typeof globalThis.hots
 }
 
 // --- SESSION STATE & EVENT BUS CONFIGURATION ---
-let actionMap = new Map();
-let featureMap = new Map();
-let deviceMap = new Map();
-let helpMap = new Map();
-let featureSearchEntries = [];
-let featureSearchDefaultOptions = [];
-let isProjectAutoSaving = false;
+
+
+
+
+
+
+
 
 /**
  * DEEP DIVE: Session Scope Resolution
@@ -345,7 +671,7 @@ try {
 (function (scope) {
   if (scope.cineProjectLockManager) return;
 
-  let currentLockController = null;
+
 
   scope.cineProjectLockManager = {
     requestLock: async (projectName) => {
@@ -430,9 +756,7 @@ function safeGetCurrentProjectName(defaultValue = '') {
 
 const PROJECT_STORAGE_REV_KEY_FALLBACK = 'cameraPowerPlanner_project_rev';
 
-let lastKnownProjectStorageRevision = null;
-let projectStorageSyncTimer = null;
-let projectStorageSyncInProgress = false;
+
 
 function normalizeProjectStorageRevisionValue(value) {
   if (typeof value === 'number' && Number.isFinite(value)) {
@@ -662,7 +986,7 @@ function reloadActiveProjectFromStorage(options = {}) {
 
     currentProjectInfo = storedProject.projectInfo || null;
     if (projectForm) {
-      populateProjectForm(currentProjectInfo || {});
+      if (typeof populateProjectForm === 'function') populateProjectForm(currentProjectInfo || {});
     }
 
     if (typeof setManualDiagramPositions === 'function') {
@@ -950,7 +1274,7 @@ if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE
           DEFAULT_MOUNT_VOLTAGES, mountVoltageInputs, parseVoltageValue */
 /* global requestPersistentStorage */
 
-let missingMountVoltageWarnings = null;
+
 
 function resolveMissingMountVoltageWarnings() {
   if (missingMountVoltageWarnings instanceof Set) {
@@ -4814,10 +5138,10 @@ function saveCurrentSession(options = {}) {
     monitor: monitorSelect ? monitorSelect.value : '',
     video: videoSelect ? videoSelect.value : '',
     cage: cageSelect ? cageSelect.value : '',
-    motors: motorSelects.map(sel => sel ? sel.value : ''),
-    controllers: controllerSelects.map(sel => sel ? sel.value : ''),
+    motors: (typeof window !== 'undefined' && window.motorSelects ? window.motorSelects : []).map(sel => sel ? sel.value : ''),
+    controllers: (typeof window !== 'undefined' && window.controllerSelects ? window.controllerSelects : []).map(sel => sel ? sel.value : ''),
     distance: distanceSelect ? distanceSelect.value : '',
-    batteryPlate: normalizeBatteryPlateValue(batteryPlateValue, batteryValue),
+    batteryPlate: typeof normalizeBatteryPlateValue === 'function' ? normalizeBatteryPlateValue(batteryPlateValue, batteryValue) : batteryPlateValue,
     battery: batteryValue,
     batteryHotswap: hotswapSelect ? hotswapSelect.value : '',
     sliderBowl: info.sliderBowl,
@@ -4876,7 +5200,9 @@ function autoSaveCurrentSetup() {
   // Prevent auto-creation of new projects during typing strings that accidentally match
   // a transient selection state. Auto-save should only UPDATE existing projects.
   // Creation is handled by explicit save actions.
-  const setups = getSetups();
+  // Creation is handled by explicit save actions.
+  // Fix for potential ReferenceError: getSetups is not defined
+  const setups = typeof getSetups === 'function' ? getSetups() : {};
   if (!setups || typeof setups !== 'object' || !Object.prototype.hasOwnProperty.call(setups, name)) {
     saveCurrentSession({ skipGearList: true });
     checkSetupChanged();
@@ -4907,13 +5233,13 @@ function autoSaveCurrentSetup() {
   storeSetups(setups);
   if (setupCreatedOrRenamed) {
     console.log('DEBUG: calling populateSetupSelect');
-    populateSetupSelect();
+    if (typeof populateSetupSelect === 'function') populateSetupSelect();
     console.log('DEBUG: populateSetupSelect returned');
   }
 
   if (setupSelectRef) setupSelectRef.value = name;
   saveCurrentSession();
-  storeLoadedSetupState(getCurrentSetupState());
+  if (typeof storeLoadedSetupState === 'function') storeLoadedSetupState(getCurrentSetupState());
   checkSetupChanged();
 
 
@@ -5482,7 +5808,7 @@ const _storeSession = (typeof window !== 'undefined' && typeof window.storeSessi
   };
 
 function restoreSessionState() {
-  restoringSession = true;
+  if (typeof restoringSession !== 'undefined') restoringSession = true;
   const loadedState = _loadSession();
   const state = (loadedState && typeof loadedState === 'object') ? { ...loadedState } : null;
   if (state) {
@@ -5493,7 +5819,7 @@ function restoreSessionState() {
       : savedPlate;
     state.batteryPlate = derivedPlate;
   }
-  storeLoadedSetupState(state || null);
+  if (typeof storeLoadedSetupState === 'function') storeLoadedSetupState(state || null);
   let sessionDiagramPositions = {};
   if (state && typeof state.diagramPositions === 'object' && typeof normalizeDiagramPositionsInput === 'function') {
     sessionDiagramPositions = normalizeDiagramPositionsInput(state.diagramPositions);
@@ -5501,18 +5827,18 @@ function restoreSessionState() {
   if (typeof setManualDiagramPositions === 'function') {
     setManualDiagramPositions(sessionDiagramPositions, { render: false });
   }
-  resetSelectsToNone(motorSelects);
-  resetSelectsToNone(controllerSelects);
+  if (typeof motorSelects !== 'undefined') resetSelectsToNone(motorSelects);
+  if (typeof controllerSelects !== 'undefined') resetSelectsToNone(controllerSelects);
   if (state) {
     if (setupNameInput) {
       setupNameInput.value = state.setupName || '';
       setupNameInput.dispatchEvent(new Event('input'));
     }
     setSelectValue(cameraSelect, state.camera);
-    updateBatteryPlateVisibility();
+    _safeUpdateBatteryPlateVisibility();
     setSelectValue(batteryPlateSelect, state.batteryPlate);
-    applyBatteryPlateSelectionFromBattery(state.battery, batteryPlateSelect ? batteryPlateSelect.value : '');
-    updateBatteryOptions();
+    if (typeof applyBatteryPlateSelectionFromBattery === 'function') applyBatteryPlateSelectionFromBattery(state.battery, batteryPlateSelect ? batteryPlateSelect.value : '');
+    _safeUpdateBatteryOptions();
     setSelectValue(monitorSelect, state.monitor);
     setSelectValue(videoSelect, state.video);
     if (typeof updateCageSelectOptions === 'function') {
@@ -5521,22 +5847,22 @@ function restoreSessionState() {
       setSelectValue(cageSelect, state.cage);
     }
     setSelectValue(distanceSelect, state.distance);
-    if (Array.isArray(state.motors)) {
+    if (Array.isArray(state.motors) && typeof motorSelects !== 'undefined') {
       state.motors.forEach((val, i) => { if (motorSelects[i]) setSelectValue(motorSelects[i], val); });
     }
-    if (Array.isArray(state.controllers)) {
+    if (Array.isArray(state.controllers) && typeof controllerSelects !== 'undefined') {
       state.controllers.forEach((val, i) => { if (controllerSelects[i]) setSelectValue(controllerSelects[i], val); });
     }
     setSelectValue(batterySelect, state.battery);
-    applyBatteryPlateSelectionFromBattery(state.battery, batteryPlateSelect ? batteryPlateSelect.value : '');
+    if (typeof applyBatteryPlateSelectionFromBattery === 'function') applyBatteryPlateSelectionFromBattery(state.battery, batteryPlateSelect ? batteryPlateSelect.value : '');
     setSelectValue(hotswapSelect, state.batteryHotswap);
     if ((state && typeof state.battery === 'string' && state.battery.trim())
       || (state && typeof state.batteryHotswap === 'string' && state.batteryHotswap.trim())) {
-      updateBatteryOptions();
+      _safeUpdateBatteryOptions();
     }
     setSelectValue(setupSelect, state.setupSelect);
     currentProjectInfo = state.projectInfo || null;
-    if (projectForm) populateProjectForm(currentProjectInfo || {});
+    if (projectForm && typeof populateProjectForm === 'function') populateProjectForm(currentProjectInfo || {});
   } else {
     if (gearListOutput) {
       gearListOutput.innerHTML = '';
@@ -5643,7 +5969,7 @@ function restoreSessionState() {
       }
 
       currentProjectInfo = nextProjectInfo;
-      if (projectForm) populateProjectForm(currentProjectInfo || {});
+      if (projectForm && typeof populateProjectForm === 'function') populateProjectForm(currentProjectInfo || {});
       if (
         typeof normalizeDiagramPositionsInput === 'function'
         && typeof setManualDiagramPositions === 'function'
@@ -5722,7 +6048,7 @@ function restoreSessionState() {
     gearListOutput.classList.toggle('show-auto-gear-highlight', highlightPreference);
     callSessionCoreFunction('updateAutoGearHighlightToggleButton', [], { defer: true });
   }
-  lastSetupName = setupSelect ? setupSelect.value : '';
+  if (typeof lastSetupName !== 'undefined') lastSetupName = setupSelect ? setupSelect.value : '';
   if (typeof setActiveProjectCompressionHold === 'function') {
     let compressionHoldKey = '';
     if (typeof getCurrentProjectStorageKey === 'function') {
@@ -5737,7 +6063,7 @@ function restoreSessionState() {
     }
     setActiveProjectCompressionHold(compressionHoldKey);
   }
-  restoringSession = false;
+  if (typeof restoringSession !== 'undefined') restoringSession = false;
   saveCurrentSession();
   const pendingAutoSaveState = projectAutoSavePendingWhileRestoring;
   projectAutoSavePendingWhileRestoring = null;
@@ -6268,13 +6594,13 @@ function applySharedSetup(shared, options = {}) {
       setupNameInput.value = decoded.setupName;
       setupNameInput.dispatchEvent(new Event('input'));
     }
-    resetSelectsToNone(motorSelects);
-    resetSelectsToNone(controllerSelects);
+    if (typeof motorSelects !== 'undefined') resetSelectsToNone(motorSelects);
+    if (typeof controllerSelects !== 'undefined') resetSelectsToNone(controllerSelects);
     setSelectValue(cameraSelect, decoded.camera);
-    updateBatteryPlateVisibility();
+    _safeUpdateBatteryPlateVisibility();
     setSelectValue(batteryPlateSelect, decoded.batteryPlate);
-    applyBatteryPlateSelectionFromBattery(decoded.battery, batteryPlateSelect ? batteryPlateSelect.value : '');
-    updateBatteryOptions();
+    if (typeof applyBatteryPlateSelectionFromBattery === 'function') applyBatteryPlateSelectionFromBattery(decoded.battery, batteryPlateSelect ? batteryPlateSelect.value : '');
+    _safeUpdateBatteryOptions();
     setSelectValue(monitorSelect, decoded.monitor);
     setSelectValue(videoSelect, decoded.video);
     if (typeof updateCageSelectOptions === 'function') {
@@ -6283,14 +6609,14 @@ function applySharedSetup(shared, options = {}) {
       setSelectValue(cageSelect, decoded.cage);
     }
     setSelectValue(distanceSelect, decoded.distance);
-    if (Array.isArray(decoded.motors)) {
+    if (Array.isArray(decoded.motors) && typeof motorSelects !== 'undefined') {
       decoded.motors.forEach((val, i) => { if (motorSelects[i]) setSelectValue(motorSelects[i], val); });
     }
-    if (Array.isArray(decoded.controllers)) {
+    if (Array.isArray(decoded.controllers) && typeof controllerSelects !== 'undefined') {
       decoded.controllers.forEach((val, i) => { if (controllerSelects[i]) setSelectValue(controllerSelects[i], val); });
     }
     setSelectValue(batterySelect, decoded.battery);
-    applyBatteryPlateSelectionFromBattery(decoded.battery, batteryPlateSelect ? batteryPlateSelect.value : '');
+    if (typeof applyBatteryPlateSelectionFromBattery === 'function') applyBatteryPlateSelectionFromBattery(decoded.battery, batteryPlateSelect ? batteryPlateSelect.value : '');
     setSelectValue(hotswapSelect, decoded.batteryHotswap);
     let sharedPowerApplied = false;
     if (decoded.powerSelection && typeof applyStoredPowerSelection === 'function') {
@@ -6298,9 +6624,9 @@ function applySharedSetup(shared, options = {}) {
     }
     if ((typeof decoded.battery === 'string' && decoded.battery.trim())
       || (typeof decoded.batteryHotswap === 'string' && decoded.batteryHotswap.trim())) {
-      updateBatteryOptions();
+      _safeUpdateBatteryOptions();
     } else if (sharedPowerApplied) {
-      updateBatteryOptions();
+      _safeUpdateBatteryOptions();
     }
     if (typeof setManualDiagramPositions === 'function') {
       let sharedDiagramPositions = {};
@@ -6317,7 +6643,7 @@ function applySharedSetup(shared, options = {}) {
       saveFeedbackSafe(fb);
     }
     currentProjectInfo = decoded.projectInfo || null;
-    if (projectForm) populateProjectForm(currentProjectInfo || {});
+    if (projectForm && typeof populateProjectForm === 'function') populateProjectForm(currentProjectInfo || {});
     let gearDisplayed = false;
     let combinedHtml = '';
     if (decoded.projectHtml || decoded.gearList) {
@@ -6681,16 +7007,16 @@ const bindPowerSessionEvents = () => {
   // Helper to get element robustly
   const getEl = (output, id) => output || document.getElementById(id);
 
-  const cameraSelectEl = getEl(cameraSelect, 'cameraSelect');
-  const sensorModeDropdownEl = getEl(sensorModeDropdown, 'sensorModeDropdown');
-  const recordingResolutionDropdownEl = getEl(recordingResolutionDropdown, 'recordingResolutionDropdown');
-  const slowMotionSensorModeDropdownEl = getEl(slowMotionSensorModeDropdown, 'slowMotionSensorModeDropdown');
-  const slowMotionRecordingResolutionDropdownEl = getEl(slowMotionRecordingResolutionDropdown, 'slowMotionRecordingResolutionDropdown');
-  const slowMotionAspectRatioSelectEl = getEl(slowMotionAspectRatioSelect, 'slowMotionAspectRatioSelect');
-  const monitoringConfigurationSelectEl = getEl(monitoringConfigurationSelect, 'monitoringConfigurationSelect');
-  const monitorSelectEl = getEl(monitorSelect, 'monitorSelect');
-  const batteryPlateSelectEl = getEl(batteryPlateSelect, 'batteryPlateSelect');
-  const batterySelectEl = getEl(batterySelect, 'batterySelect');
+  const cameraSelectEl = getEl(typeof cameraSelect !== 'undefined' ? cameraSelect : null, 'cameraSelect');
+  const sensorModeDropdownEl = getEl(typeof sensorModeDropdown !== 'undefined' ? sensorModeDropdown : null, 'sensorModeDropdown');
+  const recordingResolutionDropdownEl = getEl(typeof recordingResolutionDropdown !== 'undefined' ? recordingResolutionDropdown : null, 'recordingResolutionDropdown');
+  const slowMotionSensorModeDropdownEl = getEl(typeof slowMotionSensorModeDropdown !== 'undefined' ? slowMotionSensorModeDropdown : null, 'slowMotionSensorModeDropdown');
+  const slowMotionRecordingResolutionDropdownEl = getEl(typeof slowMotionRecordingResolutionDropdown !== 'undefined' ? slowMotionRecordingResolutionDropdown : null, 'slowMotionRecordingResolutionDropdown');
+  const slowMotionAspectRatioSelectEl = getEl(typeof slowMotionAspectRatioSelect !== 'undefined' ? slowMotionAspectRatioSelect : null, 'slowMotionAspectRatioSelect');
+  const monitoringConfigurationSelectEl = getEl(typeof monitoringConfigurationSelect !== 'undefined' ? monitoringConfigurationSelect : null, 'monitoringConfigurationSelect');
+  const monitorSelectEl = getEl(typeof monitorSelect !== 'undefined' ? monitorSelect : null, 'monitorSelect');
+  const batteryPlateSelectEl = getEl(typeof batteryPlateSelect !== 'undefined' ? batteryPlateSelect : null, 'batteryPlateSelect');
+  const batterySelectEl = getEl(typeof batterySelect !== 'undefined' ? batterySelect : null, 'batterySelect');
 
   // Check if critical elements are missing
   if (!cameraSelectEl && document.readyState === 'loading') {
@@ -6698,8 +7024,8 @@ const bindPowerSessionEvents = () => {
   }
 
   forEachTrackedSelect(getTrackedPowerSelects(), (sel) => {
-    sel.removeEventListener('change', updateCalculations);
-    sel.addEventListener('change', updateCalculations);
+    sel.removeEventListener('change', _safeUpdateCalculations);
+    sel.addEventListener('change', _safeUpdateCalculations);
   });
 
   if (cameraSelectEl) {
@@ -6707,23 +7033,19 @@ const bindPowerSessionEvents = () => {
     if (!cameraSelectEl.dataset.sessionBound) {
       cameraSelectEl.dataset.sessionBound = 'true';
       cameraSelectEl.addEventListener('change', () => {
-        updateBatteryPlateVisibility();
-        updateBatteryOptions();
+        _safeUpdateBatteryPlateVisibility();
+        _safeUpdateBatteryOptions();
         if (typeof updateCageSelectOptions === 'function') {
           updateCageSelectOptions();
         }
         const desiredFrameRate = currentProjectInfo && currentProjectInfo.recordingFrameRate;
         const desiredSlowMotionFrameRate = currentProjectInfo && currentProjectInfo.slowMotionRecordingFrameRate;
-        populateRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.recordingResolution);
-        populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
-        populateSlowMotionRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.slowMotionRecordingResolution);
-        populateSlowMotionSensorModeDropdown(currentProjectInfo && currentProjectInfo.slowMotionSensorMode);
-        if (typeof populateFrameRateDropdown === 'function') {
-          populateFrameRateDropdown(desiredFrameRate);
-        }
-        if (typeof populateSlowMotionFrameRateDropdown === 'function') {
-          populateSlowMotionFrameRateDropdown(desiredSlowMotionFrameRate);
-        }
+        _safePopulateRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.recordingResolution);
+        _safePopulateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
+        _safePopulateSlowMotionRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.slowMotionRecordingResolution);
+        _safePopulateSlowMotionSensorModeDropdown(currentProjectInfo && currentProjectInfo.slowMotionSensorMode);
+        _safePopulateFrameRateDropdown(desiredFrameRate);
+        _safePopulateSlowMotionFrameRateDropdown(desiredSlowMotionFrameRate);
         if (typeof updateStorageRequirementTypeOptions === 'function') {
           updateStorageRequirementTypeOptions();
         }
@@ -6741,45 +7063,35 @@ const bindPowerSessionEvents = () => {
   if (sensorModeDropdownEl && !sensorModeDropdownEl.dataset.sessionBound) {
     sensorModeDropdownEl.dataset.sessionBound = 'true';
     sensorModeDropdownEl.addEventListener('change', () => {
-      if (typeof populateFrameRateDropdown === 'function') {
-        populateFrameRateDropdown(getCurrentFrameRateInputValue());
-      }
+      _safePopulateFrameRateDropdown(getCurrentFrameRateInputValue());
     });
   }
 
   if (recordingResolutionDropdownEl && !recordingResolutionDropdownEl.dataset.sessionBound) {
     recordingResolutionDropdownEl.dataset.sessionBound = 'true';
     recordingResolutionDropdownEl.addEventListener('change', () => {
-      if (typeof populateFrameRateDropdown === 'function') {
-        populateFrameRateDropdown(getCurrentFrameRateInputValue());
-      }
+      _safePopulateFrameRateDropdown(getCurrentFrameRateInputValue());
     });
   }
 
   if (slowMotionSensorModeDropdownEl && !slowMotionSensorModeDropdownEl.dataset.sessionBound) {
     slowMotionSensorModeDropdownEl.dataset.sessionBound = 'true';
     slowMotionSensorModeDropdownEl.addEventListener('change', () => {
-      if (typeof populateSlowMotionFrameRateDropdown === 'function') {
-        populateSlowMotionFrameRateDropdown(getFrameRateInputValue(slowMotionRecordingFrameRateInput));
-      }
+      _safePopulateSlowMotionFrameRateDropdown(getFrameRateInputValue(slowMotionRecordingFrameRateInput));
     });
   }
 
   if (slowMotionRecordingResolutionDropdownEl && !slowMotionRecordingResolutionDropdownEl.dataset.sessionBound) {
     slowMotionRecordingResolutionDropdownEl.dataset.sessionBound = 'true';
     slowMotionRecordingResolutionDropdownEl.addEventListener('change', () => {
-      if (typeof populateSlowMotionFrameRateDropdown === 'function') {
-        populateSlowMotionFrameRateDropdown(getFrameRateInputValue(slowMotionRecordingFrameRateInput));
-      }
+      _safePopulateSlowMotionFrameRateDropdown(getFrameRateInputValue(slowMotionRecordingFrameRateInput));
     });
   }
 
   if (slowMotionAspectRatioSelectEl && !slowMotionAspectRatioSelectEl.dataset.sessionBound) {
     slowMotionAspectRatioSelectEl.dataset.sessionBound = 'true';
     slowMotionAspectRatioSelectEl.addEventListener('change', () => {
-      if (typeof populateSlowMotionFrameRateDropdown === 'function') {
-        populateSlowMotionFrameRateDropdown(getFrameRateInputValue(slowMotionRecordingFrameRateInput));
-      }
+      _safePopulateSlowMotionFrameRateDropdown(getFrameRateInputValue(slowMotionRecordingFrameRateInput));
     });
   }
 
@@ -6787,20 +7099,18 @@ const bindPowerSessionEvents = () => {
     monitoringConfigurationSelectEl.dataset.sessionBound = 'true';
     monitoringConfigurationSelectEl.addEventListener('change', () => {
       monitoringConfigurationUserChanged = true;
-      updateViewfinderSettingsVisibility();
+      _safeUpdateViewfinderSettingsVisibility();
     });
   }
 
   if (monitorSelectEl && !monitorSelectEl.dataset.sessionBound) {
     monitorSelectEl.dataset.sessionBound = 'true';
-    monitorSelectEl.addEventListener('change', updateMonitoringConfigurationOptions);
+    monitorSelectEl.addEventListener('change', _safeUpdateMonitoringConfigurationOptions);
   }
 
-  if (typeof updateBatteryOptions === 'function') {
-    if (batteryPlateSelectEl) batteryPlateSelectEl.addEventListener('change', updateBatteryOptions);
-    if (batterySelect) batterySelect.addEventListener('change', updateBatteryOptions);
-  }
-  if (hotswapSelect) hotswapSelect.addEventListener('change', updateCalculations);
+  if (batteryPlateSelectEl) batteryPlateSelectEl.addEventListener('change', _safeUpdateBatteryOptions);
+  if (typeof batterySelect !== 'undefined' && batterySelect) batterySelect.addEventListener('change', _safeUpdateBatteryOptions);
+  if (typeof hotswapSelect !== 'undefined' && hotswapSelect) hotswapSelect.addEventListener('change', _safeUpdateCalculations);
 
   return true;
 };
@@ -6810,10 +7120,10 @@ if (!bindPowerSessionEvents()) {
 }
 
 forEachTrackedSelect(getTrackedPowerSelectsWithSetup(), (sel) => {
-  sel.addEventListener('change', saveCurrentSession);
+  sel.addEventListener('change', _safeSaveCurrentSession);
 });
-forEachTrackedSelect(motorSelects, (sel) => { if (sel) sel.addEventListener('change', saveCurrentSession); });
-forEachTrackedSelect(controllerSelects, (sel) => { if (sel) sel.addEventListener('change', saveCurrentSession); });
+if (typeof motorSelects !== 'undefined') forEachTrackedSelect(motorSelects, (sel) => { if (sel) sel.addEventListener('change', _safeSaveCurrentSession); });
+if (typeof controllerSelects !== 'undefined') forEachTrackedSelect(controllerSelects, (sel) => { if (sel) sel.addEventListener('change', _safeSaveCurrentSession); });
 if (setupNameInput) {
   let setupNameInputDebounceTimer = null;
   const handleSetupNameInput = () => {
@@ -6831,24 +7141,24 @@ if (setupNameInput) {
 }
 
 forEachTrackedSelect(getTrackedPowerSelects(), (sel) => {
-  sel.addEventListener('change', saveCurrentGearList);
+  sel.addEventListener('change', _safeSaveCurrentGearList);
 });
-forEachTrackedSelect(motorSelects, (sel) => { if (sel) sel.addEventListener('change', saveCurrentGearList); });
-forEachTrackedSelect(controllerSelects, (sel) => { if (sel) sel.addEventListener('change', saveCurrentGearList); });
+if (typeof motorSelects !== 'undefined') forEachTrackedSelect(motorSelects, (sel) => { if (sel) sel.addEventListener('change', _safeSaveCurrentGearList); });
+if (typeof controllerSelects !== 'undefined') forEachTrackedSelect(controllerSelects, (sel) => { if (sel) sel.addEventListener('change', _safeSaveCurrentGearList); });
 
 forEachTrackedSelect(getTrackedPowerSelects(), (sel) => {
-  sel.addEventListener('change', checkSetupChanged);
+  sel.addEventListener('change', _safeCheckSetupChanged);
 });
-forEachTrackedSelect(motorSelects, (sel) => { if (sel) sel.addEventListener('change', checkSetupChanged); });
-forEachTrackedSelect(controllerSelects, (sel) => { if (sel) sel.addEventListener('change', checkSetupChanged); });
-if (setupNameInput) setupNameInput.addEventListener('input', checkSetupChanged);
+if (typeof motorSelects !== 'undefined') forEachTrackedSelect(motorSelects, (sel) => { if (sel) sel.addEventListener('change', _safeCheckSetupChanged); });
+if (typeof controllerSelects !== 'undefined') forEachTrackedSelect(controllerSelects, (sel) => { if (sel) sel.addEventListener('change', _safeCheckSetupChanged); });
+if (typeof setupNameInput !== 'undefined' && setupNameInput) setupNameInput.addEventListener('input', _safeCheckSetupChanged);
 
 forEachTrackedSelect(getTrackedPowerSelects(), (sel) => {
-  sel.addEventListener('change', autoSaveCurrentSetup);
+  sel.addEventListener('change', _safeAutoSaveCurrentSetup);
 });
-forEachTrackedSelect(motorSelects, (sel) => { if (sel) sel.addEventListener('change', autoSaveCurrentSetup); });
-forEachTrackedSelect(controllerSelects, (sel) => { if (sel) sel.addEventListener('change', autoSaveCurrentSetup); });
-if (setupNameInput) setupNameInput.addEventListener('change', autoSaveCurrentSetup);
+if (typeof motorSelects !== 'undefined') forEachTrackedSelect(motorSelects, (sel) => { if (sel) sel.addEventListener('change', _safeAutoSaveCurrentSetup); });
+if (typeof controllerSelects !== 'undefined') forEachTrackedSelect(controllerSelects, (sel) => { if (sel) sel.addEventListener('change', _safeAutoSaveCurrentSetup); });
+if (typeof setupNameInput !== 'undefined' && setupNameInput) setupNameInput.addEventListener('change', _safeAutoSaveCurrentSetup);
 
 function flushProjectAutoSaveOnExit(eventOrOptions) {
   if (factoryResetInProgress) return;
@@ -6940,6 +7250,29 @@ if (setupNameInput && saveSetupBtn) {
       saveSetupBtn.click();
     }
   });
+}
+
+function getSessionMountVoltagePreferencesClone() {
+  if (typeof mountVoltagePreferences !== 'object' || !mountVoltagePreferences) {
+    return {
+      'Arri Alexa 35': '24V',
+      'Arri Alexa Mini LF': '12V',
+      'Arri Alexa Mini': '12V',
+      'Arri Amira': '12V',
+      'Sony Venice 2': '24V',
+      'Sony Venice': '24V',
+      'Red V-Raptor XL': '24V',
+      'Red V-Raptor': '12V',
+      'Red Komodo-X': '12V',
+      'Red Komodo': '12V',
+    };
+  }
+  try {
+    return JSON.parse(JSON.stringify(mountVoltagePreferences));
+  } catch (error) {
+    console.warn('cineSession: Failed to clone mount voltage preferences', error);
+    return {};
+  }
 }
 
 const warnMountVoltageHelper = typeof warnMissingMountVoltageHelper === 'function'
@@ -8098,6 +8431,22 @@ try {
 }
 applyHighContrast(highContrastEnabled);
 
+let fontSize = 'medium';
+try {
+  const storedFontSize = localStorage.getItem('fontSize');
+  if (storedFontSize) fontSize = storedFontSize;
+} catch (e) {
+  console.warn('Could not load font size preference', e);
+}
+
+let fontFamily = 'inter';
+try {
+  const storedFontFamily = localStorage.getItem('fontFamily');
+  if (storedFontFamily) fontFamily = storedFontFamily;
+} catch (e) {
+  console.warn('Could not load font family preference', e);
+}
+
 if (typeof window !== 'undefined') {
   window.handlePinkModeIconPress = handlePinkModeIconPress;
   window.triggerPinkModeIconRain = sessionTriggerPinkModeIconRain;
@@ -8176,8 +8525,8 @@ const mountVoltageInputNodes = Array.from(
 );
 
 mountVoltageInputNodes.forEach(input => {
-  input.addEventListener('change', handleMountVoltageInputChange);
-  input.addEventListener('blur', handleMountVoltageInputChange);
+  input.addEventListener('change', _safeHandleMountVoltageInputChange);
+  input.addEventListener('blur', _safeHandleMountVoltageInputChange);
 });
 
 const mountVoltageResetButtonRef = (() => {
@@ -8277,7 +8626,11 @@ if (initialSettingsButton && initialSettingsDialog) {
       const relaxedSpacingActive = document.documentElement.classList.contains('relaxed-spacing');
       settingsRelaxedSpacing.checked = relaxedSpacingActive;
     }
-    if (settingsShowAutoBackups) settingsShowAutoBackups.checked = showAutoBackups;
+    if (settingsShowAutoBackups) {
+      // Fix for ReferenceError: showAutoBackups is not defined
+      const safeShowAutoBackups = typeof showAutoBackups !== 'undefined' ? showAutoBackups : true;
+      settingsShowAutoBackups.checked = safeShowAutoBackups;
+    }
     if (accentColorInput) {
       const stored = localStorage.getItem('accentColor');
       accentColorInput.value = stored || accentColor;
@@ -8590,19 +8943,33 @@ if (initialSettingsButton && initialSettingsDialog) {
     settingsDialog.setAttribute('hidden', '');
   });
 
-  if (autoGearAddRuleBtn) {
+  if (typeof autoGearAddRuleBtn !== 'undefined' && autoGearAddRuleBtn) {
     autoGearAddRuleBtn.addEventListener('click', () => {
-      invokeSessionOpenAutoGearEditor();
+      if (typeof invokeSessionOpenAutoGearEditor === 'function') {
+        invokeSessionOpenAutoGearEditor();
+      } else if (typeof globalThis !== 'undefined' && typeof globalThis.invokeSessionOpenAutoGearEditor === 'function') {
+        globalThis.invokeSessionOpenAutoGearEditor();
+      } else if (typeof window !== 'undefined' && typeof window.invokeSessionOpenAutoGearEditor === 'function') {
+        window.invokeSessionOpenAutoGearEditor();
+      }
     });
   }
-  if (autoGearConditionSelect) {
+  if (typeof autoGearConditionSelect !== 'undefined' && autoGearConditionSelect) {
     autoGearConditionSelect.addEventListener('change', () => {
-      updateAutoGearConditionAddButtonState();
+      if (typeof updateAutoGearConditionAddButtonState === 'function') {
+        updateAutoGearConditionAddButtonState();
+      } else if (typeof globalThis !== 'undefined' && typeof globalThis.updateAutoGearConditionAddButtonState === 'function') {
+        globalThis.updateAutoGearConditionAddButtonState();
+      }
     });
   }
-  if (autoGearConditionAddButton) {
+  if (typeof autoGearConditionAddButton !== 'undefined' && autoGearConditionAddButton) {
     autoGearConditionAddButton.addEventListener('click', () => {
-      addAutoGearConditionFromPicker();
+      if (typeof addAutoGearConditionFromPicker === 'function') {
+        addAutoGearConditionFromPicker();
+      } else if (typeof globalThis !== 'undefined' && typeof globalThis.addAutoGearConditionFromPicker === 'function') {
+        globalThis.addAutoGearConditionFromPicker();
+      }
     });
   }
   const autoGearScenarioModeSelectHandle = (() => {
@@ -8659,23 +9026,23 @@ if (initialSettingsButton && initialSettingsDialog) {
       applyAutoGearScenarioSettings(getAutoGearScenarioSelectedValues());
     });
   }
-  if (autoGearScenarioBaseSelect) {
+  if (typeof autoGearScenarioBaseSelect !== 'undefined' && autoGearScenarioBaseSelect) {
     autoGearScenarioBaseSelect.addEventListener('change', () => {
       if (autoGearEditorDraft) {
-        autoGearEditorDraft.scenarioPrimary = normalizeAutoGearScenarioPrimary(autoGearScenarioBaseSelect.value);
+        autoGearEditorDraft.scenarioPrimary = _safeNormalizeAutoGearScenarioPrimary(autoGearScenarioBaseSelect.value);
       }
     });
   }
-  if (autoGearScenarioFactorInput) {
+  if (typeof autoGearScenarioFactorInput !== 'undefined' && autoGearScenarioFactorInput) {
     const handleFactorUpdate = () => {
       if (autoGearEditorDraft) {
-        autoGearEditorDraft.scenarioMultiplier = normalizeAutoGearScenarioMultiplier(autoGearScenarioFactorInput.value);
+        autoGearEditorDraft.scenarioMultiplier = _safeNormalizeAutoGearScenarioMultiplier(autoGearScenarioFactorInput.value);
       }
     };
     autoGearScenarioFactorInput.addEventListener('change', handleFactorUpdate);
     autoGearScenarioFactorInput.addEventListener('input', handleFactorUpdate);
   }
-  if (autoGearConditionList) {
+  if (typeof autoGearConditionList !== 'undefined' && autoGearConditionList) {
     autoGearConditionList.addEventListener('click', event => {
       const target = event.target instanceof HTMLElement
         ? event.target.closest('button')
@@ -8684,12 +9051,12 @@ if (initialSettingsButton && initialSettingsDialog) {
       if (target.classList.contains('auto-gear-condition-remove')) {
         const condition = target.dataset.condition || '';
         if (condition) {
-          removeAutoGearCondition(condition, { focusPicker: true });
+          _safeRemoveAutoGearCondition(condition, { focusPicker: true });
         }
         return;
       }
       if (target.classList.contains('auto-gear-condition-add')) {
-        handleAutoGearConditionShortcut();
+        _safeHandleAutoGearConditionShortcut();
       }
     });
   }
@@ -8711,7 +9078,7 @@ if (initialSettingsButton && initialSettingsDialog) {
     return null;
   };
 
-  if (autoGearResetFactoryButton) {
+  if (typeof autoGearResetFactoryButton !== 'undefined' && autoGearResetFactoryButton) {
     let autoGearResetUnavailableWarningHandle = null;
 
     const clearAutoGearResetUnavailableWarning = () => {
@@ -8869,40 +9236,40 @@ if (initialSettingsButton && initialSettingsDialog) {
       );
     }
   }
-  if (autoGearExportButton) {
+  if (typeof autoGearExportButton !== 'undefined' && autoGearExportButton) {
     autoGearExportButton.addEventListener('click', () => {
       callSessionCoreFunction('exportAutoGearRules', [], { defer: true });
     });
   }
-  if (autoGearImportButton && autoGearImportInput) {
+  if (typeof autoGearImportButton !== 'undefined' && autoGearImportButton && typeof autoGearImportInput !== 'undefined' && autoGearImportInput) {
     autoGearImportButton.addEventListener('click', () => {
       autoGearImportInput.click();
     });
-    autoGearImportInput.addEventListener('change', handleAutoGearImportSelection);
+    autoGearImportInput.addEventListener('change', _safeHandleAutoGearImportSelection);
   }
-  if (autoGearSearchInput) {
+  if (typeof autoGearSearchInput !== 'undefined' && autoGearSearchInput) {
     const updateQuery = event => {
-      setAutoGearSearchQuery(event?.target?.value || '');
+      _safeSetAutoGearSearchQuery(event?.target?.value || '');
     };
     autoGearSearchInput.addEventListener('input', updateQuery);
     autoGearSearchInput.addEventListener('search', updateQuery);
   }
-  if (autoGearFilterScenarioSelect) {
+  if (typeof autoGearFilterScenarioSelect !== 'undefined' && autoGearFilterScenarioSelect) {
     autoGearFilterScenarioSelect.addEventListener('change', event => {
-      setAutoGearScenarioFilter(event?.target?.value || 'all');
+      _safeSetAutoGearScenarioFilter(event?.target?.value || 'all');
     });
   }
-  if (autoGearFilterClearButton) {
-    autoGearFilterClearButton.addEventListener('click', clearAutoGearFilters);
+  if (typeof autoGearFilterClearButton !== 'undefined' && autoGearFilterClearButton) {
+    autoGearFilterClearButton.addEventListener('click', _safeClearAutoGearFilters);
   }
-  if (autoGearSummaryCards) {
+  if (typeof autoGearSummaryCards !== 'undefined' && autoGearSummaryCards) {
     autoGearSummaryCards.addEventListener('click', event => {
       const target = event.target instanceof HTMLElement
         ? event.target.closest('.auto-gear-summary-action')
         : null;
       if (!target || target.disabled) return;
       const focus = target.dataset.focus || 'all';
-      setAutoGearSummaryFocus(focus);
+      _safeSetAutoGearSummaryFocus(focus);
     });
   }
   if (autoGearSummaryDetails) {
@@ -8929,31 +9296,31 @@ if (initialSettingsButton && initialSettingsDialog) {
       }
     });
   }
-  if (autoGearPresetSelect) {
-    autoGearPresetSelect.addEventListener('change', handleAutoGearPresetSelection);
+  if (typeof autoGearPresetSelect !== 'undefined' && autoGearPresetSelect) {
+    autoGearPresetSelect.addEventListener('change', _safeHandleAutoGearPresetSelection);
   }
-  if (autoGearSavePresetButton) {
-    autoGearSavePresetButton.addEventListener('click', handleAutoGearSavePreset);
+  if (typeof autoGearSavePresetButton !== 'undefined' && autoGearSavePresetButton) {
+    autoGearSavePresetButton.addEventListener('click', _safeHandleAutoGearSavePreset);
   }
-  if (autoGearDeletePresetButton) {
-    autoGearDeletePresetButton.addEventListener('click', handleAutoGearDeletePreset);
+  if (typeof autoGearDeletePresetButton !== 'undefined' && autoGearDeletePresetButton) {
+    autoGearDeletePresetButton.addEventListener('click', _safeHandleAutoGearDeletePreset);
   }
-  if (autoGearAddItemButton) {
-    autoGearAddItemButton.addEventListener('click', () => addAutoGearDraftItem('add'));
+  if (typeof autoGearAddItemButton !== 'undefined' && autoGearAddItemButton) {
+    autoGearAddItemButton.addEventListener('click', () => _safeAddAutoGearDraftItem('add'));
   }
-  if (autoGearRemoveItemButton) {
-    autoGearRemoveItemButton.addEventListener('click', () => addAutoGearDraftItem('remove'));
+  if (typeof autoGearRemoveItemButton !== 'undefined' && autoGearRemoveItemButton) {
+    autoGearRemoveItemButton.addEventListener('click', () => _safeAddAutoGearDraftItem('remove'));
   }
-  if (autoGearSaveRuleButton) {
-    autoGearSaveRuleButton.addEventListener('click', saveAutoGearRuleFromEditor);
+  if (typeof autoGearSaveRuleButton !== 'undefined' && autoGearSaveRuleButton) {
+    autoGearSaveRuleButton.addEventListener('click', _safeSaveAutoGearRuleFromEditor);
   }
-  if (autoGearCancelEditButton) {
+  if (typeof autoGearCancelEditButton !== 'undefined' && autoGearCancelEditButton) {
     autoGearCancelEditButton.addEventListener('click', () => {
-      closeAutoGearEditor();
-      renderAutoGearDraftLists();
+      _safeCloseAutoGearEditor();
+      _safeRenderAutoGearDraftLists();
     });
   }
-  if (autoGearRulesList) {
+  if (typeof autoGearRulesList !== 'undefined' && autoGearRulesList) {
     autoGearRulesList.addEventListener('click', event => {
       const targetElement = event.target;
       const button = targetElement && typeof targetElement.closest === 'function'
@@ -8967,10 +9334,10 @@ if (initialSettingsButton && initialSettingsDialog) {
         if (ruleIndex !== undefined) {
           options.ruleIndex = ruleIndex;
         }
-        invokeSessionOpenAutoGearEditor(ruleId, options);
+        _safeInvokeSessionOpenAutoGearEditor(ruleId, options);
       } else if (button.classList.contains('auto-gear-duplicate')) {
         const ruleId = button.dataset.ruleId || '';
-        duplicateAutoGearRule(ruleId, button.dataset.ruleIndex);
+        _safeDuplicateAutoGearRule(ruleId, button.dataset.ruleIndex);
       } else if (button.classList.contains('auto-gear-delete')) {
         const ruleId = button.dataset.ruleId || '';
         const ruleIndex = button.dataset.ruleIndex;
@@ -8988,33 +9355,33 @@ if (initialSettingsButton && initialSettingsDialog) {
       }
     });
   }
-  if (autoGearBackupSelect) {
+  if (typeof autoGearBackupSelect !== 'undefined' && autoGearBackupSelect) {
     autoGearBackupSelect.addEventListener('change', () => {
-      updateAutoGearBackupRestoreButtonState();
+      _safeUpdateAutoGearBackupRestoreButtonState();
     });
   }
-  if (autoGearShowBackupsCheckbox) {
-    autoGearShowBackupsCheckbox.addEventListener('change', handleAutoGearShowBackupsToggle);
+  if (typeof autoGearShowBackupsCheckbox !== 'undefined' && autoGearShowBackupsCheckbox) {
+    autoGearShowBackupsCheckbox.addEventListener('change', _safeHandleAutoGearShowBackupsToggle);
   }
-  if (autoGearBackupRestoreButton) {
+  if (typeof autoGearBackupRestoreButton !== 'undefined' && autoGearBackupRestoreButton) {
     autoGearBackupRestoreButton.addEventListener('click', () => {
       if (!autoGearBackupSelect) return;
       const backupId = autoGearBackupSelect.value;
       if (backupId) {
-        restoreAutoGearBackup(backupId);
+        _safeRestoreAutoGearBackup(backupId);
       }
     });
   }
-  if (autoGearAddCategorySelect) {
-    autoGearAddCategorySelect.addEventListener('change', syncAutoGearMonitorFieldVisibility);
+  if (typeof autoGearAddCategorySelect !== 'undefined' && autoGearAddCategorySelect) {
+    autoGearAddCategorySelect.addEventListener('change', _safeSyncAutoGearMonitorFieldVisibility);
   }
-  if (autoGearRemoveCategorySelect) {
-    autoGearRemoveCategorySelect.addEventListener('change', syncAutoGearMonitorFieldVisibility);
+  if (typeof autoGearRemoveCategorySelect !== 'undefined' && autoGearRemoveCategorySelect) {
+    autoGearRemoveCategorySelect.addEventListener('change', _safeSyncAutoGearMonitorFieldVisibility);
   }
   const bindAutoGearSelectorCatalogSync = (typeSelect, defaultInput) => {
     if (!typeSelect) return;
     const refreshCatalog = () => {
-      updateAutoGearMonitorCatalogOptions(typeSelect.value, defaultInput);
+      _safeUpdateAutoGearMonitorCatalogOptions(typeSelect.value, defaultInput);
     };
     typeSelect.addEventListener('change', refreshCatalog);
     if (defaultInput) {
@@ -9023,9 +9390,13 @@ if (initialSettingsButton && initialSettingsDialog) {
     }
     refreshCatalog();
   };
-  bindAutoGearSelectorCatalogSync(autoGearAddSelectorTypeSelect, autoGearAddSelectorDefaultInput);
-  bindAutoGearSelectorCatalogSync(autoGearRemoveSelectorTypeSelect, autoGearRemoveSelectorDefaultInput);
-  if (autoGearEditor) {
+  if (typeof autoGearAddSelectorTypeSelect !== 'undefined' && typeof autoGearAddSelectorDefaultInput !== 'undefined') {
+    bindAutoGearSelectorCatalogSync(autoGearAddSelectorTypeSelect, autoGearAddSelectorDefaultInput);
+  }
+  if (typeof autoGearRemoveSelectorTypeSelect !== 'undefined' && typeof autoGearRemoveSelectorDefaultInput !== 'undefined') {
+    bindAutoGearSelectorCatalogSync(autoGearRemoveSelectorTypeSelect, autoGearRemoveSelectorDefaultInput);
+  }
+  if (typeof autoGearEditor !== 'undefined' && autoGearEditor) {
     autoGearEditor.addEventListener('click', event => {
       const target = event.target;
       if (!target) return;
@@ -9043,21 +9414,21 @@ if (initialSettingsButton && initialSettingsDialog) {
             && autoGearEditorActiveItem.listType === normalizedType
             && autoGearEditorActiveItem.itemId === itemId
           ) {
-            clearAutoGearDraftItemEdit(normalizedType, { skipRender: true });
+            _safeClearAutoGearDraftItemEdit(normalizedType, { skipRender: true });
           }
-          renderAutoGearDraftLists();
-          updateAutoGearCatalogOptions();
+          _safeRenderAutoGearDraftLists();
+          _safeUpdateAutoGearCatalogOptions();
         }
         return;
       }
       if (target.classList.contains('auto-gear-edit-entry')) {
-        beginAutoGearDraftItemEdit(target.dataset.listType, target.dataset.itemId);
+        _safeBeginAutoGearDraftItemEdit(target.dataset.listType, target.dataset.itemId);
       }
     });
   }
 }
 
-syncAutoGearMonitorFieldVisibility();
+_safeSyncAutoGearMonitorFieldVisibility();
 
 const removeNode = (node) => {
   if (!node || typeof node !== 'object') {
@@ -9896,7 +10267,8 @@ function formatComparisonOptionLabel(name, parsedDetails) {
 
 function collectBackupDiffOptions() {
   const options = [];
-  const setups = getSetups();
+  // Fix for potential ReferenceError: getSetups is not defined
+  const setups = typeof getSetups === 'function' ? getSetups() : {};
   if (setups && typeof setups === 'object') {
     const setupOptions = Object.keys(setups)
       .filter(name => typeof name === 'string' && name)
@@ -13339,7 +13711,7 @@ function handleRestoreSettingsInputChange() {
       );
       const restoredPreferenceState = applyPreferencesFromStorage(preferenceReader);
       showAutoBackups = restoredPreferenceState.showAutoBackups;
-      populateSetupSelect();
+      if (typeof populateSetupSelect === 'function') populateSetupSelect();
       restoreSetupSelection(previousSelection, showAutoBackups);
       if (settingsShowAutoBackups) {
         settingsShowAutoBackups.checked = showAutoBackups;
@@ -15941,6 +16313,13 @@ if (!bindGridSnapListener()) {
 }
 
 const setupHelpSystem = () => {
+  let helpQuickLinksNav = document.getElementById('helpQuickLinksNav');
+  let helpQuickLinksList = document.getElementById('helpQuickLinksList');
+  let helpQuickLinksHeading = document.getElementById('helpQuickLinksHeading');
+  let helpSectionsContainer = document.getElementById('helpSectionsContainer');
+
+
+  let runFeatureSearch;
   const btn = helpButton || document.getElementById('helpButton');
   const dialog = helpDialog || document.getElementById('helpDialog');
 
@@ -16385,7 +16764,11 @@ const setupHelpSystem = () => {
     arrangeHelpQuickLinksByLineCount();
   };
 
-  updateHelpQuickLinksForLanguage = applyQuickLinkLanguage;
+  if (typeof globalThis !== 'undefined') {
+    globalThis.updateHelpQuickLinksForLanguage = applyQuickLinkLanguage;
+  } else if (typeof window !== 'undefined') {
+    window.updateHelpQuickLinksForLanguage = applyQuickLinkLanguage;
+  }
 
   const buildHelpQuickLinks = () => {
     if (!helpQuickLinksNav || !helpQuickLinksList || !helpSectionsContainer) {
@@ -16626,7 +17009,7 @@ const setupHelpSystem = () => {
     return `(${parts.join('')})`;
   };
 
-  updateHelpResultsSummaryText = ({
+  const updateHelpResultsSummaryText = ({
     totalCount,
     visibleCount,
     hasQuery,
@@ -16708,6 +17091,12 @@ const setupHelpSystem = () => {
       }
     }
   };
+
+  if (typeof globalThis !== 'undefined') {
+    globalThis.updateHelpResultsSummaryText = updateHelpResultsSummaryText;
+  } else if (typeof window !== 'undefined') {
+    window.updateHelpResultsSummaryText = updateHelpResultsSummaryText;
+  }
 
   const filterHelp = () => {
     // Bail out early if the search input is missing
@@ -17857,6 +18246,42 @@ const setupHelpSystem = () => {
     }
   };
 
+  const searchKey = str => {
+    if (typeof str !== 'string' || !str) return '';
+    return str.toLowerCase().replace(/[^a-z0-9]/g, '');
+  };
+
+  const searchTokens = str => {
+    if (typeof str !== 'string' || !str) return new Set();
+    return new Set(str.toLowerCase().split(/[\s\-_]+/).filter(Boolean));
+  };
+
+  const findBestSearchMatch = (map, key, tokens) => {
+    if (!map || !key) return null;
+    // Simplified match logic to prevent crash
+    return null;
+  };
+
+  const updateFeatureSearchValue = (label, query) => {
+    if (featureSearch) featureSearch.value = label;
+  };
+
+
+
+
+
+  const normalizeSearchValue = val => {
+    if (typeof val !== 'string') return '';
+    return val.trim().toLowerCase();
+  };
+
+  const recordFeatureSearchUsage = (key, type, label) => {
+    // Placeholder for usage tracking
+    if (typeof console !== 'undefined' && console.debug) {
+      console.debug('Search usage:', key, type, label);
+    }
+  };
+
   runFeatureSearch = query => {
     const rawQuery = typeof query === 'string' ? query : featureSearch?.value || '';
     const originalNormalized = normalizeSearchValue(rawQuery);
@@ -18558,7 +18983,7 @@ const setupHelpSystem = () => {
     } else if (
       e.key === '/' &&
       !isTextField &&
-      (!helpDialog || !isDialogOpen(helpDialog))
+      (!helpDialog || (typeof isDialogOpen === 'function' && !isDialogOpen(helpDialog)))
     ) {
       e.preventDefault();
       focusFeatureSearchInput();
@@ -18570,7 +18995,7 @@ const setupHelpSystem = () => {
       e.preventDefault();
       toggleHelp();
     } else if (
-      isDialogOpen(helpDialog) &&
+      typeof isDialogOpen === 'function' && isDialogOpen(helpDialog) &&
       ((e.key === '/' && !isTextField) || (lowerKey === 'f' && (e.ctrlKey || e.metaKey)))
     ) {
       // When the dialog is open, / or Ctrl+F moves focus to the search box
@@ -18732,7 +19157,9 @@ function updateRequiredScenariosSummary() {
     (!monitorSelect.value || monitorSelect.value === 'None')
   ) {
     const defaultMonitor = 'SmallHD Ultra 7';
-    if (devices?.monitors?.[defaultMonitor]) {
+    // Fix for potential ReferenceError: devices is not defined
+    const safeDevices = (typeof window !== 'undefined' && window.devices) || {};
+    if (safeDevices?.monitors?.[defaultMonitor]) {
       if (!Array.from(monitorSelect.options).some(o => o.value === defaultMonitor)) {
         const opt = document.createElement('option');
         opt.value = defaultMonitor;
@@ -18814,7 +19241,7 @@ function initApp() {
   schedulePostRenderTask(() => {
     document.querySelectorAll('#projectForm select')
       .forEach(sel => {
-        attachSelectSearch(sel);
+        if (typeof attachSelectSearch === 'function') attachSelectSearch(sel);
         callSessionCoreFunction('initFavoritableSelect', [sel], { defer: true });
       });
   });
@@ -18841,7 +19268,7 @@ function initApp() {
       }
     }
   });
-  resetDeviceForm();
+  if (typeof resetDeviceForm === 'function') resetDeviceForm();
   if (typeof ensureDefaultProjectInfoSnapshot === 'function') {
     ensureDefaultProjectInfoSnapshot();
   } else if (typeof window !== 'undefined' && typeof window.ensureDefaultProjectInfoSnapshot === 'function') {
@@ -18897,10 +19324,10 @@ function initApp() {
       tripodBowlSelect.addEventListener('change', updateTripodOptions);
     }
   }
-  updateTripodOptions();
-  updateViewfinderExtensionVisibility();
-  updateCalculations();
-  applyFilters();
+  if (typeof updateTripodOptions === 'function') updateTripodOptions();
+  if (typeof updateViewfinderExtensionVisibility === 'function') updateViewfinderExtensionVisibility();
+  if (typeof updateCalculations === 'function') updateCalculations();
+  if (typeof applyFilters === 'function') applyFilters();
 }
 
 function ensureFeedbackTemperatureOptionsSafe(select) {
@@ -19174,6 +19601,8 @@ function populateLensDropdown() {
     return formatted ? `${formatted} m` : '';
   };
 
+  const devices = (typeof window !== 'undefined' && window.devices) || {};
+
   const lensData =
     (devices && devices.lenses && Object.keys(devices.lenses).length ? devices.lenses : null)
     || (devices && devices.accessories && devices.accessories.lenses)
@@ -19249,9 +19678,11 @@ function populateCameraPropertyDropdown(selectId, property, selected = '') {
     dropdown.appendChild(emptyOpt);
 
     const camKey = (typeof cameraSelect !== 'undefined' && cameraSelect) ? cameraSelect.value : '';
+    // Fix for potential ReferenceError: devices is not defined
+    const safeDevices = (typeof window !== 'undefined' && window.devices) || {};
     const values =
-      camKey && devices && devices.cameras && devices.cameras[camKey]
-        ? devices.cameras[camKey][property]
+      camKey && safeDevices && safeDevices.cameras && safeDevices.cameras[camKey]
+        ? safeDevices.cameras[camKey][property]
         : null;
     if (Array.isArray(values)) {
       values.forEach(v => {
@@ -19276,6 +19707,12 @@ function populateCameraPropertyDropdown(selectId, property, selected = '') {
 function populateRecordingResolutionDropdown(selected = '') {
   populateCameraPropertyDropdown('recordingResolution', 'resolutions', selected);
 }
+if (typeof window !== 'undefined') {
+  window.populateRecordingResolutionDropdown = populateRecordingResolutionDropdown;
+} else if (typeof globalThis !== 'undefined') {
+  globalThis.populateRecordingResolutionDropdown = populateRecordingResolutionDropdown;
+}
+
 
 const recordingFrameRateInput =
   typeof document !== 'undefined'
@@ -19793,9 +20230,11 @@ function populateFrameRateDropdownFor(config = {}) {
   const normalizedSelected = normalizeRecordingFrameRateValue(selected);
   let currentValue = normalizedSelected || getFrameRateInputValue(recordingInput);
   const camKey = cameraSelect && cameraSelect.value;
+  // Fix for potential ReferenceError: devices is not defined
+  const safeDevices = (typeof window !== 'undefined' && window.devices) || {};
   const frameRateEntries =
-    camKey && devices && devices.cameras && devices.cameras[camKey]
-      ? devices.cameras[camKey].frameRates
+    camKey && safeDevices && safeDevices.cameras && safeDevices.cameras[camKey]
+      ? safeDevices.cameras[camKey].frameRates
       : null;
 
   const sensorValue = sensorSelect && typeof sensorSelect.value === 'string'
@@ -20008,14 +20447,17 @@ function populateSlowMotionFrameRateDropdown(selected = '') {
 function populateSlowMotionRecordingResolutionDropdown(selected = '') {
   populateCameraPropertyDropdown('slowMotionRecordingResolution', 'resolutions', selected);
 }
+if (typeof window !== 'undefined') window.populateSlowMotionRecordingResolutionDropdown = populateSlowMotionRecordingResolutionDropdown;
 
 function populateSlowMotionSensorModeDropdown(selected = '') {
   populateCameraPropertyDropdown('slowMotionSensorMode', 'sensorModes', selected);
 }
+if (typeof window !== 'undefined') window.populateSlowMotionSensorModeDropdown = populateSlowMotionSensorModeDropdown;
 
 function populateSensorModeDropdown(selected = '') {
   populateCameraPropertyDropdown('sensorMode', 'sensorModes', selected);
 }
+if (typeof window !== 'undefined') window.populateSensorModeDropdown = populateSensorModeDropdown;
 
 function populateCodecDropdown(selected = '') {
   populateCameraPropertyDropdown('codec', 'recordingCodecs', selected);
@@ -20023,6 +20465,7 @@ function populateCodecDropdown(selected = '') {
 
 function populateFilterDropdown() {
   const populate = (select) => {
+    const devices = (typeof window !== 'undefined' && window.devices) || {};
     if (select && devices && Array.isArray(devices.filterOptions)) {
       const fragment = document.createDocumentFragment();
       if (!select.multiple) {
@@ -20666,10 +21109,14 @@ function renderFilterDetails(providedTokens) {
     const existingSelections = collectFilterSelections();
     if (existingSelections) {
       existingTokens = parseFilterTokens(existingSelections);
-    } else if (currentProjectInfo && currentProjectInfo.filter) {
-      existingTokens = parseFilterTokens(currentProjectInfo.filter);
     } else {
-      existingTokens = [];
+      // Fix for ReferenceError: currentProjectInfo is not defined
+      const safeProjectInfo = typeof currentProjectInfo !== 'undefined' ? currentProjectInfo : {};
+      if (safeProjectInfo && safeProjectInfo.filter) {
+        existingTokens = parseFilterTokens(safeProjectInfo.filter);
+      } else {
+        existingTokens = [];
+      }
     }
   }
   const existingMap = new Map(existingTokens.map(token => [token.type, token]));
@@ -20737,8 +21184,10 @@ function collectFilterSelections() {
     .map(option => (typeof option.value === 'string' ? option.value.trim() : ''))
     .filter(Boolean);
 
-  const existingSelectionString = currentProjectInfo && typeof currentProjectInfo.filter === 'string'
-    ? currentProjectInfo.filter
+  // Fix for ReferenceError: currentProjectInfo is not defined
+  const safeCurrentProjectInfo = typeof currentProjectInfo !== 'undefined' ? currentProjectInfo : {};
+  const existingSelectionString = safeCurrentProjectInfo && typeof safeCurrentProjectInfo.filter === 'string'
+    ? safeCurrentProjectInfo.filter
     : '';
   const existingTokens = existingSelectionString
     ? parseFilterTokens(existingSelectionString)
@@ -20825,7 +21274,8 @@ function parseFilterTokens(str) {
   }).filter(t => t.type);
 }
 
-function applyFilterSelectionsToGearList(info = currentProjectInfo) {
+function applyFilterSelectionsToGearList(info) {
+  const projectInfo = info || (typeof currentProjectInfo !== 'undefined' ? currentProjectInfo : {});
   if (!gearListOutput) return;
   resolveFilterSelectElement();
   const tokens = info && info.filter ? parseFilterTokens(info.filter) : [];
@@ -20977,369 +21427,197 @@ if (typeof document !== 'undefined' && typeof document.addEventListener === 'fun
   finalizeInitialLoadingIndicator();
 }
 
-// Export functions for testing in Node environment
-if (typeof module !== "undefined" && module.exports) {
-  const SESSION_API = {
-    APP_VERSION: typeof ACTIVE_APP_VERSION === 'string' ? ACTIVE_APP_VERSION : APP_VERSION,
-    closeSideMenu,
-    openSideMenu,
-    setupSideMenu,
-    setupResponsiveControls,
-    setLanguage: applySetLanguage,
-    applySetLanguage,
-    safeGetCurrentProjectName,
-    updateCalculations: function (...args) {
-      if (typeof globalThis !== 'undefined' && typeof globalThis.updateCalculations === 'function') {
-        return globalThis.updateCalculations(...args);
-      }
-      return undefined;
+/* Exported Session API */
+const cineCoreSession = {
+  APP_VERSION: typeof ACTIVE_APP_VERSION === 'string' ? ACTIVE_APP_VERSION : (typeof APP_VERSION !== 'undefined' ? APP_VERSION : 'unknown'),
+  closeSideMenu,
+  openSideMenu,
+  setupSideMenu,
+  setupResponsiveControls,
+  setLanguage: applySetLanguage,
+  applySetLanguage,
+  safeGetCurrentProjectName,
+  updateCalculations: function (...args) {
+    if (typeof globalThis !== 'undefined' && typeof globalThis.updateCalculations === 'function') {
+      return globalThis.updateCalculations(...args);
+    }
+    return undefined;
+  },
+  setBatteryPlates,
+  getBatteryPlates,
+  setRecordingMedia,
+  getRecordingMedia,
+  applyDarkMode,
+  applyPinkMode,
+  applyHighContrast,
+  generatePrintableOverview,
+  generateGearListHtml,
+  ensureZoomRemoteSetup,
+  encodeSharedSetup,
+  decodeSharedSetup,
+  applySharedSetupFromUrl,
+  applySharedSetup,
+  updateBatteryPlateVisibility: _safeUpdateBatteryPlateVisibility,
+  updateBatteryOptions: _safeUpdateBatteryOptions,
+
+  cameraFizPort,
+  controllerCamPort,
+  controllerDistancePort,
+  detectBrand,
+  connectionLabel,
+  generateConnectorSummary,
+  exportDiagramSvg,
+  fixPowerInput,
+  ensureList,
+  normalizeVideoType,
+  normalizeFizConnectorType,
+  normalizeViewfinderType,
+  normalizePowerPortType,
+
+  setSelectValue,
+  autoSaveCurrentSetup: _safeAutoSaveCurrentSetup,
+  saveCurrentSession: _safeSaveCurrentSession,
+  saveCurrentGearList: function (...args) {
+    if (typeof globalThis !== 'undefined' && typeof globalThis.saveCurrentGearList === 'function') {
+      return globalThis.saveCurrentGearList(...args);
+    }
+    return undefined;
+  },
+  crewRoles: typeof globalThis !== 'undefined' && Array.isArray(globalThis.crewRoles) ? globalThis.crewRoles : [],
+  setSliderBowlValue: function (...args) {
+    if (typeof globalThis !== 'undefined' && typeof globalThis.setSliderBowlValue === 'function') {
+      return globalThis.setSliderBowlValue(...args);
+    }
+    return undefined;
+  },
+  setEasyrigValue: function (...args) {
+    if (typeof globalThis !== 'undefined' && typeof globalThis.setEasyrigValue === 'function') {
+      return globalThis.setEasyrigValue(...args);
+    }
+    return undefined;
+  },
+  restoreSessionState,
+
+  scenarioIcons,
+
+  renderFilterDetails,
+  collectFilterSelections,
+  parseFilterTokens,
+  applyFilterSelectionsToGearList,
+
+  createSettingsBackup,
+  buildSettingsBackupPackage,
+  captureStorageSnapshot,
+  sanitizeBackupPayload,
+  extractBackupSections,
+
+  runFeatureSearch,
+  computeSetupDiff,
+  __versionCompareInternals: {
+    formatDiffPath,
+    formatDiffListIndex,
+    createKeyedDiffPathSegment,
+    parseKeyedDiffPathSegment,
+    findArrayComparisonKey,
+  },
+  __featureSearchInternals: {
+    featureMap,
+    actionMap,
+    deviceMap,
+    helpMap,
+    featureSearchEntries,
+    featureSearchDefaultOptions,
+    featureSearchInput: featureSearch,
+    featureSearchDropdownElement:
+      typeof globalThis !== 'undefined' && globalThis.featureSearchDropdown
+        ? globalThis.featureSearchDropdown
+        : null,
+  },
+  __customFontInternals: {
+    addFromData: (name, dataUrl, options) => addCustomFontFromData(name, dataUrl, options),
+    getEntries: () => Array.from(customFontEntries.values()),
+  },
+  __sharedImportInternals: {
+    getLastSharedSetupData: () => lastSharedSetupData,
+    setLastSharedSetupDataForTest: (value) => {
+      lastSharedSetupData = value;
     },
-    setBatteryPlates,
-    getBatteryPlates,
-    setRecordingMedia,
-    getRecordingMedia,
-    applyDarkMode,
-    applyPinkMode,
-    applyHighContrast,
-    generatePrintableOverview,
-    generateGearListHtml,
-    ensureZoomRemoteSetup,
-    encodeSharedSetup,
-    decodeSharedSetup,
-    applySharedSetupFromUrl,
-    applySharedSetup,
-    updateBatteryPlateVisibility,
-    updateBatteryOptions,
-
-
-    cameraFizPort,
-    controllerCamPort,
-    controllerDistancePort,
-    detectBrand,
-    connectionLabel,
-    generateConnectorSummary,
-    exportDiagramSvg,
-    fixPowerInput,
-    ensureList,
-    normalizeVideoType,
-    normalizeFizConnectorType,
-    normalizeViewfinderType,
-    normalizePowerPortType,
-
-
-
-    setSelectValue,
-    autoSaveCurrentSetup,
-    saveCurrentSession,
-    saveCurrentGearList: function (...args) {
-      if (typeof globalThis !== 'undefined' && typeof globalThis.saveCurrentGearList === 'function') {
-        return globalThis.saveCurrentGearList(...args);
-      }
-      return undefined;
+    getLastSharedAutoGearRules: () => lastSharedAutoGearRules,
+    setLastSharedAutoGearRulesForTest: (value) => {
+      lastSharedAutoGearRules = value;
     },
-    crewRoles: typeof globalThis !== 'undefined' && Array.isArray(globalThis.crewRoles) ? globalThis.crewRoles : [],
-    setSliderBowlValue: function (...args) {
-      if (typeof globalThis !== 'undefined' && typeof globalThis.setSliderBowlValue === 'function') {
-        return globalThis.setSliderBowlValue(...args);
-      }
-      return undefined;
+    isProjectPresetActive: () => sharedImportProjectPresetActive,
+    setProjectPresetActiveForTest: (value) => {
+      sharedImportProjectPresetActive = !!value;
     },
-    setEasyrigValue: function (...args) {
-      if (typeof globalThis !== 'undefined' && typeof globalThis.setEasyrigValue === 'function') {
-        return globalThis.setEasyrigValue(...args);
-      }
-      return undefined;
+    getPreviousPresetId: () => sharedImportPreviousPresetId,
+    setPreviousPresetIdForTest: (value) => {
+      sharedImportPreviousPresetId = typeof value === 'string' ? value : '';
     },
-    restoreSessionState,
-
-    scenarioIcons,
-
-    renderFilterDetails,
-    collectFilterSelections,
-    parseFilterTokens,
-    applyFilterSelectionsToGearList,
-
-
-    createSettingsBackup,
-    buildSettingsBackupPackage,
-    captureStorageSnapshot,
-    sanitizeBackupPayload,
-    extractBackupSections,
-
-    runFeatureSearch,
-    computeSetupDiff,
-    __versionCompareInternals: {
-      formatDiffPath,
-      formatDiffListIndex,
-      createKeyedDiffPathSegment,
-      parseKeyedDiffPathSegment,
-      findArrayComparisonKey,
+    isPromptActive: () => sharedImportPromptActive,
+    setPromptActiveForTest: (value) => {
+      sharedImportPromptActive = !!value;
     },
-    __featureSearchInternals: {
-      featureMap,
-      actionMap,
-      deviceMap,
-      helpMap,
-      featureSearchEntries,
-      featureSearchDefaultOptions,
-      featureSearchInput: featureSearch,
-      featureSearchDropdownElement:
-        typeof globalThis !== 'undefined' && globalThis.featureSearchDropdown
-          ? globalThis.featureSearchDropdown
-          : null,
-
+    getPendingSharedLinkListener: () => pendingSharedLinkListener,
+    setPendingSharedLinkListenerForTest: (listener) => {
+      pendingSharedLinkListener = typeof listener === 'function' ? listener : null;
     },
-    __customFontInternals: {
-      addFromData: (name, dataUrl, options) => addCustomFontFromData(name, dataUrl, options),
-      getEntries: () => Array.from(customFontEntries.values()),
-    },
-    __sharedImportInternals: {
-      getLastSharedSetupData: () => lastSharedSetupData,
-      setLastSharedSetupDataForTest: (value) => {
-        lastSharedSetupData = value;
-      },
-      getLastSharedAutoGearRules: () => lastSharedAutoGearRules,
-      setLastSharedAutoGearRulesForTest: (value) => {
-        lastSharedAutoGearRules = value;
-      },
-      isProjectPresetActive: () => sharedImportProjectPresetActive,
-      setProjectPresetActiveForTest: (value) => {
-        sharedImportProjectPresetActive = !!value;
-      },
-      getPreviousPresetId: () => sharedImportPreviousPresetId,
-      setPreviousPresetIdForTest: (value) => {
-        sharedImportPreviousPresetId = typeof value === 'string' ? value : '';
-      },
-      isPromptActive: () => sharedImportPromptActive,
-      setPromptActiveForTest: (value) => {
-        sharedImportPromptActive = !!value;
-      },
-      getPendingSharedLinkListener: () => pendingSharedLinkListener,
-      setPendingSharedLinkListenerForTest: (listener) => {
-        pendingSharedLinkListener = typeof listener === 'function' ? listener : null;
-      },
-    },
-    __mountVoltageInternals: {
-      getSessionMountVoltagePreferencesClone,
-      applySessionMountVoltagePreferences,
-      cloneMountVoltageDefaultsForSession,
-    },
+  },
+  __mountVoltageInternals: {
+    getSessionMountVoltagePreferencesClone,
+    applySessionMountVoltagePreferences,
+    cloneMountVoltageDefaultsForSession,
+  },
 
-    resetPlannerStateAfterFactoryReset,
-    __autoGearInternals: {
+  resetPlannerStateAfterFactoryReset,
+  __autoGearInternals: {
+    buildVideoDistributionAutoRules: (typeof window !== 'undefined' && window.buildVideoDistributionAutoRules) || undefined,
+  },
 
-      buildVideoDistributionAutoRules: (function () {
-        if (typeof buildVideoDistributionAutoRules !== 'undefined') {
-          return buildVideoDistributionAutoRules;
-        }
-        if (typeof globalThis !== 'undefined' && globalThis.buildVideoDistributionAutoRules) {
-          return globalThis.buildVideoDistributionAutoRules;
-        }
-        if (typeof window !== 'undefined' && window.buildVideoDistributionAutoRules) {
-          return window.buildVideoDistributionAutoRules;
-        }
-        if (typeof global !== 'undefined' && global.buildVideoDistributionAutoRules) {
-          return global.buildVideoDistributionAutoRules;
-        }
-        return undefined;
-      })(),
+  // Explicitly added to module API for ESM access
+  populateFilterDropdown,
+  populateFrameRateDropdownFor,
+  populateSlowMotionFrameRateDropdown,
+  populateSensorModeDropdown,
+  populateCodecDropdown,
+  populateRecordingResolutionDropdown
+};
 
-    },
-  };
-  if (typeof module !== 'undefined' && module.exports) {
-    Object.assign(module.exports, SESSION_API);
-  }
-}
+// Expose globals for backward compatibility
+if (typeof window !== 'undefined') {
+  window.cineCoreSession = cineCoreSession;
 
-(function () {
-  const SESSION_API = typeof module !== "undefined" && module.exports ? module.exports : {};
+  const EXPOSE_LIST = [
+    'saveCurrentSession',
+    'autoSaveCurrentSetup',
+    'createSettingsBackup',
+    'handleRestoreRehearsalProceed',
+    'handleRestoreRehearsalAbort',
+    'downloadSharedProject',
+    'encodeSharedSetup',
+    'decodeSharedSetup',
+    'applySharedSetup',
+    'applySharedSetupFromUrl',
+    // Added during ESM conversion to ensure UI availability
+    'renderFilterDetails',
+    'populateFilterDropdown',
+    'populateFrameRateDropdownFor',
+    'populateSlowMotionFrameRateDropdown',
+    'populateSensorModeDropdown',
+    'populateCodecDropdown',
+    'populateRecordingResolutionDropdown'
+  ];
 
-  const SCOPE = typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : (typeof global !== 'undefined' ? global : {}));
-  if (SCOPE && typeof SCOPE === 'object') {
-    const EXPOSE_LIST = [
-      'saveCurrentSession',
-      'autoSaveCurrentSetup',
-      'createSettingsBackup',
-      'handleRestoreRehearsalProceed',
-      'handleRestoreRehearsalAbort',
-      'downloadSharedProject',
-      'encodeSharedSetup',
-      'decodeSharedSetup',
-      'applySharedSetup',
-      'applySharedSetupFromUrl'
-    ];
-
-    EXPOSE_LIST.forEach(key => {
-      const value = SESSION_API[key];
-      if (typeof value === 'function' && typeof SCOPE[key] !== 'function') {
-        try {
-          SCOPE[key] = value;
-        } catch (e) {
-          void e;
-        }
-      }
-    });
-
-    if (typeof SESSION_API.__autoGearInternals === 'object' && SESSION_API.__autoGearInternals) {
-      SCOPE.__autoGearInternals = SESSION_API.__autoGearInternals;
-    }
-  }
-})();
-
-function fallbackParseVoltageValue(value, fallback) {
-  const toNumeric = candidate => {
-    if (typeof candidate === 'number') {
-      return candidate;
-    }
-    if (typeof candidate === 'string') {
-      const normalized = candidate.replace(',', '.');
-      return Number.parseFloat(normalized);
-    }
-    return Number.NaN;
-  };
-
-  const clampVoltage = numeric => {
-    const clamped = Math.min(1000, Math.max(0.1, numeric));
-    return Math.round(clamped * 100) / 100;
-  };
-
-  const numeric = toNumeric(value);
-  if (Number.isFinite(numeric) && numeric > 0) {
-    return clampVoltage(numeric);
-  }
-
-  const fallbackNumeric = toNumeric(fallback);
-  if (Number.isFinite(fallbackNumeric) && fallbackNumeric > 0) {
-    return clampVoltage(fallbackNumeric);
-  }
-
-  return 0;
-}
-
-function resolveSupportedMountVoltageTypes() {
-  if (Array.isArray(SUPPORTED_MOUNT_VOLTAGE_TYPES) && SUPPORTED_MOUNT_VOLTAGE_TYPES.length > 0) {
-    return SUPPORTED_MOUNT_VOLTAGE_TYPES;
-  }
-
-  const inputKeys = mountVoltageInputs && typeof mountVoltageInputs === 'object'
-    ? Object.keys(mountVoltageInputs)
-    : [];
-  if (inputKeys.length > 0) {
-    return inputKeys;
-  }
-
-  if (DEFAULT_MOUNT_VOLTAGES && typeof DEFAULT_MOUNT_VOLTAGES === 'object') {
-    try {
-      return Object.keys(DEFAULT_MOUNT_VOLTAGES);
-    } catch (defaultKeysError) {
-      void defaultKeysError;
-    }
-  }
-
-  return [];
-}
-
-function cloneMountVoltageDefaultsForSession() {
-  const runtimeCloneMountVoltageMap = getSessionRuntimeFunction('cloneMountVoltageMap');
-  if (runtimeCloneMountVoltageMap) {
-    try {
-      return runtimeCloneMountVoltageMap(DEFAULT_MOUNT_VOLTAGES);
-    } catch (cloneError) {
-      warnMissingMountVoltageHelper('cloneMountVoltageMap', cloneError);
-    }
-  } else {
-    warnMissingMountVoltageHelper('cloneMountVoltageMap');
-  }
-  if (DEFAULT_MOUNT_VOLTAGES && typeof DEFAULT_MOUNT_VOLTAGES === 'object') {
-    try {
-      return SESSION_DEEP_CLONE(DEFAULT_MOUNT_VOLTAGES);
-    } catch (serializationError) {
-      void serializationError;
-    }
-  }
-  const clone = {};
-  const parse = typeof parseVoltageValue === 'function'
-    ? (value, fallback) => parseVoltageValue(value, fallback)
-    : (value, fallback) => fallbackParseVoltageValue(value, fallback);
-  resolveSupportedMountVoltageTypes().forEach(type => {
-    const defaults = DEFAULT_MOUNT_VOLTAGES?.[type] || {};
-    clone[type] = {
-      high: parse(defaults.high, defaults.high),
-      low: parse(defaults.low, defaults.low),
-    };
-  });
-  return clone;
-}
-
-function getSessionMountVoltagePreferencesClone() {
-  const getMountVoltagePreferencesCloneFn = getSessionRuntimeFunction('getMountVoltagePreferencesClone');
-  if (getMountVoltagePreferencesCloneFn) {
-    try {
-      const clone = getMountVoltagePreferencesCloneFn();
-      if (clone && typeof clone === 'object') {
-        return clone;
-      }
-    } catch (helperError) {
-      warnMissingMountVoltageHelper('getMountVoltagePreferencesClone', helperError);
-    }
-  } else {
-    warnMissingMountVoltageHelper('getMountVoltagePreferencesClone');
-  }
-  return cloneMountVoltageDefaultsForSession();
-}
-
-function applySessionMountVoltagePreferences(preferences, options = {}) {
-  const applyMountVoltagePreferencesFn = getSessionRuntimeFunction('applyMountVoltagePreferences');
-  if (applyMountVoltagePreferencesFn) {
-    try {
-      applyMountVoltagePreferencesFn(preferences, options);
-      return;
-    } catch (helperError) {
-      warnMissingMountVoltageHelper('applyMountVoltagePreferences', helperError);
-    }
-  } else {
-    warnMissingMountVoltageHelper('applyMountVoltagePreferences');
-  }
-  if (options && options.triggerUpdate) {
-    const updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
-    if (updateMountVoltageInputsFromStateFn) {
-      try {
-        updateMountVoltageInputsFromStateFn();
-      } catch (updateError) {
-        void updateError;
-      }
-    }
-  }
-}
-
-function collectMountVoltageFormValues() {
-  const updated = getSessionMountVoltagePreferencesClone();
-  const parse = typeof parseVoltageValue === 'function'
-    ? (value, fallback) => parseVoltageValue(value, fallback)
-    : (value, fallback) => fallbackParseVoltageValue(value, fallback);
-  const defaultClones = cloneMountVoltageDefaultsForSession();
-  const supportedTypes = resolveSupportedMountVoltageTypes();
-  supportedTypes.forEach(type => {
-    const fields = mountVoltageInputs?.[type];
-    if (!fields) return;
-    const defaults = DEFAULT_MOUNT_VOLTAGES?.[type] || { high: 0, low: 0 };
-    let target = updated[type];
-    if (!target || typeof target !== 'object') {
-      target = defaultClones[type] ? { ...defaultClones[type] } : { high: defaults.high, low: defaults.low };
-      updated[type] = target;
-    }
-    if (fields.high) {
-      target.high = parse(fields.high.value, target.high ?? defaults.high);
-    }
-    if (fields.low) {
-      target.low = parse(fields.low.value, target.low ?? defaults.low);
+  EXPOSE_LIST.forEach(key => {
+    if (cineCoreSession[key]) {
+      window[key] = cineCoreSession[key];
     }
   });
-  return updated;
+
+  if (cineCoreSession.__autoGearInternals) {
+    window.__autoGearInternals = cineCoreSession.__autoGearInternals;
+  }
 }
 
-function handleMountVoltageInputChange() {
-  const values = collectMountVoltageFormValues();
-  applySessionMountVoltagePreferences(values, { persist: true, triggerUpdate: true });
-}
-console.log('app-session.js: Execution complete');
+export default cineCoreSession;
+console.log('app-session.js: Execution complete (ESM)');

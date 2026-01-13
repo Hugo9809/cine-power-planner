@@ -14,18 +14,24 @@
  * Git's rename heuristics continue to treat this file as intentionally new and
  * the review history remains readable.
  */
+export const CORE_GLOBAL_SCOPE =
+  (typeof globalThis !== 'undefined' && globalThis) ||
+  (typeof window !== 'undefined' && window) ||
+  (typeof self !== 'undefined' && self) ||
+  (typeof global !== 'undefined' && global) ||
+  {};
 
 function resolveRuntimeModuleLoader() {
-  if (typeof require === 'function') {
-    try {
-      const requiredLoader = require('./modules/core/runtime-module-loader.js');
-      if (requiredLoader && typeof requiredLoader === 'object') {
-        return requiredLoader;
-      }
-    } catch (runtimeLoaderError) {
-      void runtimeLoaderError;
-    }
-  }
+  // if (typeof require === 'function') {
+  //   try {
+  //     const requiredLoader = require('./modules/core/runtime-module-loader.js');
+  //     if (requiredLoader && typeof requiredLoader === 'object') {
+  //       return requiredLoader;
+  //     }
+  //   } catch (runtimeLoaderError) {
+  //     void runtimeLoaderError;
+  //   }
+  // }
 
   if (
     typeof cineCoreRuntimeModuleLoader !== 'undefined' &&
@@ -171,13 +177,13 @@ function inlineResolvePrimaryScopeCandidate() {
   return null;
 }
 
-var CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE =
+export var CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE =
   CORE_RUNTIME_SCOPE_TOOLS &&
     typeof CORE_RUNTIME_SCOPE_TOOLS.getPrimaryScopeCandidate === 'function'
     ? CORE_RUNTIME_SCOPE_TOOLS.getPrimaryScopeCandidate()
     : inlineResolvePrimaryScopeCandidate();
 
-var collectRuntimeScopeCandidates =
+export var collectRuntimeScopeCandidates =
   CORE_RUNTIME_SCOPE_TOOLS && typeof CORE_RUNTIME_SCOPE_TOOLS.getScopeCandidates === 'function'
     ? function collectRuntimeScopeCandidates(additionalCandidates = []) {
       return CORE_RUNTIME_SCOPE_TOOLS.getScopeCandidates({
@@ -225,4 +231,9 @@ var collectRuntimeScopeCandidates =
 
       return resolved;
     };
+
+if (typeof window !== 'undefined') {
+  window.collectRuntimeScopeCandidates = collectRuntimeScopeCandidates;
+  window.CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE = CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE;
+}
 

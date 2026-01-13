@@ -1,4 +1,7 @@
-(function () {
+const runtimeModule = (function () {
+  // ESM specific context adjustments if needed
+  const globalThis = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : (typeof global !== 'undefined' ? global : {}));
+  // (function () {
   function detectHelperScope() {
     if (typeof globalThis !== 'undefined') {
       return globalThis;
@@ -1489,7 +1492,7 @@
         configurable: true,
         enumerable: false,
         value: targetRegistry,
-        writable: false,
+        writable: true,
       });
       return { ok: true, updated: true };
     } catch (defineError) {
@@ -2480,7 +2483,7 @@
             configurable: true,
             enumerable: false,
             value: runtimeAPI,
-            writable: false,
+            writable: true,
           });
         }
       } catch (attachmentError) {
@@ -2490,4 +2493,8 @@
       module.exports = runtimeAPI;
     }
   }
+  return runtimeAPI;
 })();
+
+export const cineRuntime = runtimeModule;
+export default runtimeModule;

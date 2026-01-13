@@ -51,8 +51,8 @@ const createInlineRuntimeToolFallbacks = (function createInlineRuntimeToolFallba
       typeof fallbackValue === 'function'
         ? fallbackValue
         : function provideStaticFallback() {
-            return fallbackValue;
-          };
+          return fallbackValue;
+        };
 
     const scope = fallbackDetectScope(scopeCandidate);
 
@@ -206,9 +206,22 @@ const createInlineRuntimeToolFallbacks = (function createInlineRuntimeToolFallba
   };
 })();
 
-let CORE_RUNTIME_TOOL_FALLBACKS =
+// Safely resolve CORE_PART1_RUNTIME_SCOPE with fallback
+const _CORE_PART1_RUNTIME_SCOPE = (() => {
+  try {
+    if (typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' && CORE_PART1_RUNTIME_SCOPE) {
+      return CORE_PART1_RUNTIME_SCOPE;
+    }
+  } catch (e) { /* ignore */ }
+  return typeof globalThis !== 'undefined' ? globalThis :
+    typeof window !== 'undefined' ? window :
+      typeof self !== 'undefined' ? self :
+        typeof global !== 'undefined' ? global : null;
+})();
+
+export let CORE_RUNTIME_TOOL_FALLBACKS =
   typeof CORE_RUNTIME_TOOL_FALLBACK_FACTORY === 'function'
-    ? CORE_RUNTIME_TOOL_FALLBACK_FACTORY(CORE_PART1_RUNTIME_SCOPE)
+    ? CORE_RUNTIME_TOOL_FALLBACK_FACTORY(_CORE_PART1_RUNTIME_SCOPE)
     : null;
 
 if (
@@ -216,7 +229,7 @@ if (
   typeof CORE_RUNTIME_TOOL_FALLBACKS !== 'object'
 ) {
   CORE_RUNTIME_TOOL_FALLBACKS = createInlineRuntimeToolFallbacks(
-    CORE_PART1_RUNTIME_SCOPE
+    _CORE_PART1_RUNTIME_SCOPE
   );
 }
 
@@ -436,53 +449,53 @@ const CORE_RUNTIME_TOOLS_REFERENCE = (function resolveRuntimeToolsReference() {
   return null;
 })();
 
-const getCoreGlobalObject =
+export const getCoreGlobalObject =
   CORE_RUNTIME_TOOLS_REFERENCE && typeof CORE_RUNTIME_TOOLS_REFERENCE.detectScope === 'function'
     ? function getCoreGlobalObjectProxy() {
-        try {
-          return CORE_RUNTIME_TOOLS_REFERENCE.detectScope(CORE_GLOBAL_SCOPE);
-        } catch (detectScopeError) {
-          void detectScopeError;
-        }
-
-        return fallbackGetCoreGlobalObject();
+      try {
+        return CORE_RUNTIME_TOOLS_REFERENCE.detectScope(CORE_GLOBAL_SCOPE);
+      } catch (detectScopeError) {
+        void detectScopeError;
       }
+
+      return fallbackGetCoreGlobalObject();
+    }
     : fallbackGetCoreGlobalObject;
 
-const ensureCoreGlobalValue =
+export const ensureCoreGlobalValue =
   CORE_RUNTIME_TOOLS_REFERENCE && typeof CORE_RUNTIME_TOOLS_REFERENCE.ensureGlobalValue === 'function'
     ? function ensureCoreGlobalValueProxy(name, fallbackValue) {
-        return CORE_RUNTIME_TOOLS_REFERENCE.ensureGlobalValue(name, fallbackValue, CORE_GLOBAL_SCOPE);
-      }
+      return CORE_RUNTIME_TOOLS_REFERENCE.ensureGlobalValue(name, fallbackValue, CORE_GLOBAL_SCOPE);
+    }
     : fallbackEnsureCoreGlobalValue;
 
 const coreJsonDeepClone =
   CORE_RUNTIME_TOOLS_REFERENCE && typeof CORE_RUNTIME_TOOLS_REFERENCE.jsonDeepClone === 'function'
     ? function coreJsonDeepCloneProxy(value) {
-        try {
-          return CORE_RUNTIME_TOOLS_REFERENCE.jsonDeepClone(value);
-        } catch (jsonCloneError) {
-          void jsonCloneError;
-        }
-
-        return fallbackJsonDeepClone(value);
+      try {
+        return CORE_RUNTIME_TOOLS_REFERENCE.jsonDeepClone(value);
+      } catch (jsonCloneError) {
+        void jsonCloneError;
       }
+
+      return fallbackJsonDeepClone(value);
+    }
     : fallbackJsonDeepClone;
 
 const coreCreateResilientDeepClone =
   CORE_RUNTIME_TOOLS_REFERENCE && typeof CORE_RUNTIME_TOOLS_REFERENCE.createResilientDeepClone === 'function'
     ? function coreCreateResilientDeepCloneProxy(scope) {
-        try {
-          return CORE_RUNTIME_TOOLS_REFERENCE.createResilientDeepClone(scope || CORE_GLOBAL_SCOPE);
-        } catch (createDeepCloneError) {
-          void createDeepCloneError;
-        }
-
-        return fallbackCreateResilientDeepClone(scope || CORE_GLOBAL_SCOPE);
+      try {
+        return CORE_RUNTIME_TOOLS_REFERENCE.createResilientDeepClone(scope || CORE_GLOBAL_SCOPE);
+      } catch (createDeepCloneError) {
+        void createDeepCloneError;
       }
+
+      return fallbackCreateResilientDeepClone(scope || CORE_GLOBAL_SCOPE);
+    }
     : fallbackCreateResilientDeepClone;
 
-const CORE_DEEP_CLONE =
+export const CORE_DEEP_CLONE =
   CORE_RUNTIME_TOOLS_REFERENCE && typeof CORE_RUNTIME_TOOLS_REFERENCE.ensureDeepClone === 'function'
     ? CORE_RUNTIME_TOOLS_REFERENCE.ensureDeepClone(CORE_GLOBAL_SCOPE)
     : fallbackEnsureDeepClone(CORE_GLOBAL_SCOPE);
@@ -495,7 +508,7 @@ if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone !== 'function'
   }
 }
 
-const CORE_RUNTIME_GLOBAL_TOOLS = (function createCoreRuntimeGlobalToolsBridge() {
+export const CORE_RUNTIME_GLOBAL_TOOLS = (function createCoreRuntimeGlobalToolsBridge() {
   const namespace = {};
 
   function assignNamespaceValue(key, value) {
@@ -562,19 +575,25 @@ const CORE_RUNTIME_GLOBAL_TOOLS = (function createCoreRuntimeGlobalToolsBridge()
       if (!scope.cineCoreRuntimeGlobalTools) {
         scope.cineCoreRuntimeGlobalTools = namespace;
       }
+
+      // Direct Global Exposure for legacy compatibility (app-core-new-1.js)
+      if (!scope.ensureCoreGlobalValue) {
+        scope.ensureCoreGlobalValue = namespace.ensureCoreGlobalValue;
+      }
+      if (!scope.getCoreGlobalObject) {
+        scope.getCoreGlobalObject = namespace.getCoreGlobalObject;
+      }
+      // Fix: Expose CORE_DEEP_CLONE globally as expected by app-core-new-1.js
+      if (!scope.CORE_DEEP_CLONE) {
+        scope.CORE_DEEP_CLONE = namespace.CORE_DEEP_CLONE;
+      }
     } catch (assignError) {
       void assignError;
     }
   }
 
-  if (typeof module === 'object' && module && typeof module.exports === 'object') {
-    try {
-      module.exports = namespace;
-    } catch (moduleExportError) {
-      void moduleExportError;
-    }
-  }
-
   return namespace;
 })();
+
+export default CORE_RUNTIME_GLOBAL_TOOLS;
 

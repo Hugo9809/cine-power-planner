@@ -1123,6 +1123,9 @@ if (typeof self !== 'undefined') {
         }
       })();
 
+      // Ensure SW stays alive for network request even if timeout wins
+      event.waitUntil(networkPromise.catch(() => { }));
+
       let response;
 
       if (bypassCache) {

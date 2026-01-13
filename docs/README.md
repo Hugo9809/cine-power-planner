@@ -18,6 +18,18 @@ services, and no dependencies beyond this repository.
    [Offline Readiness Runbook](ops/offline-readiness.md) before any production
    day or offline deployment.
 
+## Quick Dev Start
+
+New to the codebase? Use Vite to start developing instantly:
+
+```bash
+npm install
+npm run dev     # Start dev server at localhost:3000
+npm run build   # Build for production
+```
+
+See [Development & Maintenance Guide](dev/development.md#vite-build-system) for details.
+
 ## By role
 
 ### Users & crew
@@ -53,6 +65,7 @@ services, and no dependencies beyond this repository.
 - [Documentation Status Report Template](dev/documentation-status-report-template.md)
 - [Translation Guide](dev/translation-guide.md)
 - [Testing Plan](dev/testing-plan.md)
+- [API Quick Reference](dev/api-quick-reference.md)
 - [Schema Inventory](dev/schema-inventory.md)
 - [Feature Gap Analysis](dev/feature-gap-analysis.md)
 - [Runtime Refactor Plan](dev/runtime-refactor-plan.md)
@@ -60,16 +73,16 @@ services, and no dependencies beyond this repository.
 - [Missing Devices Research](dev/missing_devices_research.md)
 - Architecture references:
   - [Codebase Overview](dev/codebase-overview.md)
-  - [Firebase Studio Architecture](dev/firebase-architecture.md)
+  - [V2 Views Architecture](dev/architecture/v2-views.md)
   - [Module Registry](dev/architecture/module-registry.md)
   - [App Core Modules](dev/architecture/app-core-modules.md)
+  - [API Quick Reference](dev/api-quick-reference.md)
+  - [Firebase Studio Architecture](dev/firebase-architecture.md)
+  - [Vite Migration Guide](dev/vite-migration.md)
 - Reviews & snapshots:
   - [Review Findings](dev/reviews/review-findings.md)
   - [Review Tasks (2025-02-07)](dev/reviews/review-tasks-2025-02-07.md)
   - [Translation Review (2025-03-10)](dev/reviews/translation-review-2025-03-10.md)
-  - V2 UI References:
-    - [V2 View Logic](../src/scripts/v2/view-manager.js) - Hash-based routing and view switching
-    - [V2 Bootstrap](../src/scripts/v2/bootstrap.js) - V2 UI initialization pattern
 
 ## By workflow
 

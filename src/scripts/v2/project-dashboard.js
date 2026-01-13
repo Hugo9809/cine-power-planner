@@ -4,383 +4,384 @@
  * Renders the project grid with tiles for each saved project.
  */
 
-(function (global) {
-    'use strict';
+// Polyfill global for legacy code
+const global = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : {};
 
-    // =====================
-    // CONFIGURATION
-    // =====================
-    const GRID_CONTAINER_ID = 'projectGrid';
-    const VIEW_ID = 'view-projects';
-    const STORAGE_KEY = 'cameraPowerPlanner_setups';
 
-    // Color palette for project tiles
-    const TILE_COLORS = [
-        'blue', 'green', 'orange', 'purple', 'red', 'pink', 'teal', 'indigo',
-        'yellow', 'amber', 'lime', 'emerald', 'cyan', 'sky',
-        'violet', 'fuchsia', 'rose',
-        'slate', 'stone', 'neutral',
-        'gold', 'crimson', 'navy', 'aquamarine'
-    ];
+// =====================
+// CONFIGURATION
+// =====================
+const GRID_CONTAINER_ID = 'projectGrid';
+const VIEW_ID = 'view-projects';
+const STORAGE_KEY = 'cameraPowerPlanner_setups';
 
-    // Icon options
-    const PROJECT_ICONS = [
-        '📽️', '🎬', '⚡', '🔋', '🎥', '📺', '💡', '🎞️', '📸', '🎯', '📝', '⭐',
-        '🐴', '🦄', '🤘', '🦊', '🐶', '🦖', '🐙', '🐉', '👽', '👻', '🤖', '💀',
-        '👾', '🤡', '🎉', '🔥', '✨', '🚀', '🍕', '🤙', '✌️', '💪'
-    ];
+// Color palette for project tiles
+const TILE_COLORS = [
+    'blue', 'green', 'orange', 'purple', 'red', 'pink', 'teal', 'indigo',
+    'yellow', 'amber', 'lime', 'emerald', 'cyan', 'sky',
+    'violet', 'fuchsia', 'rose',
+    'slate', 'stone', 'neutral',
+    'gold', 'crimson', 'navy', 'aquamarine'
+];
 
-    // =====================
-    // STATE
-    // =====================
-    // let colorIndex = 0;
-    let currentFilter = {
-        query: '',
-        type: 'active' // 'active' | 'archived'
-    };
+// Icon options
+const PROJECT_ICONS = [
+    '📽️', '🎬', '⚡', '🔋', '🎥', '📺', '💡', '🎞️', '📸', '🎯', '📝', '⭐',
+    '🐴', '🦄', '🤘', '🦊', '🐶', '🦖', '🐙', '🐉', '👽', '👻', '🤖', '💀',
+    '👾', '🤡', '🎉', '🔥', '✨', '🚀', '🍕', '🤙', '✌️', '💪'
+];
 
-    // Cache for project data to avoid O(N) localStorage parsing
-    let _cachedProjectData = null;
+// =====================
+// STATE
+// =====================
+// let colorIndex = 0;
+let currentFilter = {
+    query: '',
+    type: 'active' // 'active' | 'archived'
+};
 
-    // =====================
-    // HELPERS
-    // =====================
+// Cache for project data to avoid O(N) localStorage parsing
+let _cachedProjectData = null;
 
-    /**
-     * Get the next color in the palette
-     */
-    // Unused helper - keeping for future color cycling if needed
-    // function getNextColor() {
-    //     const color = TILE_COLORS[colorIndex % TILE_COLORS.length];
-    //     colorIndex++;
-    //     return color;
-    // }
+// =====================
+// HELPERS
+// =====================
 
-    /**
-     * Escape HTML to prevent XSS
-     */
-    function escapeHtml(str) {
-        if (typeof str !== 'string') return '';
-        return str
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
+/**
+ * Get the next color in the palette
+ */
+// Unused helper - keeping for future color cycling if needed
+// function getNextColor() {
+//     const color = TILE_COLORS[colorIndex % TILE_COLORS.length];
+//     colorIndex++;
+//     return color;
+// }
+
+/**
+ * Escape HTML to prevent XSS
+ */
+function escapeHtml(str) {
+    if (typeof str !== 'string') return '';
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+/**
+ * Format a date for display
+ */
+function formatDate(dateStr) {
+    if (!dateStr) return '';
+    try {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString(undefined, {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        });
+    } catch (_e) {
+        void _e;
+        return '';
+    }
+}
+
+/**
+ * Format a date range string "YYYY-MM-DD to YYYY-MM-DD"
+ */
+function formatDateRange(rangeStr) {
+    if (!rangeStr || typeof rangeStr !== 'string') return '';
+    const parts = rangeStr.split(' to ');
+    if (parts.length === 1) return formatDate(parts[0]);
+    if (parts.length === 2) {
+        return `${formatDate(parts[0])} - ${formatDate(parts[1])}`;
+    }
+    return rangeStr;
+}
+
+/**
+ * Translation Helper
+ */
+function _t(path, params = {}) {
+    const lang = document.documentElement.lang || 'en';
+    let root = (window.texts && window.texts[lang]) ? window.texts[lang] : null;
+    if (!root && window.texts) root = window.texts['en'];
+
+    // Simple resolve
+    const resolve = (obj, p) => p.split('.').reduce((o, i) => o ? o[i] : null, obj);
+
+    let val = root ? resolve(root, path) : null;
+
+    // Fallback to English if missing in current lang
+    if (!val && lang !== 'en' && window.texts && window.texts['en']) {
+        val = resolve(window.texts['en'], path);
     }
 
-    /**
-     * Format a date for display
-     */
-    function formatDate(dateStr) {
-        if (!dateStr) return '';
+    if (!val) return path;
+
+    if (typeof val === 'string') {
+        for (const [k, v] of Object.entries(params)) {
+            val = val.replace(`{${k}}`, v);
+        }
+    }
+    return val;
+}
+
+// =====================
+// PROJECT DATA
+// =====================
+
+/**
+ * Refresh the project data cache.
+ * Uses the optimized loadProjectMetadata API from storage.js if available.
+ */
+function refreshProjectDataCache() {
+    // [New V2] Use optimized metadata loader from storage.js
+    if (typeof window.loadProjectMetadata === 'function') {
         try {
-            const date = new Date(dateStr);
-            return date.toLocaleDateString(undefined, {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric'
-            });
-        } catch (_e) {
-            void _e;
-            return '';
-        }
-    }
-
-    /**
-     * Format a date range string "YYYY-MM-DD to YYYY-MM-DD"
-     */
-    function formatDateRange(rangeStr) {
-        if (!rangeStr || typeof rangeStr !== 'string') return '';
-        const parts = rangeStr.split(' to ');
-        if (parts.length === 1) return formatDate(parts[0]);
-        if (parts.length === 2) {
-            return `${formatDate(parts[0])} - ${formatDate(parts[1])}`;
-        }
-        return rangeStr;
-    }
-
-    /**
-     * Translation Helper
-     */
-    function _t(path, params = {}) {
-        const lang = document.documentElement.lang || 'en';
-        let root = (window.texts && window.texts[lang]) ? window.texts[lang] : null;
-        if (!root && window.texts) root = window.texts['en'];
-
-        // Simple resolve
-        const resolve = (obj, p) => p.split('.').reduce((o, i) => o ? o[i] : null, obj);
-
-        let val = root ? resolve(root, path) : null;
-
-        // Fallback to English if missing in current lang
-        if (!val && lang !== 'en' && window.texts && window.texts['en']) {
-            val = resolve(window.texts['en'], path);
-        }
-
-        if (!val) return path;
-
-        if (typeof val === 'string') {
-            for (const [k, v] of Object.entries(params)) {
-                val = val.replace(`{${k}}`, v);
-            }
-        }
-        return val;
-    }
-
-    // =====================
-    // PROJECT DATA
-    // =====================
-
-    /**
-     * Refresh the project data cache.
-     * Uses the optimized loadProjectMetadata API from storage.js if available.
-     */
-    function refreshProjectDataCache() {
-        // [New V2] Use optimized metadata loader from storage.js
-        if (typeof window.loadProjectMetadata === 'function') {
-            try {
-                _cachedProjectData = window.loadProjectMetadata();
-                return;
-            } catch (e) {
-                console.warn('[V2] Failed to load project metadata via storage API:', e);
-            }
-        }
-
-        // [Fallback] Legacy direct read
-        try {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) {
-                _cachedProjectData = JSON.parse(stored);
-            } else {
-                _cachedProjectData = {};
-            }
+            _cachedProjectData = window.loadProjectMetadata();
+            return;
         } catch (e) {
-            console.error('[V2] Failed to parse project data:', e);
+            console.warn('[V2] Failed to load project metadata via storage API:', e);
+        }
+    }
+
+    // [Fallback] Legacy direct read
+    try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+            _cachedProjectData = JSON.parse(stored);
+        } else {
             _cachedProjectData = {};
         }
+    } catch (e) {
+        console.error('[V2] Failed to parse project data:', e);
+        _cachedProjectData = {};
+    }
+}
+
+/**
+ * Get all saved project names from legacy system
+ * Uses a fallback chain to ensure data availability even during initialization
+ */
+function getProjectNames() {
+    // Priority 1: Read from cached project data (Fastest & Most Accurate)
+    if (_cachedProjectData) {
+        return Object.keys(_cachedProjectData).filter(name => name && !name.startsWith('auto-backup-'));
     }
 
-    /**
-     * Get all saved project names from legacy system
-     * Uses a fallback chain to ensure data availability even during initialization
-     */
-    function getProjectNames() {
-        // Priority 1: Read from cached project data (Fastest & Most Accurate)
-        if (_cachedProjectData) {
-            return Object.keys(_cachedProjectData).filter(name => name && !name.startsWith('auto-backup-'));
-        }
+    // Priority 2: Use legacy shim if available
+    if (global.cineLegacyShim && typeof global.cineLegacyShim.getProjectNames === 'function') {
+        const names = global.cineLegacyShim.getProjectNames();
+        if (names.length > 0) return names;
+    }
 
-        // Priority 2: Use legacy shim if available
-        if (global.cineLegacyShim && typeof global.cineLegacyShim.getProjectNames === 'function') {
-            const names = global.cineLegacyShim.getProjectNames();
-            if (names.length > 0) return names;
-        }
+    // Priority 3: Read from setupSelect (if populated)
+    const setupSelect = document.getElementById('setupSelect');
+    if (setupSelect && setupSelect.options.length > 1) {
+        const names = Array.from(setupSelect.options)
+            .map(opt => opt.value)
+            .filter(val => val !== '');
+        if (names.length > 0) return [...new Set(names)];
+    }
 
-        // Priority 3: Read from setupSelect (if populated)
-        const setupSelect = document.getElementById('setupSelect');
-        if (setupSelect && setupSelect.options.length > 1) {
-            const names = Array.from(setupSelect.options)
-                .map(opt => opt.value)
-                .filter(val => val !== '');
-            if (names.length > 0) return [...new Set(names)];
+    // Priority 4: Direct localStorage fallback
+    try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+            const data = JSON.parse(stored);
+            return Object.keys(data).filter(name => name && !name.startsWith('auto-backup-'));
         }
+    } catch (_e) {
+        void _e;
+    }
 
-        // Priority 4: Direct localStorage fallback
+    return [];
+}
+
+/**
+ * Get filtered projects based on current state
+ */
+/**
+ * Get filtered projects based on current state
+ */
+function getFilteredProjects() {
+    let projects = getProjectNames();
+
+    // 0. Filter by Archive Status
+    const showArchived = (currentFilter.type === 'archived');
+    projects = projects.filter(name => {
+        const metadata = getProjectMetadata(name);
+        const isArchived = !!metadata.archived;
+        return showArchived ? isArchived : !isArchived;
+    });
+
+    // 1. Filter by Query
+    if (currentFilter.query) {
+        const q = currentFilter.query.toLowerCase();
+        projects = projects.filter(name => name.toLowerCase().includes(q));
+    }
+
+    return [...new Set(projects)];
+}
+
+/**
+ * Get project metadata (color, icon, last modified)
+ * Uses module-level cache for performance
+ */
+function getProjectMetadata(projectName) {
+    // Initialize cache if needed (though it should be primed by render)
+    if (_cachedProjectData === null) {
+        refreshProjectDataCache();
+    }
+
+    const project = _cachedProjectData[projectName];
+    if (project) {
+        return {
+            lastModified: project.lastModified || null,
+            color: project.color || null,
+            icon: project.icon || null,
+            prepDays: project.prepDays || [],
+            shootingDays: project.shootingDays || [],
+            returnDays: project.returnDays || [],
+            archived: project.archived || false,
+            status: project.status || (project.archived ? 'Archived' : 'Planning')
+        };
+    }
+
+    return { lastModified: null, color: null, icon: null, prepDays: [], shootingDays: [], returnDays: [], archived: false, status: 'Planning' };
+}
+
+/**
+ * Update project metadata (color, icon, dates)
+ */
+function updateProjectMetadata(projectName, metadata = {}) {
+    // [New V2] Use storage API to safely update project shards
+    if (typeof window.loadProject === 'function' && typeof window.saveProject === 'function') {
         try {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) {
-                const data = JSON.parse(stored);
-                return Object.keys(data).filter(name => name && !name.startsWith('auto-backup-'));
-            }
-        } catch (_e) {
-            void _e;
-        }
+            const project = window.loadProject(projectName);
+            if (project) {
+                if (metadata.color) project.color = metadata.color;
+                if (metadata.icon) project.icon = metadata.icon;
+                if (metadata.prepDays) project.prepDays = metadata.prepDays;
+                if (metadata.shootingDays) project.shootingDays = metadata.shootingDays;
+                if (metadata.returnDays) project.returnDays = metadata.returnDays;
+                if (typeof metadata.archived !== 'undefined') project.archived = metadata.archived;
+                if (metadata.status) project.status = metadata.status;
 
-        return [];
-    }
+                window.saveProject(projectName, project);
 
-    /**
-     * Get filtered projects based on current state
-     */
-    /**
-     * Get filtered projects based on current state
-     */
-    function getFilteredProjects() {
-        let projects = getProjectNames();
-
-        // 0. Filter by Archive Status
-        const showArchived = (currentFilter.type === 'archived');
-        projects = projects.filter(name => {
-            const metadata = getProjectMetadata(name);
-            const isArchived = !!metadata.archived;
-            return showArchived ? isArchived : !isArchived;
-        });
-
-        // 1. Filter by Query
-        if (currentFilter.query) {
-            const q = currentFilter.query.toLowerCase();
-            projects = projects.filter(name => name.toLowerCase().includes(q));
-        }
-
-        return [...new Set(projects)];
-    }
-
-    /**
-     * Get project metadata (color, icon, last modified)
-     * Uses module-level cache for performance
-     */
-    function getProjectMetadata(projectName) {
-        // Initialize cache if needed (though it should be primed by render)
-        if (_cachedProjectData === null) {
-            refreshProjectDataCache();
-        }
-
-        const project = _cachedProjectData[projectName];
-        if (project) {
-            return {
-                lastModified: project.lastModified || null,
-                color: project.color || null,
-                icon: project.icon || null,
-                prepDays: project.prepDays || [],
-                shootingDays: project.shootingDays || [],
-                returnDays: project.returnDays || [],
-                archived: project.archived || false,
-                status: project.status || (project.archived ? 'Archived' : 'Planning')
-            };
-        }
-
-        return { lastModified: null, color: null, icon: null, prepDays: [], shootingDays: [], returnDays: [], archived: false, status: 'Planning' };
-    }
-
-    /**
-     * Update project metadata (color, icon, dates)
-     */
-    function updateProjectMetadata(projectName, metadata = {}) {
-        // [New V2] Use storage API to safely update project shards
-        if (typeof window.loadProject === 'function' && typeof window.saveProject === 'function') {
-            try {
-                const project = window.loadProject(projectName);
-                if (project) {
-                    if (metadata.color) project.color = metadata.color;
-                    if (metadata.icon) project.icon = metadata.icon;
-                    if (metadata.prepDays) project.prepDays = metadata.prepDays;
-                    if (metadata.shootingDays) project.shootingDays = metadata.shootingDays;
-                    if (metadata.returnDays) project.returnDays = metadata.returnDays;
-                    if (typeof metadata.archived !== 'undefined') project.archived = metadata.archived;
-                    if (metadata.status) project.status = metadata.status;
-
-                    window.saveProject(projectName, project);
-
-                    // Update cache manually to reflect changes immediately in UI
-                    if (_cachedProjectData && _cachedProjectData[projectName]) {
-                        Object.assign(_cachedProjectData[projectName], metadata);
-                    }
-                    return true;
+                // Update cache manually to reflect changes immediately in UI
+                if (_cachedProjectData && _cachedProjectData[projectName]) {
+                    Object.assign(_cachedProjectData[projectName], metadata);
                 }
-            } catch (e) {
-                console.error('[V2] Failed to update project via storage API:', e);
-                return false;
-            }
-        }
-
-        // [Legacy Fallback] - ONLY use if storage API is missing
-        try {
-            // Ensure cache is fresh before read-modify-write
-            refreshProjectDataCache();
-            const data = _cachedProjectData || {};
-
-            if (data && data[projectName]) {
-                // Merge new metadata
-                if (metadata.color) data[projectName].color = metadata.color;
-                if (metadata.icon) data[projectName].icon = metadata.icon;
-                if (metadata.prepDays) data[projectName].prepDays = metadata.prepDays;
-                if (metadata.shootingDays) data[projectName].shootingDays = metadata.shootingDays;
-                if (metadata.returnDays) data[projectName].returnDays = metadata.returnDays;
-                if (typeof metadata.archived !== 'undefined') data[projectName].archived = metadata.archived;
-                if (metadata.status) data[projectName].status = metadata.status;
-
-                // Persist
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-
-                // Update cache reference
-                _cachedProjectData = data;
-
                 return true;
             }
         } catch (e) {
-            console.error('[V2] Failed to update project metadata:', e);
+            console.error('[V2] Failed to update project via storage API:', e);
+            return false;
         }
-        return false;
     }
 
-    // =====================
-    // TILE RENDERING
-    // =====================
+    // [Legacy Fallback] - ONLY use if storage API is missing
+    try {
+        // Ensure cache is fresh before read-modify-write
+        refreshProjectDataCache();
+        const data = _cachedProjectData || {};
 
-    /**
-     * Create a project tile HTML
-     */
-    function createTileHtml(projectName, index) {
-        const metadata = getProjectMetadata(projectName);
+        if (data && data[projectName]) {
+            // Merge new metadata
+            if (metadata.color) data[projectName].color = metadata.color;
+            if (metadata.icon) data[projectName].icon = metadata.icon;
+            if (metadata.prepDays) data[projectName].prepDays = metadata.prepDays;
+            if (metadata.shootingDays) data[projectName].shootingDays = metadata.shootingDays;
+            if (metadata.returnDays) data[projectName].returnDays = metadata.returnDays;
+            if (typeof metadata.archived !== 'undefined') data[projectName].archived = metadata.archived;
+            if (metadata.status) data[projectName].status = metadata.status;
 
-        // Use stored color or cycle through palette based on index
-        let color = metadata.color || TILE_COLORS[index % TILE_COLORS.length];
+            // Persist
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
-        // Security: Validate color is in the allowed list to prevent injection
-        if (!TILE_COLORS.includes(color)) {
-            color = TILE_COLORS[index % TILE_COLORS.length];
+            // Update cache reference
+            _cachedProjectData = data;
+
+            return true;
+        }
+    } catch (e) {
+        console.error('[V2] Failed to update project metadata:', e);
+    }
+    return false;
+}
+
+// =====================
+// TILE RENDERING
+// =====================
+
+/**
+ * Create a project tile HTML
+ */
+function createTileHtml(projectName, index) {
+    const metadata = getProjectMetadata(projectName);
+
+    // Use stored color or cycle through palette based on index
+    let color = metadata.color || TILE_COLORS[index % TILE_COLORS.length];
+
+    // Security: Validate color is in the allowed list to prevent injection
+    if (!TILE_COLORS.includes(color)) {
+        color = TILE_COLORS[index % TILE_COLORS.length];
+    }
+
+    // Use stored icon or default
+    // Security: Sanitize icon to prevent XSS
+    const icon = escapeHtml(metadata.icon || '📽️');
+
+    const dateStr = metadata.lastModified ? formatDate(metadata.lastModified) : '';
+    const escapedName = escapeHtml(projectName);
+    const status = metadata.status || 'Planning';
+    const statusClass = status.toLowerCase().replace(/\s+/g, '-');
+
+    // Translate Status
+    let statusKey = status.toLowerCase().replace(/\s+/g, '');
+    if (statusKey === 'waitingforapproval') statusKey = 'waitingForApproval'; // Handle capitalization mismatch
+    const statusLabel = _t(`v2.dashboard.status.${statusKey}`) === `v2.dashboard.status.${statusKey}` ? status : _t(`v2.dashboard.status.${statusKey}`);
+
+
+    let periodsHtml = '';
+    const hasDates = (metadata.prepDays?.length > 0) || (metadata.shootingDays?.length > 0) || (metadata.returnDays?.length > 0);
+
+    if (hasDates) {
+        periodsHtml = `<div class="v2-tile-periods">`;
+
+        // Render all Prep dates
+        if (Array.isArray(metadata.prepDays)) {
+            metadata.prepDays.forEach(range => {
+                const fmt = formatDateRange(range);
+                if (fmt) periodsHtml += `<span class="v2-period-badge prep" title="${_t('v2.dashboard.projectTile.prep')} ${fmt}"><span class="period-icon">📅</span> ${fmt}</span>`;
+            });
         }
 
-        // Use stored icon or default
-        // Security: Sanitize icon to prevent XSS
-        const icon = escapeHtml(metadata.icon || '📽️');
-
-        const dateStr = metadata.lastModified ? formatDate(metadata.lastModified) : '';
-        const escapedName = escapeHtml(projectName);
-        const status = metadata.status || 'Planning';
-        const statusClass = status.toLowerCase().replace(/\s+/g, '-');
-
-        // Translate Status
-        let statusKey = status.toLowerCase().replace(/\s+/g, '');
-        if (statusKey === 'waitingforapproval') statusKey = 'waitingForApproval'; // Handle capitalization mismatch
-        const statusLabel = _t(`v2.dashboard.status.${statusKey}`) === `v2.dashboard.status.${statusKey}` ? status : _t(`v2.dashboard.status.${statusKey}`);
-
-
-        let periodsHtml = '';
-        const hasDates = (metadata.prepDays?.length > 0) || (metadata.shootingDays?.length > 0) || (metadata.returnDays?.length > 0);
-
-        if (hasDates) {
-            periodsHtml = `<div class="v2-tile-periods">`;
-
-            // Render all Prep dates
-            if (Array.isArray(metadata.prepDays)) {
-                metadata.prepDays.forEach(range => {
-                    const fmt = formatDateRange(range);
-                    if (fmt) periodsHtml += `<span class="v2-period-badge prep" title="${_t('v2.dashboard.projectTile.prep')} ${fmt}"><span class="period-icon">📅</span> ${fmt}</span>`;
-                });
-            }
-
-            // Render all Shoot dates
-            if (Array.isArray(metadata.shootingDays)) {
-                metadata.shootingDays.forEach(range => {
-                    const fmt = formatDateRange(range);
-                    if (fmt) periodsHtml += `<span class="v2-period-badge shoot" title="${_t('v2.dashboard.projectTile.shoot')} ${fmt}"><span class="period-icon">🎥</span> ${fmt}</span>`;
-                });
-            }
-
-            // Render all Return dates
-            if (Array.isArray(metadata.returnDays)) {
-                metadata.returnDays.forEach(range => {
-                    const fmt = formatDateRange(range);
-                    if (fmt) periodsHtml += `<span class="v2-period-badge return" title="${_t('v2.dashboard.projectTile.return')} ${fmt}"><span class="period-icon">🚛</span> ${fmt}</span>`;
-                });
-            }
-
-            periodsHtml += `</div>`;
+        // Render all Shoot dates
+        if (Array.isArray(metadata.shootingDays)) {
+            metadata.shootingDays.forEach(range => {
+                const fmt = formatDateRange(range);
+                if (fmt) periodsHtml += `<span class="v2-period-badge shoot" title="${_t('v2.dashboard.projectTile.shoot')} ${fmt}"><span class="period-icon">🎥</span> ${fmt}</span>`;
+            });
         }
 
-        return `
+        // Render all Return dates
+        if (Array.isArray(metadata.returnDays)) {
+            metadata.returnDays.forEach(range => {
+                const fmt = formatDateRange(range);
+                if (fmt) periodsHtml += `<span class="v2-period-badge return" title="${_t('v2.dashboard.projectTile.return')} ${fmt}"><span class="period-icon">🚛</span> ${fmt}</span>`;
+            });
+        }
+
+        periodsHtml += `</div>`;
+    }
+
+    return `
       <div class="v2-project-tile" data-project="${escapedName}" tabindex="0" role="button" aria-label="${_t('v2.dashboard.projectTile.actionsFor', { project: escapedName })}">
         <div class="v2-tile-header">
           <div class="v2-tile-icon color-${color}">${icon}</div>
@@ -404,13 +405,13 @@
         </div>
       </div>
     `;
-    }
+}
 
-    /**
-     * Create the "New Project" tile HTML
-     */
-    function createNewProjectTileHtml() {
-        return `
+/**
+ * Create the "New Project" tile HTML
+ */
+function createNewProjectTileHtml() {
+    return `
       <div class="v2-project-tile new-project" id="v2CreateProjectTile" tabindex="0" role="button" aria-label="${_t('v2.dashboard.newProject')}">
         <div class="v2-tile-header center">
           <div class="v2-tile-icon-add">
@@ -422,18 +423,18 @@
         </div>
       </div>
     `;
-    }
+}
 
-    /**
-     * Create Empty State HTML (No Projects)
-     */
+/**
+ * Create Empty State HTML (No Projects)
+ */
 
 
-    /**
-     * Create No Results HTML (Search)
-     */
-    function createNoResultsHtml(query) {
-        return `
+/**
+ * Create No Results HTML (Search)
+ */
+function createNoResultsHtml(query) {
+    return `
       <div class="view-empty-state">
         <div class="view-empty-state-icon" style="font-size: 48px; display: flex; align-items: center; justify-content: center;">🔍</div>
         <h2>${_t('v2.dashboard.search.noResults.title')}</h2>
@@ -443,226 +444,226 @@
         </button>
       </div>
     `;
+}
+
+// =====================
+// DASHBOARD RENDERING
+// =====================
+
+/**
+ * Render the project grid
+ *
+ * Core Rendering Logic:
+ * 1. Clears the existing grid container.
+ * 2. Retrieves the list of projects (from legacy storage or shim).
+ * 3. Applies current filters (Search Query).
+ * 4. Renders the appropriate state:
+ *    - GLOBAL EMPTY STATE: If no projects exist at all.
+ *    - NO RESULTS STATE: If projects exist but the search query matches nothing.
+ *    - PROJECT GRID: Renders a tile for each matching project.
+ * 5. Appends the "New Project" tile at the end (unless searching).
+ * 6. Re-binds all click/keyboard events to the new DOM elements.
+ *
+ * Triggered by:
+ * - Initial Load
+ * - 'v2:viewchange' event (when switching to the Projects view)
+ * - 'v2:search' event (real-time filtering from the Sidebar)
+ */
+function renderProjectGrid() {
+    // Release any held project lock when returning to dashboard
+    if (global.cineProjectLockManager) {
+        global.cineProjectLockManager.releaseLock();
     }
 
-    // =====================
-    // DASHBOARD RENDERING
-    // =====================
+    const container = document.getElementById(GRID_CONTAINER_ID);
+    if (!container) return;
 
-    /**
-     * Render the project grid
-     *
-     * Core Rendering Logic:
-     * 1. Clears the existing grid container.
-     * 2. Retrieves the list of projects (from legacy storage or shim).
-     * 3. Applies current filters (Search Query).
-     * 4. Renders the appropriate state:
-     *    - GLOBAL EMPTY STATE: If no projects exist at all.
-     *    - NO RESULTS STATE: If projects exist but the search query matches nothing.
-     *    - PROJECT GRID: Renders a tile for each matching project.
-     * 5. Appends the "New Project" tile at the end (unless searching).
-     * 6. Re-binds all click/keyboard events to the new DOM elements.
-     *
-     * Triggered by:
-     * - Initial Load
-     * - 'v2:viewchange' event (when switching to the Projects view)
-     * - 'v2:search' event (real-time filtering from the Sidebar)
-     */
-    function renderProjectGrid() {
-        // Release any held project lock when returning to dashboard
-        if (global.cineProjectLockManager) {
-            global.cineProjectLockManager.releaseLock();
-        }
+    // Render immediately - Removed artificial 800ms delay for performance
+    _renderGridContent(container);
+}
 
-        const container = document.getElementById(GRID_CONTAINER_ID);
-        if (!container) return;
+/**
+ * Internal render logic
+ */
+function _renderGridContent(container) {
+    // Reset container to be sure
+    container.innerHTML = '';
+    container.className = 'v2-project-grid';
+    container.style = '';
 
-        // Render immediately - Removed artificial 800ms delay for performance
-        _renderGridContent(container);
-    }
+    // Prime the cache ONCE before processing any items
+    // This is the key performance fix
+    refreshProjectDataCache();
 
-    /**
-     * Internal render logic
-     */
-    function _renderGridContent(container) {
-        // Reset container to be sure
-        container.innerHTML = '';
-        container.className = 'v2-project-grid';
-        container.style = '';
+    // Check if we have ANY projects at all (Global Empty State)
+    const allProjects = getProjectNames();
+    if (allProjects.length === 0) {
+        container.classList.add('v2-grid-empty');
 
-        // Prime the cache ONCE before processing any items
-        // This is the key performance fix
-        refreshProjectDataCache();
+        // Force styles logic...
+        container.style.display = 'flex';
+        container.style.flexDirection = 'column';
+        container.style.alignItems = 'center';
+        container.style.justifyContent = 'flex-start';
+        container.style.paddingTop = '10vh';
+        container.style.minHeight = '100%';
+        container.style.flex = '1';
 
-        // Check if we have ANY projects at all (Global Empty State)
-        const allProjects = getProjectNames();
-        if (allProjects.length === 0) {
-            container.classList.add('v2-grid-empty');
-
-            // Force styles logic...
-            container.style.display = 'flex';
-            container.style.flexDirection = 'column';
-            container.style.alignItems = 'center';
-            container.style.justifyContent = 'flex-start';
-            container.style.paddingTop = '10vh';
-            container.style.minHeight = '100%';
-            container.style.flex = '1';
-
-            const main = container.closest('.v2-main');
-            if (main) main.classList.add('align-top'); // Fix layout
-
-            container.innerHTML = createEmptyStateHtml();
-            bindEmptyStateEvents(container);
-            return;
-        }
-
-        // Get Filtered Projects
-        const filteredProjects = getFilteredProjects();
-
-        // Check if Search returned nothing
-        if (filteredProjects.length === 0) {
-            container.classList.add('v2-grid-empty');
-
-            // Force styles logic...
-            container.style.display = 'flex';
-            container.style.flexDirection = 'column';
-            container.style.alignItems = 'center';
-            container.style.justifyContent = 'flex-start';
-            container.style.paddingTop = '10vh';
-            container.style.minHeight = '100%';
-            container.style.flex = '1';
-
-            const main = container.closest('.v2-main');
-            if (main) main.classList.add('align-top'); // Fix layout
-
-            container.innerHTML = createNoResultsHtml(currentFilter.query);
-
-            // Bind Clear Search
-            const clearBtn = container.querySelector('#v2ClearSearchBtn');
-            if (clearBtn) {
-                clearBtn.addEventListener('click', () => {
-                    // Dispatch clear event or manually clear
-                    const searchInput = document.getElementById('v2SidebarSearchInput');
-                    if (searchInput) {
-                        searchInput.value = '';
-                        searchInput.dispatchEvent(new Event('input', { bubbles: true })); // Trigger update
-                    }
-                });
-            }
-            return;
-        }
-
-        // Has Projects - Render Grid
         const main = container.closest('.v2-main');
-        if (main) main.classList.remove('align-top'); // Reset layout
+        if (main) main.classList.add('align-top'); // Fix layout
 
-        let html = '';
-        filteredProjects.forEach((name, index) => {
-            html += createTileHtml(name, index);
-        });
-
-        // Always show "New Project" tile at the end, unless searching
-        if (!currentFilter.query) {
-            html += createNewProjectTileHtml();
-        }
-
-        container.innerHTML = html;
-        bindTileEvents(container);
+        container.innerHTML = createEmptyStateHtml();
+        bindEmptyStateEvents(container);
+        return;
     }
 
+    // Get Filtered Projects
+    const filteredProjects = getFilteredProjects();
 
+    // Check if Search returned nothing
+    if (filteredProjects.length === 0) {
+        container.classList.add('v2-grid-empty');
 
-    // =====================
-    // EVENT HANDLING
-    // =====================
+        // Force styles logic...
+        container.style.display = 'flex';
+        container.style.flexDirection = 'column';
+        container.style.alignItems = 'center';
+        container.style.justifyContent = 'flex-start';
+        container.style.paddingTop = '10vh';
+        container.style.minHeight = '100%';
+        container.style.flex = '1';
 
-    /**
-     * Bind Search Events
-     * Listens for the custom 'v2:search' event dispatched by the Sidebar's search input.
-     * This decouples the Sidebar component from the Dashboard component.
-     */
-    function bindSearchEvents() {
-        window.addEventListener('v2:search', (e) => {
-            currentFilter.query = e.detail?.query || '';
-            renderProjectGrid();
-        });
-    }
+        const main = container.closest('.v2-main');
+        if (main) main.classList.add('align-top'); // Fix layout
 
-    /**
-     * Bind events to project tiles
-     */
-    /**
-     * Bind events to project tiles
-     */
-    function bindTileEvents(container) {
-        // Click on tile (open project)
-        container.querySelectorAll('.v2-project-tile').forEach(tile => {
-            // Left Click
-            tile.addEventListener('click', (e) => {
-                // Don't trigger if clicking on menu button
-                if (e.target.closest('[data-action="menu"]')) return;
+        container.innerHTML = createNoResultsHtml(currentFilter.query);
 
-                const projectName = tile.dataset.project;
-                if (projectName) {
-                    openProject(projectName);
+        // Bind Clear Search
+        const clearBtn = container.querySelector('#v2ClearSearchBtn');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', () => {
+                // Dispatch clear event or manually clear
+                const searchInput = document.getElementById('v2SidebarSearchInput');
+                if (searchInput) {
+                    searchInput.value = '';
+                    searchInput.dispatchEvent(new Event('input', { bubbles: true })); // Trigger update
                 }
             });
+        }
+        return;
+    }
 
-            // Right Click (Context Menu)
-            tile.addEventListener('contextmenu', (e) => {
+    // Has Projects - Render Grid
+    const main = container.closest('.v2-main');
+    if (main) main.classList.remove('align-top'); // Reset layout
+
+    let html = '';
+    filteredProjects.forEach((name, index) => {
+        html += createTileHtml(name, index);
+    });
+
+    // Always show "New Project" tile at the end, unless searching
+    if (!currentFilter.query) {
+        html += createNewProjectTileHtml();
+    }
+
+    container.innerHTML = html;
+    bindTileEvents(container);
+}
+
+
+
+// =====================
+// EVENT HANDLING
+// =====================
+
+/**
+ * Bind Search Events
+ * Listens for the custom 'v2:search' event dispatched by the Sidebar's search input.
+ * This decouples the Sidebar component from the Dashboard component.
+ */
+function bindSearchEvents() {
+    window.addEventListener('v2:search', (e) => {
+        currentFilter.query = e.detail?.query || '';
+        renderProjectGrid();
+    });
+}
+
+/**
+ * Bind events to project tiles
+ */
+/**
+ * Bind events to project tiles
+ */
+function bindTileEvents(container) {
+    // Click on tile (open project)
+    container.querySelectorAll('.v2-project-tile').forEach(tile => {
+        // Left Click
+        tile.addEventListener('click', (e) => {
+            // Don't trigger if clicking on menu button
+            if (e.target.closest('[data-action="menu"]')) return;
+
+            const projectName = tile.dataset.project;
+            if (projectName) {
+                openProject(projectName);
+            }
+        });
+
+        // Right Click (Context Menu)
+        tile.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            const projectName = tile.dataset.project;
+            if (projectName) {
+                showContextMenu(e, projectName);
+            }
+        });
+
+        // Keyboard support
+        tile.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                const projectName = tile.dataset.project;
-                if (projectName) {
-                    showContextMenu(e, projectName);
-                }
-            });
-
-            // Keyboard support
-            tile.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    tile.click();
-                }
-            });
+                tile.click();
+            }
         });
+    });
 
-        // Click on menu button
-        container.querySelectorAll('[data-action="menu"]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const projectName = btn.dataset.project;
-                if (projectName) {
-                    showContextMenu(e, projectName);
-                }
-            });
+    // Click on menu button
+    container.querySelectorAll('[data-action="menu"]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const projectName = btn.dataset.project;
+            if (projectName) {
+                showContextMenu(e, projectName);
+            }
         });
+    });
 
-        // Click on new project tile
-        const newProjectTile = container.querySelector('#v2CreateProjectTile');
-        if (newProjectTile) {
-            newProjectTile.addEventListener('click', () => showProjectDialog()); // No arg = new
-            newProjectTile.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    showProjectDialog();
-                }
-            });
-        }
+    // Click on new project tile
+    const newProjectTile = container.querySelector('#v2CreateProjectTile');
+    if (newProjectTile) {
+        newProjectTile.addEventListener('click', () => showProjectDialog()); // No arg = new
+        newProjectTile.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                showProjectDialog();
+            }
+        });
     }
+}
 
-    /**
-     * Show Context Menu
-     */
-    /**
-     * Show Context Menu
-     */
-    function showContextMenu(e, projectName) {
-        // Close existing
-        closeContextMenu();
+/**
+ * Show Context Menu
+ */
+/**
+ * Show Context Menu
+ */
+function showContextMenu(e, projectName) {
+    // Close existing
+    closeContextMenu();
 
-        const menu = document.createElement('div');
-        menu.className = 'v2-context-menu';
-        menu.innerHTML = `
+    const menu = document.createElement('div');
+    menu.className = 'v2-context-menu';
+    menu.innerHTML = `
             <button class="v2-context-menu-item" data-action="open">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -709,112 +710,112 @@
             </button>
         `;
 
-        // Position
-        menu.style.left = `${e.clientX}px`;
-        menu.style.top = `${e.clientY}px`;
+    // Position
+    menu.style.left = `${e.clientX}px`;
+    menu.style.top = `${e.clientY}px`;
 
-        // Bind Actions
-        menu.querySelector('[data-action="open"]').addEventListener('click', () => {
-            openProject(projectName);
-            closeContextMenu();
-        });
+    // Bind Actions
+    menu.querySelector('[data-action="open"]').addEventListener('click', () => {
+        openProject(projectName);
+        closeContextMenu();
+    });
 
-        menu.querySelector('[data-action="edit"]').addEventListener('click', () => {
-            closeContextMenu();
-            showProjectDialog(projectName); // Pass name = edit mode
-        });
+    menu.querySelector('[data-action="edit"]').addEventListener('click', () => {
+        closeContextMenu();
+        showProjectDialog(projectName); // Pass name = edit mode
+    });
 
-        menu.querySelector('[data-action="print"]').addEventListener('click', () => {
-            openProject(projectName, { action: 'print' });
-            closeContextMenu();
-        });
+    menu.querySelector('[data-action="print"]').addEventListener('click', () => {
+        openProject(projectName, { action: 'print' });
+        closeContextMenu();
+    });
 
-        menu.querySelector('[data-action="duplicate"]').addEventListener('click', () => {
-            duplicateProject(projectName);
-            closeContextMenu();
-        });
+    menu.querySelector('[data-action="duplicate"]').addEventListener('click', () => {
+        duplicateProject(projectName);
+        closeContextMenu();
+    });
 
-        menu.querySelector('[data-action="archive"]').addEventListener('click', () => {
-            archiveProject(projectName);
-            closeContextMenu();
-        });
+    menu.querySelector('[data-action="archive"]').addEventListener('click', () => {
+        archiveProject(projectName);
+        closeContextMenu();
+    });
 
-        menu.querySelector('[data-action="delete"]').addEventListener('click', () => {
-            deleteProject(projectName);
-            closeContextMenu();
-        });
+    menu.querySelector('[data-action="delete"]').addEventListener('click', () => {
+        deleteProject(projectName);
+        closeContextMenu();
+    });
 
-        document.body.appendChild(menu);
+    document.body.appendChild(menu);
 
-        // Adjust constraints (keep onscreen)
-        const rect = menu.getBoundingClientRect();
-        if (rect.right > window.innerWidth) menu.style.left = `${window.innerWidth - rect.width - 10}px`;
-        if (rect.bottom > window.innerHeight) menu.style.top = `${window.innerHeight - rect.height - 10}px`;
+    // Adjust constraints (keep onscreen)
+    const rect = menu.getBoundingClientRect();
+    if (rect.right > window.innerWidth) menu.style.left = `${window.innerWidth - rect.width - 10}px`;
+    if (rect.bottom > window.innerHeight) menu.style.top = `${window.innerHeight - rect.height - 10}px`;
 
-        // Bind Close
-        setTimeout(() => {
-            document.addEventListener('click', closeContextMenu, { once: true });
-            document.addEventListener('contextmenu', closeContextMenu, { once: true });
-        }, 0);
+    // Bind Close
+    setTimeout(() => {
+        document.addEventListener('click', closeContextMenu, { once: true });
+        document.addEventListener('contextmenu', closeContextMenu, { once: true });
+    }, 0);
+}
+
+/**
+ * Close Context Menu
+ */
+function closeContextMenu() {
+    const existing = document.querySelector('.v2-context-menu');
+    if (existing) existing.remove();
+    document.removeEventListener('click', closeContextMenu);
+}
+
+/**
+ * Bind events for empty state
+ */
+function bindEmptyStateEvents(container) {
+    const createBtn = container.querySelector('#v2EmptyStateCreateBtn');
+    if (createBtn) {
+        createBtn.addEventListener('click', showCreateProjectDialog);
     }
+}
 
-    /**
-     * Close Context Menu
-     */
-    function closeContextMenu() {
-        const existing = document.querySelector('.v2-context-menu');
-        if (existing) existing.remove();
-        document.removeEventListener('click', closeContextMenu);
-    }
+// =====================
+// PROJECT OPERATIONS
+// =====================
 
-    /**
-     * Bind events for empty state
-     */
-    function bindEmptyStateEvents(container) {
-        const createBtn = container.querySelector('#v2EmptyStateCreateBtn');
-        if (createBtn) {
-            createBtn.addEventListener('click', showCreateProjectDialog);
+/**
+ * Open a project (navigate to detail view)
+ */
+async function openProject(projectName, options = {}) {
+    // Check for cross-tab lock
+    if (global.cineProjectLockManager) {
+        const locked = await global.cineProjectLockManager.requestLock(projectName);
+        if (!locked) {
+            alert(_t('v2.dashboard.projectLocked', { projectName: projectName }));
+            return;
         }
     }
 
-    // =====================
-    // PROJECT OPERATIONS
-    // =====================
-
-    /**
-     * Open a project (navigate to detail view)
-     */
-    async function openProject(projectName, options = {}) {
-        // Check for cross-tab lock
-        if (global.cineProjectLockManager) {
-            const locked = await global.cineProjectLockManager.requestLock(projectName);
-            if (!locked) {
-                alert(_t('v2.dashboard.projectLocked', { projectName: projectName }));
-                return;
-            }
-        }
-
-        // Load the project via legacy shim
-        if (global.cineLegacyShim) {
-            global.cineLegacyShim.loadProject(projectName);
-        }
-
-        // Navigate to project detail view
-        if (global.cineViewManager) {
-            global.cineViewManager.showView('projectDetail', {
-                projectId: projectName,
-                tab: 'camera',
-                ...options
-            });
-        }
+    // Load the project via legacy shim
+    if (global.cineLegacyShim) {
+        global.cineLegacyShim.loadProject(projectName);
     }
 
-    /**
-     * Create Empty State HTML (No Projects)
-     */
-    function createEmptyStateHtml() {
-        if (currentFilter.type === 'archived') {
-            return `
+    // Navigate to project detail view
+    if (global.cineViewManager) {
+        global.cineViewManager.showView('projectDetail', {
+            projectId: projectName,
+            tab: 'camera',
+            ...options
+        });
+    }
+}
+
+/**
+ * Create Empty State HTML (No Projects)
+ */
+function createEmptyStateHtml() {
+    if (currentFilter.type === 'archived') {
+        return `
               <div class="view-empty-state">
                 <div class="view-empty-state-icon" style="font-size: 64px; opacity: 0.8; margin-bottom: 16px;">
                   📂
@@ -823,9 +824,9 @@
                 <p class="text-muted">${_t('v2.dashboard.emptyState.archiveSubtitle')}</p>
               </div>
             `;
-        }
+    }
 
-        return `
+    return `
       <div class="view-empty-state">
         <div class="view-empty-state-icon" style="font-size: 64px; opacity: 0.8; margin-bottom: 16px;">
           <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -846,217 +847,217 @@
         </div>
       </div>
     `;
+}
+
+// ... (createNoResultsHtml and render methods stay same, but we need to jump to project operations area)
+
+// [Skipping middle sections, targeting lines 656-696 for project operations]
+
+/**
+ * Delete a project
+ */
+/**
+ * Delete a project
+ */
+function deleteProject(projectName) {
+    if (!confirm(_t('v2.dashboard.confirmDelete', { project: projectName }) || `Are you sure you want to delete project "${projectName}"?`)) {
+        return;
     }
 
-    // ... (createNoResultsHtml and render methods stay same, but we need to jump to project operations area)
-
-    // [Skipping middle sections, targeting lines 656-696 for project operations]
-
-    /**
-     * Delete a project
-     */
-    /**
-     * Delete a project
-     */
-    function deleteProject(projectName) {
-        if (!confirm(_t('v2.dashboard.confirmDelete', { project: projectName }) || `Are you sure you want to delete project "${projectName}"?`)) {
-            return;
-        }
-
-        try {
-            // 1. Delete from storage
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) {
-                const data = JSON.parse(stored);
-                if (data[projectName]) {
-                    delete data[projectName];
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-
-                    // UPDATE REVISION for cross-tab sync
-                    updateProjectRevision();
-                }
-            }
-
-            // 2. Notify legacy shim if available (to clean up its internal state if any)
-            if (global.cineLegacyShim && typeof global.cineLegacyShim.deleteProject === 'function') {
-                // We typically just need to refresh, but if the shim has specific delete logic, call it.
-                // However, since we manually deleted from storage, we might just need to refresh.
-                if (typeof global.cineLegacyShim.refreshProjects === 'function') {
-                    global.cineLegacyShim.refreshProjects();
-                }
-            }
-
-            // 3. Update UI
-            renderProjectGrid();
-
-        } catch (e) {
-            console.error('[V2] Failed to delete project:', e);
-            alert(_t('v2.common.error') || 'An error occurred.');
-        }
-    }
-
-    /**
-     * Archive Project
-     */
-    function archiveProject(projectName) {
-        updateProjectMetadata(projectName, { archived: true, status: 'Archived' });
-        renderProjectGrid();
-    }
-
-    /**
-     * Duplicate Project
-     */
-    function duplicateProject(projectName) {
-        try {
-            // 1. Get original data
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (!stored) return;
+    try {
+        // 1. Delete from storage
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
             const data = JSON.parse(stored);
-            const originalData = data[projectName];
-            if (!originalData) return;
+            if (data[projectName]) {
+                delete data[projectName];
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
-            // 2. Generate new unique name
-            let newName = `${projectName} (Copy)`;
-            let counter = 2;
-            while (data[newName]) {
-                newName = `${projectName} (Copy ${counter})`;
-                counter++;
+                // UPDATE REVISION for cross-tab sync
+                updateProjectRevision();
             }
+        }
 
-            // 3. Clone data
-            const newData = JSON.parse(JSON.stringify(originalData));
-            newData.created = new Date().toISOString();
-            newData.lastModified = new Date().toISOString();
-
-            // 4. Save
-            data[newName] = newData;
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-
-            // UPDATE REVISION for cross-tab sync
-            updateProjectRevision();
-
-            // Refresh Grid
-            renderProjectGrid();
-
-            // Notify legacy shim if available
-            if (global.cineLegacyShim && typeof global.cineLegacyShim.refreshProjects === 'function') {
+        // 2. Notify legacy shim if available (to clean up its internal state if any)
+        if (global.cineLegacyShim && typeof global.cineLegacyShim.deleteProject === 'function') {
+            // We typically just need to refresh, but if the shim has specific delete logic, call it.
+            // However, since we manually deleted from storage, we might just need to refresh.
+            if (typeof global.cineLegacyShim.refreshProjects === 'function') {
                 global.cineLegacyShim.refreshProjects();
             }
-
-        } catch (e) {
-            console.error('Failed to duplicate project:', e);
         }
+
+        // 3. Update UI
+        renderProjectGrid();
+
+    } catch (e) {
+        console.error('[V2] Failed to delete project:', e);
+        alert(_t('v2.common.error') || 'An error occurred.');
     }
+}
 
-    /**
-     * Show create project dialog using internal modal
-     */
-    function showProjectDialog(projectName = null) {
-        showCreateProjectDialog(projectName);
+/**
+ * Archive Project
+ */
+function archiveProject(projectName) {
+    updateProjectMetadata(projectName, { archived: true, status: 'Archived' });
+    renderProjectGrid();
+}
+
+/**
+ * Duplicate Project
+ */
+function duplicateProject(projectName) {
+    try {
+        // 1. Get original data
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (!stored) return;
+        const data = JSON.parse(stored);
+        const originalData = data[projectName];
+        if (!originalData) return;
+
+        // 2. Generate new unique name
+        let newName = `${projectName} (Copy)`;
+        let counter = 2;
+        while (data[newName]) {
+            newName = `${projectName} (Copy ${counter})`;
+            counter++;
+        }
+
+        // 3. Clone data
+        const newData = JSON.parse(JSON.stringify(originalData));
+        newData.created = new Date().toISOString();
+        newData.lastModified = new Date().toISOString();
+
+        // 4. Save
+        data[newName] = newData;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+        // UPDATE REVISION for cross-tab sync
+        updateProjectRevision();
+
+        // Refresh Grid
+        renderProjectGrid();
+
+        // Notify legacy shim if available
+        if (global.cineLegacyShim && typeof global.cineLegacyShim.refreshProjects === 'function') {
+            global.cineLegacyShim.refreshProjects();
+        }
+
+    } catch (e) {
+        console.error('Failed to duplicate project:', e);
     }
+}
 
-    /**
-     * Internal implementation for showing the modal
-     */
-    function showCreateProjectDialog(existingProject = null) {
-        const isEditing = !!existingProject;
-        const randomColorIndex = Math.floor(Math.random() * TILE_COLORS.length);
-        let selectedColor = TILE_COLORS[randomColorIndex];
-        let selectedIcon = '📽️';
+/**
+ * Show create project dialog using internal modal
+ */
+function showProjectDialog(projectName = null) {
+    showCreateProjectDialog(projectName);
+}
 
-        let existingMetadata = null;
+/**
+ * Internal implementation for showing the modal
+ */
+function showCreateProjectDialog(existingProject = null) {
+    const isEditing = !!existingProject;
+    const randomColorIndex = Math.floor(Math.random() * TILE_COLORS.length);
+    let selectedColor = TILE_COLORS[randomColorIndex];
+    let selectedIcon = '📽️';
 
-        // If editing, load existing data
-        if (isEditing) {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) {
-                const data = JSON.parse(stored);
-                if (data[existingProject]) {
-                    existingMetadata = data[existingProject];
-                    if (existingMetadata.color) selectedColor = existingMetadata.color;
-                    if (existingMetadata.icon) selectedIcon = existingMetadata.icon;
-                }
+    let existingMetadata = null;
+
+    // If editing, load existing data
+    if (isEditing) {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+            const data = JSON.parse(stored);
+            if (data[existingProject]) {
+                existingMetadata = data[existingProject];
+                if (existingMetadata.color) selectedColor = existingMetadata.color;
+                if (existingMetadata.icon) selectedIcon = existingMetadata.icon;
             }
         }
+    }
 
-        // Dynamic periods state
-        let periods = [];
+    // Dynamic periods state
+    let periods = [];
 
-        if (isEditing && existingMetadata) {
-            // Reconstruct periods from V1 structure
-            let pid = 1;
+    if (isEditing && existingMetadata) {
+        // Reconstruct periods from V1 structure
+        let pid = 1;
 
-            // Helpers
-            const parseRange = (str, type, name) => {
-                if (!str) return;
-                let start = '', end = '';
-                if (str.includes(' to ')) {
-                    [start, end] = str.split(' to ');
-                } else {
-                    start = str;
-                    end = str; // Single day range
-                }
-                periods.push({
-                    id: `period-${pid++}`,
-                    type,
-                    name,
-                    startDate: start,
-                    endDate: end
-                });
-            };
+        // Helpers
+        const parseRange = (str, type, name) => {
+            if (!str) return;
+            let start = '', end = '';
+            if (str.includes(' to ')) {
+                [start, end] = str.split(' to ');
+            } else {
+                start = str;
+                end = str; // Single day range
+            }
+            periods.push({
+                id: `period-${pid++}`,
+                type,
+                name,
+                startDate: start,
+                endDate: end
+            });
+        };
 
-            if (Array.isArray(existingMetadata.prepDays)) existingMetadata.prepDays.forEach(d => parseRange(d, 'prep', 'Prep'));
-            if (Array.isArray(existingMetadata.shootingDays)) existingMetadata.shootingDays.forEach(d => parseRange(d, 'shoot', 'Shoot'));
-            if (Array.isArray(existingMetadata.returnDays)) existingMetadata.returnDays.forEach(d => parseRange(d, 'return', 'Return'));
-        }
+        if (Array.isArray(existingMetadata.prepDays)) existingMetadata.prepDays.forEach(d => parseRange(d, 'prep', 'Prep'));
+        if (Array.isArray(existingMetadata.shootingDays)) existingMetadata.shootingDays.forEach(d => parseRange(d, 'shoot', 'Shoot'));
+        if (Array.isArray(existingMetadata.returnDays)) existingMetadata.returnDays.forEach(d => parseRange(d, 'return', 'Return'));
+    }
 
-        // Default for new projects
-        if (!isEditing && periods.length === 0) {
-            periods = [
-                { id: 'period-1', type: 'prep', name: 'Prep', startDate: '', endDate: '' },
-                { id: 'period-2', type: 'shoot', name: 'Shoot', startDate: '', endDate: '' },
-                { id: 'period-3', type: 'return', name: 'Return', startDate: '', endDate: '' }
-            ];
-        }
-
-        let periodCounter = periods.length > 0 ? periods.length : 3;
-
-        const PERIOD_TYPES = [
-            { value: 'prep', label: 'Prep', icon: '📅' },
-            { value: 'shoot', label: 'Shoot', icon: '🎥' },
-            { value: 'return', label: 'Return', icon: '🚛' }
+    // Default for new projects
+    if (!isEditing && periods.length === 0) {
+        periods = [
+            { id: 'period-1', type: 'prep', name: 'Prep', startDate: '', endDate: '' },
+            { id: 'period-2', type: 'shoot', name: 'Shoot', startDate: '', endDate: '' },
+            { id: 'period-3', type: 'return', name: 'Return', startDate: '', endDate: '' }
         ];
+    }
 
-        // Modal styles moved to src/styles/v2/views/project-dashboard.css
+    let periodCounter = periods.length > 0 ? periods.length : 3;
 
-        const getColorVar = (c) => `var(--v2-color-${c})`;
+    const PERIOD_TYPES = [
+        { value: 'prep', label: 'Prep', icon: '📅' },
+        { value: 'shoot', label: 'Shoot', icon: '🎥' },
+        { value: 'return', label: 'Return', icon: '🚛' }
+    ];
 
-        // Build HTML for swatches
-        const colorSwatchesHtml = TILE_COLORS.map(c => `
+    // Modal styles moved to src/styles/v2/views/project-dashboard.css
+
+    const getColorVar = (c) => `var(--v2-color-${c})`;
+
+    // Build HTML for swatches
+    const colorSwatchesHtml = TILE_COLORS.map(c => `
             <button type="button" class="v2-color-swatch-sm color-${c} ${c === selectedColor ? 'selected' : ''}" 
                     data-color="${c}" aria-label="Select ${c} color">
             </button>
         `).join('');
 
-        // Build HTML for icons
-        const iconOptionsHtml = PROJECT_ICONS.map(i => `
+    // Build HTML for icons
+    const iconOptionsHtml = PROJECT_ICONS.map(i => `
             <button type="button" class="v2-icon-option-sm ${i === selectedIcon ? 'selected' : ''}" 
                     data-icon="${i}" aria-label="Select icon ${i}">
                 ${i}
             </button>
         `).join('');
 
-        // Build HTML for periods
-        const buildPeriodsHtml = () => {
-            if (periods.length === 0) {
-                return `<div class="v2-empty-state" style="padding: 16px; font-size: 13px;">No dates added yet.</div>`;
-            }
-            return periods.map(p => {
-                const typeOptions = PERIOD_TYPES.map(t =>
-                    `<option value="${t.value}" ${p.type === t.value ? 'selected' : ''}>${t.icon} ${t.label}</option>`
-                ).join('');
+    // Build HTML for periods
+    const buildPeriodsHtml = () => {
+        if (periods.length === 0) {
+            return `<div class="v2-empty-state" style="padding: 16px; font-size: 13px;">No dates added yet.</div>`;
+        }
+        return periods.map(p => {
+            const typeOptions = PERIOD_TYPES.map(t =>
+                `<option value="${t.value}" ${p.type === t.value ? 'selected' : ''}>${t.icon} ${t.label}</option>`
+            ).join('');
 
-                return `
+            return `
                 <div class="v2-period-row" data-period-id="${p.id}">
                     <div class="v2-period-name">
                         <select class="v2-period-type-select" data-field="type">
@@ -1073,12 +1074,12 @@
                     </button>
                 </div>
             `}).join('');
-        }
+    }
 
-        // Create modal backdrop
-        const backdrop = document.createElement('div');
-        backdrop.className = 'v2-modal-backdrop';
-        backdrop.innerHTML = `
+    // Create modal backdrop
+    const backdrop = document.createElement('div');
+    backdrop.className = 'v2-modal-backdrop';
+    backdrop.innerHTML = `
             <div class="v2-modal" style="max-width: 520px;">
                 <div class="v2-modal-header">
                     <h3 class="v2-modal-title">${isEditing ? 'Edit Project' : 'Create New Project'}</h3>
@@ -1156,362 +1157,362 @@
             </div>
         `;
 
-        document.body.appendChild(backdrop);
+    document.body.appendChild(backdrop);
 
-        // Animate open
-        requestAnimationFrame(() => {
-            backdrop.classList.add('open');
-        });
+    // Animate open
+    requestAnimationFrame(() => {
+        backdrop.classList.add('open');
+    });
 
-        const input = backdrop.querySelector('#v2NewProjectName');
-        const errorEl = backdrop.querySelector('#v2NewProjectError');
-        const createBtn = backdrop.querySelector('#v2CreateProjectBtn');
-        const cancelBtn = backdrop.querySelector('#v2CancelProjectBtn');
-        const closeBtn = backdrop.querySelector('.v2-modal-close');
-        const periodsContainer = backdrop.querySelector('#v2PeriodsContainer');
-        const addPeriodBtn = backdrop.querySelector('#v2AddPeriodBtn');
+    const input = backdrop.querySelector('#v2NewProjectName');
+    const errorEl = backdrop.querySelector('#v2NewProjectError');
+    const createBtn = backdrop.querySelector('#v2CreateProjectBtn');
+    const cancelBtn = backdrop.querySelector('#v2CancelProjectBtn');
+    const closeBtn = backdrop.querySelector('.v2-modal-close');
+    const periodsContainer = backdrop.querySelector('#v2PeriodsContainer');
+    const addPeriodBtn = backdrop.querySelector('#v2AddPeriodBtn');
 
-        // Color picker logic
-        const colorTrigger = backdrop.querySelector('#v2ColorPickerTrigger');
-        const colorPopover = backdrop.querySelector('#v2ColorPopover');
-        const colorPreview = backdrop.querySelector('#v2ColorPreview');
-        const colorLabel = colorTrigger.querySelector('.v2-picker-label');
+    // Color picker logic
+    const colorTrigger = backdrop.querySelector('#v2ColorPickerTrigger');
+    const colorPopover = backdrop.querySelector('#v2ColorPopover');
+    const colorPreview = backdrop.querySelector('#v2ColorPreview');
+    const colorLabel = colorTrigger.querySelector('.v2-picker-label');
 
-        colorTrigger.addEventListener('click', (e) => {
+    colorTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        colorTrigger.classList.toggle('open');
+        colorPopover.classList.toggle('open');
+        // Close icon popover
+        iconTrigger.classList.remove('open');
+        iconPopover.classList.remove('open');
+    });
+
+    colorPopover.querySelectorAll('.v2-color-swatch-sm').forEach(swatch => {
+        swatch.addEventListener('click', (e) => {
             e.stopPropagation();
-            colorTrigger.classList.toggle('open');
-            colorPopover.classList.toggle('open');
-            // Close icon popover
-            iconTrigger.classList.remove('open');
-            iconPopover.classList.remove('open');
-        });
-
-        colorPopover.querySelectorAll('.v2-color-swatch-sm').forEach(swatch => {
-            swatch.addEventListener('click', (e) => {
-                e.stopPropagation();
-                colorPopover.querySelectorAll('.v2-color-swatch-sm').forEach(s => s.classList.remove('selected'));
-                swatch.classList.add('selected');
-                selectedColor = swatch.dataset.color;
-                colorPreview.style.backgroundColor = getColorVar(selectedColor);
-                colorLabel.textContent = selectedColor.charAt(0).toUpperCase() + selectedColor.slice(1);
-                colorTrigger.classList.remove('open');
-                colorPopover.classList.remove('open');
-            });
-        });
-
-        // Icon picker logic
-        const iconTrigger = backdrop.querySelector('#v2IconPickerTrigger');
-        const iconPopover = backdrop.querySelector('#v2IconPopover');
-        const iconPreview = backdrop.querySelector('#v2IconPreview');
-
-        iconTrigger.addEventListener('click', (e) => {
-            e.stopPropagation();
-            iconTrigger.classList.toggle('open');
-            iconPopover.classList.toggle('open');
-            // Close color popover
+            colorPopover.querySelectorAll('.v2-color-swatch-sm').forEach(s => s.classList.remove('selected'));
+            swatch.classList.add('selected');
+            selectedColor = swatch.dataset.color;
+            colorPreview.style.backgroundColor = getColorVar(selectedColor);
+            colorLabel.textContent = selectedColor.charAt(0).toUpperCase() + selectedColor.slice(1);
             colorTrigger.classList.remove('open');
             colorPopover.classList.remove('open');
         });
+    });
 
-        iconPopover.querySelectorAll('.v2-icon-option-sm').forEach(opt => {
-            opt.addEventListener('click', (e) => {
-                e.stopPropagation();
-                iconPopover.querySelectorAll('.v2-icon-option-sm').forEach(o => o.classList.remove('selected'));
-                opt.classList.add('selected');
-                selectedIcon = opt.dataset.icon;
-                iconPreview.textContent = selectedIcon;
-                iconTrigger.classList.remove('open');
-                iconPopover.classList.remove('open');
-            });
-        });
+    // Icon picker logic
+    const iconTrigger = backdrop.querySelector('#v2IconPickerTrigger');
+    const iconPopover = backdrop.querySelector('#v2IconPopover');
+    const iconPreview = backdrop.querySelector('#v2IconPreview');
 
-        // Close popovers when clicking outside
-        backdrop.addEventListener('click', () => {
-            colorTrigger.classList.remove('open');
-            colorPopover.classList.remove('open');
+    iconTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        iconTrigger.classList.toggle('open');
+        iconPopover.classList.toggle('open');
+        // Close color popover
+        colorTrigger.classList.remove('open');
+        colorPopover.classList.remove('open');
+    });
+
+    iconPopover.querySelectorAll('.v2-icon-option-sm').forEach(opt => {
+        opt.addEventListener('click', (e) => {
+            e.stopPropagation();
+            iconPopover.querySelectorAll('.v2-icon-option-sm').forEach(o => o.classList.remove('selected'));
+            opt.classList.add('selected');
+            selectedIcon = opt.dataset.icon;
+            iconPreview.textContent = selectedIcon;
             iconTrigger.classList.remove('open');
             iconPopover.classList.remove('open');
         });
+    });
 
-        // Periods management
-        function updatePeriodData(periodId, field, value) {
-            const period = periods.find(p => p.id === periodId);
-            if (period) {
-                if (field === 'type') {
-                    const typeInfo = PERIOD_TYPES.find(t => t.value === value);
-                    if (typeInfo) {
-                        period.type = value;
-                        period.name = typeInfo.label;
-                    }
-                } else {
-                    period[field] = value;
+    // Close popovers when clicking outside
+    backdrop.addEventListener('click', () => {
+        colorTrigger.classList.remove('open');
+        colorPopover.classList.remove('open');
+        iconTrigger.classList.remove('open');
+        iconPopover.classList.remove('open');
+    });
+
+    // Periods management
+    function updatePeriodData(periodId, field, value) {
+        const period = periods.find(p => p.id === periodId);
+        if (period) {
+            if (field === 'type') {
+                const typeInfo = PERIOD_TYPES.find(t => t.value === value);
+                if (typeInfo) {
+                    period.type = value;
+                    period.name = typeInfo.label;
                 }
+            } else {
+                period[field] = value;
             }
         }
+    }
 
-        function removePeriod(periodId) {
-            periods = periods.filter(p => p.id !== periodId);
-            renderPeriods();
-        }
+    function removePeriod(periodId) {
+        periods = periods.filter(p => p.id !== periodId);
+        renderPeriods();
+    }
 
-        function addPeriod() {
-            periodCounter++;
-            periods.push({
-                id: `period-${periodCounter}`,
-                type: 'shoot',
-                name: 'Shoot',
-                startDate: '',
-                endDate: ''
-            });
-            renderPeriods();
-            // Focus new date input? Or scroll to bottom
-        }
+    function addPeriod() {
+        periodCounter++;
+        periods.push({
+            id: `period-${periodCounter}`,
+            type: 'shoot',
+            name: 'Shoot',
+            startDate: '',
+            endDate: ''
+        });
+        renderPeriods();
+        // Focus new date input? Or scroll to bottom
+    }
 
-        function renderPeriods() {
-            periodsContainer.innerHTML = buildPeriodsHtml();
-            bindPeriodEvents();
-        }
-
-        function bindPeriodEvents() {
-            periodsContainer.querySelectorAll('.v2-period-row').forEach(row => {
-                const periodId = row.dataset.periodId;
-
-                // Inputs
-                row.querySelectorAll('input, select').forEach(input => {
-                    input.addEventListener('change', () => {
-                        updatePeriodData(periodId, input.dataset.field, input.value);
-                    });
-                    input.addEventListener('input', () => {
-                        updatePeriodData(periodId, input.dataset.field, input.value);
-                    });
-                });
-
-                // Remove button
-                const removeBtn = row.querySelector('.v2-period-remove');
-                if (removeBtn) {
-                    removeBtn.addEventListener('click', () => {
-                        removePeriod(periodId);
-                    });
-                }
-            });
-        }
-
-        // Initial bind
+    function renderPeriods() {
+        periodsContainer.innerHTML = buildPeriodsHtml();
         bindPeriodEvents();
+    }
 
-        // Add period button
-        addPeriodBtn.addEventListener('click', addPeriod);
+    function bindPeriodEvents() {
+        periodsContainer.querySelectorAll('.v2-period-row').forEach(row => {
+            const periodId = row.dataset.periodId;
 
-        // Focus input (unless editing)
-        if (!isEditing) {
-            setTimeout(() => input.focus(), 100);
+            // Inputs
+            row.querySelectorAll('input, select').forEach(input => {
+                input.addEventListener('change', () => {
+                    updatePeriodData(periodId, input.dataset.field, input.value);
+                });
+                input.addEventListener('input', () => {
+                    updatePeriodData(periodId, input.dataset.field, input.value);
+                });
+            });
+
+            // Remove button
+            const removeBtn = row.querySelector('.v2-period-remove');
+            if (removeBtn) {
+                removeBtn.addEventListener('click', () => {
+                    removePeriod(periodId);
+                });
+            }
+        });
+    }
+
+    // Initial bind
+    bindPeriodEvents();
+
+    // Add period button
+    addPeriodBtn.addEventListener('click', addPeriod);
+
+    // Focus input (unless editing)
+    if (!isEditing) {
+        setTimeout(() => input.focus(), 100);
+    }
+
+    function closeModal() {
+        backdrop.classList.remove('open');
+        setTimeout(() => backdrop.remove(), 200);
+    }
+
+    function handleCreate() {
+        const projectName = input.value.trim();
+
+        if (!projectName) {
+            errorEl.textContent = 'Please enter a project name.';
+            errorEl.style.display = 'block';
+            input.focus();
+            return;
         }
 
-        function closeModal() {
-            backdrop.classList.remove('open');
-            setTimeout(() => backdrop.remove(), 200);
-        }
+        const existingNames = getProjectNames();
 
-        function handleCreate() {
-            const projectName = input.value.trim();
-
-            if (!projectName) {
-                errorEl.textContent = 'Please enter a project name.';
+        // Check duplicates
+        if (isEditing) {
+            // If named changed, check if new name exists
+            if (projectName !== existingProject && existingNames.includes(projectName)) {
+                errorEl.textContent = 'A project with this name already exists.';
                 errorEl.style.display = 'block';
                 input.focus();
                 return;
             }
-
-            const existingNames = getProjectNames();
-
-            // Check duplicates
-            if (isEditing) {
-                // If named changed, check if new name exists
-                if (projectName !== existingProject && existingNames.includes(projectName)) {
-                    errorEl.textContent = 'A project with this name already exists.';
-                    errorEl.style.display = 'block';
-                    input.focus();
-                    return;
-                }
-            } else {
-                // New Project
-                if (existingNames.includes(projectName)) {
-                    errorEl.textContent = 'A project with this name already exists.';
-                    errorEl.style.display = 'block';
-                    input.focus();
-                    return;
-                }
+        } else {
+            // New Project
+            if (existingNames.includes(projectName)) {
+                errorEl.textContent = 'A project with this name already exists.';
+                errorEl.style.display = 'block';
+                input.focus();
+                return;
             }
+        }
 
-            closeModal();
+        closeModal();
 
-            // Collect period data into V1 structures
-            const formatPeriod = (period) => {
-                if (!period) return null;
-                const s = period.startDate;
-                const e = period.endDate;
-                if (!s && !e) return null;
-                if (s && e) return `${s} to ${e}`;
-                if (s) return s;
-                if (e) return e;
-                return null;
-            };
+        // Collect period data into V1 structures
+        const formatPeriod = (period) => {
+            if (!period) return null;
+            const s = period.startDate;
+            const e = period.endDate;
+            if (!s && !e) return null;
+            if (s && e) return `${s} to ${e}`;
+            if (s) return s;
+            if (e) return e;
+            return null;
+        };
 
-            const prepDays = periods.filter(p => p.type === 'prep').map(formatPeriod).filter(Boolean);
-            const shootingDays = periods.filter(p => p.type === 'shoot').map(formatPeriod).filter(Boolean);
-            const returnDays = periods.filter(p => p.type === 'return').map(formatPeriod).filter(Boolean);
+        const prepDays = periods.filter(p => p.type === 'prep').map(formatPeriod).filter(Boolean);
+        const shootingDays = periods.filter(p => p.type === 'shoot').map(formatPeriod).filter(Boolean);
+        const returnDays = periods.filter(p => p.type === 'return').map(formatPeriod).filter(Boolean);
 
-            const metadata = {
-                color: selectedColor,
-                icon: selectedIcon,
-                prepDays,
-                shootingDays,
-                returnDays
-            };
+        const metadata = {
+            color: selectedColor,
+            icon: selectedIcon,
+            prepDays,
+            shootingDays,
+            returnDays
+        };
 
-            if (isEditing) {
-                // Rename Checks
-                if (projectName !== existingProject) {
-                    // RENAME LOGIC: Duplicate then Delete
-                    try {
-                        const stored = localStorage.getItem(STORAGE_KEY);
-                        if (stored) {
-                            const data = JSON.parse(stored);
-                            const oldData = data[existingProject];
-                            if (oldData) {
-                                // Create New Entry
-                                data[projectName] = { ...oldData, ...metadata };
-                                data[projectName].lastModified = new Date().toISOString();
-                                // Delete Old Entry
-                                delete data[existingProject];
-                                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        if (isEditing) {
+            // Rename Checks
+            if (projectName !== existingProject) {
+                // RENAME LOGIC: Duplicate then Delete
+                try {
+                    const stored = localStorage.getItem(STORAGE_KEY);
+                    if (stored) {
+                        const data = JSON.parse(stored);
+                        const oldData = data[existingProject];
+                        if (oldData) {
+                            // Create New Entry
+                            data[projectName] = { ...oldData, ...metadata };
+                            data[projectName].lastModified = new Date().toISOString();
+                            // Delete Old Entry
+                            delete data[existingProject];
+                            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
-                                // UPDATE REVISION for cross-tab sync
-                                updateProjectRevision();
+                            // UPDATE REVISION for cross-tab sync
+                            updateProjectRevision();
 
-                                // If we are renaming the currently active project, we need to update the global session
-                                const setupSelect = document.getElementById('setupSelect');
-                                if (setupSelect && setupSelect.value === existingProject) {
-                                    // We can't easily update the active session fully without a reload or deep app-session calls
-                                    // But for the dashboard view, we just need to refresh the grid.
-                                    // Ideally, we should switch the active project to the new name if it was open.
-                                    // For now, let's just refresh the grid which is the primary goal.
-                                }
+                            // If we are renaming the currently active project, we need to update the global session
+                            const setupSelect = document.getElementById('setupSelect');
+                            if (setupSelect && setupSelect.value === existingProject) {
+                                // We can't easily update the active session fully without a reload or deep app-session calls
+                                // But for the dashboard view, we just need to refresh the grid.
+                                // Ideally, we should switch the active project to the new name if it was open.
+                                // For now, let's just refresh the grid which is the primary goal.
+                            }
 
-                                renderProjectGrid();
+                            renderProjectGrid();
 
-                                // If the user has the legacy shim, we might need to notify it
-                                if (global.cineLegacyShim && typeof global.cineLegacyShim.refreshProjects === 'function') {
-                                    global.cineLegacyShim.refreshProjects();
-                                }
+                            // If the user has the legacy shim, we might need to notify it
+                            if (global.cineLegacyShim && typeof global.cineLegacyShim.refreshProjects === 'function') {
+                                global.cineLegacyShim.refreshProjects();
                             }
                         }
-                    } catch (e) {
-                        console.error('Rename failed', e);
                     }
-                } else {
-                    // UPDATE Existing (Same Name)
-                    updateProjectMetadata(projectName, metadata);
-                    renderProjectGrid(); // Refresh grid
+                } catch (e) {
+                    console.error('Rename failed', e);
                 }
             } else {
-                // CREATE New
-                createProject(projectName, metadata);
+                // UPDATE Existing (Same Name)
+                updateProjectMetadata(projectName, metadata);
+                renderProjectGrid(); // Refresh grid
             }
-        }
-
-        // Event listeners
-        createBtn.addEventListener('click', handleCreate);
-        cancelBtn.addEventListener('click', closeModal);
-        closeBtn.addEventListener('click', closeModal);
-
-        // Close on backdrop click
-        backdrop.addEventListener('click', (e) => {
-            if (e.target === backdrop) closeModal();
-        });
-
-        // Enter key to create
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') handleCreate();
-            if (e.key === 'Escape') closeModal();
-        });
-
-        // Clear error on typing
-        input.addEventListener('input', () => {
-            errorEl.style.display = 'none';
-        });
-    }
-
-
-    /**
-     * Create a new project
-     */
-    function createProject(projectName, metadata = {}) {
-        if (global.cineLegacyShim) {
-            global.cineLegacyShim.createProject(projectName);
-
-            // Wait for the project to be saved before updating metadata
-            // The legacy save is async (triggered via button click), so we poll
-            const waitForProjectAndUpdateMetadata = (attempts = 0) => {
-                const maxAttempts = 20; // ~2 seconds max
-                const stored = localStorage.getItem(STORAGE_KEY);
-                if (stored) {
-                    try {
-                        const data = JSON.parse(stored);
-                        if (data && data[projectName]) {
-                            updateProjectMetadata(projectName, metadata);
-                            return;
-                        }
-                    } catch (_e) { void _e; }
-                }
-                if (attempts < maxAttempts) {
-                    setTimeout(() => waitForProjectAndUpdateMetadata(attempts + 1), 100);
-                } else {
-                    console.warn('[V2] Timed out waiting for project to be saved:', projectName);
-                }
-            };
-            waitForProjectAndUpdateMetadata();
-        }
-
-        // Navigate to the new project
-        if (global.cineViewManager) {
-            global.cineViewManager.showView('projectDetail', {
-                projectId: projectName,
-                tab: 'camera'
-            });
+        } else {
+            // CREATE New
+            createProject(projectName, metadata);
         }
     }
 
-    /**
-     * Helper to update the project revision key for cross-tab sync
-     */
-    function updateProjectRevision() {
-        try {
-            const REV_KEY = 'cameraPowerPlanner_project_rev';
-            const currentRev = parseInt(localStorage.getItem(REV_KEY) || '0', 10);
-            localStorage.setItem(REV_KEY, (currentRev + 1).toString());
-        } catch (e) {
-            console.error('[V2] Failed to update project revision:', e);
-        }
+    // Event listeners
+    createBtn.addEventListener('click', handleCreate);
+    cancelBtn.addEventListener('click', closeModal);
+    closeBtn.addEventListener('click', closeModal);
+
+    // Close on backdrop click
+    backdrop.addEventListener('click', (e) => {
+        if (e.target === backdrop) closeModal();
+    });
+
+    // Enter key to create
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleCreate();
+        if (e.key === 'Escape') closeModal();
+    });
+
+    // Clear error on typing
+    input.addEventListener('input', () => {
+        errorEl.style.display = 'none';
+    });
+}
+
+
+/**
+ * Create a new project
+ */
+function createProject(projectName, metadata = {}) {
+    if (global.cineLegacyShim) {
+        global.cineLegacyShim.createProject(projectName);
+
+        // Wait for the project to be saved before updating metadata
+        // The legacy save is async (triggered via button click), so we poll
+        const waitForProjectAndUpdateMetadata = (attempts = 0) => {
+            const maxAttempts = 20; // ~2 seconds max
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                try {
+                    const data = JSON.parse(stored);
+                    if (data && data[projectName]) {
+                        updateProjectMetadata(projectName, metadata);
+                        return;
+                    }
+                } catch (_e) { void _e; }
+            }
+            if (attempts < maxAttempts) {
+                setTimeout(() => waitForProjectAndUpdateMetadata(attempts + 1), 100);
+            } else {
+                console.warn('[V2] Timed out waiting for project to be saved:', projectName);
+            }
+        };
+        waitForProjectAndUpdateMetadata();
     }
 
-    // =====================
-    // VIEW MANAGEMENT
-    // =====================
+    // Navigate to the new project
+    if (global.cineViewManager) {
+        global.cineViewManager.showView('projectDetail', {
+            projectId: projectName,
+            tab: 'camera'
+        });
+    }
+}
 
-    /**
-     * Create the dashboard view HTML structure
-     */
-    function createDashboardView() {
-        // Check if view already exists
-        if (document.getElementById(VIEW_ID)) {
-            return document.getElementById(VIEW_ID);
-        }
+/**
+ * Helper to update the project revision key for cross-tab sync
+ */
+function updateProjectRevision() {
+    try {
+        const REV_KEY = 'cameraPowerPlanner_project_rev';
+        const currentRev = parseInt(localStorage.getItem(REV_KEY) || '0', 10);
+        localStorage.setItem(REV_KEY, (currentRev + 1).toString());
+    } catch (e) {
+        console.error('[V2] Failed to update project revision:', e);
+    }
+}
 
-        const view = document.createElement('section');
-        view.id = VIEW_ID;
-        view.className = 'app-view v2-app';
-        view.innerHTML = `
+// =====================
+// VIEW MANAGEMENT
+// =====================
+
+/**
+ * Create the dashboard view HTML structure
+ */
+function createDashboardView() {
+    // Check if view already exists
+    if (document.getElementById(VIEW_ID)) {
+        return document.getElementById(VIEW_ID);
+    }
+
+    const view = document.createElement('section');
+    view.id = VIEW_ID;
+    view.className = 'app-view v2-app';
+    view.innerHTML = `
       <header class="view-header">
         <h1>Projects</h1>
         <div class="view-header-actions">
@@ -1535,101 +1536,97 @@
       </div>
     `;
 
-        // Bind header create button
-        const headerBtn = view.querySelector('#v2HeaderCreateBtn');
-        if (headerBtn) {
-            headerBtn.addEventListener('click', showCreateProjectDialog);
-        }
-
-        return view;
+    // Bind header create button
+    const headerBtn = view.querySelector('#v2HeaderCreateBtn');
+    if (headerBtn) {
+        headerBtn.addEventListener('click', showCreateProjectDialog);
     }
 
-    /**
-     * Initialize the project dashboard
-     */
-    function init() {
-        console.log('[ProjectDashboard] init() called');
+    return view;
+}
 
-        // Create dashboard view if it doesn't exist
-        const view = createDashboardView();
+/**
+ * Initialize the project dashboard
+ */
+function init() {
+    console.log('[ProjectDashboard] init() called');
 
-        // Find main content area and append
-        const v2Main = document.querySelector('.v2-main');
+    // Create dashboard view if it doesn't exist
+    const view = createDashboardView();
 
-        if (v2Main && !document.getElementById(VIEW_ID)) {
-            v2Main.appendChild(view);
-        }
+    // Find main content area and append
+    const v2Main = document.querySelector('.v2-main');
 
-        // Bind the header button event (Delegated for robustness)
-        document.addEventListener('click', (e) => {
-            if (e.target) {
-                if (e.target.closest('#v2HeaderCreateBtn')) {
-                    showCreateProjectDialog();
-                } else if (e.target.closest('#v2HeaderImportBtn')) {
-                    // Trigger legacy import
-                    if (global.cineLegacyShim) {
-                        global.cineLegacyShim.triggerLegacyClick('applySharedLinkBtn');
-                    }
+    if (v2Main && !document.getElementById(VIEW_ID)) {
+        v2Main.appendChild(view);
+    }
+
+    // Bind the header button event (Delegated for robustness)
+    document.addEventListener('click', (e) => {
+        if (e.target) {
+            if (e.target.closest('#v2HeaderCreateBtn')) {
+                showCreateProjectDialog();
+            } else if (e.target.closest('#v2HeaderImportBtn')) {
+                // Trigger legacy import
+                if (global.cineLegacyShim) {
+                    global.cineLegacyShim.triggerLegacyClick('applySharedLinkBtn');
                 }
             }
-        });
-
-        // If we are already on the projects view, render
-        const currentView = document.querySelector('.v2-view.active');
-        if (currentView && currentView.id === VIEW_ID) {
-            renderProjectGrid(true); // Pass true for initial load
         }
+    });
 
-        // Listen for view changes
-        window.addEventListener('v2:viewchange', (e) => {
-            if (e.detail.view === 'projects') {
-                // If switching to this view, treat as initial load
-                renderProjectGrid(true);
-            }
-        });
-
-        bindSearchEvents();
+    // If we are already on the projects view, render
+    const currentView = document.querySelector('.v2-view.active');
+    if (currentView && currentView.id === VIEW_ID) {
+        renderProjectGrid(true); // Pass true for initial load
     }
 
-    // =====================
-    // PUBLIC API
-    // =====================
-    const ProjectDashboard = {
-        init,
-        renderProjectGrid,
-        createProject,
-        deleteProject,
-        openProject,
-        getProjectNames,
-        createDashboardView,
-        formatDate,
-        formatDateRange
-    };
+    // Listen for view changes
+    window.addEventListener('v2:viewchange', (e) => {
+        if (e.detail.view === 'projects') {
+            // If switching to this view, treat as initial load
+            renderProjectGrid(true);
+        }
+    });
 
-    // Expose to global scope
-    if (typeof global !== 'undefined') {
-        global.cineProjectDashboard = ProjectDashboard;
-    }
+    bindSearchEvents();
+}
 
-    if (typeof window !== 'undefined') {
-        window.cineProjectDashboard = ProjectDashboard;
-    }
+// =====================
+// PUBLIC API
+// =====================
+const ProjectDashboard = {
+    init,
+    renderProjectGrid,
+    createProject,
+    deleteProject,
+    openProject,
+    getProjectNames,
+    createDashboardView,
+    formatDate,
+    formatDateRange
+};
 
-    // Auto-initialize when DOM is ready
-    if (typeof document !== 'undefined') {
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                // Delay init to let other V2 modules load first
-                setTimeout(init, 200);
-            });
-        } else {
+// Expose to global scope
+if (typeof global !== 'undefined') {
+    global.cineProjectDashboard = ProjectDashboard;
+}
+
+if (typeof window !== 'undefined') {
+    window.cineProjectDashboard = ProjectDashboard;
+}
+
+// Auto-initialize when DOM is ready
+if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            // Delay init to let other V2 modules load first
             setTimeout(init, 200);
-        }
+        });
+    } else {
+        setTimeout(init, 200);
     }
+}
 
-    // Module export
-    if (typeof module !== 'undefined' && module.exports) {
-        module.exports = ProjectDashboard;
-    }
+export { ProjectDashboard };
 
-})(typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : this);

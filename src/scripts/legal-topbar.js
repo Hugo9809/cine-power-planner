@@ -28,6 +28,14 @@
   }
 
   function safeSet(key, value) {
+    if (typeof window !== 'undefined' && typeof window.safeSetLocalStorage === 'function') {
+      try {
+        window.safeSetLocalStorage(key, value);
+        return;
+      } catch (e) {
+        // Fallback to direct write if helper fails
+      }
+    }
     try {
       if (typeof window !== 'undefined' && window.localStorage) {
         window.localStorage.setItem(key, value);

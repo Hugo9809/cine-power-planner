@@ -40,23 +40,27 @@ This guide expands on the workflows, features, and safety practices for using Ci
    ```bash
    git clone /path/to/cine-power-planner.git
    cd cine-power-planner
+   npm install
    ```
    (If you received an offline bundle, unpack it to a local folder instead.)
-2. Open `index.html` directly in a supported browser. Every asset loads from the
-   repository, so you can disconnect immediately after opening the file.
-3. (Optional) Serve the folder over `http://localhost` to enable the bundled
-   service worker and Progressive Web App install prompt. Any static server
-   works while offline, for example:
+2. Start the development server:
    ```bash
-   python -m http.server
-   # or
-   npm run serve
-   # or
-   npx http-server
+   npm run dev
    ```
-   `npx http-server` may fetch packages from the network unless the dependency
-   is cached locally, so avoid it in fully offline environments.
-4. Follow the [Quick Start](#quick-start) drill to rehearse saving, sharing,
+   This opens the app at `http://localhost:3000` with hot module replacement.
+3. For production builds:
+   ```bash
+   npm run build      # Build to dist/
+   npm run preview    # Preview the production build
+   ```
+4. (Combined offline usage) Open `index.html` directly in a supported browser for fully
+   offline use. All assets load from the repository without a network connection.
+5. (Optional) Serve the folder over `http://localhost` to enable the bundled
+   service worker. Any static server works while offline:
+   ```bash
+   npm run serve # Legacy static server
+   ```
+6. Follow the [Quick Start](#quick-start) drill to rehearse saving, sharing,
    importing, backing up and restoring on every machine before crews rely on the
    planner in the field.
 

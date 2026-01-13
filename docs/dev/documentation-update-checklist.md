@@ -40,31 +40,27 @@ instructions.
 
 ## Verification
 
+- [ ] Run automated validation scripts:
+      - `npm run check-consistency` (Schema & SW manifest)
+      - `npm run translation:validate` (Locale coverage)
 - [ ] Run the [Operations Checklist](operations-checklist.md) to confirm the
       instructions match the UI.
 - [ ] Perform the [Offline Help & Translation Verification](offline-help-verification.md)
-      drill to prove the help overlay, search results and localized topics load
-      from cached assets and mirror the README updates while offline.
+      drill so help overlay and localized topics mirror README updates.
 - [ ] Execute the [Offline Cache Verification Drill](offline-cache-verification-drill.md)
       if service worker assets or icons changed.
 - [ ] Restore backups in the rehearsal sandbox to confirm documentation for
       backup/restore remains correct.
 - [ ] Perform a full save/share/import rehearsal offline: capture a manual save,
-      export a project bundle, import it into the sandbox, review the diff, and
-      promote the data only after the pre-promotion backup timestamp appears in
-      **Latest activity**.
+      export a project, import it, review the diff, and promote the data.
 - [ ] Capture a fresh `window.__cineRuntimeIntegrity` report (or run
-      `window.cineRuntime.verifyCriticalFlows()` with the `warnOnFailure`
-      flag) and file it with the verification packet so runtime safeguards and
-      documented guardrails stay in sync.
-- [ ] Store the rehearsal **Compare versions** diff logs, checksum logs and sandbox screenshots with
-      the verification packet and confirm redundant media copies before ticking
-      the drill item so save/share/restore docs stay aligned with runtime
-      safeguards.
+      `window.cineRuntime.verifyCriticalFlows()`) and file it with the
+      verification packet.
 - [ ] Validate translations in-app using the language switcher.
-- [ ] While still offline, open the in-app help center and each localized
-      README you touched to confirm the updated guidance renders without remote
-      dependencies and mirrors the rehearsed workflows.
+- [ ] Cross-reference updates with developer guides:
+      - [API Quick Reference](api-quick-reference.md)
+      - [Testing Plan](testing-plan.md)
+      - [Translation Guide](translation-guide.md)
 
 ## Finalise
 

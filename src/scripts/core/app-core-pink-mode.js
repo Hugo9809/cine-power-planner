@@ -3,6 +3,8 @@
  * The logic remains identical to protect autosave, offline, and localization behaviours.
  */
 
+import { resolveCoreSupportModule } from './app-core-runtime-support.js';
+
 const PINK_MODE_SUPPORT_LOADER_TOOLS = resolveCoreSupportModule(
   'cineCoreAppPinkModeSupportLoader',
   './modules/app-core/pink-mode.js'

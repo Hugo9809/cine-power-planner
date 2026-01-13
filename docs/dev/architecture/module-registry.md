@@ -5,6 +5,11 @@ modules while preserving offline determinism and data safety. This document
 summarises the registry contract, available tokens and the expectations every
 module must follow.
 
+> [!NOTE]
+> Modules in `src/scripts/modules/` are being migrated to ES Modules.
+> Most modules now support both standard `import` (for Vite/V2) and global access (for legacy IIFE).
+> See [Vite Migration Guide](../vite-migration.md) for patterns.
+
 ## Registry lifecycle
 
 1. `architecture-kernel.js` creates the registry, binds a hardened `define`
@@ -23,17 +28,40 @@ The following canonical tokens are available to feature modules. Reference these
 instead of importing files directly so tests and offline bundles can swap
 implementations if needed.
 
+### Core Infrastructure
+
 | Token | Provides | Notes |
 | --- | --- | --- |
 | `cineModuleImmutability` | Deep freeze helpers that prevent accidental mutations of registered APIs. | Core infrastructure—loaded very early. |
 | `cineModuleArchitectureHelpers` | Utility functions for module creation, normalization, and dependency resolution. | Used by other architecture modules. |
 | `cineModuleArchitectureKernel` | The "kernel" that boots the module registry and wires low-level primitives. | Loaded before other modules. |
 | `cineEnvironmentBridge` | Safe access to `window`, `globalThis`, workers and Node-style globals. | Never mutate the returned references. |
+| `cineRuntimeBootstrap` | Core runtime initialization, boot queue, and scope detection utilities. | From `src/scripts/runtime/bootstrap.js`. |
+
+### Persistence & Offline
+
+| Token | Provides | Notes |
+| --- | --- | --- |
 | `cinePersistence` | Redundant save/autosave/backup helpers that wrap `storage.js`. | All user data writes must flow through this token. |
 | `cineOffline` | Service worker handshake, cache verification drills and bundle checksum utilities. | Works even when the service worker is unavailable. |
 | `cineRuntime` | Error boundaries, crash protection, and runtime guard logic. | Wraps critical operations to prevent data loss. |
+
+### UI & Views
+
+| Token | Provides | Notes |
+| --- | --- | --- |
 | `cineUi` | UI helpers, modal management, and DOM utilities. | Coordinate with View Manager for V2. |
+| `cineV2ViewManager` | V2 hash-based routing, view transitions, and navigation state. | See [V2 Views Architecture](v2-views.md). |
+| `cineFeatureSearch` | Global search normalization, highlighting, and suggestion ranking. | Powers the command palette and search bar. |
+
+### Feature Modules
+
+| Token | Provides | Notes |
+| --- | --- | --- |
 | `autoGearRulesApi` | Automatic gear rule builder, validation logic and rehearsal checkpoints. | Stores redundant mirrors before applying changes. |
+| `cineContactsApi` | Crew contact roster CRUD operations and vCard import/export. | Persists with planner backups. |
+| `cineOwnGearApi` | Personal equipment inventory tracking and quantity management. | Integrates with auto gear rule conditions. |
+
 
 > **Tip:** Add new tokens only after updating the [Documentation Coverage
 > Matrix](../documentation-coverage-matrix.md) so help, training and translation

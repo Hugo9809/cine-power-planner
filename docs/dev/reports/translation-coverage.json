@@ -1,0 +1,106 @@
+{
+  "de": {
+    "total": 2184,
+    "translated": 2184,
+    "coverage": "100.00",
+    "identicalToEnglish": 76,
+    "sections": {
+      "texts": {
+        "total": 2156,
+        "translated": 2156,
+        "coverage": "100.0",
+        "identicalToEnglish": 85
+      },
+      "categoryNames": {
+        "total": 26,
+        "translated": 26,
+        "coverage": "100.0",
+        "identicalToEnglish": 4
+      },
+      "gearItems": {
+        "total": 2,
+        "translated": 2,
+        "coverage": "100.0",
+        "identicalToEnglish": 0
+      }
+    }
+  },
+  "es": {
+    "total": 2184,
+    "translated": 2184,
+    "coverage": "100.00",
+    "identicalToEnglish": 60,
+    "sections": {
+      "texts": {
+        "total": 2156,
+        "translated": 2156,
+        "coverage": "100.0",
+        "identicalToEnglish": 72
+      },
+      "categoryNames": {
+        "total": 26,
+        "translated": 26,
+        "coverage": "100.0",
+        "identicalToEnglish": 2
+      },
+      "gearItems": {
+        "total": 2,
+        "translated": 2,
+        "coverage": "100.0",
+        "identicalToEnglish": 0
+      }
+    }
+  },
+  "fr": {
+    "total": 2184,
+    "translated": 2184,
+    "coverage": "100.00",
+    "identicalToEnglish": 78,
+    "sections": {
+      "texts": {
+        "total": 2156,
+        "translated": 2156,
+        "coverage": "100.0",
+        "identicalToEnglish": 91
+      },
+      "categoryNames": {
+        "total": 26,
+        "translated": 26,
+        "coverage": "100.0",
+        "identicalToEnglish": 0
+      },
+      "gearItems": {
+        "total": 2,
+        "translated": 2,
+        "coverage": "100.0",
+        "identicalToEnglish": 0
+      }
+    }
+  },
+  "it": {
+    "total": 2184,
+    "translated": 2184,
+    "coverage": "100.00",
+    "identicalToEnglish": 64,
+    "sections": {
+      "texts": {
+        "total": 2156,
+        "translated": 2156,
+        "coverage": "100.0",
+        "identicalToEnglish": 76
+      },
+      "categoryNames": {
+        "total": 26,
+        "translated": 26,
+        "coverage": "100.0",
+        "identicalToEnglish": 2
+      },
+      "gearItems": {
+        "total": 2,
+        "translated": 2,
+        "coverage": "100.0",
+        "identicalToEnglish": 0
+      }
+    }
+  }
+}

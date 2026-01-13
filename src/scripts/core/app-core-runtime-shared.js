@@ -3,7 +3,15 @@
  * The logic remains identical to protect autosave, offline, and localization behaviours.
  */
 
-var CORE_RUNTIME_SHARED_NAMESPACE_TOOLS = (function resolveRuntimeSharedNamespaceTools() {
+import {
+  APP_CORE_BOOTSTRAP_TOOLS,
+  APP_CORE_BOOTSTRAP_FALLBACK_TOOLS,
+  APP_CORE_BOOTSTRAP_SUITE,
+  APP_CORE_BOOTSTRAP_RESULTS_TOOLS,
+} from './app-core-bootstrap.js';
+import { resolveCoreSupportModule } from './app-core-runtime-support.js';
+
+export var CORE_RUNTIME_SHARED_NAMESPACE_TOOLS = (function resolveRuntimeSharedNamespaceTools() {
   const runtimeScope =
     typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' && CORE_PART1_RUNTIME_SCOPE
       ? CORE_PART1_RUNTIME_SCOPE
@@ -70,14 +78,14 @@ var CORE_RUNTIME_SHARED_NAMESPACE_TOOLS = (function resolveRuntimeSharedNamespac
   return resolved;
 })();
 
-var RUNTIME_SHARED_BOOTSTRAP_TOOLS = resolveCoreSupportModule(
+export var RUNTIME_SHARED_BOOTSTRAP_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeSharedBootstrap',
   './modules/app-core/runtime.js'
 );
 
 var LOCALIZATION_ACCESSORS_TOOLS = resolveCoreSupportModule(
   'cineCoreAppLocalizationAccessors',
-  './modules/app-core/localization.js'
+  './modules/app-core/localization-fixed.js'
 );
 
 var RUNTIME_SHARED_BOOTSTRAP_INLINE_TOOLS = resolveCoreSupportModule(
@@ -243,18 +251,18 @@ var runtimeSharedBootstrapResult = (function resolveRuntimeSharedBootstrapResult
   return createInlineRuntimeSharedFallback(moduleOptions);
 })();
 
-var CORE_RUNTIME_SHARED_NAMESPACE =
+export var CORE_RUNTIME_SHARED_NAMESPACE =
   runtimeSharedBootstrapResult && runtimeSharedBootstrapResult.runtimeSharedNamespace
     ? runtimeSharedBootstrapResult.runtimeSharedNamespace
     : null;
 
-var CORE_RUNTIME_SHARED_RESOLVER =
+export var CORE_RUNTIME_SHARED_RESOLVER =
   runtimeSharedBootstrapResult &&
     typeof runtimeSharedBootstrapResult.runtimeSharedResolver === 'function'
     ? runtimeSharedBootstrapResult.runtimeSharedResolver
     : null;
 
-var EXISTING_CORE_RUNTIME_SHARED =
+export var EXISTING_CORE_RUNTIME_SHARED =
   (runtimeSharedBootstrapResult &&
     runtimeSharedBootstrapResult.existingRuntimeShared &&
     typeof runtimeSharedBootstrapResult.existingRuntimeShared === 'object'
@@ -273,7 +281,7 @@ var fallbackResolveRuntimeSharedFromGlobal =
       return null;
     };
 
-var CORE_RUNTIME_SHARED =
+export var CORE_RUNTIME_SHARED =
   (runtimeSharedBootstrapResult &&
     runtimeSharedBootstrapResult.runtimeShared &&
     typeof runtimeSharedBootstrapResult.runtimeShared === 'object'
@@ -306,5 +314,14 @@ var CORE_RUNTIME_SHARED =
     : null) ||
   fallbackResolveRuntimeSharedFromGlobal() ||
   Object.create(null);
+
+if (typeof window !== 'undefined') {
+  window.CORE_RUNTIME_SHARED_NAMESPACE_TOOLS = CORE_RUNTIME_SHARED_NAMESPACE_TOOLS;
+  window.RUNTIME_SHARED_BOOTSTRAP_TOOLS = RUNTIME_SHARED_BOOTSTRAP_TOOLS;
+  window.CORE_RUNTIME_SHARED_NAMESPACE = CORE_RUNTIME_SHARED_NAMESPACE;
+  window.CORE_RUNTIME_SHARED_RESOLVER = CORE_RUNTIME_SHARED_RESOLVER;
+  window.EXISTING_CORE_RUNTIME_SHARED = EXISTING_CORE_RUNTIME_SHARED;
+  window.CORE_RUNTIME_SHARED = CORE_RUNTIME_SHARED;
+}
 
 

@@ -3,37 +3,48 @@
  * The logic remains identical to protect autosave, offline, and localization behaviours.
  */
 
-const CORE_RUNTIME_CANDIDATE_SCOPE_BRIDGE = resolveCoreSupportModule(
+import { resolveCoreSupportModule } from './app-core-runtime-support.js';
+
+// Safe fallback for resolveCoreSupportModule if import fails
+const _resolveCoreSupportModule = typeof resolveCoreSupportModule === 'function'
+  ? resolveCoreSupportModule
+  : () => null;
+
+// Safe fallbacks for undefined globals
+const _CORE_RUNTIME_SHARED = typeof CORE_RUNTIME_SHARED !== 'undefined' ? CORE_RUNTIME_SHARED : null;
+const _CORE_ENVIRONMENT_HELPERS = typeof CORE_ENVIRONMENT_HELPERS !== 'undefined' ? CORE_ENVIRONMENT_HELPERS : null;
+
+const CORE_RUNTIME_CANDIDATE_SCOPE_BRIDGE = _resolveCoreSupportModule(
   'cineCoreRuntimeCandidateScopes',
   './modules/core/runtime-candidate-scopes.js'
 );
 
-const CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT_TOOLS = resolveCoreSupportModule(
+const CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT_TOOLS = _resolveCoreSupportModule(
   'cineCoreAppRuntimeCandidateScopeSupport',
   './modules/app-core/runtime.js'
 );
 
 const resolveRuntimeCandidateScopeSupport =
   (CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT_TOOLS &&
-  typeof CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT_TOOLS.resolveRuntimeCandidateScopeSupport === 'function'
+    typeof CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT_TOOLS.resolveRuntimeCandidateScopeSupport === 'function'
     ? CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT_TOOLS.resolveRuntimeCandidateScopeSupport
     : null) ||
   (function fallbackResolveRuntimeCandidateScopeSupport() {
-    if (typeof require === 'function') {
-      try {
-        const required = require(
-          './modules/app-core/runtime.js'
-        );
-        if (
-          required &&
-          typeof required.resolveRuntimeCandidateScopeSupport === 'function'
-        ) {
-          return required.resolveRuntimeCandidateScopeSupport;
-        }
-      } catch (runtimeCandidateScopeSupportError) {
-        void runtimeCandidateScopeSupportError;
-      }
-    }
+    // if (typeof require === 'function') {
+    //   try {
+    //     const required = require(
+    //       './modules/app-core/runtime.js'
+    //     );
+    //     if (
+    //       required &&
+    //       typeof required.resolveRuntimeCandidateScopeSupport === 'function'
+    //     ) {
+    //       return required.resolveRuntimeCandidateScopeSupport;
+    //     }
+    //   } catch (runtimeCandidateScopeSupportError) {
+    //     void runtimeCandidateScopeSupportError;
+    //   }
+    // }
 
     const fallbackScopes = [
       typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
@@ -68,25 +79,25 @@ const resolveRuntimeCandidateScopeSupport =
 
 const createFallbackRuntimeCandidateScopeSupport =
   (CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT_TOOLS &&
-  typeof CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT_TOOLS.createFallbackRuntimeCandidateScopeSupport === 'function'
+    typeof CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT_TOOLS.createFallbackRuntimeCandidateScopeSupport === 'function'
     ? CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT_TOOLS.createFallbackRuntimeCandidateScopeSupport
     : null) ||
   (function fallbackCreateRuntimeCandidateScopeSupport() {
-    if (typeof require === 'function') {
-      try {
-        const required = require(
-          './modules/app-core/runtime.js'
-        );
-        if (
-          required &&
-          typeof required.createFallbackRuntimeCandidateScopeSupport === 'function'
-        ) {
-          return required.createFallbackRuntimeCandidateScopeSupport;
-        }
-      } catch (runtimeCandidateScopeFallbackError) {
-        void runtimeCandidateScopeFallbackError;
-      }
-    }
+    // if (typeof require === 'function') {
+    //   try {
+    //     const required = require(
+    //       './modules/app-core/runtime.js'
+    //     );
+    //     if (
+    //       required &&
+    //       typeof required.createFallbackRuntimeCandidateScopeSupport === 'function'
+    //     ) {
+    //       return required.createFallbackRuntimeCandidateScopeSupport;
+    //     }
+    //   } catch (runtimeCandidateScopeFallbackError) {
+    //     void runtimeCandidateScopeFallbackError;
+    //   }
+    // }
 
     const fallbackScopes = [
       typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
@@ -119,150 +130,150 @@ const createFallbackRuntimeCandidateScopeSupport =
     return null;
   })();
 
-const RUNTIME_CANDIDATE_SCOPE_FALLBACK_TOOLS = resolveCoreSupportModule(
+const RUNTIME_CANDIDATE_SCOPE_FALLBACK_TOOLS = _resolveCoreSupportModule(
   'cineCoreAppRuntimeCandidateScopeFallback',
   './modules/app-core/runtime.js'
 );
 
 const createRuntimeCandidateScopeSupportFallback =
   (RUNTIME_CANDIDATE_SCOPE_FALLBACK_TOOLS &&
-  typeof RUNTIME_CANDIDATE_SCOPE_FALLBACK_TOOLS.createRuntimeCandidateScopeSupportFallback === 'function'
+    typeof RUNTIME_CANDIDATE_SCOPE_FALLBACK_TOOLS.createRuntimeCandidateScopeSupportFallback === 'function'
     ? RUNTIME_CANDIDATE_SCOPE_FALLBACK_TOOLS.createRuntimeCandidateScopeSupportFallback
     : (function resolveRuntimeCandidateScopeFallbackFactory() {
-        if (typeof require === 'function') {
-          try {
-            const requiredRuntimeCandidateScopeFallback = require(
-              './modules/app-core/runtime.js'
-            );
-            if (
-              requiredRuntimeCandidateScopeFallback &&
-              typeof requiredRuntimeCandidateScopeFallback.createRuntimeCandidateScopeSupportFallback === 'function'
-            ) {
-              return requiredRuntimeCandidateScopeFallback.createRuntimeCandidateScopeSupportFallback;
-            }
-          } catch (runtimeCandidateScopeFallbackRequireError) {
-            void runtimeCandidateScopeFallbackRequireError;
-          }
-        }
+      //     if (typeof require === 'function') {
+      //       try {
+      //         const requiredRuntimeCandidateScopeFallback = require(
+      //           './modules/app-core/runtime.js'
+      //         );
+      // if (
+      //   requiredRuntimeCandidateScopeFallback &&
+      //   typeof requiredRuntimeCandidateScopeFallback.createRuntimeCandidateScopeSupportFallback === 'function'
+      // ) {
+      //   return requiredRuntimeCandidateScopeFallback.createRuntimeCandidateScopeSupportFallback;
+      // }
+      //     } catch (runtimeCandidateScopeFallbackRequireError) {
+      //       void runtimeCandidateScopeFallbackRequireError;
+      //     }
+      //         }
 
-        return function runtimeCandidateScopeSupportFallbackFactory(options) {
-          const fallbackSupport = {
-            collectCandidateScopes() {
-              return [];
-            },
-            collectCandidateScopesWithFallback() {
-              return [];
-            },
-            resolveCandidateScopes(resolveOptions) {
-              const provided =
-                resolveOptions && Array.isArray(resolveOptions.currentCandidateScopes)
-                  ? resolveOptions.currentCandidateScopes
-                  : null;
+      return function runtimeCandidateScopeSupportFallbackFactory(options) {
+        const fallbackSupport = {
+          collectCandidateScopes() {
+            return [];
+          },
+          collectCandidateScopesWithFallback() {
+            return [];
+          },
+          resolveCandidateScopes(resolveOptions) {
+            const provided =
+              resolveOptions && Array.isArray(resolveOptions.currentCandidateScopes)
+                ? resolveOptions.currentCandidateScopes
+                : null;
 
-              return provided || [];
-            },
-            syncCandidateScopes(candidateScopes, syncOptions) {
-              const list = Array.isArray(candidateScopes) ? candidateScopes : [];
-              const assignCandidateScopes =
-                (syncOptions && typeof syncOptions.assignCurrentCandidateScopes === 'function'
-                  ? syncOptions.assignCurrentCandidateScopes
-                  : options && typeof options.assignCurrentCandidateScopes === 'function'
+            return provided || [];
+          },
+          syncCandidateScopes(candidateScopes, syncOptions) {
+            const list = Array.isArray(candidateScopes) ? candidateScopes : [];
+            const assignCandidateScopes =
+              (syncOptions && typeof syncOptions.assignCurrentCandidateScopes === 'function'
+                ? syncOptions.assignCurrentCandidateScopes
+                : options && typeof options.assignCurrentCandidateScopes === 'function'
                   ? options.assignCurrentCandidateScopes
                   : null);
 
-              if (assignCandidateScopes) {
-                try {
-                  assignCandidateScopes(list);
-                } catch (assignCandidateScopesError) {
-                  void assignCandidateScopesError;
-                }
+            if (assignCandidateScopes) {
+              try {
+                assignCandidateScopes(list);
+              } catch (assignCandidateScopesError) {
+                void assignCandidateScopesError;
               }
+            }
 
-              return list;
-            },
-            ensureCandidateScopes(ensureOptions) {
-              const ensureOptionsWithDefaults = ensureOptions || {};
-              const resolved = fallbackSupport.resolveCandidateScopes(
-                ensureOptionsWithDefaults
-              );
+            return list;
+          },
+          ensureCandidateScopes(ensureOptions) {
+            const ensureOptionsWithDefaults = ensureOptions || {};
+            const resolved = fallbackSupport.resolveCandidateScopes(
+              ensureOptionsWithDefaults
+            );
 
-              return fallbackSupport.syncCandidateScopes(
-                resolved,
-                ensureOptionsWithDefaults
-              );
-            },
-          };
-
-          return fallbackSupport;
+            return fallbackSupport.syncCandidateScopes(
+              resolved,
+              ensureOptionsWithDefaults
+            );
+          },
         };
-      })());
+
+        return fallbackSupport;
+      };
+    })());
 
 const FALLBACK_RUNTIME_CANDIDATE_SCOPE_SUPPORT =
   typeof createFallbackRuntimeCandidateScopeSupport === 'function'
     ? createFallbackRuntimeCandidateScopeSupport({
-        runtimeShared: CORE_RUNTIME_SHARED,
-        environmentHelpers: CORE_ENVIRONMENT_HELPERS,
-      })
+      runtimeShared: _CORE_RUNTIME_SHARED,
+      environmentHelpers: _CORE_ENVIRONMENT_HELPERS,
+    })
     : createRuntimeCandidateScopeSupportFallback({
-        runtimeShared: CORE_RUNTIME_SHARED,
-        environmentHelpers: CORE_ENVIRONMENT_HELPERS,
-        candidateScopeBridge: CORE_RUNTIME_CANDIDATE_SCOPE_BRIDGE,
-        corePartRuntimeScope:
-          typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
-        coreGlobalScope:
-          typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
-        assignCurrentCandidateScopes(value) {
-          try {
-            CORE_RUNTIME_CANDIDATE_SCOPES = value;
-          } catch (candidateAssignError) {
-            void candidateAssignError;
-          }
-        },
-      });
+      runtimeShared: _CORE_RUNTIME_SHARED,
+      environmentHelpers: _CORE_ENVIRONMENT_HELPERS,
+      candidateScopeBridge: CORE_RUNTIME_CANDIDATE_SCOPE_BRIDGE,
+      corePartRuntimeScope:
+        typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
+      coreGlobalScope:
+        typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
+      assignCurrentCandidateScopes(value) {
+        try {
+          CORE_RUNTIME_CANDIDATE_SCOPES = value;
+        } catch (candidateAssignError) {
+          void candidateAssignError;
+        }
+      },
+    });
 
 const CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT =
   (typeof resolveRuntimeCandidateScopeSupport === 'function'
     ? resolveRuntimeCandidateScopeSupport({
-        resolveCoreSupportModule,
-        requireFn: typeof require === 'function' ? require : null,
-        runtimeScope:
-          typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
-        coreGlobalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
-        runtimeShared: CORE_RUNTIME_SHARED,
-        environmentHelpers: CORE_ENVIRONMENT_HELPERS,
-      })
+      resolveCoreSupportModule: _resolveCoreSupportModule,
+      requireFn: typeof require === 'function' ? require : null,
+      runtimeScope:
+        typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
+      coreGlobalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
+      runtimeShared: _CORE_RUNTIME_SHARED,
+      environmentHelpers: _CORE_ENVIRONMENT_HELPERS,
+    })
     : null) || FALLBACK_RUNTIME_CANDIDATE_SCOPE_SUPPORT;
 
-const RUNTIME_CANDIDATE_SCOPE_RESOLVER_TOOLS = resolveCoreSupportModule(
+const RUNTIME_CANDIDATE_SCOPE_RESOLVER_TOOLS = _resolveCoreSupportModule(
   'cineCoreAppRuntimeCandidateScopeResolvers',
   './modules/app-core/runtime.js'
 );
 
 const createRuntimeCandidateScopeResolvers =
   (RUNTIME_CANDIDATE_SCOPE_RESOLVER_TOOLS &&
-  typeof RUNTIME_CANDIDATE_SCOPE_RESOLVER_TOOLS.createRuntimeCandidateScopeResolvers ===
+    typeof RUNTIME_CANDIDATE_SCOPE_RESOLVER_TOOLS.createRuntimeCandidateScopeResolvers ===
     'function'
     ? RUNTIME_CANDIDATE_SCOPE_RESOLVER_TOOLS.createRuntimeCandidateScopeResolvers
     : (function resolveRuntimeCandidateScopeResolversFactory() {
-        if (typeof require === 'function') {
-          try {
-            const requiredRuntimeCandidateScopeResolvers = require(
-              './modules/app-core/runtime.js'
-            );
-            if (
-              requiredRuntimeCandidateScopeResolvers &&
-              typeof requiredRuntimeCandidateScopeResolvers.createRuntimeCandidateScopeResolvers ===
-                'function'
-            ) {
-              return requiredRuntimeCandidateScopeResolvers.createRuntimeCandidateScopeResolvers;
-            }
-          } catch (runtimeCandidateScopeResolversRequireError) {
-            void runtimeCandidateScopeResolversRequireError;
-          }
-        }
+      //     if (typeof require === 'function') {
+      //       try {
+      //         const requiredRuntimeCandidateScopeResolvers = require(
+      //           './modules/app-core/runtime.js'
+      //         );
+      //         if (
+      //           requiredRuntimeCandidateScopeResolvers &&
+      //           typeof requiredRuntimeCandidateScopeResolvers.createRuntimeCandidateScopeResolvers ===
+      //             'function'
+      //         ) {
+      //           return requiredRuntimeCandidateScopeResolvers.createRuntimeCandidateScopeResolvers;
+      //         }
+      //       } catch (runtimeCandidateScopeResolversRequireError) {
+      //         void runtimeCandidateScopeResolversRequireError;
+      //       }
+      //     }
 
-        return null;
-      })());
+      return null;
+    })());
 
 function createInlineRuntimeCandidateScopeResolvers(resolverOptions) {
   const runtimeSupport =
@@ -340,12 +351,12 @@ function createInlineRuntimeCandidateScopeResolvers(resolverOptions) {
   };
 }
 
-const runtimeCandidateScopeResolvers =
+export const runtimeCandidateScopeResolvers =
   (typeof createRuntimeCandidateScopeResolvers === 'function'
     ? createRuntimeCandidateScopeResolvers({
-        runtimeCandidateScopeSupport: CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT,
-        fallbackRuntimeCandidateScopeSupport: FALLBACK_RUNTIME_CANDIDATE_SCOPE_SUPPORT,
-      })
+      runtimeCandidateScopeSupport: CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT,
+      fallbackRuntimeCandidateScopeSupport: FALLBACK_RUNTIME_CANDIDATE_SCOPE_SUPPORT,
+    })
     : null) ||
   createInlineRuntimeCandidateScopeResolvers({
     runtimeCandidateScopeSupport: CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT,
@@ -362,17 +373,17 @@ const COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE =
 
 const collectRuntimeCandidateScopesFromResolvers =
   runtimeCandidateScopeResolvers &&
-  typeof runtimeCandidateScopeResolvers.collectCoreRuntimeCandidateScopes === 'function'
+    typeof runtimeCandidateScopeResolvers.collectCoreRuntimeCandidateScopes === 'function'
     ? runtimeCandidateScopeResolvers.collectCoreRuntimeCandidateScopes
     : inlineCollectCoreRuntimeCandidateScopes;
 
 const collectRuntimeCandidateScopesFromGlobal =
   COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE &&
-  typeof COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE.collectCoreRuntimeCandidateScopes === 'function'
+    typeof COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE.collectCoreRuntimeCandidateScopes === 'function'
     ? COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE.collectCoreRuntimeCandidateScopes
     : null;
 
-const resolvedCollectCoreRuntimeCandidateScopes =
+export const resolvedCollectCoreRuntimeCandidateScopes =
   collectRuntimeCandidateScopesFromGlobal || collectRuntimeCandidateScopesFromResolvers;
 
 if (
@@ -383,13 +394,19 @@ if (
     resolvedCollectCoreRuntimeCandidateScopes;
 }
 
-const CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED = (function ensureCoreRuntimeCandidateScopes() {
+// Expose the variable name expected by legacy scripts (app-core-new-1.js)
+if (COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE) {
+  COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE.resolvedCollectCoreRuntimeCandidateScopes =
+    resolvedCollectCoreRuntimeCandidateScopes;
+}
+
+export const CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED = (function ensureCoreRuntimeCandidateScopes() {
   const primaryScope =
     typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null;
 
   const ensureFn =
     runtimeCandidateScopeResolvers &&
-    typeof runtimeCandidateScopeResolvers.ensureCoreRuntimeCandidateScopes === 'function'
+      typeof runtimeCandidateScopeResolvers.ensureCoreRuntimeCandidateScopes === 'function'
       ? runtimeCandidateScopeResolvers.ensureCoreRuntimeCandidateScopes
       : null;
 
@@ -397,8 +414,8 @@ const CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED = (function ensureCoreRuntimeCandid
     primaryScope,
     currentCandidateScopes:
       typeof CORE_RUNTIME_CANDIDATE_SCOPES !== 'undefined' &&
-      CORE_RUNTIME_CANDIDATE_SCOPES &&
-      typeof CORE_RUNTIME_CANDIDATE_SCOPES.length === 'number'
+        CORE_RUNTIME_CANDIDATE_SCOPES &&
+        typeof CORE_RUNTIME_CANDIDATE_SCOPES.length === 'number'
         ? CORE_RUNTIME_CANDIDATE_SCOPES
         : null,
     globalScope:
@@ -429,5 +446,13 @@ const CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED = (function ensureCoreRuntimeCandid
 
   return resolvedCollectCoreRuntimeCandidateScopes(primaryScope);
 })();
+
+if (COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE) {
+  COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE.CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED = CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED;
+  // Shim for potential loop usage where it expects it on window directly if global scope is different
+  if (typeof window !== 'undefined') {
+    window.CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED = CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED;
+  }
+}
 
 

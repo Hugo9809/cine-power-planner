@@ -1,200 +1,56 @@
-(function (global) {
-    'use strict';
+/**
+ * V2 Translations Bridge
+ * 
+ * This module ensures V2 UI views can access translations from the main locale files.
+ * Previously, this file contained hardcoded English strings. Now it simply verifies
+ * that the main translation system has loaded the V2 keys.
+ * 
+ * The actual V2 translations are now in:
+ * - src/scripts/translations/en.js
+ * - src/scripts/translations/de.js
+ * - src/scripts/translations/es.js
+ * - src/scripts/translations/fr.js
+ * - src/scripts/translations/it.js
+ */
 
-    const V2_TEXTS = {
-        en: {
-            // Contacts View
-            contactsViewTitle: 'Contacts',
-            contactsViewSubtitle: 'Manage your crew and equipment suppliers.',
-            buttonAddContact: 'Add Contact',
-            contactsEmptyTitle: 'No contacts yet',
-            contactsEmptyText: 'Add people and companies to your address book for quick access in projects.',
-            buttonAddFirstContact: 'Add your first contact',
-            linkWebsite: 'Website',
-            contactUnnamed: 'Unnamed Contact',
-            contactNoRole: 'No Role',
-            buttonEdit: 'Edit',
-            buttonDelete: 'Delete',
-            modalTitleDeleteContact: 'Delete Contact',
-            confirmDeleteContact: 'Are you sure you want to delete this contact? This action cannot be undone.',
-            buttonDeleteRed: 'Delete',
-            modalTitleNewContact: 'New Contact',
-            modalTitleEditContact: 'Edit Contact',
-            buttonUploadPhoto: 'Upload Photo',
-            buttonRemovePhoto: 'Remove',
-            labelName: 'Name',
-            placeholderFullName: 'Full Name',
-            labelRole: 'Role / Title',
-            placeholderRole: 'e.g. Gaffer, Rental House',
-            labelPhone: 'Phone',
-            placeholderPhone: '+1 234 567 890',
-            labelEmail: 'Email',
-            placeholderEmail: 'email@example.com',
-            labelWebsite: 'Website',
-            placeholderWebsite: 'https://example.com',
-            labelNotes: 'Notes',
-            placeholderNotes: 'Additional details...',
-            buttonCancel: 'Cancel',
-            buttonSaveContact: 'Save Contact',
-            alertEnterName: 'Please enter a name.',
+// Polyfill global for legacy code
+const global = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : {};
 
-            // Auto Gear Rules View
-            rulesViewTitle: 'Auto Gear Rules',
-            rulesViewSubtitle: 'Configure automatic gear suggestions based on shooting scenarios.',
-            buttonAddRule: 'Add Rule',
-            rulesEmptyTitle: 'No rules defined',
-            rulesEmptyText: 'Create rules to automatically add accessories based on your camera and scenario.',
-            ruleBadgeAlways: 'Always Active',
-            ruleTagConditions: 'Conditions',
-            ruleTagItemsAdded: 'Items Added',
-            confirmDeleteRule: 'Are you sure you want to delete this rule?',
-            buttonExportRules: 'Export Rules',
-            buttonImportRules: 'Import Rules',
-            buttonResetRules: 'Reset Default Rules',
-            confirmResetRules: 'Reset all rules to defaults? This will overwrite your changes.',
-            headingMonitorDefaults: 'Default Monitors',
-            labelFocusMonitor: 'Focus Monitor',
-            labelHandheldMonitor: 'Handheld Monitor',
-            labelComboMonitor: 'Combo Monitor',
-            labelDirectorMonitor: 'Director Monitor',
-            optionNone: 'None',
-            modalTitleCreateRule: 'Create Rule',
-            modalTitleEditRule: 'Edit Rule',
-            tabGeneral: 'General',
-            tabContext: 'Context',
-            tabCamera: 'Camera',
-            tabMonitoring: 'Monitoring',
-            tabSupport: 'Support',
-            tabCrew: 'Crew',
-            tabActions: 'Actions',
-            labelRuleName: 'Rule Name',
-            placeholderRuleName: 'e.g. Add Rain Cover when Outdoor',
-            labelRuleEnabled: 'Enable Rule',
-            labelRuleAlways: 'Always Apply',
-            helpRuleAlways: 'If checked, this rule applies regardless of other conditions.',
-            sectionScenarios: 'Scenarios',
-            labelScenarioMode: 'Match Mode',
-            optionScenarioAll: 'Match ALL selected',
-            optionScenarioAny: 'Match ANY selected',
-            optionScenarioMultiplier: 'Multiplier',
-            labelScenarioFactor: 'Multiplier Factor',
-            sectionShootingDays: 'Shooting Days',
-            labelShootingDaysMode: 'Applies when days are:',
-            optionDaysMinimum: 'Minimum',
-            optionDaysMaximum: 'Maximum',
-            optionDaysEvery: 'Every X Days',
-            labelShootingDaysValue: 'Days Count',
-            placeholderOptional: 'Optional',
-            helpShootingDays: 'Leave empty to ignore shooting duration.',
-            sectionCameraModels: 'Camera Models',
-            sectionMatteboxes: 'Matteboxes',
-            sectionViewfinders: 'Viewfinders',
-            sectionMonitors: 'Monitors',
-            sectionWireless: 'Wireless Video',
-            sectionTripodHeads: 'Tripod Heads',
-            sectionBowlSize: 'Bowl Size',
-            sectionLegTypes: 'Leg Types',
-            sectionSpreaders: 'Spreaders',
-            sectionCrewPresent: 'Crew Present',
-            sectionCrewAbsent: 'Crew Absent',
-            sectionItemsToAdd: 'Add Items',
-            sectionItemsToRemove: 'Remove Items',
-            buttonAddItem: 'Add Item',
-            labelItemName: 'Item Name',
-            placeholderItemSearch: 'Search or enter name',
-            labelCategory: 'Category',
-            labelQty: 'Qty',
-            buttonAdd: 'Add',
-            textNoOptions: 'No options available.',
-            textNoItems: 'No items configured.',
-            buttonSaveRule: 'Save Rule',
+// V2 required keys - used to verify translations are loaded
+const V2_REQUIRED_KEYS = [
+    'contactsViewTitle',
+    'rulesViewTitle',
+    'ownGearViewTitle',
+    'deviceLibraryTitle',
+    'buttonAddContact',
+    'buttonAddRule',
+    'buttonAddGearItem'
+];
 
-            // Owned Gear
-            ownGearViewTitle: 'Owned Gear',
-            ownGearViewSubtitle: 'Manage your personal equipment inventory.',
-            buttonAddGearItem: 'Add Item',
-            ownGearEmptyTitle: 'Your inventory is empty',
-            ownGearEmptyText: 'Add gear that you own to track it in projects.',
-            buttonAddFirstGearItem: 'Add first item',
-            labelQtyPrefix: 'Qty: ',
-            labelSourcePrefix: 'Source: ',
-            modalTitleNewGearItem: 'New Gear Item',
-            modalTitleEditGearItem: 'Edit Gear Item',
-            placeholderGearName: 'Item Name',
-            labelQuantity: 'Quantity',
-            placeholderGearQty: '1',
-            placeholderGearNotes: 'Serial number, condition, etc.',
-            buttonSaveGearItem: 'Save Item',
-            alertSaveItemFailed: 'Failed to save item.',
-            confirmDeleteGearItem: 'Delete this item?',
-            alertInvalidItemData: 'Invalid item data.',
-
-            // Device Library
-            deviceLibraryTitle: 'Device Library',
-            deviceLibrarySubtitle: 'Add, edit, and manage devices in your local database',
-            tabAddDevice: 'Add Device',
-            tabBrowseLibrary: 'Browse Library',
-            addNewDeviceTitle: 'Add New Device',
-            addDeviceSubtitle: 'Create a custom device entry for your database',
-            existingDevicesTitle: 'Existing Devices',
-            existingDevicesSubtitle: 'Browse and manage devices in your library'
-        }
-    };
-
-    // Safely merge V2 texts into potentially frozen target objects
-    function safeMergeTexts(target, source) {
-        if (!target || !source) return target;
-
-        const isFrozen = Object.isFrozen && Object.isFrozen(target);
-
-        Object.keys(source).forEach(key => {
-            if (isFrozen) {
-                // If frozen, we can't modify it - attempt via defineProperty as fallback
-                try {
-                    Object.defineProperty(target, key, {
-                        configurable: true,
-                        enumerable: true,
-                        writable: true,
-                        value: source[key]
-                    });
-                } catch (_e) { // eslint-disable-line no-unused-vars
-                    // Property is truly immutable - skip silently
-                }
-            } else {
-                try {
-                    target[key] = source[key];
-                } catch (_e) { // eslint-disable-line no-unused-vars
-                    // Assignment failed - skip silently
-                }
-            }
-        });
-
-        return target;
+/**
+ * Verify V2 translations are available
+ * Returns true if all required V2 keys are present
+ */
+function verifyV2Translations() {
+    if (!global.texts || !global.texts.en) {
+        console.warn('[V2 Translations] Main translation system not loaded');
+        return false;
     }
 
-    // Inject into window.texts
-    function injectTexts() {
-        if (!global.texts) {
-            global.texts = {};
-        }
-        if (!global.texts.en) {
-            global.texts.en = {};
-        }
+    const missing = V2_REQUIRED_KEYS.filter(key => !(key in global.texts.en));
 
-        // Merge English texts safely
-        safeMergeTexts(global.texts.en, V2_TEXTS.en);
-
-        // Simple fallback for other languages to English for now
-        ['de', 'es', 'fr', 'it'].forEach(lang => {
-            if (!global.texts[lang]) {
-                global.texts[lang] = {};
-            }
-            safeMergeTexts(global.texts[lang], V2_TEXTS.en);
-        });
-
-        console.log('[Translations] V2 texts injected');
+    if (missing.length > 0) {
+        console.warn('[V2 Translations] Missing keys:', missing);
+        return false;
     }
 
-    injectTexts();
+    console.log('[V2 Translations] All V2 keys verified');
+    return true;
+}
 
-})(typeof window !== 'undefined' ? window : this);
+// Run verification on load
+const isReady = verifyV2Translations();
+
+// Export for testing
+export { verifyV2Translations, V2_REQUIRED_KEYS, isReady };
+export default { verifyV2Translations, isReady };

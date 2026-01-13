@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 const EXPLICIT_ASSET_ENTRIES = ['./'];
 
@@ -15,12 +15,12 @@ const EXPLICIT_FILES = [
 const TOOL_WHITELIST = new Set([
   'checkConsistency.js',
   'cliHelp.js',
-  'findMissingAttributes.js',
-  'generateSchema.js',
-  'normalizeData.js',
-  'runDomTests.js',
-  'runUnitTests.js',
-  'unifyPorts.js',
+  'findMissingAttributes.cjs',
+  'generateSchema.cjs',
+  'normalizeData.cjs',
+  'runDomTests.cjs',
+  'runUnitTests.cjs',
+  'unifyPorts.cjs',
 ]);
 
 const TOP_LEVEL_DOC_PATTERN = /^(README.*|CONTRIBUTING|SECURITY)\.md$/i;
@@ -132,4 +132,4 @@ function collectServiceWorkerAssets(projectRoot) {
   return sortedAssets;
 }
 
-module.exports = { collectServiceWorkerAssets };
+export { collectServiceWorkerAssets };

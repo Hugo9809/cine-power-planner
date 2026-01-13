@@ -142,6 +142,15 @@
         if (typeof window.PINK_MODE_ICON_FALLBACK_MARKUP === 'undefined' && pm.PINK_MODE_ICON_FALLBACK_MARKUP) window.PINK_MODE_ICON_FALLBACK_MARKUP = pm.PINK_MODE_ICON_FALLBACK_MARKUP;
     }
 
+    // Restoration of legacy global variables for V2/Vite compatibility
+    (function () {
+        if (typeof window !== 'undefined' && typeof window.global === 'undefined') {
+            window.global = window;
+        }
+
+        // Safety check for window.devices structure which is critical for the V2 UI
+    })();
+
     // Backup Shims
     // Ensure clearBackupVault is available as a promise-returning function to prevent runtime reference errors
     if (typeof window.clearBackupVault !== 'function') {
@@ -164,4 +173,30 @@
     }
 
     console.log("Legacy globals shim executed. Global UI references and localeSort restored.");
+
+    // Helper functions restored for app-session.js
+    if (!window.getBatteryMountType) {
+        window.getBatteryMountType = function getBatteryMountType(batteryName) {
+            if (!batteryName || batteryName === 'None') {
+                return '';
+            }
+            const info = window.devices && window.devices.batteries ? window.devices.batteries[batteryName] : null;
+            const mount = info && typeof info.mount_type === 'string' ? info.mount_type : '';
+            return mount || '';
+        };
+    }
+
+    if (!window.normalizeBatteryPlateValue) {
+        window.normalizeBatteryPlateValue = function normalizeBatteryPlateValue(plateValue, batteryName) {
+            const normalizedPlate = typeof plateValue === 'string' ? plateValue.trim() : '';
+            const derivedMount = window.getBatteryMountType(batteryName);
+            if (!derivedMount) {
+                return normalizedPlate;
+            }
+            if (!normalizedPlate || normalizedPlate !== derivedMount) {
+                return derivedMount;
+            }
+            return normalizedPlate;
+        };
+    }
 })();

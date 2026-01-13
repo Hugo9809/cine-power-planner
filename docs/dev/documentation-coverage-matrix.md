@@ -12,10 +12,12 @@ whenever you ship a feature, adjust persistence logic or revise workflows.
 | Docs/offline-readiness.md | Production | 2025-11-01 | Travel prep, cache priming, redundancy planning. | Photos of field kit, signed readiness checklist noting vault check. |
 | Docs/offline-cache-verification-drill.md | Engineering | _(fill date)_ | Service worker cache validation and rehearse resets. | Console log of cache entries, service worker diagnostic screenshot. |
 | Docs/data-protection-playbook.md | Security | _(fill date)_ | Safeguard principles, incident response. | Meeting notes, signed approval. |
-| Docs/translation-guide.md | Localization | _(fill date)_ | Translation workflow, locale-specific rules. | Translator confirmation emails stored offline. |
+| Docs/translation-guide.md | Localization | 2026-01-13 | Translation workflow, locale-specific rules. | Translator confirmation emails stored offline. |
 | Docs/documentation-maintenance.md | Documentation | _(fill date)_ | Update cadence, review triggers. | Checklist copy with initials. |
-| Docs/testing-plan.md | QA | _(fill date)_ | Automated/manual test coverage for persistence + offline surfaces. | Test run output archived with release. |
-| Docs/schema-inventory.md | Engineering | _(fill date)_ | JSON shape definitions for persistence payloads. | Exported schema diff, console log of validation pass. |
+| Docs/testing-plan.md | QA | 2026-01-13 | Automated/manual test coverage for persistence + offline surfaces. | Test run output archived with release. |
+| Docs/schema-inventory.md | Engineering | 2026-01-13 | JSON shape definitions for persistence payloads. | Exported schema diff, console log of validation pass. |
+| Docs/api-quick-reference.md | Engineering | 2026-01-13 | Internal API reference for developers. | N/A (Internal). |
+| Docs/architecture/v2-views.md | Engineering | 2026-01-13 | V2 UI architecture and routing. | N/A (Internal). |
 | Docs/pink-mode-reference.md | Product | 2025-12-22 | Animations, triggers, stickers and celebratory rain events. | Console capture of rain effect, Lottie asset manifest check. |
 
 ## How to use the matrix

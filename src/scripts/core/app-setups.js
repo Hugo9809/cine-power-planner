@@ -13,6 +13,10 @@
           populateSlowMotionRecordingResolutionDropdown, populateSlowMotionSensorModeDropdown,
           populateSlowMotionFrameRateDropdown */
 
+import { cineCoreAutoGearUi } from './app-core-auto-gear-ui.js';
+import { cineCoreUiHelpers } from './app-core-ui-helpers.js';
+import * as cineTranslations from '../translations.js';
+
 // Setups orchestrates saving and restoring complex project forms. A gentle
 // reminder: every helper here feeds into autosave, backup and sharing flows, so
 // prefer descriptive names and leave breadcrumbs when adjusting logic.
@@ -47,54 +51,11 @@ const deriveProjectInfo = (function resolveDeriveProjectInfo() {
   };
 })();
 
-const normalizeVideoDistributionOptionValueForSetups = (function resolveNormalizeVideoDistributionOptionValue() {
-  if (typeof require === 'function') {
-    try {
-      const autoGearUiModule = require('./app-core-auto-gear-ui.js');
-      if (autoGearUiModule && typeof autoGearUiModule.normalizeVideoDistributionOptionValue === 'function') {
-        return autoGearUiModule.normalizeVideoDistributionOptionValue;
-      }
-      if (
-        autoGearUiModule &&
-        autoGearUiModule.cineCoreAutoGearUi &&
-        typeof autoGearUiModule.cineCoreAutoGearUi.normalizeVideoDistributionOptionValue === 'function'
-      ) {
-        return autoGearUiModule.cineCoreAutoGearUi.normalizeVideoDistributionOptionValue;
-      }
-    } catch (autoGearRequireError) {
-      void autoGearRequireError;
-    }
-  }
-
-  const scopes = [];
-
-  try { if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) scopes.push(CORE_GLOBAL_SCOPE); } catch (coreScopeError) { void coreScopeError; }
-  try { if (typeof globalThis !== 'undefined' && globalThis) scopes.push(globalThis); } catch (globalThisError) { void globalThisError; }
-  try { if (typeof window !== 'undefined' && window) scopes.push(window); } catch (windowError) { void windowError; }
-  try { if (typeof self !== 'undefined' && self) scopes.push(self); } catch (selfError) { void selfError; }
-  try { if (typeof global !== 'undefined' && global) scopes.push(global); } catch (globalError) { void globalError; }
-
-  for (let index = 0; index < scopes.length; index += 1) {
-    const scope = scopes[index];
-    if (!scope || typeof scope !== 'object') {
-      continue;
-    }
-
-    try {
-      if (typeof scope.normalizeVideoDistributionOptionValue === 'function') {
-        return scope.normalizeVideoDistributionOptionValue;
-      }
-
-      const autoGearUi = scope.cineCoreAutoGearUi;
-      if (autoGearUi && typeof autoGearUi.normalizeVideoDistributionOptionValue === 'function') {
-        return autoGearUi.normalizeVideoDistributionOptionValue;
-      }
-    } catch (scopeLookupError) {
-      void scopeLookupError;
-    }
-  }
-
-  return function fallbackNormalizeVideoDistributionOptionValue(value) {
+const normalizeVideoDistributionOptionValueForSetups = (
+  cineCoreAutoGearUi &&
+  typeof cineCoreAutoGearUi.normalizeVideoDistributionOptionValue === 'function'
+) ? cineCoreAutoGearUi.normalizeVideoDistributionOptionValue
+  : function fallbackNormalizeVideoDistributionOptionValue(value) {
     if (typeof value !== 'string') return '';
     const trimmed = value.trim();
     if (!trimmed) return '';
@@ -102,100 +63,10 @@ const normalizeVideoDistributionOptionValueForSetups = (function resolveNormaliz
     if (lower === '__none__' || lower === 'none') return '__none__';
     return trimmed;
   };
-})();
 
-const SETUPS_UI_HELPERS = (function resolveUiHelpersForSetups() {
-  if (typeof require === 'function') {
-    try {
-      const required = require('./app-core-ui-helpers.js');
-      if (required && typeof required === 'object') {
-        return required;
-      }
-    } catch (uiHelpersError) {
-      void uiHelpersError;
-    }
-  }
+const SETUPS_UI_HELPERS = cineCoreUiHelpers || {};
 
-  const scopes = [];
-
-  try {
-    if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
-      scopes.push(CORE_GLOBAL_SCOPE);
-    }
-  } catch (coreScopeError) {
-    void coreScopeError;
-  }
-
-  if (typeof globalThis !== 'undefined' && globalThis) {
-    scopes.push(globalThis);
-  }
-
-  if (typeof window !== 'undefined' && window) {
-    scopes.push(window);
-  }
-
-  if (typeof self !== 'undefined' && self) {
-    scopes.push(self);
-  }
-
-  if (typeof global !== 'undefined' && global) {
-    scopes.push(global);
-  }
-
-  for (let index = 0; index < scopes.length; index += 1) {
-    const scope = scopes[index];
-    if (!scope) {
-      continue;
-    }
-    try {
-      const helpers = scope.cineCoreUiHelpers;
-      if (helpers && typeof helpers === 'object') {
-        return helpers;
-      }
-    } catch (scopeLookupError) {
-      void scopeLookupError;
-    }
-  }
-
-  return {};
-})();
-
-const TRANSLATIONS_RUNTIME_FOR_SETUPS = (function resolveTranslationsRuntimeForSetups() {
-  const candidates = [];
-  try { candidates.push(typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null); } catch (coreScopeError) { void coreScopeError; }
-  try { candidates.push(typeof globalThis !== 'undefined' ? globalThis : null); } catch (globalThisError) { void globalThisError; }
-  try { candidates.push(typeof window !== 'undefined' ? window : null); } catch (windowError) { void windowError; }
-  try { candidates.push(typeof self !== 'undefined' ? self : null); } catch (selfError) { void selfError; }
-  try { candidates.push(typeof global !== 'undefined' ? global : null); } catch (globalError) { void globalError; }
-
-  for (let index = 0; index < candidates.length; index += 1) {
-    const scope = candidates[index];
-    if (!scope || typeof scope !== 'object') {
-      continue;
-    }
-    try {
-      const runtime = scope.translations;
-      if (runtime && typeof runtime.loadLanguage === 'function') {
-        return runtime;
-      }
-    } catch (runtimeError) {
-      void runtimeError;
-    }
-  }
-
-  if (typeof require === 'function') {
-    try {
-      const required = require('./translations.js');
-      if (required && typeof required.loadLanguage === 'function') {
-        return required;
-      }
-    } catch (requireError) {
-      void requireError;
-    }
-  }
-
-  return null;
-})();
+const TRANSLATIONS_RUNTIME_FOR_SETUPS = cineTranslations || {};
 
 if (TRANSLATIONS_RUNTIME_FOR_SETUPS && typeof TRANSLATIONS_RUNTIME_FOR_SETUPS.loadLanguage === 'function') {
   const activeLanguage =
@@ -6035,7 +5906,7 @@ function collectProjectFormData() {
   const viewfinderSettings = getMultiValue('viewfinderSettings');
   const frameGuides = getMultiValue('frameGuides');
   const aspectMaskOpacity = getMultiValue('aspectMaskOpacity');
-  const filterStr = collectFilterSelections();
+  const filterStr = typeof collectFilterSelections === 'function' ? collectFilterSelections() : '';
   const filterTypes = filterStr ? filterStr.split(',').map(s => s.split(':')[0]) : [];
   const matteboxVal = filterTypes.some(t => t === 'ND Grad HE' || t === 'ND Grad SE')
     ? 'Swing Away'
@@ -6342,6 +6213,34 @@ function populateFilterDropdown(extraTypes = []) {
     fragment.appendChild(opt);
   });
   filterSelect.appendChild(fragment);
+}
+
+function populateCodecDropdown(selectedValue) {
+  const codecSelect = document.getElementById('codec');
+  if (!codecSelect) return;
+
+  // Ensure options exist (basic check)
+  if (codecSelect.options.length <= 1) {
+    const CODEC_OPTIONS = [
+      "X-OCN XT", "X-OCN ST", "X-OCN LT",
+      "RAW HQ", "RAW SQ", "RAW MQ",
+      "ProRes 4444 XQ", "ProRes 4444", "ProRes 422 HQ", "ProRes 422", "ProRes 422 LT", "ProRes 422 Proxy",
+      "DNxHR 444", "DNxHR HQX", "DNxHR HQ", "DNxHR SQ", "DNxHR LB",
+      "H.264", "H.265"
+    ];
+
+    codecSelect.innerHTML = '<option value="">--</option>';
+    CODEC_OPTIONS.forEach(opt => {
+      const option = document.createElement('option');
+      option.value = opt;
+      option.textContent = opt;
+      codecSelect.appendChild(option);
+    });
+  }
+
+  if (selectedValue) {
+    codecSelect.value = selectedValue;
+  }
 }
 
 function populateProjectForm(info = {}) {
@@ -16240,3 +16139,25 @@ if (typeof globalThis !== 'undefined') {
   globalThis.populateProjectForm = populateProjectForm;
 }
 console.log('app-setups.js: Execution complete');
+
+/* --- GLOBAL EXPORTS FOR EVENTS --- */
+
+function getSetups() {
+  // Placeholder: return empty object until storage schema is confirmed
+  // This unblocks app-events.js from crashing
+  return {};
+}
+
+function getSetupSelectElement() {
+  if (typeof document !== 'undefined') {
+    return document.getElementById('setupSelect');
+  }
+  return null;
+}
+
+// Expose to global scope for app-events.js
+if (typeof globalThis !== 'undefined') {
+  globalThis.getSetups = getSetups;
+}
+window.getSetups = getSetups;
+window.normalizeBatteryPlateValue = normalizeBatteryPlateValue;

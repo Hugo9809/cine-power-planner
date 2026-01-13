@@ -14,7 +14,10 @@ function setupModuleHarness() {
   jest.resetModules();
 
   const registryPath = path.join(MODULES_DIR, 'registry.js');
-  const registry = require(registryPath);
+  let registry = require(registryPath);
+  if (registry && registry.default) {
+    registry = registry.default;
+  }
   if (registry && typeof registry.__internalResetForTests === 'function') {
     registry.__internalResetForTests({ force: true });
   }
@@ -312,7 +315,12 @@ function setupModuleHarness() {
     freezeDeep,
     safeFreezeDeep: freezeDeep,
     teardown() {
+      if (pendingQueueKey) {
+        delete global[pendingQueueKey];
+      }
       delete global.cineModuleGlobals;
+      delete global.cineModules;
+
       pendingWaiters.clear();
       recordedModules.clear();
 

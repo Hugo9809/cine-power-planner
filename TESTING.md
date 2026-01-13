@@ -1,75 +1,168 @@
 # Testing Guide
 
-This document outlines the testing strategy, available test scripts, and known limitations for the Cine Power Planner application.
+This document outlines the testing strategy, available test scripts, and best practices for the Cine Power Planner application.
 
 ## Overview
 
 > [!IMPORTANT]
-> **ALWAYS run the app via the local server (e.g., `npm run serve` or `python3 -m http.server`) for testing.**
-> Do NOT test via the `file://` protocol. The application relies on features that may not work correctly when opened directly from the file system.
+> **ALWAYS run the app via the Vite dev server (`npm run dev`) for testing.**
+> This ensures proper ES module resolution and enables hot reload during development.
+> Do NOT test via the `file://` protocol. The application relies on ES modules and Service Workers that require a proper HTTP context.
 
-The testing suite is designed to verify critical user flows and logic. Due to current limitations in the automated browser environment (connection resets, page load hangs), these scripts are primarily intended for **manual execution** or use in a stable local development environment.
+The testing suite uses a multi-tier approach to verify critical user flows, data integrity, and business logic while managing memory constraints effectively.
 
-## Test Scripts
+## Test Commands Reference
 
-All test scripts are located in the root directory.
+| Command | Description | Heap Limit | Use Case |
+| --- | --- | --- | --- |
+| `npm test` | Full suite: lint + checks + Jest | 3 GB | CI/pre-commit |
+| `npm run test:jest` | All Jest projects | 3 GB | Quick full test |
+| `npm run test:unit` | Unit tests only | 1 GB | Module logic iteration |
+| `npm run test:data` | Data validation tests | 1 GB | Device catalog changes |
+| `npm run test:dom` | DOM utility tests | 1.5 GB | UI helper functions |
+| `npm run test:script` | Script integration tests | 3 GB | Heavy integration (requires `RUN_HEAVY_TESTS=true`) |
+| `npm run lint` | ESLint only | — | Code style checks |
+| `npm run check-consistency` | Device data + SW manifest | — | Asset verification |
 
-### 1. Device Manager (`verify_device_manager.js`)
-Verifies the functionality of the custom device manager.
-- **Scope:** Adding categories, adding devices (custom & library), verifying persistence.
-- **Run:** Copy the script content and paste it into the browser console while the app is running.
+## Jest Project Configuration
 
-### 2. Battery Comparison (`verify_battery_comparison.js`)
-Verifies the battery comparison logic and UI.
-- **Scope:** Configuring a rig, adding multiple batteries, checking the comparison table for correct runtime estimates.
-- **Run:** Paste into browser console.
+The Jest configuration (`jest.config.cjs`) defines multiple test projects:
 
-### 3. Contacts (`verify_contacts.js`)
-Verifies contact management.
-- **Scope:** Creating new contacts, verifying they appear in lists, checking persistence.
-- **Run:** Paste into browser console.
+| Project | Test Files | Environment | Purpose |
+| --- | --- | --- | --- |
+| `unit` | `tests/unit/**/*.test.js` | Node | Pure logic, storage helpers |
+| `data` | `tests/data/**/*.test.js` | Node | Device catalog validation |
+| `dom` | `tests/dom/**/*.test.js` | jsdom | DOM utilities, UI helpers |
+| `script` | `tests/script/**/*.test.js` | jsdom | Integration, heavy tests |
 
-### 4. Own Gear (`verify_own_gear.js`)
-Verifies the "Own Gear" feature.
-- **Scope:** Adding personal gear items, verifying list updates, persistence, and deletion.
-- **Run:** Paste into browser console.
+### Running Specific Projects
 
-### 5. Settings Persistence (`verify_settings.js`)
-Verifies that user preferences are saved.
-- **Scope:** Changing language or theme, reloading, and confirming settings are retained.
-- **Run:** Paste into browser console.
+```bash
+# Run only unit tests
+npm run test:unit
 
-### 6. Feature Search (`verify_feature_search.js`)
-Unit test for the search normalization and highlighting logic.
-- **Scope:** Tests `cineFeaturesFeatureSearch` API methods (`normalizeSearchValue`, `sanitizeHighlightTokens`, `applyHighlight`).
-- **Run:** Paste into browser console. **Note:** Requires the app to be fully loaded so the global API is available.
+# Run only data validation
+npm run test:data
 
-### 7. Project Management (`verify_project_management.js`)
-Verifies project CRUD operations.
-- **Scope:** Creating, saving, loading, and deleting projects.
-- **Run:** Paste into browser console.
+# Run specific test file
+npx jest tests/unit/storage.test.js
+```
 
-### 8. Calculation Accuracy (`verify_calculations.js`)
-Verifies power calculation logic.
-- **Scope:** Adding specific devices and checking if the "Total Draw" and "Runtime" match expected values.
-- **Run:** Paste into browser console.
+## 4-Tier Testing Strategy
 
-### 9. Smoke Test (`verify_smoke_test.js`)
-End-to-end smoke test for system health.
-- **Scope:** Factory reset -> Create Project -> Add Devices -> Auto Gear -> Print.
-- **Run:** Paste into browser console.
+See [tests/README.md](tests/README.md) for detailed documentation on the testing approach.
 
-## Automation Status & Limitations
-Current automated attempts via the browser subagent have consistently failed due to:
--   **Browser Connection Resets:** Occur during complex multi-step flows or page reloads.
--   **Page Load Hangs:** The app sometimes gets stuck at "Preparing planner...", preventing scripts from accessing necessary globals.
+### Tier 1: Automated Unit Tests
+- **Scope**: Pure functions, calculations, data transformations
+- **Location**: `tests/unit/`
+- **Run**: `npm run test:unit`
 
-**Recommendation:** Use these scripts for manual regression testing before major releases.
+### Tier 2: Data Validation Tests
+- **Scope**: Device catalog integrity, schema validation
+- **Location**: `tests/data/`
+- **Run**: `npm run test:data`
 
-## Manual Testing Workflow
-1.  Open the application in Chrome or Safari.
-2.  Open Developer Tools (F12 or Cmd+Opt+I).
-3.  Go to the "Console" tab.
-4.  Paste the desired test script.
-5.  Press Enter.
-6.  Watch the logs for "SUCCESS" messages or errors.
+### Tier 3: DOM/UI Tests
+- **Scope**: DOM utilities, rendering helpers
+- **Location**: `tests/dom/`
+- **Run**: `npm run test:dom`
+
+### Tier 4: Integration Tests
+- **Scope**: Full application flows (heavy, optional)
+- **Location**: `tests/script/`
+- **Run**: `RUN_HEAVY_TESTS=true npm run test:script`
+
+## Manual Browser Tests
+
+Due to limitations in automated browser environments (connection resets, page load issues), several verification scripts are designed for **manual console execution**.
+
+### Console Verification Scripts
+
+All scripts are in the repository root. Copy the script content and paste into the browser console while the app is running at `http://localhost:3000`.
+
+| Script | Scope | What It Tests |
+| --- | --- | --- |
+| `verify_device_manager.js` | Device Manager | Adding categories, devices, persistence |
+| `verify_battery_comparison.js` | Battery Logic | Rig config, comparison table, runtime estimates |
+| `verify_contacts.js` | Contacts | Creating contacts, list updates, persistence |
+| `verify_own_gear.js` | Own Gear | Adding items, list updates, deletion |
+| `verify_settings.js` | Settings | Language/theme changes, persistence after reload |
+| `verify_feature_search.js` | Search | Normalization, highlighting, suggestion ranking |
+| `verify_project_management.js` | Projects | Create, save, load, delete operations |
+| `verify_calculations.js` | Calculations | Power draw totals, runtime accuracy |
+| `verify_smoke_test.js` | End-to-End | Factory reset → Create → Add → Auto Gear → Print |
+
+### Manual Testing Workflow
+
+1. Start the development server: `npm run dev`
+2. Open the application in Chrome or Safari
+3. Open Developer Tools (F12 or Cmd+Opt+I)
+4. Go to the "Console" tab
+5. Paste the desired test script
+6. Press Enter
+7. Watch for "SUCCESS" messages or errors
+
+## Automated vs Manual Test Matrix
+
+| Feature Area | Automated | Manual | Notes |
+| --- | --- | --- | --- |
+| Storage helpers | ✅ Jest | — | Full coverage |
+| Power calculations | ✅ Jest | — | Core business logic |
+| Device catalog | ✅ Jest | — | Schema validation |
+| DOM utilities | ✅ Jest | — | jsdom environment |
+| Project management | Partial | ✅ Console | UI-heavy flows |
+| Contact management | — | ✅ Console | UI-dependent |
+| Settings persistence | — | ✅ Console | Requires reload |
+| Offline behavior | — | ✅ Manual | Network toggle |
+| Service worker | — | ✅ Manual | Browser-specific |
+
+## Pre-Release Checklist
+
+Before merging or releasing:
+
+1. **Run full test suite**
+   ```bash
+   npm test
+   ```
+
+2. **Run consistency checks**
+   ```bash
+   npm run check-consistency
+   ```
+
+3. **Manual smoke test**
+   - Run `verify_smoke_test.js` in browser console
+   - Test offline mode (toggle network off)
+   - Verify Force Reload works
+
+4. **Cross-browser check**
+   - Chrome (primary)
+   - Safari
+   - Firefox
+
+## Troubleshooting Test Failures
+
+### Memory Errors
+Use the heap-limited commands:
+```bash
+npm run test:unit   # 1 GB
+npm run test:data   # 1 GB
+npm run test:dom    # 1.5 GB
+```
+
+### Module Resolution Errors
+Ensure you're running tests from the project root:
+```bash
+cd cine-power-planner
+npm run test:unit
+```
+
+### Outdated Snapshots
+Update Jest snapshots if intentional changes were made:
+```bash
+npx jest --updateSnapshot
+```
+
+### Missing Global Functions
+Some tests require the app to be fully loaded. For console scripts, wait for the app to finish initializing before pasting.
+

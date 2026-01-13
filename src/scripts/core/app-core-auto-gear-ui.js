@@ -1,152 +1,148 @@
-(function initAutoGearUiModule(globalScope) {
-  'use strict';
+const scope =
+  (typeof globalThis !== 'undefined' && globalThis) ||
+  (typeof window !== 'undefined' && window) ||
+  (typeof self !== 'undefined' && self) ||
+  (typeof global !== 'undefined' && global) ||
+  null;
 
-  const scope =
-    globalScope ||
-    (typeof globalThis !== 'undefined' && globalThis) ||
-    (typeof window !== 'undefined' && window) ||
-    (typeof self !== 'undefined' && self) ||
-    (typeof global !== 'undefined' && global) ||
-    null;
+const existingDocument = (typeof document !== 'undefined' && document) || null;
+const autoGearDocument = existingDocument || (scope && scope.document) || null;
+let AUTO_GEAR_UI_EXPORTS;
+if (!autoGearDocument) {
+  AUTO_GEAR_UI_EXPORTS = {
+    autoGearRuleNameInput: null,
+    autoGearRuleNameLabel: null,
+    autoGearScenariosSelect: null,
+    autoGearScenariosLabel: null,
+    autoGearScenarioModeSelectElement: null,
+    autoGearScenarioModeLabel: null,
+    autoGearScenarioMultiplierContainer: null,
+    autoGearScenarioBaseSelect: null,
+    autoGearScenarioBaseLabel: null,
+    autoGearScenarioFactorInput: null,
+    autoGearScenarioFactorLabel: null,
+    autoGearShootingDaysMode: null,
+    autoGearShootingDaysInput: null,
+    autoGearShootingDaysLabel: null,
+    autoGearShootingDaysHelp: null,
+    autoGearShootingDaysValueLabel: null,
+    autoGearMatteboxSelect: null,
+    autoGearMatteboxLabel: null,
+    autoGearMatteboxModeLabel: null,
+    autoGearMatteboxModeSelect: null,
+    autoGearCameraHandleSelect: null,
+    autoGearCameraHandleLabel: null,
+    autoGearCameraHandleModeLabel: null,
+    autoGearCameraHandleModeSelect: null,
+    autoGearViewfinderExtensionSelect: null,
+    autoGearViewfinderExtensionLabel: null,
+    autoGearViewfinderExtensionModeLabel: null,
+    autoGearViewfinderExtensionModeSelect: null,
+    autoGearDeliveryResolutionSelect: null,
+    autoGearDeliveryResolutionLabel: null,
+    autoGearDeliveryResolutionModeLabel: null,
+    autoGearDeliveryResolutionModeSelect: null,
+    autoGearVideoDistributionSelect: null,
+    autoGearVideoDistributionLabel: null,
+    autoGearVideoDistributionModeLabel: null,
+    autoGearVideoDistributionModeSelect: null,
+    autoGearCameraSelect: null,
+    autoGearCameraLabel: null,
+    autoGearCameraModeLabel: null,
+    autoGearCameraModeSelect: null,
+    autoGearOwnGearLabel: null,
+    autoGearOwnGearModeLabel: null,
+    autoGearOwnGearModeSelect: null,
+    autoGearOwnGearSelect: null,
+    autoGearCameraWeightLabel: null,
+    autoGearCameraWeightOperator: null,
+    autoGearCameraWeightOperatorLabel: null,
+    autoGearCameraWeightValueInput: null,
+    autoGearCameraWeightValueLabel: null,
+    autoGearCameraWeightHelp: null,
+    autoGearMonitorSelect: null,
+    autoGearMonitorLabel: null,
+    autoGearMonitorModeLabel: null,
+    autoGearMonitorModeSelect: null,
+    autoGearTripodHeadBrandSelect: null,
+    autoGearTripodHeadBrandLabel: null,
+    autoGearTripodHeadBrandModeLabel: null,
+    autoGearTripodHeadBrandModeSelect: null,
+    autoGearTripodBowlSelect: null,
+    autoGearTripodBowlLabel: null,
+    autoGearTripodBowlModeLabel: null,
+    autoGearTripodBowlModeSelect: null,
+    autoGearTripodTypesSelect: null,
+    autoGearTripodTypesLabel: null,
+    autoGearTripodTypesModeLabel: null,
+    autoGearTripodTypesModeSelect: null,
+    autoGearTripodSpreaderSelect: null,
+    autoGearTripodSpreaderLabel: null,
+    autoGearTripodSpreaderModeLabel: null,
+    autoGearTripodSpreaderModeSelect: null,
+    autoGearCrewPresentSelect: null,
+    autoGearCrewPresentLabel: null,
+    autoGearCrewPresentModeLabel: null,
+    autoGearCrewPresentModeSelect: null,
+    autoGearCrewAbsentSelect: null,
+    autoGearCrewAbsentLabel: null,
+    autoGearCrewAbsentModeLabel: null,
+    autoGearCrewAbsentModeSelect: null,
+    autoGearWirelessSelect: null,
+    autoGearWirelessLabel: null,
+    autoGearWirelessModeLabel: null,
+    autoGearWirelessModeSelect: null,
+    autoGearMotorsSelect: null,
+    autoGearMotorsLabel: null,
+    autoGearMotorsModeLabel: null,
+    autoGearMotorsModeSelect: null,
+    autoGearControllersSelect: null,
+    autoGearControllersLabel: null,
+    autoGearControllersModeLabel: null,
+    autoGearControllersModeSelect: null,
+    autoGearDistanceSelect: null,
+    autoGearDistanceLabel: null,
+    autoGearDistanceModeLabel: null,
+    autoGearDistanceModeSelect: null,
+    autoGearConditionLabels: {},
+    autoGearConditionSelects: {},
+    autoGearConditionLogicLabels: {},
+    autoGearConditionLogicSelects: {},
+    AUTO_GEAR_CONDITION_KEYS: [],
+    AUTO_GEAR_REPEATABLE_CONDITIONS: new Set(),
+    AUTO_GEAR_CONDITION_FALLBACK_LABELS: {},
+    getViewfinderFallbackLabel: function (value) {
+      if (value === '__none__') return 'No';
+      return typeof value === 'string' ? value : '';
+    },
+    getVideoDistributionFallbackLabel: function (value) {
+      if (value === '__none__') return 'No video distribution selected';
+      return typeof value === 'string' ? value : '';
+    },
+    refreshAutoGearShootingDaysValue: function () { },
+    refreshAutoGearScenarioOptions: function () { },
+    refreshAutoGearScenarioBaseSelect: function () { },
+    refreshAutoGearMatteboxOptions: function () { },
+    refreshAutoGearCameraHandleOptions: function () { },
+    refreshAutoGearViewfinderExtensionOptions: function () { },
+    refreshAutoGearDeliveryResolutionOptions: function () { },
+    refreshAutoGearVideoDistributionOptions: function () { },
+    collectAutoGearSelectedValues: function () { return []; },
+    getAutoGearScenarioModeSelectElement: function () { return null; },
+    setAutoGearScenarioModeSelectElement: function () { }
+  };
 
-  const existingDocument = (typeof document !== 'undefined' && document) || null;
-  const autoGearDocument = existingDocument || (scope && scope.document) || null;
-  if (!autoGearDocument) {
-    const AUTO_GEAR_UI_EXPORTS = {
-      autoGearRuleNameInput: null,
-      autoGearRuleNameLabel: null,
-      autoGearScenariosSelect: null,
-      autoGearScenariosLabel: null,
-      autoGearScenarioModeSelectElement: null,
-      autoGearScenarioModeLabel: null,
-      autoGearScenarioMultiplierContainer: null,
-      autoGearScenarioBaseSelect: null,
-      autoGearScenarioBaseLabel: null,
-      autoGearScenarioFactorInput: null,
-      autoGearScenarioFactorLabel: null,
-      autoGearShootingDaysMode: null,
-      autoGearShootingDaysInput: null,
-      autoGearShootingDaysLabel: null,
-      autoGearShootingDaysHelp: null,
-      autoGearShootingDaysValueLabel: null,
-      autoGearMatteboxSelect: null,
-      autoGearMatteboxLabel: null,
-      autoGearMatteboxModeLabel: null,
-      autoGearMatteboxModeSelect: null,
-      autoGearCameraHandleSelect: null,
-      autoGearCameraHandleLabel: null,
-      autoGearCameraHandleModeLabel: null,
-      autoGearCameraHandleModeSelect: null,
-      autoGearViewfinderExtensionSelect: null,
-      autoGearViewfinderExtensionLabel: null,
-      autoGearViewfinderExtensionModeLabel: null,
-      autoGearViewfinderExtensionModeSelect: null,
-      autoGearDeliveryResolutionSelect: null,
-      autoGearDeliveryResolutionLabel: null,
-      autoGearDeliveryResolutionModeLabel: null,
-      autoGearDeliveryResolutionModeSelect: null,
-      autoGearVideoDistributionSelect: null,
-      autoGearVideoDistributionLabel: null,
-      autoGearVideoDistributionModeLabel: null,
-      autoGearVideoDistributionModeSelect: null,
-      autoGearCameraSelect: null,
-      autoGearCameraLabel: null,
-      autoGearCameraModeLabel: null,
-      autoGearCameraModeSelect: null,
-      autoGearOwnGearLabel: null,
-      autoGearOwnGearModeLabel: null,
-      autoGearOwnGearModeSelect: null,
-      autoGearOwnGearSelect: null,
-      autoGearCameraWeightLabel: null,
-      autoGearCameraWeightOperator: null,
-      autoGearCameraWeightOperatorLabel: null,
-      autoGearCameraWeightValueInput: null,
-      autoGearCameraWeightValueLabel: null,
-      autoGearCameraWeightHelp: null,
-      autoGearMonitorSelect: null,
-      autoGearMonitorLabel: null,
-      autoGearMonitorModeLabel: null,
-      autoGearMonitorModeSelect: null,
-      autoGearTripodHeadBrandSelect: null,
-      autoGearTripodHeadBrandLabel: null,
-      autoGearTripodHeadBrandModeLabel: null,
-      autoGearTripodHeadBrandModeSelect: null,
-      autoGearTripodBowlSelect: null,
-      autoGearTripodBowlLabel: null,
-      autoGearTripodBowlModeLabel: null,
-      autoGearTripodBowlModeSelect: null,
-      autoGearTripodTypesSelect: null,
-      autoGearTripodTypesLabel: null,
-      autoGearTripodTypesModeLabel: null,
-      autoGearTripodTypesModeSelect: null,
-      autoGearTripodSpreaderSelect: null,
-      autoGearTripodSpreaderLabel: null,
-      autoGearTripodSpreaderModeLabel: null,
-      autoGearTripodSpreaderModeSelect: null,
-      autoGearCrewPresentSelect: null,
-      autoGearCrewPresentLabel: null,
-      autoGearCrewPresentModeLabel: null,
-      autoGearCrewPresentModeSelect: null,
-      autoGearCrewAbsentSelect: null,
-      autoGearCrewAbsentLabel: null,
-      autoGearCrewAbsentModeLabel: null,
-      autoGearCrewAbsentModeSelect: null,
-      autoGearWirelessSelect: null,
-      autoGearWirelessLabel: null,
-      autoGearWirelessModeLabel: null,
-      autoGearWirelessModeSelect: null,
-      autoGearMotorsSelect: null,
-      autoGearMotorsLabel: null,
-      autoGearMotorsModeLabel: null,
-      autoGearMotorsModeSelect: null,
-      autoGearControllersSelect: null,
-      autoGearControllersLabel: null,
-      autoGearControllersModeLabel: null,
-      autoGearControllersModeSelect: null,
-      autoGearDistanceSelect: null,
-      autoGearDistanceLabel: null,
-      autoGearDistanceModeLabel: null,
-      autoGearDistanceModeSelect: null,
-      autoGearConditionLabels: {},
-      autoGearConditionSelects: {},
-      autoGearConditionLogicLabels: {},
-      autoGearConditionLogicSelects: {},
-      AUTO_GEAR_CONDITION_KEYS: [],
-      AUTO_GEAR_REPEATABLE_CONDITIONS: new Set(),
-      AUTO_GEAR_CONDITION_FALLBACK_LABELS: {},
-      getViewfinderFallbackLabel: function (value) {
-        if (value === '__none__') return 'No';
-        return typeof value === 'string' ? value : '';
-      },
-      getVideoDistributionFallbackLabel: function (value) {
-        if (value === '__none__') return 'No video distribution selected';
-        return typeof value === 'string' ? value : '';
-      },
-      refreshAutoGearShootingDaysValue: function () { },
-      refreshAutoGearScenarioOptions: function () { },
-      refreshAutoGearScenarioBaseSelect: function () { },
-      refreshAutoGearMatteboxOptions: function () { },
-      refreshAutoGearCameraHandleOptions: function () { },
-      refreshAutoGearViewfinderExtensionOptions: function () { },
-      refreshAutoGearDeliveryResolutionOptions: function () { },
-      refreshAutoGearVideoDistributionOptions: function () { },
-      collectAutoGearSelectedValues: function () { return []; },
-      getAutoGearScenarioModeSelectElement: function () { return null; },
-      setAutoGearScenarioModeSelectElement: function () { }
-    };
-
-    if (typeof module === 'object' && module && module.exports) {
-      module.exports = AUTO_GEAR_UI_EXPORTS;
-    }
-
-    if (scope && typeof scope === 'object') {
-      scope.cineCoreAutoGearUi = AUTO_GEAR_UI_EXPORTS;
-      scope.getViewfinderFallbackLabel = AUTO_GEAR_UI_EXPORTS.getViewfinderFallbackLabel;
-      scope.getVideoDistributionFallbackLabel = AUTO_GEAR_UI_EXPORTS.getVideoDistributionFallbackLabel;
-    }
-
-    return;
+  if (typeof module === 'object' && module && module.exports) {
+    module.exports = AUTO_GEAR_UI_EXPORTS;
   }
+
+  if (scope && typeof scope === 'object') {
+    scope.cineCoreAutoGearUi = AUTO_GEAR_UI_EXPORTS;
+    scope.getViewfinderFallbackLabel = AUTO_GEAR_UI_EXPORTS.getViewfinderFallbackLabel;
+    scope.getVideoDistributionFallbackLabel = AUTO_GEAR_UI_EXPORTS.getVideoDistributionFallbackLabel;
+  }
+
+} else {
 
   var autoGearRuleNameInput = autoGearDocument.getElementById('autoGearRuleName');
   var autoGearRuleNameLabel = autoGearDocument.getElementById('autoGearRuleNameLabel');
@@ -1027,7 +1023,7 @@
     autoGearScenarioModeSelectElement = value || null;
   }
 
-  const AUTO_GEAR_UI_EXPORTS = {
+  AUTO_GEAR_UI_EXPORTS = {
     autoGearRuleNameInput,
     autoGearRuleNameLabel,
     autoGearScenariosSelect,
@@ -1144,15 +1140,15 @@
     setAutoGearScenarioModeSelectElement,
     normalizeVideoDistributionOptionValue
   };
+}
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = AUTO_GEAR_UI_EXPORTS;
-  }
+if (scope && typeof scope === 'object') {
+  scope.cineCoreAutoGearUi = AUTO_GEAR_UI_EXPORTS;
+  scope.getViewfinderFallbackLabel = AUTO_GEAR_UI_EXPORTS.getViewfinderFallbackLabel;
+  scope.getVideoDistributionFallbackLabel = AUTO_GEAR_UI_EXPORTS.getVideoDistributionFallbackLabel;
+  scope.normalizeVideoDistributionOptionValue = AUTO_GEAR_UI_EXPORTS.normalizeVideoDistributionOptionValue;
+}
 
-  if (scope && typeof scope === 'object') {
-    scope.cineCoreAutoGearUi = AUTO_GEAR_UI_EXPORTS;
-    scope.getViewfinderFallbackLabel = getViewfinderFallbackLabel;
-    scope.getVideoDistributionFallbackLabel = getVideoDistributionFallbackLabel;
-    scope.normalizeVideoDistributionOptionValue = normalizeVideoDistributionOptionValue;
-  }
-})(typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : this);
+const cineCoreAutoGearUi = AUTO_GEAR_UI_EXPORTS;
+export { cineCoreAutoGearUi };
+export default AUTO_GEAR_UI_EXPORTS;

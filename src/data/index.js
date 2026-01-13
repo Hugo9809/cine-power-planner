@@ -1,5 +1,5 @@
-const devices = require('./devices');
-const rentalHouses = require('./rental-houses');
+import devices from './devices/index.js';
+import rentalHouses from './rental-houses.js';
 
 if (devices && !Object.prototype.hasOwnProperty.call(devices, 'rentalHouses')) {
   Object.defineProperty(devices, 'rentalHouses', {
@@ -10,4 +10,5 @@ if (devices && !Object.prototype.hasOwnProperty.call(devices, 'rentalHouses')) {
   });
 }
 
-module.exports = devices;
+export default devices;
+export { devices, rentalHouses };

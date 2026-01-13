@@ -42,6 +42,17 @@ Object.defineProperty(global.window, 'sessionStorage', {
 global.localStorage = localStorageMock;
 global.sessionStorage = sessionStorageMock;
 
+global.window.addEventListener = jest.fn();
+global.window.removeEventListener = jest.fn();
+global.BroadcastChannel = jest.fn().mockImplementation(() => ({
+  postMessage: jest.fn(),
+  close: jest.fn(),
+  onmessage: null,
+}));
+
+// Use fake timers to prevent open handles from ProjectLockService heartbeats
+jest.useFakeTimers();
+
 jest.resetModules();
 
 const LZString = require('../../src/vendor/lz-string.min.js');

@@ -93,18 +93,21 @@ The application now features a completely redesigned, responsive V2 User Interfa
    ```bash
    git clone /path/to/cine-power-planner.git
    cd cine-power-planner
+   npm install
    ```
    (If you received an offline bundle, unpack it to a local folder instead.)
-2. Open `index.html` directly in a supported browser. Every asset loads from the
-   repository, so you can disconnect immediately after opening the file.
-3. (Optional) Serve the folder over `http://localhost` to enable the bundled
-   service worker and Progressive Web App install prompt. Any static server
-   works while offline:
+2. Start the development server:
    ```bash
-   python -m http.server
-   # or
-   npm run serve
+   npm run dev
    ```
+   This opens the app at `http://localhost:3000` with hot module replacement.
+3. For production builds:
+   ```bash
+   npm run build      # Build to dist/
+   npm run preview    # Preview the production build
+   ```
+4. (Offline usage) Open `index.html` directly in a supported browser for fully
+   offline use. All assets load from the repository without a network connection.
 
 ## Translations
 

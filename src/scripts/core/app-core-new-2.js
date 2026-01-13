@@ -713,8 +713,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     ensureGlobalFunctionBinding('checkSetupChanged', checkSetupChanged);
     ensureGlobalFunctionBinding('hasProjectInfoData', hasProjectInfoData);
     ensureGlobalFunctionBinding('getCurrentProjectInfo', getCurrentProjectInfo);
+    ensureGlobalFunctionBinding('getCurrentSetupKey', getCurrentSetupKey);
+    ensureGlobalFunctionBinding('updateStorageSummary', updateStorageSummary);
 
-    autoGearAutoPresetIdState = declareCoreFallbackBinding('autoGearAutoPresetId', () => {
+    var autoGearAutoPresetIdState = declareCoreFallbackBinding('autoGearAutoPresetId', () => {
       if (typeof loadAutoGearAutoPresetId === 'function') {
         try {
           const storedId = loadAutoGearAutoPresetId();
@@ -728,7 +730,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return '';
     });
 
-    baseAutoGearRulesState = declareCoreFallbackBinding('baseAutoGearRules', () => {
+    var baseAutoGearRulesState = declareCoreFallbackBinding('baseAutoGearRules', () => {
       if (typeof loadAutoGearRules === 'function') {
         try {
           const storedRules = loadAutoGearRules();
@@ -742,9 +744,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return [];
     });
 
-    autoGearScenarioModeSelectRef = declareCoreFallbackBinding('autoGearScenarioModeSelect', () => null);
+    var autoGearScenarioModeSelectRef = declareCoreFallbackBinding('autoGearScenarioModeSelect', () => null);
 
-    safeGenerateConnectorSummaryFn = declareCoreFallbackBinding(
+    var safeGenerateConnectorSummaryFn = declareCoreFallbackBinding(
       'safeGenerateConnectorSummary',
       () => createFallbackSafeGenerateConnectorSummary(),
     );
@@ -18579,6 +18581,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     function renderFeedbackTable(currentKey) {
+      if (typeof window !== 'undefined' && !window.renderFeedbackTable) window.renderFeedbackTable = renderFeedbackTable;
       const container = document.getElementById('feedbackTableContainer');
       const table = document.getElementById('userFeedbackTable');
       const feedbackData = loadFeedbackSafe();
@@ -18789,6 +18792,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return null;
     }
+
+    if (typeof ensureGlobalFunctionBinding === 'function') {
+      ensureGlobalFunctionBinding('renderFeedbackTable', renderFeedbackTable);
+    }
+
 
     // Normalize device data for comparison so that key ordering and undefined
     // values do not cause false positives when determining whether a device

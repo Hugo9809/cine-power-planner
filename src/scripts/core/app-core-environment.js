@@ -22,18 +22,20 @@
 
 /* global cineGearList, cineCoreRuntimeModuleLoader */
 
+import { resolveCoreSupportModule } from './app-core-runtime-support.js';
 
-function resolveRuntimeModuleLoader() {
-  if (typeof require === 'function') {
-    try {
-      const requiredLoader = require('./modules/core/runtime-module-loader.js');
-      if (requiredLoader && typeof requiredLoader === 'object') {
-        return requiredLoader;
-      }
-    } catch (runtimeLoaderError) {
-      void runtimeLoaderError;
-    }
-  }
+
+export function resolveRuntimeModuleLoader() {
+  // if (typeof require === 'function') {
+  //   try {
+  //     const requiredLoader = require('./modules/core/runtime-module-loader.js');
+  //     if (requiredLoader && typeof requiredLoader === 'object') {
+  //       return requiredLoader;
+  //     }
+  //   } catch (runtimeLoaderError) {
+  //     void runtimeLoaderError;
+  //   }
+  // }
 
   if (
     typeof cineCoreRuntimeModuleLoader !== 'undefined' &&
@@ -78,7 +80,7 @@ function resolveRuntimeModuleLoader() {
   return null;
 }
 
-function requireCoreRuntimeModule(moduleId, options) {
+export function requireCoreRuntimeModule(moduleId, options) {
   const loader = resolveRuntimeModuleLoader();
   if (
     loader &&
@@ -95,31 +97,7 @@ function requireCoreRuntimeModule(moduleId, options) {
 }
 
 
-if (typeof CORE_TEMPERATURE_QUEUE_KEY === 'undefined') {
-  try {
-    CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
-  } catch (coreTemperatureQueueError) {
-    void coreTemperatureQueueError;
-    if (typeof globalThis !== 'undefined') {
-      globalThis.CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
-    } else if (typeof window !== 'undefined') {
-      window.CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
-    }
-  }
-}
 
-if (typeof CORE_TEMPERATURE_RENDER_NAME === 'undefined') {
-  try {
-    CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';
-  } catch (coreTemperatureRenderError) {
-    void coreTemperatureRenderError;
-    if (typeof globalThis !== 'undefined') {
-      globalThis.CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';
-    } else if (typeof window !== 'undefined') {
-      window.CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';
-    }
-  }
-}
 
 (function ensureIconGlyphRegistryAvailability() {
   const candidateScopes = [
@@ -183,7 +161,7 @@ if (typeof CORE_TEMPERATURE_RENDER_NAME === 'undefined') {
   }
 })();
 
-var CORE_ENVIRONMENT_HELPERS = (function resolveCoreEnvironmentHelpers() {
+export var CORE_ENVIRONMENT_HELPERS = (function resolveCoreEnvironmentHelpers() {
   var helpers = null;
 
   if (typeof resolveCoreSupportModule === 'function') {
@@ -193,16 +171,16 @@ var CORE_ENVIRONMENT_HELPERS = (function resolveCoreEnvironmentHelpers() {
     );
   }
 
-  if (!helpers && typeof require === 'function') {
-    try {
-      var requiredHelpers = require('./modules/runtime-environment-helpers.js');
-      if (requiredHelpers && typeof requiredHelpers === 'object') {
-        helpers = requiredHelpers;
-      }
-    } catch (environmentHelpersRequireError) {
-      void environmentHelpersRequireError;
-    }
-  }
+  // if (!helpers && typeof require === 'function') {
+  //   try {
+  //     var requiredHelpers = require('./modules/runtime-environment-helpers.js');
+  //     if (requiredHelpers && typeof requiredHelpers === 'object') {
+  //       helpers = requiredHelpers;
+  //     }
+  //   } catch (environmentHelpersRequireError) {
+  //     void environmentHelpersRequireError;
+  //   }
+  // }
 
   if (helpers) {
     return helpers;
@@ -238,7 +216,7 @@ var CORE_ENVIRONMENT_HELPERS = (function resolveCoreEnvironmentHelpers() {
   return helpers;
 })();
 
-var CORE_RUNTIME_SHARED =
+export var CORE_RUNTIME_SHARED =
   (typeof CORE_RUNTIME_SHARED !== 'undefined' && CORE_RUNTIME_SHARED)
     ? CORE_RUNTIME_SHARED
     : (function resolveCoreRuntimeShared() {
@@ -252,17 +230,18 @@ var CORE_RUNTIME_SHARED =
       }
 
       if (!shared) {
-        var loaderShared = requireCoreRuntimeModule(
-          'modules/core/runtime-shared.js',
-          {
-            primaryScope:
-              typeof CORE_GLOBAL_SCOPE !== 'undefined' &&
-                CORE_GLOBAL_SCOPE &&
-                typeof CORE_GLOBAL_SCOPE === 'object'
-                ? CORE_GLOBAL_SCOPE
-                : null,
-          }
-        );
+        // var loaderShared = requireCoreRuntimeModule(
+        //   'modules/core/runtime-shared.js',
+        //   {
+        //     primaryScope:
+        //       typeof CORE_GLOBAL_SCOPE !== 'undefined' &&
+        //         CORE_GLOBAL_SCOPE &&
+        //         typeof CORE_GLOBAL_SCOPE === 'object'
+        //         ? CORE_GLOBAL_SCOPE
+        //         : null,
+        //   }
+        // );
+        var loaderShared = null;
         if (loaderShared && typeof loaderShared === 'object') {
           shared = loaderShared;
         }
@@ -311,7 +290,7 @@ var CORE_RUNTIME_SHARED =
       return null;
     })();
 
-function collectEnvironmentRuntimeCandidateScopes(primaryScope) {
+export function collectEnvironmentRuntimeCandidateScopes(primaryScope) {
   if (
     CORE_RUNTIME_SHARED &&
     typeof CORE_RUNTIME_SHARED.collectCandidateScopes === 'function'
@@ -402,7 +381,7 @@ function collectEnvironmentRuntimeCandidateScopes(primaryScope) {
 // workers, offline tabs and legacy frames all share the same configuration. We
 // build an ordered array here and then let the state helpers below iterate over
 // it when fetching shared utilities.
-var CORE_RUNTIME_CANDIDATE_SCOPES = (function resolveCoreRuntimeCandidateScopesPart2() {
+export var CORE_RUNTIME_CANDIDATE_SCOPES = (function resolveCoreRuntimeCandidateScopesPart2() {
   if (
     typeof CORE_RUNTIME_CANDIDATE_SCOPES !== 'undefined' &&
     CORE_RUNTIME_CANDIDATE_SCOPES &&
@@ -482,7 +461,7 @@ var CORE_RUNTIME_CANDIDATE_SCOPES = (function resolveCoreRuntimeCandidateScopesP
   return resolvedScopes;
 })();
 
-var CORE_RUNTIME_STATE_SUPPORT_PART2 = (function resolveCoreRuntimeStateSupportPart2() {
+export var CORE_RUNTIME_STATE_SUPPORT_PART2 = (function resolveCoreRuntimeStateSupportPart2() {
   function readExistingRuntimeStateSupport() {
     var scopes = [];
     if (typeof globalThis !== 'undefined') scopes.push(globalThis);
@@ -574,10 +553,10 @@ var CORE_RUNTIME_STATE_SUPPORT_PART2 = (function resolveCoreRuntimeStateSupportP
   return null;
 })();
 
-var CORE_TEMPERATURE_KEY_DEFAULTS = (function resolveCoreTemperatureKeyDefaults() {
+export var CORE_TEMPERATURE_KEY_DEFAULTS = (function resolveCoreTemperatureKeyDefaults() {
   var defaults = {
-    queueKey: CORE_TEMPERATURE_QUEUE_KEY,
-    renderName: CORE_TEMPERATURE_RENDER_NAME,
+    queueKey: '__cinePendingTemperatureNote',
+    renderName: 'renderTemperatureNote',
   };
 
   if (
@@ -611,10 +590,10 @@ var CORE_TEMPERATURE_KEY_DEFAULTS = (function resolveCoreTemperatureKeyDefaults(
   return defaults;
 })();
 
-CORE_TEMPERATURE_QUEUE_KEY = CORE_TEMPERATURE_KEY_DEFAULTS.queueKey;
-CORE_TEMPERATURE_RENDER_NAME = CORE_TEMPERATURE_KEY_DEFAULTS.renderName;
+export const CORE_TEMPERATURE_QUEUE_KEY = CORE_TEMPERATURE_KEY_DEFAULTS.queueKey;
+export const CORE_TEMPERATURE_RENDER_NAME = CORE_TEMPERATURE_KEY_DEFAULTS.renderName;
 
-var CORE_SAFE_FREEZE_REGISTRY = (function resolveCoreSafeFreezeRegistry() {
+export var CORE_SAFE_FREEZE_REGISTRY = (function resolveCoreSafeFreezeRegistry() {
   if (
     CORE_RUNTIME_STATE_SUPPORT_PART2 &&
     typeof CORE_RUNTIME_STATE_SUPPORT_PART2.ensureSafeFreezeRegistry === 'function'
@@ -719,7 +698,7 @@ function coreSafeFreezeRegistryAdd(value) {
 // The planner frequently runs in embedded webviews where referencing window
 // directly can throw. Collecting the scopes once and reusing them keeps the
 // rest of the module intentionally boring and therefore easier to maintain.
-function createLocalRuntimeStateFallback(candidateScopes) {
+export function createLocalRuntimeStateFallback(candidateScopes) {
   var scopes = [];
   var seenScopes = typeof Set === 'function' ? new Set() : null;
 
@@ -1447,6 +1426,10 @@ function createFallbackSafeGenerateConnectorSummary() {
   };
 }
 
+ensureGlobalFallback('createFallbackSafeGenerateConnectorSummary', function () {
+  return createFallbackSafeGenerateConnectorSummary;
+});
+
 ensureGlobalFallback('safeGenerateConnectorSummary', function () {
   return createFallbackSafeGenerateConnectorSummary();
 });
@@ -1913,3 +1896,5 @@ function generateSafeConnectorSummary(device) {
   return '';
 }
 
+
+export const CORE_SHARED = {};

@@ -243,6 +243,9 @@ describe('cineResults module', () => {
     harness = setupModuleHarness();
     jest.isolateModules(() => {
       cineResults = require(path.join('..', '..', 'src', 'scripts', 'modules', 'results.js'));
+      if (cineResults && cineResults.default) {
+        cineResults = cineResults.default;
+      }
     });
   }
 

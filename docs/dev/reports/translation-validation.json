@@ -1,0 +1,1034 @@
+{
+  "generated": "2026-01-13T11:13:45.655Z",
+  "baseLocale": "en",
+  "locales": [
+    {
+      "locale": "de",
+      "totalKeys": 2184,
+      "missingKeys": [],
+      "untranslatedKeys": [
+        {
+          "key": "texts.appTitle",
+          "value": "Cine Power Planner"
+        },
+        {
+          "key": "texts.contacts.avatarEditZoomLabel",
+          "value": "Zoom"
+        },
+        {
+          "key": "texts.documentationTrackerSectionProgress",
+          "value": "{completed}/{total}"
+        },
+        {
+          "key": "texts.tabMonitoring",
+          "value": "Monitoring"
+        },
+        {
+          "key": "texts.tabSupport",
+          "value": "Support"
+        },
+        {
+          "key": "texts.tabCrew",
+          "value": "Crew"
+        },
+        {
+          "key": "texts.linkWebsite",
+          "value": "Website"
+        },
+        {
+          "key": "texts.labelName",
+          "value": "Name"
+        },
+        {
+          "key": "texts.labelWebsite",
+          "value": "Website / Link"
+        },
+        {
+          "key": "texts.placeholderWebsite",
+          "value": "https://..."
+        },
+        {
+          "key": "texts.buttonSupport",
+          "value": "Support"
+        },
+        {
+          "key": "texts.focusScaleImperial",
+          "value": "Imperial"
+        },
+        {
+          "key": "texts.mountVoltageCardLabelV",
+          "value": "V-Mount"
+        },
+        {
+          "key": "texts.mountVoltageCardLabelGold",
+          "value": "Gold Mount"
+        },
+        {
+          "key": "texts.mountVoltageCardLabelB",
+          "value": "B-Mount"
+        },
+        {
+          "key": "texts.temperatureUnitCelsius",
+          "value": "Celsius (°C)"
+        },
+        {
+          "key": "texts.temperatureUnitFahrenheit",
+          "value": "Fahrenheit (°F)"
+        },
+        {
+          "key": "texts.logoSetting",
+          "value": "Logo (SVG)"
+        },
+        {
+          "key": "texts.autoGearShootingDaysModeMinimum",
+          "value": "Minimum"
+        },
+        {
+          "key": "texts.autoGearShootingDaysModeMaximum",
+          "value": "Maximum"
+        },
+        {
+          "key": "texts.autoGearBackupMeta",
+          "value": "%s · %s"
+        },
+        {
+          "key": "texts.autoGearItemSummaryWithCategory",
+          "value": "%s × %s (%s)"
+        },
+        {
+          "key": "texts.autoGearItemSummary",
+          "value": "%s × %s"
+        },
+        {
+          "key": "texts.loggingLevelDebug",
+          "value": "Debug"
+        },
+        {
+          "key": "texts.loggingLevelInfo",
+          "value": "Info"
+        },
+        {
+          "key": "texts.loggingEntryNamespaceLabel",
+          "value": "Namespace"
+        },
+        {
+          "key": "texts.loggingEntryDetailLabel",
+          "value": "Details"
+        },
+        {
+          "key": "texts.loggingTimestampCombined",
+          "value": "{local} ({iso})"
+        },
+        {
+          "key": "texts.storageStatusWithName",
+          "value": "{name} — {time}"
+        },
+        {
+          "key": "texts.storageTotalSizeValue",
+          "value": "~%s KB"
+        },
+        {
+          "key": "texts.versionLabel",
+          "value": "Version"
+        },
+        {
+          "key": "texts.supportLink",
+          "value": "Support"
+        },
+        {
+          "key": "texts.monitorLabel",
+          "value": "Monitor:"
+        },
+        {
+          "key": "texts.category_cages",
+          "value": "Cages"
+        },
+        {
+          "key": "texts.lensSpecClampOnLabel",
+          "value": "Clamp-on"
+        },
+        {
+          "key": "texts.deviceNameLabel",
+          "value": "Name:"
+        },
+        {
+          "key": "texts.timecodeHeading",
+          "value": "Timecode"
+        },
+        {
+          "key": "texts.timecodeLabel",
+          "value": "Timecode:"
+        },
+        {
+          "key": "texts.projectForm.codec",
+          "value": "Codec:"
+        },
+        {
+          "key": "texts.projectForm.filter",
+          "value": "Filter:"
+        },
+        {
+          "key": "texts.projectForm.userButtonFunctions.falseColor",
+          "value": "False Color"
+        },
+        {
+          "key": "texts.projectForm.userButtonFunctions.peaking",
+          "value": "Peaking"
+        },
+        {
+          "key": "texts.projectForm.userButtonFunctions.oneToOneZoom",
+          "value": "1:1 Zoom"
+        },
+        {
+          "key": "texts.projectForm.userButtonFunctions.waveform",
+          "value": "Waveform"
+        },
+        {
+          "key": "texts.projectForm.userButtonFunctions.zebra",
+          "value": "Zebra"
+        },
+        {
+          "key": "texts.projectForm.userButtonFunctions.zoom",
+          "value": "Zoom"
+        },
+        {
+          "key": "texts.projectForm.userButtonFunctions.shutter",
+          "value": "Shutter"
+        },
+        {
+          "key": "texts.projectForm.crewNamePlaceholder",
+          "value": "Name"
+        },
+        {
+          "key": "texts.projectForm.crewWebsitePlaceholder",
+          "value": "Website"
+        },
+        {
+          "key": "texts.projectFields.codec",
+          "value": "Codec"
+        },
+        {
+          "key": "texts.scenarios.Studio",
+          "value": "Studio"
+        },
+        {
+          "key": "texts.scenarios.Easyrig",
+          "value": "Easyrig"
+        },
+        {
+          "key": "texts.scenarios.Steadybag",
+          "value": "Steadybag"
+        },
+        {
+          "key": "texts.scenarios.Slider",
+          "value": "Slider"
+        },
+        {
+          "key": "texts.scenarios.Steadicam",
+          "value": "Steadicam"
+        },
+        {
+          "key": "texts.scenarios.Gimbal",
+          "value": "Gimbal"
+        },
+        {
+          "key": "texts.scenarios.Trinity",
+          "value": "Trinity"
+        },
+        {
+          "key": "texts.scenarios.Remote Head",
+          "value": "Remote Head"
+        },
+        {
+          "key": "texts.printOptionsLayoutLabel",
+          "value": "Layout"
+        },
+        {
+          "key": "texts.helpButtonAriaShortcuts",
+          "value": "F1 Control+Slash Meta+Slash Shift+Slash KeyH"
+        },
+        {
+          "key": "texts.v2.dashboard.projectTile.prep",
+          "value": "Prep:"
+        },
+        {
+          "key": "texts.v2.sidebar.nav.supportSection",
+          "value": "Support"
+        },
+        {
+          "key": "categoryNames.monitors",
+          "value": "Monitor"
+        },
+        {
+          "key": "categoryNames.iosVideo",
+          "value": "iOS Video"
+        },
+        {
+          "key": "categoryNames.videoAssist",
+          "value": "Video Assist"
+        }
+      ],
+      "placeholderIssues": [],
+      "extraKeys": [
+        "texts.videoDistributionOptions.Director Monitor 7\" handheld",
+        "texts.videoDistributionOptions.Gaffer Monitor 7\" handheld",
+        "texts.videoDistributionOptions.Director Monitor 15-21\"",
+        "texts.videoDistributionOptions.Combo Monitor 15-21\"",
+        "texts.videoDistributionOptions.DoP Monitor 7\" handheld",
+        "texts.videoDistributionOptions.DoP Monitor 15-21\"",
+        "texts.videoDistributionOptions.IOS Video",
+        "texts.onboardingTour.steps.intro.title",
+        "texts.onboardingTour.steps.intro.body"
+      ],
+      "translatedKeys": 2184,
+      "coverage": "100.00"
+    },
+    {
+      "locale": "es",
+      "totalKeys": 2184,
+      "missingKeys": [],
+      "untranslatedKeys": [
+        {
+          "key": "texts.appTitle",
+          "value": "Cine Power Planner"
+        },
+        {
+          "key": "texts.contacts.avatarEditZoomLabel",
+          "value": "Zoom"
+        },
+        {
+          "key": "texts.settingsTabGeneral",
+          "value": "General"
+        },
+        {
+          "key": "texts.documentationTrackerSectionProgress",
+          "value": "{completed}/{total}"
+        },
+        {
+          "key": "texts.tabGeneral",
+          "value": "General"
+        },
+        {
+          "key": "texts.sectionMatteboxes",
+          "value": "Matteboxes"
+        },
+        {
+          "key": "texts.placeholderWebsite",
+          "value": "https://..."
+        },
+        {
+          "key": "texts.focusScaleImperial",
+          "value": "Imperial"
+        },
+        {
+          "key": "texts.mountVoltageCardLabelV",
+          "value": "V-Mount"
+        },
+        {
+          "key": "texts.mountVoltageCardLabelGold",
+          "value": "Gold Mount"
+        },
+        {
+          "key": "texts.mountVoltageCardLabelB",
+          "value": "B-Mount"
+        },
+        {
+          "key": "texts.temperatureUnitCelsius",
+          "value": "Celsius (°C)"
+        },
+        {
+          "key": "texts.temperatureUnitFahrenheit",
+          "value": "Fahrenheit (°F)"
+        },
+        {
+          "key": "texts.autoGearBackupMeta",
+          "value": "%s · %s"
+        },
+        {
+          "key": "texts.autoGearItemSummaryWithCategory",
+          "value": "%s × %s (%s)"
+        },
+        {
+          "key": "texts.autoGearItemSummary",
+          "value": "%s × %s"
+        },
+        {
+          "key": "texts.autoGearAddSelectorTypeLabel",
+          "value": "Selector"
+        },
+        {
+          "key": "texts.autoGearRemoveSelectorTypeLabel",
+          "value": "Selector"
+        },
+        {
+          "key": "texts.loggingLevelError",
+          "value": "Error"
+        },
+        {
+          "key": "texts.loggingEntryNamespaceLabel",
+          "value": "Namespace"
+        },
+        {
+          "key": "texts.loggingTimestampCombined",
+          "value": "{local} ({iso})"
+        },
+        {
+          "key": "texts.storageStatusWithName",
+          "value": "{name} — {time}"
+        },
+        {
+          "key": "texts.storageTotalSizeValue",
+          "value": "~%s KB"
+        },
+        {
+          "key": "texts.monitorLabel",
+          "value": "Monitor:"
+        },
+        {
+          "key": "texts.category_cables",
+          "value": "Cables"
+        },
+        {
+          "key": "texts.lensSpecTStopLabel",
+          "value": "T-stop"
+        },
+        {
+          "key": "texts.lensSpecClampOnLabel",
+          "value": "Clamp-on"
+        },
+        {
+          "key": "texts.lensSpecCategoryGeneralLabel",
+          "value": "General"
+        },
+        {
+          "key": "texts.projectForm.rentalHouse",
+          "value": "Rental:"
+        },
+        {
+          "key": "texts.projectForm.userButtonFunctions.falseColor",
+          "value": "False Color"
+        },
+        {
+          "key": "texts.projectForm.userButtonFunctions.peaking",
+          "value": "Peaking"
+        },
+        {
+          "key": "texts.projectForm.userButtonFunctions.waveform",
+          "value": "Waveform"
+        },
+        {
+          "key": "texts.projectForm.userButtonFunctions.vectorscope",
+          "value": "Vectorscope"
+        },
+        {
+          "key": "texts.projectForm.userButtonFunctions.zoom",
+          "value": "Zoom"
+        },
+        {
+          "key": "texts.projectFields.rentalHouse",
+          "value": "Rental"
+        },
+        {
+          "key": "texts.scenarios.Easyrig",
+          "value": "Easyrig"
+        },
+        {
+          "key": "texts.scenarios.Cine Saddle",
+          "value": "Cine Saddle"
+        },
+        {
+          "key": "texts.scenarios.Steadybag",
+          "value": "Steadybag"
+        },
+        {
+          "key": "texts.scenarios.Dolly",
+          "value": "Dolly"
+        },
+        {
+          "key": "texts.scenarios.Slider",
+          "value": "Slider"
+        },
+        {
+          "key": "texts.scenarios.Steadicam",
+          "value": "Steadicam"
+        },
+        {
+          "key": "texts.scenarios.Gimbal",
+          "value": "Gimbal"
+        },
+        {
+          "key": "texts.scenarios.Trinity",
+          "value": "Trinity"
+        },
+        {
+          "key": "texts.scenarios.Rollcage",
+          "value": "Rollcage"
+        },
+        {
+          "key": "texts.scenarios.Car Mount",
+          "value": "Car Mount"
+        },
+        {
+          "key": "texts.gearListProviderRental",
+          "value": "Rental"
+        },
+        {
+          "key": "texts.helpButtonShortcuts",
+          "value": "F1; Ctrl + /; Cmd + /; ?; H"
+        },
+        {
+          "key": "texts.helpButtonAriaShortcuts",
+          "value": "F1 Control+Slash Meta+Slash Shift+Slash KeyH"
+        },
+        {
+          "key": "texts.v2.dashboard.projectTile.prep",
+          "value": "Prep:"
+        },
+        {
+          "key": "categoryNames.monitors",
+          "value": "Monitor"
+        }
+      ],
+      "placeholderIssues": [],
+      "extraKeys": [
+        "texts.onboardingTour.steps.intro.title",
+        "texts.onboardingTour.steps.intro.body"
+      ],
+      "translatedKeys": 2184,
+      "coverage": "100.00"
+    },
+    {
+      "locale": "fr",
+      "totalKeys": 2184,
+      "missingKeys": [],
+      "untranslatedKeys": [
+        {
+          "key": "texts.appTitle",
+          "value": "Cine Power Planner"
+        },
+        {
+          "key": "texts.printPreview.sectionsTitle",
+          "value": "Sections"
+        },
+        {
+          "key": "texts.menuToggleLabel",
+          "value": "Menu"
+        },
+        {
+          "key": "texts.contacts.heading",
+          "value": "Contacts"
+        },
+        {
+          "key": "texts.contacts.avatarEditZoomLabel",
+          "value": "Zoom"
+        },
+        {
+          "key": "texts.featureSearchTypeAction",
+          "value": "Action"
+        },
+        {
+          "key": "texts.helpTopics.contacts.title",
+          "value": "Contacts"
+        },
+        {
+          "key": "texts.documentationTrackerSectionProgress",
+          "value": "{completed}/{total}"
+        },
+        {
+          "key": "texts.tabMonitoring",
+          "value": "Monitoring"
+        },
+        {
+          "key": "texts.tabSupport",
+          "value": "Support"
+        },
+        {
+          "key": "texts.tabActions",
+          "value": "Actions"
+        },
+        {
+          "key": "texts.sectionMatteboxes",
+          "value": "Matteboxes"
+        },
+        {
+          "key": "texts.contactsViewTitle",
+          "value": "Contacts"
+        },
+        {
+          "key": "texts.labelNotes",
+          "value": "Notes"
+        },
+        {
+          "key": "texts.placeholderWebsite",
+          "value": "https://..."
+        },
+        {
+          "key": "texts.buttonSupport",
+          "value": "Support"
+        },
+        {
+          "key": "texts.mountVoltageCardLabelV",
+          "value": "V-Mount"
+        },
+        {
+          "key": "texts.mountVoltageCardLabelGold",
+          "value": "Gold Mount"
+        },
+        {
+          "key": "texts.mountVoltageCardLabelB",
+          "value": "B-Mount"
+        },
+        {
+          "key": "texts.temperatureUnitCelsius",
+          "value": "Celsius (°C)"
+        },
+        {
+          "key": "texts.temperatureUnitFahrenheit",
+          "value": "Fahrenheit (°F)"
+        },
+        {
+          "key": "texts.logoSetting",
+          "value": "Logo (SVG)"
+        },
+        {
+          "key": "texts.autoGearShootingDaysModeMinimum",
+          "value": "Minimum"
+        },
+        {
+          "key": "texts.autoGearShootingDaysModeMaximum",
+          "value": "Maximum"
+        },
+        {
+          "key": "texts.autoGearImportMetadataLabelVersion",
+          "value": "version"
+        },
+        {
+          "key": "texts.autoGearBackupMeta",
+          "value": "%s · %s"
+        },
+        {
+          "key": "texts.autoGearItemSummaryWithCategory",
+          "value": "%s × %s (%s)"
+        },
+        {
+          "key": "texts.autoGearItemSummary",
+          "value": "%s × %s"
+        },
+        {
+          "key": "texts.autoGearAddNotesLabel",
+          "value": "Notes"
+        },
+        {
+          "key": "texts.autoGearRemoveNotesLabel",
+          "value": "Notes"
+        },
+        {
+          "key": "texts.loggingLevelInfo",
+          "value": "Info"
+        },
+        {
+          "key": "texts.loggingEntryNamespaceLabel",
+          "value": "Namespace"
+        },
+        {
+          "key": "texts.loggingTimestampCombined",
+          "value": "{local} ({iso})"
+        },
+        {
+          "key": "texts.storageStatusWithName",
+          "value": "{name} — {time}"
+        },
+        {
+          "key": "texts.storageTotalSizeValue",
+          "value": "~%s KB"
+        },
+        {
+          "key": "texts.versionLabel",
+          "value": "Version"
+        },
+        {
+          "key": "texts.supportLink",
+          "value": "Support"
+        },
+        {
+          "key": "texts.category_cages",
+          "value": "Cages"
+        },
+        {
+          "key": "texts.category_batteries",
+          "value": "Batteries"
+        },
+        {
+          "key": "texts.lensSpecTStopLabel",
+          "value": "T-stop"
+        },
+        {
+          "key": "texts.lensSpecClampOnLabel",
+          "value": "Clamp-on"
+        },
+        {
+          "key": "texts.lensSpecCategorySupportLabel",
+          "value": "Support"
+        },
+        {
+          "key": "texts.lensSpecCategoryNotesLabel",
+          "value": "Notes"
+        },
+        {
+          "key": "texts.lensSpecNotesLabel",
+          "value": "Notes"
+        },
+        {
+          "key": "texts.videoPowerNotesLabel",
+          "value": "Notes"
+        },
+        {
+          "key": "texts.notesLabel",
+          "value": "Notes:"
+        },
+        {
+          "key": "texts.projectForm.userButtonFunctions.falseColor",
+          "value": "False Color"
+        },
+        {
+          "key": "texts.projectForm.userButtonFunctions.peaking",
+          "value": "Peaking"
+        },
+        {
+          "key": "texts.projectForm.userButtonFunctions.waveform",
+          "value": "Waveform"
+        },
+        {
+          "key": "texts.projectForm.userButtonFunctions.zoom",
+          "value": "Zoom"
+        },
+        {
+          "key": "texts.projectFields.codec",
+          "value": "Codec"
+        },
+        {
+          "key": "texts.projectFields.mattebox",
+          "value": "Mattebox"
+        },
+        {
+          "key": "texts.scenarios.Studio",
+          "value": "Studio"
+        },
+        {
+          "key": "texts.scenarios.Easyrig",
+          "value": "Easyrig"
+        },
+        {
+          "key": "texts.scenarios.Cine Saddle",
+          "value": "Cine Saddle"
+        },
+        {
+          "key": "texts.scenarios.Steadybag",
+          "value": "Steadybag"
+        },
+        {
+          "key": "texts.scenarios.Dolly",
+          "value": "Dolly"
+        },
+        {
+          "key": "texts.scenarios.Slider",
+          "value": "Slider"
+        },
+        {
+          "key": "texts.scenarios.Steadicam",
+          "value": "Steadicam"
+        },
+        {
+          "key": "texts.scenarios.Gimbal",
+          "value": "Gimbal"
+        },
+        {
+          "key": "texts.scenarios.Trinity",
+          "value": "Trinity"
+        },
+        {
+          "key": "texts.scenarios.Rollcage",
+          "value": "Rollcage"
+        },
+        {
+          "key": "texts.gearListEditNoteLabel",
+          "value": "Note"
+        },
+        {
+          "key": "texts.ownGearNotesLabel",
+          "value": "Notes"
+        },
+        {
+          "key": "texts.helpButtonShortcuts",
+          "value": "F1; Ctrl + /; Cmd + /; ?; H"
+        },
+        {
+          "key": "texts.helpButtonAriaShortcuts",
+          "value": "F1 Control+Slash Meta+Slash Shift+Slash KeyH"
+        },
+        {
+          "key": "texts.v2.sidebar.nav.contacts",
+          "value": "Contacts"
+        },
+        {
+          "key": "texts.v2.sidebar.nav.supportSection",
+          "value": "Support"
+        }
+      ],
+      "placeholderIssues": [],
+      "extraKeys": [
+        "texts.onboardingTour.steps.intro.title",
+        "texts.onboardingTour.steps.intro.body"
+      ],
+      "translatedKeys": 2184,
+      "coverage": "100.00"
+    },
+    {
+      "locale": "it",
+      "totalKeys": 2184,
+      "missingKeys": [],
+      "untranslatedKeys": [
+        {
+          "key": "texts.appTitle",
+          "value": "Cine Power Planner"
+        },
+        {
+          "key": "texts.menuToggleLabel",
+          "value": "Menu"
+        },
+        {
+          "key": "texts.contacts.avatarEditZoomLabel",
+          "value": "Zoom"
+        },
+        {
+          "key": "texts.documentationTrackerSectionProgress",
+          "value": "{completed}/{total}"
+        },
+        {
+          "key": "texts.tabCamera",
+          "value": "Camera"
+        },
+        {
+          "key": "texts.sectionWireless",
+          "value": "Wireless"
+        },
+        {
+          "key": "texts.labelEmail",
+          "value": "Email"
+        },
+        {
+          "key": "texts.placeholderWebsite",
+          "value": "https://..."
+        },
+        {
+          "key": "texts.mountVoltageCardLabelV",
+          "value": "V-Mount"
+        },
+        {
+          "key": "texts.mountVoltageCardLabelGold",
+          "value": "Gold Mount"
+        },
+        {
+          "key": "texts.mountVoltageCardLabelB",
+          "value": "B-Mount"
+        },
+        {
+          "key": "texts.temperatureUnitCelsius",
+          "value": "Celsius (°C)"
+        },
+        {
+          "key": "texts.temperatureUnitFahrenheit",
+          "value": "Fahrenheit (°F)"
+        },
+        {
+          "key": "texts.logoSetting",
+          "value": "Logo (SVG)"
+        },
+        {
+          "key": "texts.autoGearBackupMeta",
+          "value": "%s · %s"
+        },
+        {
+          "key": "texts.autoGearItemSummaryWithCategory",
+          "value": "%s × %s (%s)"
+        },
+        {
+          "key": "texts.autoGearItemSummary",
+          "value": "%s × %s"
+        },
+        {
+          "key": "texts.backupSettings",
+          "value": "Backup"
+        },
+        {
+          "key": "texts.loggingLevelDebug",
+          "value": "Debug"
+        },
+        {
+          "key": "texts.loggingLevelInfo",
+          "value": "Info"
+        },
+        {
+          "key": "texts.loggingEntryNamespaceLabel",
+          "value": "Namespace"
+        },
+        {
+          "key": "texts.loggingTimestampCombined",
+          "value": "{local} ({iso})"
+        },
+        {
+          "key": "texts.storageStatusWithName",
+          "value": "{name} — {time}"
+        },
+        {
+          "key": "texts.storageTotalSizeValue",
+          "value": "~%s KB"
+        },
+        {
+          "key": "texts.monitorLabel",
+          "value": "Monitor:"
+        },
+        {
+          "key": "texts.lensSpecTStopLabel",
+          "value": "T-stop"
+        },
+        {
+          "key": "texts.lensSpecClampOnLabel",
+          "value": "Clamp-on"
+        },
+        {
+          "key": "texts.projectForm.codec",
+          "value": "Codec:"
+        },
+        {
+          "key": "texts.projectForm.mattebox",
+          "value": "Mattebox:"
+        },
+        {
+          "key": "texts.projectForm.userButtonFunctions.falseColor",
+          "value": "False Color"
+        },
+        {
+          "key": "texts.projectForm.userButtonFunctions.peaking",
+          "value": "Peaking"
+        },
+        {
+          "key": "texts.projectForm.userButtonFunctions.waveform",
+          "value": "Waveform"
+        },
+        {
+          "key": "texts.projectForm.userButtonFunctions.zebra",
+          "value": "Zebra"
+        },
+        {
+          "key": "texts.projectForm.userButtonFunctions.zoom",
+          "value": "Zoom"
+        },
+        {
+          "key": "texts.projectForm.userButtonFunctions.shutter",
+          "value": "Shutter"
+        },
+        {
+          "key": "texts.projectForm.crewEmailPlaceholder",
+          "value": "Email"
+        },
+        {
+          "key": "texts.projectFields.codec",
+          "value": "Codec"
+        },
+        {
+          "key": "texts.projectFields.mattebox",
+          "value": "Mattebox"
+        },
+        {
+          "key": "texts.scenarios.Studio",
+          "value": "Studio"
+        },
+        {
+          "key": "texts.scenarios.Easyrig",
+          "value": "Easyrig"
+        },
+        {
+          "key": "texts.scenarios.Cine Saddle",
+          "value": "Cine Saddle"
+        },
+        {
+          "key": "texts.scenarios.Steadybag",
+          "value": "Steadybag"
+        },
+        {
+          "key": "texts.scenarios.Dolly",
+          "value": "Dolly"
+        },
+        {
+          "key": "texts.scenarios.Slider",
+          "value": "Slider"
+        },
+        {
+          "key": "texts.scenarios.Steadicam",
+          "value": "Steadicam"
+        },
+        {
+          "key": "texts.scenarios.Gimbal",
+          "value": "Gimbal"
+        },
+        {
+          "key": "texts.scenarios.Trinity",
+          "value": "Trinity"
+        },
+        {
+          "key": "texts.scenarios.Rollcage",
+          "value": "Rollcage"
+        },
+        {
+          "key": "texts.scenarios.Car Mount",
+          "value": "Car Mount"
+        },
+        {
+          "key": "texts.gearListEditCameraLinkCameraOption",
+          "value": "Camera %s — %s"
+        },
+        {
+          "key": "texts.gearListEditCameraLinkDefaultLabel",
+          "value": "Camera %s"
+        },
+        {
+          "key": "texts.printOptionsLayoutLabel",
+          "value": "Layout"
+        },
+        {
+          "key": "texts.helpButtonShortcuts",
+          "value": "F1; Ctrl + /; Cmd + /; ?; H"
+        },
+        {
+          "key": "texts.helpButtonAriaShortcuts",
+          "value": "F1 Control+Slash Meta+Slash Shift+Slash KeyH"
+        },
+        {
+          "key": "texts.v2.dashboard.projectTile.prep",
+          "value": "Prep:"
+        },
+        {
+          "key": "categoryNames.cameras",
+          "value": "Camera"
+        },
+        {
+          "key": "categoryNames.monitors",
+          "value": "Monitor"
+        }
+      ],
+      "placeholderIssues": [],
+      "extraKeys": [
+        "texts.onboardingTour.steps.intro.title",
+        "texts.onboardingTour.steps.intro.body"
+      ],
+      "translatedKeys": 2184,
+      "coverage": "100.00"
+    }
+  ],
+  "summary": {
+    "averageCoverage": "100.00",
+    "totalMissingKeys": 0,
+    "totalPlaceholderIssues": 0
+  }
+}

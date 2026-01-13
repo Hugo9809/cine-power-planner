@@ -5,240 +5,241 @@
  * and theme toggles (bridging to legacy app).
  */
 
-(function (global) {
-    'use strict';
+// Polyfill global for legacy code
+const global = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : {};
 
-    const SEARCH_CONTAINER_CLASS = 'v2-sidebar-search';
-    const SEARCH_INPUT_ID = 'v2SidebarSearchInput';
 
-    // Theme Constants
-    const DARK_MODE_KEY = 'darkMode';
-    const PINK_MODE_KEY = 'cameraPowerPlanner_pinkMode';
-    const FALLBACK_PINK_KEY = 'pinkMode';
+const SEARCH_CONTAINER_CLASS = 'v2-sidebar-search';
+const SEARCH_INPUT_ID = 'v2SidebarSearchInput';
 
-    const TEXT_TO_KEY_MAP = {
-        'All Projects': 'v2.sidebar.nav.allProjects',
-        'Active Projects': 'v2.sidebar.nav.activeProjects',
-        'Archive': 'v2.sidebar.nav.archive',
-        'Auto Backups': 'v2.sidebar.nav.autoBackups',
-        'Device Library': 'v2.sidebar.nav.deviceLibrary',
-        'Contacts': 'v2.sidebar.nav.contacts',
-        'Auto Gear Rules': 'v2.sidebar.nav.autoGearRules',
-        'Owned Gear': 'v2.sidebar.nav.ownedGear',
-        'Create New Project': 'v2.sidebar.nav.createProject',
-        'Projects': 'v2.sidebar.nav.projectsSection',
-        'Tools': 'v2.sidebar.nav.toolsSection',
-        'Support': 'v2.sidebar.nav.supportSection',
-        'Help': 'v2.sidebar.nav.help',
-        'Settings': 'v2.sidebar.nav.settings'
-    };
+// Theme Constants
+const DARK_MODE_KEY = 'darkMode';
+const PINK_MODE_KEY = 'cameraPowerPlanner_pinkMode';
+const FALLBACK_PINK_KEY = 'pinkMode';
 
-    /**
-     * Translation Helper
-     */
-    function _t(path, params = {}, lang = null) {
-        const currentLang = lang || document.documentElement.lang || 'en';
-        let root = (window.texts && window.texts[currentLang]) ? window.texts[currentLang] : null;
-        if (!root && window.texts) root = window.texts['en'];
+const TEXT_TO_KEY_MAP = {
+    'All Projects': 'v2.sidebar.nav.allProjects',
+    'Active Projects': 'v2.sidebar.nav.activeProjects',
+    'Archive': 'v2.sidebar.nav.archive',
+    'Auto Backups': 'v2.sidebar.nav.autoBackups',
+    'Device Library': 'v2.sidebar.nav.deviceLibrary',
+    'Contacts': 'v2.sidebar.nav.contacts',
+    'Auto Gear Rules': 'v2.sidebar.nav.autoGearRules',
+    'Owned Gear': 'v2.sidebar.nav.ownedGear',
+    'Create New Project': 'v2.sidebar.nav.createProject',
+    'Projects': 'v2.sidebar.nav.projectsSection',
+    'Tools': 'v2.sidebar.nav.toolsSection',
+    'Support': 'v2.sidebar.nav.supportSection',
+    'Help': 'v2.sidebar.nav.help',
+    'Settings': 'v2.sidebar.nav.settings'
+};
 
-        // Simple resolve
-        const resolve = (obj, p) => p.split('.').reduce((o, i) => o ? o[i] : null, obj);
+/**
+ * Translation Helper
+ */
+function _t(path, params = {}, lang = null) {
+    const currentLang = lang || document.documentElement.lang || 'en';
+    let root = (window.texts && window.texts[currentLang]) ? window.texts[currentLang] : null;
+    if (!root && window.texts) root = window.texts['en'];
 
-        let val = root ? resolve(root, path) : null;
+    // Simple resolve
+    const resolve = (obj, p) => p.split('.').reduce((o, i) => o ? o[i] : null, obj);
 
-        // Fallback to English if missing in current lang
-        if (!val && currentLang !== 'en' && window.texts && window.texts['en']) {
-            val = resolve(window.texts['en'], path);
-        }
+    let val = root ? resolve(root, path) : null;
 
-        if (!val) return path;
-
-        if (typeof val === 'string') {
-            for (const [k, v] of Object.entries(params)) {
-                val = val.replace(`{${k}}`, v);
-            }
-        }
-        return val;
+    // Fallback to English if missing in current lang
+    if (!val && currentLang !== 'en' && window.texts && window.texts['en']) {
+        val = resolve(window.texts['en'], path);
     }
 
-    function initSidebar() {
-        console.log('[V2 Sidebar] Initializing...');
+    if (!val) return path;
 
-        // 1. Get Main Sidebar Container [FIXED SELECTOR]
-        // In index.html, the container is <nav class="v2-sidebar">
-        const sidebar = document.querySelector('.v2-sidebar');
-        if (!sidebar) {
-            console.error('[V2 Sidebar] .v2-sidebar not found. Cannot inject controls.');
-            return;
-        }
-
-        // 2. Inject Components in Order
-        // A. Header (Already in HTML usually, but check)
-        injectSidebarHeader(sidebar);
-
-        // B. Top Controls (Rows 1 & 2)
-        injectTopControls(sidebar);
-
-        // C. Search
-        injectSearchInput(sidebar);
-        setupLegacySearchProxy(); // STRICT V1 Proxy
-
-        // 3. Initialize Logic
-        initThemes();
-        initNavigationLogic();
-        initMobileToggle(); // [New] Mobile Toggle
-        forceHelpCloseBinding();
-        interceptLegacyHelp(); // [New] Redirect Legacy Help
-
-        // 4. Initial Translation
-        const legacySelect = document.getElementById('languageSelect');
-        if (legacySelect) {
-            updateSidebarTranslations(legacySelect.value);
+    if (typeof val === 'string') {
+        for (const [k, v] of Object.entries(params)) {
+            val = val.replace(`{${k}}`, v);
         }
     }
+    return val;
+}
 
-    function injectSidebarHeader(container) {
-        if (container.querySelector('.v2-sidebar-header')) return;
+function initSidebar() {
+    console.log('[V2 Sidebar] Initializing...');
 
-        const header = document.createElement('div');
-        header.className = 'v2-sidebar-header';
-
-        const logo = document.createElement('img');
-        logo.src = 'src/icons/Icon Bluenew.svg';
-        logo.className = 'v2-sidebar-logo';
-        logo.alt = 'Logo';
-
-        const title = document.createElement('h1'); // V2 uses h1 in HTML now
-        title.className = 'v2-sidebar-title';
-        title.innerHTML = 'Cine Power<br>Planner';
-
-        header.appendChild(logo);
-        header.appendChild(title);
-
-        // Insert at very top
-        container.insertBefore(header, container.firstChild);
+    // 1. Get Main Sidebar Container [FIXED SELECTOR]
+    // In index.html, the container is <nav class="v2-sidebar">
+    const sidebar = document.querySelector('.v2-sidebar');
+    if (!sidebar) {
+        console.error('[V2 Sidebar] .v2-sidebar not found. Cannot inject controls.');
+        return;
     }
 
-    /**
-     * [Fix] Inject Top Controls in Single Row
-     * All controls in one row: Language Selector + Theme Toggles + Hard Refresh
-     */
-    /**
-     * [Refactor] Inject Controls at Bottom (Above Footer)
-     * Language Selector + Theme Toggles + Hard Refresh
-     */
-    function injectTopControls(container) {
-        if (container.querySelector('.v2-sidebar-controls-container')) return;
+    // 2. Inject Components in Order
+    // A. Header (Already in HTML usually, but check)
+    injectSidebarHeader(sidebar);
 
-        const controlsContainer = document.createElement('div');
-        controlsContainer.className = 'v2-sidebar-controls-container';
-        // Add some padding/border if needed via CSS, or rely on existing styles
-        // controlsContainer.style.borderTop = '1px solid var(--v2-border-default)'; // Optional separation
+    // B. Top Controls (Rows 1 & 2)
+    injectTopControls(sidebar);
 
-        // Single Row with all controls
-        const row1 = document.createElement('div');
-        row1.className = 'v2-controls-row-1';
-        injectLanguageSelector(row1); // Language Dropdown first
-        injectThemeControls(row1);    // Theme Buttons
-        injectHardRefresh(row1);      // Refresh Button
+    // C. Search
+    injectSearchInput(sidebar);
+    setupLegacySearchProxy(); // STRICT V1 Proxy
 
-        // Assemble (single row)
-        controlsContainer.appendChild(row1);
+    // 3. Initialize Logic
+    initThemes();
+    initNavigationLogic();
+    initMobileToggle(); // [New] Mobile Toggle
+    forceHelpCloseBinding();
+    interceptLegacyHelp(); // [New] Redirect Legacy Help
 
-        // Insert at bottom: Before Footer
-        const footer = container.querySelector('.v2-sidebar-footer');
-        if (footer) {
-            footer.insertAdjacentElement('beforebegin', controlsContainer);
-        } else {
-            // Fallback: append to end
-            container.appendChild(controlsContainer);
-        }
+    // 4. Initial Translation
+    const legacySelect = document.getElementById('languageSelect');
+    if (legacySelect) {
+        updateSidebarTranslations(legacySelect.value);
     }
+}
 
-    /**
-     * [Fix 1.8] STRICT V1 Search Proxy
-     *
-     * DEEP DIVE: The "Legacy Proxy" Pattern
-     *
-     * The V2 Search Bar is a "dumb" UI component. It does NOT contain search logic itself.
-     * Instead, it acts as a remote control for the invisible Legacy Search Input (#featureSearch).
-     *
-     * Why?
-     * The legacy app uses a complex `fuse.js` implementation tightly coupled to the DOM of the
-     * hidden V1 table. Rewriting that logic immediately would risk breaking the core tool.
-     *
-     * Mechanism:
-     * 1. EVENT MIRRORING: Typing in V2 -> triggers 'input' event on V1 input.
-     * 2. KEY FORWARDING: Arrow keys in V2 -> dispatched to V1 to navigate the dropdown results.
-     * 3. FOCUS SYNC: Focusing V2 -> Focuses V1 (to trigger the library dropdown).
-     *
-     * This allows us to ship a modern UI *today* without rewriting the search engine *yesterday*.
-     */
-    function setupLegacySearchProxy() {
-        const input = document.getElementById(SEARCH_INPUT_ID);
-        const legacyInput = document.getElementById('featureSearch');
-        if (!input || !legacyInput) return;
+function injectSidebarHeader(container) {
+    if (container.querySelector('.v2-sidebar-header')) return;
 
-        // Sync Input: V2 -> Legacy
-        input.addEventListener('input', (e) => {
-            e.stopPropagation(); // Stop 'h'/'?' interference
-            legacyInput.value = e.target.value;
-            legacyInput.dispatchEvent(new Event('input', { bubbles: true }));
-            legacyInput.dispatchEvent(new Event('change', { bubbles: true })); // Ensure listeners fire
-        });
+    const header = document.createElement('div');
+    header.className = 'v2-sidebar-header';
 
-        // Sync Focus: V2 -> Legacy (Opens Dropdown)
-        input.addEventListener('focus', () => {
-            legacyInput.dispatchEvent(new Event('focus', { bubbles: true }));
-        });
+    const logo = document.createElement('img');
+    logo.src = 'src/icons/Icon Bluenew.svg';
+    logo.className = 'v2-sidebar-logo';
+    logo.alt = 'Logo';
 
-        // Sync Blur
-        input.addEventListener('blur', () => {
-            // Small delay to allow clicks on dropdown
-            setTimeout(() => {
-                legacyInput.dispatchEvent(new Event('blur', { bubbles: true }));
-            }, 200);
-        });
+    const title = document.createElement('h1'); // V2 uses h1 in HTML now
+    title.className = 'v2-sidebar-title';
+    title.innerHTML = 'Cine Power<br>Planner';
 
-        // Sync Keys (Arrows, Enter, Escape)
-        input.addEventListener('keydown', (e) => {
-            // Stop 'h' or '?' from triggering global Help IF typing
-            e.stopPropagation();
+    header.appendChild(logo);
+    header.appendChild(title);
 
-            // LIMIT FORWARDING to Navigation Keys only
-            const allowedKeys = ['ArrowUp', 'ArrowDown', 'Enter', 'Escape'];
-            if (!allowedKeys.includes(e.key)) return;
+    // Insert at very top
+    container.insertBefore(header, container.firstChild);
+}
 
-            // Forward keys to legacy input for navigation
-            const keyEvent = new KeyboardEvent('keydown', {
-                key: e.key,
-                code: e.code,
-                keyCode: e.keyCode,
-                bubbles: true,
-                cancelable: true
-            });
-            legacyInput.dispatchEvent(keyEvent);
-        });
+/**
+ * [Fix] Inject Top Controls in Single Row
+ * All controls in one row: Language Selector + Theme Toggles + Hard Refresh
+ */
+/**
+ * [Refactor] Inject Controls at Bottom (Above Footer)
+ * Language Selector + Theme Toggles + Hard Refresh
+ */
+function injectTopControls(container) {
+    if (container.querySelector('.v2-sidebar-controls-container')) return;
 
-        // [New] Dispatch V2 Search Event for Dashboard
-        input.addEventListener('input', (e) => {
-            const query = e.target.value.trim();
-            window.dispatchEvent(new CustomEvent('v2:search', {
-                detail: { query }
-            }));
-        });
+    const controlsContainer = document.createElement('div');
+    controlsContainer.className = 'v2-sidebar-controls-container';
+    // Add some padding/border if needed via CSS, or rely on existing styles
+    // controlsContainer.style.borderTop = '1px solid var(--v2-border-default)'; // Optional separation
+
+    // Single Row with all controls
+    const row1 = document.createElement('div');
+    row1.className = 'v2-controls-row-1';
+    injectLanguageSelector(row1); // Language Dropdown first
+    injectThemeControls(row1);    // Theme Buttons
+    injectHardRefresh(row1);      // Refresh Button
+
+    // Assemble (single row)
+    controlsContainer.appendChild(row1);
+
+    // Insert at bottom: Before Footer
+    const footer = container.querySelector('.v2-sidebar-footer');
+    if (footer) {
+        footer.insertAdjacentElement('beforebegin', controlsContainer);
+    } else {
+        // Fallback: append to end
+        container.appendChild(controlsContainer);
     }
+}
 
-    function injectSearchInput(container) {
-        // Find insert point: After Controls
-        // const controls = container.querySelector('.v2-sidebar-controls-container');
+/**
+ * [Fix 1.8] STRICT V1 Search Proxy
+ *
+ * DEEP DIVE: The "Legacy Proxy" Pattern
+ *
+ * The V2 Search Bar is a "dumb" UI component. It does NOT contain search logic itself.
+ * Instead, it acts as a remote control for the invisible Legacy Search Input (#featureSearch).
+ *
+ * Why?
+ * The legacy app uses a complex `fuse.js` implementation tightly coupled to the DOM of the
+ * hidden V1 table. Rewriting that logic immediately would risk breaking the core tool.
+ *
+ * Mechanism:
+ * 1. EVENT MIRRORING: Typing in V2 -> triggers 'input' event on V1 input.
+ * 2. KEY FORWARDING: Arrow keys in V2 -> dispatched to V1 to navigate the dropdown results.
+ * 3. FOCUS SYNC: Focusing V2 -> Focuses V1 (to trigger the library dropdown).
+ *
+ * This allows us to ship a modern UI *today* without rewriting the search engine *yesterday*.
+ */
+function setupLegacySearchProxy() {
+    const input = document.getElementById(SEARCH_INPUT_ID);
+    const legacyInput = document.getElementById('featureSearch');
+    if (!input || !legacyInput) return;
 
-        // Check if already exists
-        if (container.querySelector(`.${SEARCH_CONTAINER_CLASS}`)) return;
+    // Sync Input: V2 -> Legacy
+    input.addEventListener('input', (e) => {
+        e.stopPropagation(); // Stop 'h'/'?' interference
+        legacyInput.value = e.target.value;
+        legacyInput.dispatchEvent(new Event('input', { bubbles: true }));
+        legacyInput.dispatchEvent(new Event('change', { bubbles: true })); // Ensure listeners fire
+    });
 
-        const searchContainer = document.createElement('div');
-        searchContainer.className = SEARCH_CONTAINER_CLASS;
-        searchContainer.innerHTML = `
+    // Sync Focus: V2 -> Legacy (Opens Dropdown)
+    input.addEventListener('focus', () => {
+        legacyInput.dispatchEvent(new Event('focus', { bubbles: true }));
+    });
+
+    // Sync Blur
+    input.addEventListener('blur', () => {
+        // Small delay to allow clicks on dropdown
+        setTimeout(() => {
+            legacyInput.dispatchEvent(new Event('blur', { bubbles: true }));
+        }, 200);
+    });
+
+    // Sync Keys (Arrows, Enter, Escape)
+    input.addEventListener('keydown', (e) => {
+        // Stop 'h' or '?' from triggering global Help IF typing
+        e.stopPropagation();
+
+        // LIMIT FORWARDING to Navigation Keys only
+        const allowedKeys = ['ArrowUp', 'ArrowDown', 'Enter', 'Escape'];
+        if (!allowedKeys.includes(e.key)) return;
+
+        // Forward keys to legacy input for navigation
+        const keyEvent = new KeyboardEvent('keydown', {
+            key: e.key,
+            code: e.code,
+            keyCode: e.keyCode,
+            bubbles: true,
+            cancelable: true
+        });
+        legacyInput.dispatchEvent(keyEvent);
+    });
+
+    // [New] Dispatch V2 Search Event for Dashboard
+    input.addEventListener('input', (e) => {
+        const query = e.target.value.trim();
+        window.dispatchEvent(new CustomEvent('v2:search', {
+            detail: { query }
+        }));
+    });
+}
+
+function injectSearchInput(container) {
+    // Find insert point: After Controls
+    // const controls = container.querySelector('.v2-sidebar-controls-container');
+
+    // Check if already exists
+    if (container.querySelector(`.${SEARCH_CONTAINER_CLASS}`)) return;
+
+    const searchContainer = document.createElement('div');
+    searchContainer.className = SEARCH_CONTAINER_CLASS;
+    searchContainer.innerHTML = `
             <div class="v2-search-input-wrapper">
                 <svg class="v2-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round"/>
@@ -247,213 +248,213 @@
             </div>
         `;
 
-        // Insert after Header (Top), independent of controls
-        const header = container.querySelector('.v2-sidebar-header');
-        if (header) {
-            header.insertAdjacentElement('afterend', searchContainer);
+    // Insert after Header (Top), independent of controls
+    const header = container.querySelector('.v2-sidebar-header');
+    if (header) {
+        header.insertAdjacentElement('afterend', searchContainer);
+    } else {
+        // Fallback
+        const nav = container.querySelector('.v2-sidebar-nav');
+        if (nav) {
+            container.insertBefore(searchContainer, nav);
         } else {
-            // Fallback
-            const nav = container.querySelector('.v2-sidebar-nav');
-            if (nav) {
-                container.insertBefore(searchContainer, nav);
-            } else {
-                container.insertBefore(searchContainer, container.firstChild);
-            }
-        }
-
-        // [Fix 1.1] Move Legacy Dropdown Here
-        setTimeout(() => {
-            const legacyDropdown = document.getElementById('featureSearchDropdown');
-            const wrapper = searchContainer.querySelector('.v2-search-input-wrapper');
-            if (legacyDropdown && wrapper) {
-                wrapper.appendChild(legacyDropdown);
-                // Reset styles
-                legacyDropdown.style.top = '110%';
-                legacyDropdown.style.left = '0';
-                legacyDropdown.style.visibility = 'visible';
-                legacyDropdown.style.display = 'none'; // Initially hidden
-            }
-        }, 1000);
-    }
-
-    /**
-     * [Fix 1.9] Force Help Close Button Binding
-     * Binds a global click listener to intercept the close button
-     */
-    function forceHelpCloseBinding() {
-        document.addEventListener('click', (e) => {
-            // Check for the close button specifically or its connection to the help dialog
-            const btn = e.target.closest('#closeHelp');
-
-            if (btn) {
-                e.preventDefault();
-                e.stopImmediatePropagation();
-                closeHelpModal();
-            }
-        });
-    }
-
-    function closeHelpModal() {
-        const helpDialog = document.getElementById('helpDialog');
-        if (helpDialog) {
-            helpDialog.setAttribute('hidden', '');
-            helpDialog.style.display = 'none';
-            // Also try legacy global function
-            if (typeof global.closeDialog === 'function') {
-                global.closeDialog(helpDialog);
-            }
+            container.insertBefore(searchContainer, container.firstChild);
         }
     }
 
-    /**
-     * [New] Intercept Legacy Help Triggers
-     * Redirects legacy help button and shortcuts to V2 Help
-     */
-    function interceptLegacyHelp() {
-        // 1. Header Button
-        const helpBtn = document.getElementById('helpButton');
-        // 2. Sidebar Button
-        const v1HelpNav = document.querySelector('[data-nav-key="openHelpNav"]');
+    // [Fix 1.1] Move Legacy Dropdown Here
+    setTimeout(() => {
+        const legacyDropdown = document.getElementById('featureSearchDropdown');
+        const wrapper = searchContainer.querySelector('.v2-search-input-wrapper');
+        if (legacyDropdown && wrapper) {
+            wrapper.appendChild(legacyDropdown);
+            // Reset styles
+            legacyDropdown.style.top = '110%';
+            legacyDropdown.style.left = '0';
+            legacyDropdown.style.visibility = 'visible';
+            legacyDropdown.style.display = 'none'; // Initially hidden
+        }
+    }, 1000);
+}
 
-        const redirect = (e) => {
+/**
+ * [Fix 1.9] Force Help Close Button Binding
+ * Binds a global click listener to intercept the close button
+ */
+function forceHelpCloseBinding() {
+    document.addEventListener('click', (e) => {
+        // Check for the close button specifically or its connection to the help dialog
+        const btn = e.target.closest('#closeHelp');
+
+        if (btn) {
             e.preventDefault();
             e.stopImmediatePropagation();
-            window.location.hash = '/help';
-        };
-
-        if (helpBtn) {
-            helpBtn.addEventListener('click', redirect);
+            closeHelpModal();
         }
+    });
+}
 
-        if (v1HelpNav) {
-            v1HelpNav.addEventListener('click', redirect);
+function closeHelpModal() {
+    const helpDialog = document.getElementById('helpDialog');
+    if (helpDialog) {
+        helpDialog.setAttribute('hidden', '');
+        helpDialog.style.display = 'none';
+        // Also try legacy global function
+        if (typeof global.closeDialog === 'function') {
+            global.closeDialog(helpDialog);
         }
+    }
+}
 
-        // 3. Global Keyboard Shortcuts
-        document.addEventListener('keydown', (e) => {
-            // Ignore if in input
-            if (e.target.matches('input, textarea, [contenteditable]')) return;
+/**
+ * [New] Intercept Legacy Help Triggers
+ * Redirects legacy help button and shortcuts to V2 Help
+ */
+function interceptLegacyHelp() {
+    // 1. Header Button
+    const helpBtn = document.getElementById('helpButton');
+    // 2. Sidebar Button
+    const v1HelpNav = document.querySelector('[data-nav-key="openHelpNav"]');
 
-            // Shift+? or H or F1
-            if ((e.key === '?' && e.shiftKey) || e.key === 'H' || e.key === 'h' || e.key === 'F1') {
-                redirect(e);
-            }
-            // Ctrl+/ (Cmd+/)
-            if (e.key === '/' && (e.ctrlKey || e.metaKey)) {
-                redirect(e);
-            }
-        }, true); // Capture phase to beat legacy listeners
+    const redirect = (e) => {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        window.location.hash = '/help';
+    };
+
+    if (helpBtn) {
+        helpBtn.addEventListener('click', redirect);
     }
 
-    /**
-     * [Fix 1.8] Navigation Logic
-     *
-     * DEEP DIVE: Navigation State Management
-     *
-     * This section handles the visual state of the sidebar to match the application routing.
-     *
-     * KEY CONCEPTS:
-     * 1. URL SYNC: On load, it checks `window.location.hash` and highlights the matching link.
-     * 2. EXCLUSIVITY: Only one link can be '.active' at a time.
-     * 3. FEATURE FLAGS:
-     *    - 'Auto Backups' is hidden unless `cineAutoRecover` is true in options.
-     *    - This prevents feature pollution for users who haven't opted into unstable recoveries.
-     */
-    function initNavigationLogic() {
-        // Toggle Auto Backups link based on settings
-        const backupLink = document.getElementById('navAutoBackups');
-        if (backupLink) {
-            const autoRecover = localStorage.getItem('cineAutoRecover') === 'true';
-            backupLink.style.display = autoRecover ? 'flex' : 'none';
-        }
+    if (v1HelpNav) {
+        v1HelpNav.addEventListener('click', redirect);
+    }
 
-        const navLinks = document.querySelectorAll('.v2-sidebar-nav .v2-sidebar-link');
+    // 3. Global Keyboard Shortcuts
+    document.addEventListener('keydown', (e) => {
+        // Ignore if in input
+        if (e.target.matches('input, textarea, [contenteditable]')) return;
+
+        // Shift+? or H or F1
+        if ((e.key === '?' && e.shiftKey) || e.key === 'H' || e.key === 'h' || e.key === 'F1') {
+            redirect(e);
+        }
+        // Ctrl+/ (Cmd+/)
+        if (e.key === '/' && (e.ctrlKey || e.metaKey)) {
+            redirect(e);
+        }
+    }, true); // Capture phase to beat legacy listeners
+}
+
+/**
+ * [Fix 1.8] Navigation Logic
+ *
+ * DEEP DIVE: Navigation State Management
+ *
+ * This section handles the visual state of the sidebar to match the application routing.
+ *
+ * KEY CONCEPTS:
+ * 1. URL SYNC: On load, it checks `window.location.hash` and highlights the matching link.
+ * 2. EXCLUSIVITY: Only one link can be '.active' at a time.
+ * 3. FEATURE FLAGS:
+ *    - 'Auto Backups' is hidden unless `cineAutoRecover` is true in options.
+ *    - This prevents feature pollution for users who haven't opted into unstable recoveries.
+ */
+function initNavigationLogic() {
+    // Toggle Auto Backups link based on settings
+    const backupLink = document.getElementById('navAutoBackups');
+    if (backupLink) {
+        const autoRecover = localStorage.getItem('cineAutoRecover') === 'true';
+        backupLink.style.display = autoRecover ? 'flex' : 'none';
+    }
+
+    const navLinks = document.querySelectorAll('.v2-sidebar-nav .v2-sidebar-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            navLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+        });
+    });
+
+    // Set initial active state
+    const hash = window.location.hash;
+    if (hash) {
         navLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                navLinks.forEach(l => l.classList.remove('active'));
+            if (link.getAttribute('href') === hash) {
                 link.classList.add('active');
-            });
+            }
         });
+    }
+}
 
-        // Set initial active state
-        const hash = window.location.hash;
-        if (hash) {
-            navLinks.forEach(link => {
-                if (link.getAttribute('href') === hash) {
-                    link.classList.add('active');
-                }
-            });
-        }
+/**
+ * [New] Mobile Sidebar Toggle
+ * Handles opening/closing sidebar on mobile
+ */
+function initMobileToggle() {
+    const triggers = document.querySelectorAll('.v2-mobile-menu-toggle');
+    const app = document.getElementById('v2-app');
+    const overlay = document.querySelector('.v2-sidebar-overlay');
+
+
+    if (!app) return;
+
+    function openSidebar() {
+        app.classList.add('sidebar-open');
     }
 
-    /**
-     * [New] Mobile Sidebar Toggle
-     * Handles opening/closing sidebar on mobile
-     */
-    function initMobileToggle() {
-        const triggers = document.querySelectorAll('.v2-mobile-menu-toggle');
-        const app = document.getElementById('v2-app');
-        const overlay = document.querySelector('.v2-sidebar-overlay');
-
-
-        if (!app) return;
-
-        function openSidebar() {
-            app.classList.add('sidebar-open');
-        }
-
-        function closeSidebar() {
-            app.classList.remove('sidebar-open');
-        }
-
-        // 1. Bind Triggers (Hamburger Buttons)
-        triggers.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                openSidebar();
-            });
-        });
-
-        // 2. Bind Overlay (Close on click)
-        if (overlay) {
-            overlay.addEventListener('click', closeSidebar);
-        }
-
-        // 3. Close on Navigation
-        // When a nav link is clicked (and we are on mobile), close sidebar
-        const navLinks = document.querySelectorAll('.v2-sidebar-nav .v2-sidebar-link');
-        navLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                // Determine if we are on mobile (check if overlay is visible or check window width)
-                if (window.innerWidth <= 768) {
-                    closeSidebar();
-                }
-            });
-        });
-
-        // 4. Close on Exit V2
-        const exitBtn = document.getElementById('v2ExitBtn');
-        if (exitBtn) {
-            exitBtn.addEventListener('click', closeSidebar);
-        }
+    function closeSidebar() {
+        app.classList.remove('sidebar-open');
     }
 
-    // =====================
-    // CONTROLS INJECTION
-    // =====================
+    // 1. Bind Triggers (Hamburger Buttons)
+    triggers.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openSidebar();
+        });
+    });
 
-    function injectLanguageSelector(container) {
-        if (!container || container.querySelector('.v2-lang-select-wrapper')) return;
+    // 2. Bind Overlay (Close on click)
+    if (overlay) {
+        overlay.addEventListener('click', closeSidebar);
+    }
 
-        const legacySelect = document.getElementById('languageSelect');
-        const currentLang = legacySelect ? legacySelect.value : 'en';
+    // 3. Close on Navigation
+    // When a nav link is clicked (and we are on mobile), close sidebar
+    const navLinks = document.querySelectorAll('.v2-sidebar-nav .v2-sidebar-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            // Determine if we are on mobile (check if overlay is visible or check window width)
+            if (window.innerWidth <= 768) {
+                closeSidebar();
+            }
+        });
+    });
 
-        const wrapper = document.createElement('div');
-        wrapper.className = 'v2-lang-select-wrapper';
+    // 4. Close on Exit V2
+    const exitBtn = document.getElementById('v2ExitBtn');
+    if (exitBtn) {
+        exitBtn.addEventListener('click', closeSidebar);
+    }
+}
 
-        // Full language names as requested
-        wrapper.innerHTML = `
+// =====================
+// CONTROLS INJECTION
+// =====================
+
+function injectLanguageSelector(container) {
+    if (!container || container.querySelector('.v2-lang-select-wrapper')) return;
+
+    const legacySelect = document.getElementById('languageSelect');
+    const currentLang = legacySelect ? legacySelect.value : 'en';
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'v2-lang-select-wrapper';
+
+    // Full language names as requested
+    wrapper.innerHTML = `
             <select class="v2-lang-select" aria-label="Select Language">
                 <option value="en" ${currentLang === 'en' ? 'selected' : ''}>English</option>
                 <option value="de" ${currentLang === 'de' ? 'selected' : ''}>Deutsch</option>
@@ -463,132 +464,132 @@
             </select>
         `;
 
-        const select = wrapper.querySelector('select');
-        select.addEventListener('change', (e) => {
-            const newVal = e.target.value;
-            if (legacySelect) {
-                legacySelect.value = newVal;
-                legacySelect.dispatchEvent(new Event('change', { bubbles: true }));
+    const select = wrapper.querySelector('select');
+    select.addEventListener('change', (e) => {
+        const newVal = e.target.value;
+        if (legacySelect) {
+            legacySelect.value = newVal;
+            legacySelect.dispatchEvent(new Event('change', { bubbles: true }));
 
-                if (typeof global.updateLanguage === 'function') {
-                    global.updateLanguage(newVal);
-                }
-                updateSidebarTranslations(newVal);
+            if (typeof global.updateLanguage === 'function') {
+                global.updateLanguage(newVal);
+            }
+            updateSidebarTranslations(newVal);
+        }
+    });
+
+    // Sync back from legacy
+    if (legacySelect) {
+        legacySelect.addEventListener('change', () => {
+            if (select.value !== legacySelect.value) {
+                select.value = legacySelect.value;
+                updateSidebarTranslations(legacySelect.value);
             }
         });
-
-        // Sync back from legacy
-        if (legacySelect) {
-            legacySelect.addEventListener('change', () => {
-                if (select.value !== legacySelect.value) {
-                    select.value = legacySelect.value;
-                    updateSidebarTranslations(legacySelect.value);
-                }
-            });
-        }
-
-        container.appendChild(wrapper);
     }
 
-    function injectHardRefresh(container) {
-        if (container.querySelector('#v2RefreshBtn')) return;
+    container.appendChild(wrapper);
+}
 
-        const btn = document.createElement('button');
-        btn.className = 'v2-tool-btn';
-        btn.id = 'v2RefreshBtn';
-        btn.title = 'Force reload';
-        btn.setAttribute('aria-label', 'Force reload');
-        btn.innerHTML = `
+function injectHardRefresh(container) {
+    if (container.querySelector('#v2RefreshBtn')) return;
+
+    const btn = document.createElement('button');
+    btn.className = 'v2-tool-btn';
+    btn.id = 'v2RefreshBtn';
+    btn.title = 'Force reload';
+    btn.setAttribute('aria-label', 'Force reload');
+    btn.innerHTML = `
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                 <polyline points="23 4 23 10 17 10" stroke-linecap="round" stroke-linejoin="round" />
                 <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
         `;
 
-        btn.addEventListener('click', () => {
-            const legacyBtn = document.getElementById('reloadButton');
-            if (legacyBtn) {
-                legacyBtn.click();
-            } else {
-                window.location.reload(true);
-            }
-        });
-
-        container.appendChild(btn);
-    }
-
-    // Note: injectDatabaseToggle was removed - device database is now
-    // accessed via the Device Library view in the V2 sidebar navigation.
-
-    /**
-     * [New] Sidebar Translations
-     * Updates sidebar text based on current language
-     */
-    /**
-     * [New] Sidebar Translations
-     * Updates sidebar text based on current language
-     */
-    function updateSidebarTranslations(lang) {
-        // Update Nav Links
-        const textElements = document.querySelectorAll('.v2-sidebar-link-text, .v2-sidebar-section-title');
-
-        textElements.forEach(el => {
-            if (!el.dataset.key) el.dataset.key = el.textContent.trim();
-            const originalText = el.dataset.key; // e.g. "Settings" or "All Projects"
-
-            const translationKey = TEXT_TO_KEY_MAP[originalText];
-            if (translationKey) {
-                el.textContent = _t(translationKey, {}, lang);
-            }
-        });
-
-        // Update Search Placeholder
-        const searchInput = document.getElementById(SEARCH_INPUT_ID);
-        if (searchInput) {
-            searchInput.placeholder = _t('v2.sidebar.search.placeholder', {}, lang);
+    btn.addEventListener('click', () => {
+        const legacyBtn = document.getElementById('reloadButton');
+        if (legacyBtn) {
+            legacyBtn.click();
+        } else {
+            window.location.reload(true);
         }
+    });
+
+    container.appendChild(btn);
+}
+
+// Note: injectDatabaseToggle was removed - device database is now
+// accessed via the Device Library view in the V2 sidebar navigation.
+
+/**
+ * [New] Sidebar Translations
+ * Updates sidebar text based on current language
+ */
+/**
+ * [New] Sidebar Translations
+ * Updates sidebar text based on current language
+ */
+function updateSidebarTranslations(lang) {
+    // Update Nav Links
+    const textElements = document.querySelectorAll('.v2-sidebar-link-text, .v2-sidebar-section-title');
+
+    textElements.forEach(el => {
+        if (!el.dataset.key) el.dataset.key = el.textContent.trim();
+        const originalText = el.dataset.key; // e.g. "Settings" or "All Projects"
+
+        const translationKey = TEXT_TO_KEY_MAP[originalText];
+        if (translationKey) {
+            el.textContent = _t(translationKey, {}, lang);
+        }
+    });
+
+    // Update Search Placeholder
+    const searchInput = document.getElementById(SEARCH_INPUT_ID);
+    if (searchInput) {
+        searchInput.placeholder = _t('v2.sidebar.search.placeholder', {}, lang);
     }
+}
 
-    // Expose for external calls
-    global.updateSidebarTranslations = updateSidebarTranslations;
+// Expose for external calls
+global.updateSidebarTranslations = updateSidebarTranslations;
 
-    // =====================
-    // THEME HANDLING
-    // =====================
+// =====================
+// THEME HANDLING
+// =====================
 
-    function initThemes() {
-        // Theme controls are injected via injectTopControls -> injectThemeControls
-        applyStoredThemes();
-    }
+function initThemes() {
+    // Theme controls are injected via injectTopControls -> injectThemeControls
+    applyStoredThemes();
+}
 
-    function injectThemeControls(container) {
-        // Prevent duplicate injection
-        if (container.querySelector('#v2ThemeToggleDark')) return;
+function injectThemeControls(container) {
+    // Prevent duplicate injection
+    if (container.querySelector('#v2ThemeToggleDark')) return;
 
-        // Dark Mode Toggle - V1 Style
-        const darkBtn = document.createElement('button');
-        darkBtn.className = 'v2-theme-toggle';
-        darkBtn.id = 'v2ThemeToggleDark';
-        darkBtn.setAttribute('aria-label', 'Toggle dark mode');
-        darkBtn.setAttribute('aria-pressed', 'false');
-        darkBtn.setAttribute('title', 'Toggle dark mode');
-        // Use V1 uicons glyphs for Moon and Sun
-        darkBtn.innerHTML = `
+    // Dark Mode Toggle - V1 Style
+    const darkBtn = document.createElement('button');
+    darkBtn.className = 'v2-theme-toggle';
+    darkBtn.id = 'v2ThemeToggleDark';
+    darkBtn.setAttribute('aria-label', 'Toggle dark mode');
+    darkBtn.setAttribute('aria-pressed', 'false');
+    darkBtn.setAttribute('title', 'Toggle dark mode');
+    // Use V1 uicons glyphs for Moon and Sun
+    darkBtn.innerHTML = `
             <span class="v2-icon-moon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xEC7E;</span>
             <span class="v2-icon-sun icon-glyph" aria-hidden="true" data-icon-font="uicons" style="display:none">&#xF1FE;</span>
         `;
-        darkBtn.addEventListener('click', toggleDarkMode);
+    darkBtn.addEventListener('click', toggleDarkMode);
 
-        // Pink Mode Toggle - V1 Style with Capybara SVG
-        const pinkBtn = document.createElement('button');
-        pinkBtn.className = 'v2-theme-toggle';
-        pinkBtn.id = 'v2ThemeTogglePink';
-        pinkBtn.setAttribute('aria-label', 'Toggle pink mode');
-        pinkBtn.setAttribute('aria-pressed', 'false');
-        pinkBtn.setAttribute('title', 'Toggle pink mode');
-        pinkBtn.setAttribute('data-theme', 'pink');
-        // V1 Capybara SVG
-        pinkBtn.innerHTML = `
+    // Pink Mode Toggle - V1 Style with Capybara SVG
+    const pinkBtn = document.createElement('button');
+    pinkBtn.className = 'v2-theme-toggle';
+    pinkBtn.id = 'v2ThemeTogglePink';
+    pinkBtn.setAttribute('aria-label', 'Toggle pink mode');
+    pinkBtn.setAttribute('aria-pressed', 'false');
+    pinkBtn.setAttribute('title', 'Toggle pink mode');
+    pinkBtn.setAttribute('data-theme', 'pink');
+    // V1 Capybara SVG
+    pinkBtn.innerHTML = `
             <span class="icon-glyph icon-svg pink-mode-icon" aria-hidden="true">
                 <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <path d="m1 40c0-8 3-17 3-17a4.84 4.84 0 0 0-1.829-3.064 1 1 0 0 1 .45-1.716 19.438 19.438 0 0 1 4.379-.22c.579-2.317-1.19-3.963-2.782-4.938a1 1 0 0 1 .393-1.85 14.128 14.128 0 0 1 6.389.788c0-.958-1.147-2.145-2.342-3.122a1 1 0 0 1 .708-1.773 40.655 40.655 0 0 1 6.634.895 3.723 3.723 0 0 0-1.049-2.264 1 1 0 0 1 .823-1.652c6.151.378 9.226 1.916 9.226 1.916l10-1s8.472-2.311 15.954.5a1 1 0 0 1-.084 1.9c-1.455.394-2.87 1.143-2.87 2.6 0 0 4.426.738 5.675 4.114a1 1 0 0 1-1.228 1.317c-1.64-.48-4.273-.88-6.447.569Z" fill="#805333" />
@@ -601,65 +602,75 @@
                 </svg>
             </span>
         `;
-        pinkBtn.addEventListener('click', togglePinkMode);
+    pinkBtn.addEventListener('click', togglePinkMode);
 
-        container.appendChild(darkBtn);
-        container.appendChild(pinkBtn);
-    }
+    container.appendChild(darkBtn);
+    container.appendChild(pinkBtn);
+}
 
-    function applyStoredThemes() {
-        const isDark = localStorage.getItem(DARK_MODE_KEY) === 'true';
-        updateDarkModeDisplay(isDark);
-        const isPink = localStorage.getItem(PINK_MODE_KEY) === 'true';
-        updatePinkModeDisplay(isPink);
-    }
+function applyStoredThemes() {
+    const isDark = localStorage.getItem(DARK_MODE_KEY) === 'true';
+    updateDarkModeDisplay(isDark);
+    const isPink = localStorage.getItem(PINK_MODE_KEY) === 'true';
+    updatePinkModeDisplay(isPink);
+}
 
-    function toggleDarkMode() {
-        const isDark = document.body.classList.contains('dark-mode');
-        const newState = !isDark;
-        updateDarkModeDisplay(newState);
-        localStorage.setItem(DARK_MODE_KEY, newState);
-    }
+function toggleDarkMode() {
+    const isDark = document.body.classList.contains('dark-mode');
+    const newState = !isDark;
+    updateDarkModeDisplay(newState);
+    localStorage.setItem(DARK_MODE_KEY, newState);
+}
 
-    function updateDarkModeDisplay(enabled) {
-        document.body.classList.toggle('dark-mode', enabled);
-        document.body.classList.toggle('light-mode', !enabled);
-        const btn = document.getElementById('v2ThemeToggleDark');
-        if (btn) {
-            btn.classList.toggle('active', enabled);
-            const moon = btn.querySelector('.v2-icon-moon');
-            const sun = btn.querySelector('.v2-icon-sun');
-            if (moon && sun) {
-                moon.style.display = enabled ? 'none' : 'block';
-                sun.style.display = enabled ? 'block' : 'none';
-            }
+function updateDarkModeDisplay(enabled) {
+    document.body.classList.toggle('dark-mode', enabled);
+    document.body.classList.toggle('light-mode', !enabled);
+    const btn = document.getElementById('v2ThemeToggleDark');
+    if (btn) {
+        btn.classList.toggle('active', enabled);
+        const moon = btn.querySelector('.v2-icon-moon');
+        const sun = btn.querySelector('.v2-icon-sun');
+        if (moon && sun) {
+            moon.style.display = enabled ? 'none' : 'block';
+            sun.style.display = enabled ? 'block' : 'none';
         }
     }
+}
 
-    function togglePinkMode() {
-        const isPink = document.body.classList.contains('pink-mode');
-        const newState = !isPink;
-        updatePinkModeDisplay(newState);
-        localStorage.setItem(PINK_MODE_KEY, newState);
-        localStorage.setItem(FALLBACK_PINK_KEY, newState);
-    }
+function togglePinkMode() {
+    const isPink = document.body.classList.contains('pink-mode');
+    const newState = !isPink;
+    updatePinkModeDisplay(newState);
+    localStorage.setItem(PINK_MODE_KEY, newState);
+    localStorage.setItem(FALLBACK_PINK_KEY, newState);
+}
 
-    function updatePinkModeDisplay(enabled) {
-        document.body.classList.toggle('pink-mode', enabled);
-        updateAppLogo(enabled);
-        const btn = document.getElementById('v2ThemeTogglePink');
-        if (btn) btn.classList.toggle('active', enabled);
-    }
+function updatePinkModeDisplay(enabled) {
+    document.body.classList.toggle('pink-mode', enabled);
+    updateAppLogo(enabled);
+    const btn = document.getElementById('v2ThemeTogglePink');
+    if (btn) btn.classList.toggle('active', enabled);
+}
 
-    function updateAppLogo(isPink) {
-        const logo = document.querySelector('.v2-sidebar-logo');
-        if (!logo) return;
-        logo.src = isPink ? 'src/icons/Icon Pinknew.svg' : 'src/icons/Icon Bluenew.svg';
-    }
+function updateAppLogo(isPink) {
+    const logo = document.querySelector('.v2-sidebar-logo');
+    if (!logo) return;
+    logo.src = isPink ? 'src/icons/Icon Pinknew.svg' : 'src/icons/Icon Bluenew.svg';
+}
 
-    // Expose
-    global.cineV2Sidebar = {
-        init: initSidebar
-    };
+// =====================
+// EXPORTS
+// =====================
+export const V2Sidebar = {
+    init: initSidebar
+};
 
-})(typeof window !== 'undefined' ? window : this);
+// Expose to global scope
+if (typeof global !== 'undefined') {
+    global.cineV2Sidebar = V2Sidebar;
+}
+
+if (typeof window !== 'undefined') {
+    window.cineV2Sidebar = V2Sidebar;
+}
+

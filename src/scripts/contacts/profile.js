@@ -381,11 +381,6 @@ function assignProfileModuleExports(exportsObject) {
     return;
   }
 
-  if (typeof module === 'object' && module && typeof module.exports !== 'undefined') {
-    module.exports = exportsObject;
-    return;
-  }
-
   const scope = resolveProfileGlobalScope();
   if (scope) {
     scope.CINE_CONTACTS_PROFILE_MODULE = exportsObject;
@@ -416,3 +411,19 @@ function resolveProfileGlobalScope() {
   }
   return null;
 }
+
+export {
+  CONTACT_AVATAR_MAX_BYTES,
+  CONTACT_AVATAR_MAX_SOURCE_BYTES,
+  CONTACT_AVATAR_MAX_DIMENSION,
+  CONTACT_AVATAR_JPEG_QUALITY,
+  CONTACT_AVATAR_JPEG_MIN_QUALITY,
+  DEFAULT_PROFILE_STATE,
+  createProfileController,
+  estimateDataUrlSize,
+  optimiseAvatarDataUrl,
+  readAvatarFile,
+  isSafeImageUrl
+};
+
+export default PROFILE_MODULE_EXPORT;

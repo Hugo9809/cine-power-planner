@@ -16,7 +16,7 @@
  * keeps treating the file as intentionally new.
  */
 
-const FALLBACK_HUMANIZE_OVERRIDES = {
+export const FALLBACK_HUMANIZE_OVERRIDES = {
   powerDrawWatts: 'Power (W)',
   capacity: 'Capacity (Wh)',
   pinA: 'Pin A',
@@ -31,7 +31,7 @@ const FALLBACK_HUMANIZE_OVERRIDES = {
   connectivity: 'Connectivity',
 };
 
-function fallbackStableStringify(value) {
+export function fallbackStableStringify(value) {
   if (value === null) return 'null';
   if (typeof value === 'undefined') return 'undefined';
   if (Array.isArray(value)) {
@@ -61,7 +61,7 @@ function fallbackStableStringify(value) {
   return JSON.stringify(value);
 }
 
-function fallbackHumanizeKey(key) {
+export function fallbackHumanizeKey(key) {
   if (key && Object.prototype.hasOwnProperty.call(FALLBACK_HUMANIZE_OVERRIDES, key)) {
     return FALLBACK_HUMANIZE_OVERRIDES[key];
   }
@@ -73,7 +73,7 @@ function fallbackHumanizeKey(key) {
     .replace(/^./, (c) => c.toUpperCase());
 }
 
-function createArrayFromCandidates(primary, shared, globalScope) {
+export function createArrayFromCandidates(primary, shared, globalScope) {
   const candidates = [];
 
   if (primary && (typeof primary === 'object' || typeof primary === 'function')) {
@@ -118,7 +118,7 @@ function createArrayFromCandidates(primary, shared, globalScope) {
   return resolved;
 }
 
-function createDefaultLanguageTexts(scope) {
+export function createDefaultLanguageTexts(scope) {
   if (
     scope &&
     typeof scope === 'object' &&
@@ -133,7 +133,7 @@ function createDefaultLanguageTexts(scope) {
   return {};
 }
 
-function fallbackNormalizeAutoGearWeightOperator(value) {
+export function fallbackNormalizeAutoGearWeightOperator(value) {
   if (typeof value !== 'string') return 'greater';
   const normalized = value.trim().toLowerCase();
   if (!normalized) return 'greater';
@@ -169,7 +169,7 @@ function fallbackNormalizeAutoGearWeightOperator(value) {
   return 'greater';
 }
 
-function fallbackNormalizeAutoGearWeightValue(value) {
+export function fallbackNormalizeAutoGearWeightValue(value) {
   if (typeof value === 'number' && Number.isFinite(value)) {
     const rounded = Math.round(value);
     return rounded >= 0 ? rounded : null;
@@ -187,7 +187,7 @@ function fallbackNormalizeAutoGearWeightValue(value) {
   return null;
 }
 
-function fallbackFormatAutoGearWeight(value) {
+export function fallbackFormatAutoGearWeight(value) {
   if (!Number.isFinite(value)) return '';
   try {
     if (typeof Intl !== 'undefined' && typeof Intl.NumberFormat === 'function') {
@@ -238,7 +238,7 @@ function createFallbackFormatAutoGearCameraWeight(formatWeight, getOperatorLabel
   };
 }
 
-function fallbackCreateRuntimeScopeCandidates(primaryScope, sharedScope, globalScope) {
+export function fallbackCreateRuntimeScopeCandidates(primaryScope, sharedScope, globalScope) {
   if (typeof collectRuntimeScopeCandidates === 'function') {
     return collectRuntimeScopeCandidates([primaryScope, sharedScope, globalScope]);
   }
@@ -246,7 +246,7 @@ function fallbackCreateRuntimeScopeCandidates(primaryScope, sharedScope, globalS
   return createArrayFromCandidates(primaryScope, sharedScope, globalScope);
 }
 
-function fallbackReadCoreScopeValue(name, candidates) {
+export function fallbackReadCoreScopeValue(name, candidates) {
   if (typeof name !== 'string' || !name) {
     return undefined;
   }
@@ -275,7 +275,7 @@ function fallbackReadCoreScopeValue(name, candidates) {
   return undefined;
 }
 
-function fallbackWriteCoreScopeValue(name, value, candidates) {
+export function fallbackWriteCoreScopeValue(name, value, candidates) {
   if (typeof name !== 'string' || !name) {
     return false;
   }
@@ -310,7 +310,7 @@ function fallbackWriteCoreScopeValue(name, value, candidates) {
   return false;
 }
 
-function fallbackDeclareCoreFallbackBinding(name, factory, candidates) {
+export function fallbackDeclareCoreFallbackBinding(name, factory, candidates) {
   const existing = fallbackReadCoreScopeValue(name, candidates);
   if (typeof existing !== 'undefined') {
     return existing;
@@ -320,7 +320,7 @@ function fallbackDeclareCoreFallbackBinding(name, factory, candidates) {
   return fallbackValue;
 }
 
-function resolveAutoGearWeightHelpers(options) {
+export function resolveAutoGearWeightHelpers(options) {
   const opts = options || {};
   const shared = opts.coreShared && typeof opts.coreShared === 'object' ? opts.coreShared : null;
   const globalScopeOverride =
@@ -334,59 +334,59 @@ function resolveAutoGearWeightHelpers(options) {
   const normalizeOperator =
     shared && typeof shared.normalizeAutoGearWeightOperator === 'function'
       ? function safeNormalizeAutoGearWeightOperator(value) {
-          try {
-            const normalized = shared.normalizeAutoGearWeightOperator(value);
-            return normalized || fallbackNormalizeAutoGearWeightOperator(value);
-          } catch (error) {
-            void error;
-          }
-          return fallbackNormalizeAutoGearWeightOperator(value);
+        try {
+          const normalized = shared.normalizeAutoGearWeightOperator(value);
+          return normalized || fallbackNormalizeAutoGearWeightOperator(value);
+        } catch (error) {
+          void error;
         }
+        return fallbackNormalizeAutoGearWeightOperator(value);
+      }
       : fallbackNormalizeAutoGearWeightOperator;
 
   const normalizeValue =
     shared && typeof shared.normalizeAutoGearWeightValue === 'function'
       ? function safeNormalizeAutoGearWeightValue(value) {
-          try {
-            const normalized = shared.normalizeAutoGearWeightValue(value);
-            if (typeof normalized === 'number' || normalized === null) {
-              return normalized;
-            }
-          } catch (error) {
-            void error;
+        try {
+          const normalized = shared.normalizeAutoGearWeightValue(value);
+          if (typeof normalized === 'number' || normalized === null) {
+            return normalized;
           }
-          return fallbackNormalizeAutoGearWeightValue(value);
+        } catch (error) {
+          void error;
         }
+        return fallbackNormalizeAutoGearWeightValue(value);
+      }
       : fallbackNormalizeAutoGearWeightValue;
 
-    const normalizeAutoGearCameraWeightCondition =
-      shared && typeof shared.normalizeAutoGearCameraWeightCondition === 'function'
-        ? function safeNormalizeAutoGearCameraWeightCondition(condition) {
-            try {
-              const normalized = shared.normalizeAutoGearCameraWeightCondition(condition);
-            return normalized || null;
-          } catch (error) {
-            void error;
-          }
-          return null;
+  const normalizeAutoGearCameraWeightCondition =
+    shared && typeof shared.normalizeAutoGearCameraWeightCondition === 'function'
+      ? function safeNormalizeAutoGearCameraWeightCondition(condition) {
+        try {
+          const normalized = shared.normalizeAutoGearCameraWeightCondition(condition);
+          return normalized || null;
+        } catch (error) {
+          void error;
         }
+        return null;
+      }
       : function normalizeAutoGearCameraWeightCondition() {
-          return null;
-        };
+        return null;
+      };
 
   const formatWeight =
     shared && typeof shared.formatAutoGearWeight === 'function'
       ? function safeFormatAutoGearWeight(value) {
-          try {
-            const formatted = shared.formatAutoGearWeight(value);
-            if (typeof formatted === 'string') {
-              return formatted;
-            }
-          } catch (error) {
-            void error;
+        try {
+          const formatted = shared.formatAutoGearWeight(value);
+          if (typeof formatted === 'string') {
+            return formatted;
           }
-          return fallbackFormatAutoGearWeight(value);
+        } catch (error) {
+          void error;
         }
+        return fallbackFormatAutoGearWeight(value);
+      }
       : fallbackFormatAutoGearWeight;
 
   const fallbackGetOperatorLabel = createFallbackGetAutoGearCameraWeightOperatorLabel(
@@ -397,16 +397,16 @@ function resolveAutoGearWeightHelpers(options) {
   const getOperatorLabel =
     shared && typeof shared.getAutoGearCameraWeightOperatorLabel === 'function'
       ? function safeGetAutoGearCameraWeightOperatorLabel(operator, langTexts) {
-          try {
-            const label = shared.getAutoGearCameraWeightOperatorLabel(operator, langTexts);
-            if (typeof label === 'string' && label) {
-              return label;
-            }
-          } catch (error) {
-            void error;
+        try {
+          const label = shared.getAutoGearCameraWeightOperatorLabel(operator, langTexts);
+          if (typeof label === 'string' && label) {
+            return label;
           }
-          return fallbackGetOperatorLabel(operator, langTexts);
+        } catch (error) {
+          void error;
         }
+        return fallbackGetOperatorLabel(operator, langTexts);
+      }
       : fallbackGetOperatorLabel;
 
   const fallbackFormatCameraWeight = createFallbackFormatAutoGearCameraWeight(
@@ -417,16 +417,16 @@ function resolveAutoGearWeightHelpers(options) {
   const formatCameraWeight =
     shared && typeof shared.formatAutoGearCameraWeight === 'function'
       ? function safeFormatAutoGearCameraWeight(condition, langTexts) {
-          try {
-            const formatted = shared.formatAutoGearCameraWeight(condition, langTexts);
-            if (typeof formatted === 'string') {
-              return formatted;
-            }
-          } catch (error) {
-            void error;
+        try {
+          const formatted = shared.formatAutoGearCameraWeight(condition, langTexts);
+          if (typeof formatted === 'string') {
+            return formatted;
           }
-          return fallbackFormatCameraWeight(condition, langTexts);
+        } catch (error) {
+          void error;
         }
+        return fallbackFormatCameraWeight(condition, langTexts);
+      }
       : fallbackFormatCameraWeight;
 
   return {
@@ -447,7 +447,7 @@ function resolveAutoGearWeightHelpers(options) {
   };
 }
 
-function resolveRuntimeScopeTools(options) {
+export function resolveRuntimeScopeTools(options) {
   const opts = options || {};
   const runtimeScope =
     typeof opts.runtimeScope !== 'undefined'
@@ -539,7 +539,7 @@ function resolveRuntimeScopeTools(options) {
   };
 }
 
-var CORE_PART2_RUNTIME_HELPERS = (function initialisePart2RuntimeHelpers() {
+export var CORE_PART2_RUNTIME_HELPERS = (function initialisePart2RuntimeHelpers() {
   let helpers = null;
 
   if (typeof resolveCoreSupportModule === 'function') {

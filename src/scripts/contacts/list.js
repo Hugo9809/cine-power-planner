@@ -229,11 +229,6 @@ function assignContactsListExports(exportsObject) {
     return;
   }
 
-  if (typeof module === 'object' && module && typeof module.exports !== 'undefined') {
-    module.exports = exportsObject;
-    return;
-  }
-
   const scope = resolveContactsGlobalScope();
   if (scope) {
     scope.CINE_CONTACTS_LIST_MODULE = exportsObject;
@@ -255,3 +250,14 @@ function resolveContactsGlobalScope() {
   }
   return null;
 }
+
+export {
+  sanitizeContactValue,
+  normalizeContactEntry,
+  sortContacts,
+  parseVCard,
+  mergeImportedContacts,
+  createCrewRowSync
+};
+
+export default CONTACT_LIST_MODULE_EXPORT;

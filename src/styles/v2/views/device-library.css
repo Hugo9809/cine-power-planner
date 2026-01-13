@@ -183,7 +183,7 @@
 .v2-device-library-card .v2-form-row,
 .v2-device-library-card .form-row {
     display: grid;
-    grid-template-columns: 160px 1fr;
+    grid-template-columns: minmax(120px, 180px) 1fr;
     gap: var(--v2-space-md);
     align-items: center;
 }

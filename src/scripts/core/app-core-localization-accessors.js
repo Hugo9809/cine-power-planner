@@ -261,19 +261,21 @@ function createInlineLocalizationAccessors(options) {
       }
     }
 
+    /*
     if (typeof requireFn === 'function') {
       try {
-        const translationsModule = requireFn(translationsRequirePath);
-        if (
-          isObject(translationsModule) &&
-          isObject(translationsModule.texts)
-        ) {
-          return translationsModule.texts;
-        }
+        // const translationsModule = requireFn(translationsRequirePath);
+        // if (
+        //   isObject(translationsModule) &&
+        //   isObject(translationsModule.texts)
+        // ) {
+        //   return translationsModule.texts;
+        // }
       } catch (translationRequireError) {
         void translationRequireError;
       }
     }
+    */
 
     return {};
   }
@@ -439,19 +441,21 @@ const createLocalizationAccessors =
     ? LOCALIZATION_ACCESSORS_TOOLS_GLOBAL.createLocalizationAccessors
     : null) ||
   (function fallbackResolveLocalizationAccessorsFactory() {
+    /*
     if (typeof require === 'function') {
       try {
-        const required = require('./modules/app-core/localization.js');
-        if (
-          required &&
-          typeof required.createLocalizationAccessors === 'function'
-        ) {
-          return required.createLocalizationAccessors;
-        }
+        // const required = require('./modules/app-core/localization-fixed.js');
+        // if (
+        //   required &&
+        //   typeof required.createLocalizationAccessors === 'function'
+        // ) {
+        //   return required.createLocalizationAccessors;
+        // }
       } catch (localizationAccessorsRequireError) {
         void localizationAccessorsRequireError;
       }
     }
+    */
 
     const fallbackScopes = [
       CORE_PART_RUNTIME_SCOPE_GLOBAL,

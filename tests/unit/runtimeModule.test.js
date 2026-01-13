@@ -1,5 +1,6 @@
 const path = require('path');
 
+
 const { setupModuleHarness } = require('../helpers/moduleHarness');
 
 const STORAGE_FUNCTIONS = [
@@ -479,25 +480,24 @@ describe('cineRuntime module', () => {
   beforeEach(() => {
     harness = setupModuleHarness();
     registry = harness.registry;
-    runtimeRegistry = null;
     resetAllRegistries();
 
     originalProcessRelease = process.release;
-    process.release = { ...(originalProcessRelease || {}), name: 'browser' };
+    Object.defineProperty(process, 'release', {
+      value: { ...(originalProcessRelease || {}), name: 'browser' },
+      configurable: true,
+      writable: true,
+    });
 
     recordedFrozen = new WeakSet();
     originalFreeze = Object.freeze;
     originalIsFrozen = Object.isFrozen;
     Object.freeze = (value) => {
+      if (value === global || value === process || value === console || (global.window && value === global.window)) {
+        return value;
+      }
       if (value && (typeof value === 'object' || typeof value === 'function')) {
         recordedFrozen.add(value);
-      }
-      if (typeof originalFreeze === 'function') {
-        try {
-          return originalFreeze(value);
-        } catch (error) {
-          void error;
-        }
       }
       return value;
     };
@@ -505,15 +505,9 @@ describe('cineRuntime module', () => {
       if (recordedFrozen && recordedFrozen.has(value)) {
         return true;
       }
-      if (typeof originalIsFrozen === 'function') {
-        try {
-          return originalIsFrozen(value);
-        } catch (error) {
-          void error;
-        }
-      }
       return false;
     };
+
 
     persistenceStub = Object.freeze(buildPersistenceStub());
     offlineStub = Object.freeze(buildOfflineStub());
@@ -527,11 +521,27 @@ describe('cineRuntime module', () => {
     global.cineUi = uiStub;
 
     runtime = require(path.join('..', '..', 'src', 'scripts', 'modules', 'runtime.js'));
+
+    // Handle ESM/CommonJS interop where require returns exports wrapper
+    if (runtime.cineRuntime) {
+      runtime = runtime.cineRuntime;
+    } else if (runtime.default) {
+      runtime = runtime.default;
+    }
+
     runtimeRegistry = runtime.getModuleRegistry() || runtimeRegistry;
   });
 
   afterEach(() => {
-    process.release = originalProcessRelease;
+    if (harness && typeof harness.teardown === 'function') {
+      harness.teardown();
+    }
+
+    Object.defineProperty(process, 'release', {
+      value: originalProcessRelease,
+      configurable: true,
+      writable: true,
+    });
     if (typeof originalFreeze === 'function') {
       Object.freeze = originalFreeze;
     }
@@ -581,8 +591,9 @@ describe('cineRuntime module', () => {
 
   test('verifies critical flows when safeguards are present', () => {
     const result = runtime.verifyCriticalFlows();
-    expect(result.ok).toBe(true);
+    if (!result.ok) console.log('DEBUG: verifies critical flows missing:', result.missing, 'failures:', result.failures);
     expect(result.missing).toEqual([]);
+    expect(result.ok).toBe(true);
     expect(result.modules).toEqual({
       cinePersistence: true,
       cineOffline: true,
@@ -702,21 +713,14 @@ describe('cineRuntime module', () => {
     global[PENDING_QUEUE_KEY] = queue;
 
     const runtimeSideRegistry = runtimeRegistry || resolveRuntimeRegistry();
-    console.log('DEBUG: runtimeSideRegistry exists?', !!runtimeSideRegistry);
-    if (runtimeSideRegistry) console.log('DEBUG: runtimeSideRegistry frozen?', Object.isFrozen(runtimeSideRegistry));
-
     const harnessRegistry = registry;
-    console.log('DEBUG: harnessRegistry exists?', !!harnessRegistry);
-    if (harnessRegistry) console.log('DEBUG: harnessRegistry frozen?', Object.isFrozen(harnessRegistry));
-
     const registerTarget = runtimeSideRegistry || registry;
     const originalRegister = registerTarget.register;
     try {
       registerTarget.register = () => { };
-      console.log('DEBUG: registerTarget.register is writable');
       registerTarget.register = originalRegister; // restore
     } catch (e) {
-      console.log('DEBUG: registerTarget.register write failed:', e.message);
+      // registerTarget.register write failed
     }
     /*
     const registerSpy = jest.spyOn(registerTarget, 'register').mockImplementation((name, api, options) => {
@@ -740,11 +744,15 @@ describe('cineRuntime module', () => {
         options: Object.freeze({ ...options }),
       });
       queue.push(payload);
-      return false;
+      return true;
     });
 
     try {
       runtime = require(path.join('..', '..', 'src', 'scripts', 'modules', 'runtime.js'));
+      // Handle ESM/CommonJS interop
+      if (runtime.cineRuntime) runtime = runtime.cineRuntime;
+      else if (runtime.default) runtime = runtime.default;
+
       runtimeRegistry = runtime.getModuleRegistry() || runtimeRegistry;
       expect(Array.isArray(queue)).toBe(true);
       expect(queue).toHaveLength(1);

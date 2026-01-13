@@ -1,76 +1,87 @@
-var devices = {};
+/**
+ * Devices Manifest (ESM)
+ * Aggregates all device data from ESM modules and constructs the global devices object.
+ */
+import './setup.js'; // Defines globalThis.devices initially
+console.log('DEBUG: devices/index.js executed START. globalThis.devices:', globalThis.devices);
 
-var NORMALIZED_FLAG_KEY = '__normalized';
+import cameraData from './cameras.js';
+import monitorData from './monitors.js';
+import videoData from './video.js';
+import fizData from './fiz.js';
+import batteryData from './batteries.js';
+import hotswapData from './batteryHotswaps.js';
+import chargerData from './chargers.js';
+import cageData from './cages.js';
+import cartData from './carts.js';
+import gearListData from './gearList.js';
+import recordingMediaData from './recordingMedia.js';
+import wirelessReceiversData from './wirelessReceivers.js';
+import audioData from './audio.js';
+import lightsData from './lights.js';
+import gimbalsData from './gimbals.js';
+import dronesData from './drones.js';
+import actionCamerasData from './actionCameras.js';
 
-function markDevicesNormalized() {
-  try {
-    Object.defineProperty(devices, NORMALIZED_FLAG_KEY, {
-      configurable: true,
-      enumerable: false,
-      value: true,
-      writable: true
-    });
-  } catch (defineError) {
-    void defineError;
-    devices[NORMALIZED_FLAG_KEY] = true;
-  }
+// Ensure devices object exists
+const devices = globalThis.devices || {};
+
+// 1. Register Standard Devices
+devices.cameras = cameraData;
+devices.monitors = monitorData;
+devices.video = videoData;
+devices.fiz = fizData;
+devices.batteries = batteryData;
+devices.batteryHotswaps = hotswapData;
+devices.carts = cartData;
+devices.wirelessReceivers = wirelessReceiversData;
+devices.audio = audioData;
+devices.lights = lightsData;
+devices.gimbals = gimbalsData;
+devices.drones = dronesData;
+devices.actionCameras = actionCamerasData;
+
+// 2. Register Nested Accessories
+devices.accessories = devices.accessories || {};
+devices.accessories.chargers = chargerData;
+devices.accessories.cages = cageData;
+
+// 3. Register components from gearList.js
+// Corresponds to: Object.entries(categories).forEach(([name, data]) => registerDevice(name, data));
+// categories: viewfinders, directorMonitors, iosVideo, videoAssist, media, lenses, accessories, filterOptions
+devices.viewfinders = gearListData.viewfinders;
+devices.directorMonitors = gearListData.directorMonitors;
+devices.iosVideo = gearListData.iosVideo;
+devices.videoAssist = gearListData.videoAssist;
+devices.media = gearListData.media; // devices.media
+devices.lenses = gearListData.lenses;
+devices.filterOptions = gearListData.filterOptions;
+
+// Merge gearList accessories
+if (gearListData.accessories) {
+    Object.assign(devices.accessories, gearListData.accessories);
 }
 
-function isSafeKey(key) {
-  return key !== '__proto__' && key !== 'constructor' && key !== 'prototype';
+// 4. Register Recording Media components
+// registerDevice('recordingMediaBrands', brands);
+// registerDevice('recordingMediaSizes', sizes);
+// registerDevice('gearList.media', media);
+
+devices.recordingMediaBrands = recordingMediaData.brands;
+devices.recordingMediaSizes = recordingMediaData.sizes;
+
+devices.gearList = devices.gearList || {};
+devices.gearList.media = recordingMediaData.media; // devices.gearList.media
+
+// Finalize
+if (typeof globalThis.markDevicesNormalized === 'function') {
+    globalThis.markDevicesNormalized();
 }
 
-function registerDevice(path, data) {
-  var parts = path.split('.');
-  var obj = devices;
-  while (parts.length > 1) {
-    var part = parts.shift();
-    if (!isSafeKey(part)) {
-      throw new Error("Unsafe key in path: '" + part + "'");
-    }
-    obj = obj[part] = obj[part] || {};
-  }
-  var last = parts[0];
-  if (!isSafeKey(last)) {
-    throw new Error("Unsafe key in path: '" + last + "'");
-  }
-  if (
-    obj[last] &&
-    typeof obj[last] === 'object' &&
-    typeof data === 'object' &&
-    !Array.isArray(data)
-  ) {
-    obj[last] = Object.assign({}, obj[last], data);
-  } else {
-    obj[last] = data;
-  }
-  return obj[last];
-}
+// Cleanup global registration function as it's no longer needed for these files
+delete globalThis.registerDevice;
 
-if (typeof module !== 'undefined' && module.exports) {
-  globalThis.registerDevice = registerDevice;
-  require('./cameras.js');
-  require('./monitors.js');
-  require('./video.js');
-  require('./fiz.js');
-  require('./batteries.js');
-  require('./batteryHotswaps.js');
-  require('./chargers.js');
-  require('./cages.js');
-  require('./carts.js');
-  require('./gearList.js');
-  require('./recordingMedia.js');
-  require('./wirelessReceivers.js');
-  require('./audio.js');
-  require('./lights.js');
-  require('./gimbals.js');
-  require('./drones.js');
-  require('./actionCameras.js');
-  markDevicesNormalized();
-  delete globalThis.registerDevice;
-  module.exports = devices;
-} else {
-  globalThis.registerDevice = registerDevice;
-  globalThis.devices = devices;
-  markDevicesNormalized();
-}
+globalThis.devices = devices;
+
+export default devices;
+export const cineDevices = devices;

@@ -1,904 +1,913 @@
-(function () {
-  function detectGlobalScope() {
-    if (typeof globalThis !== 'undefined') {
-      return globalThis;
+import cineModuleBase from './base.js';
+import cineModules from './registry.js';
+import { cineModuleEnvironment } from './environment.js';
+import { cineEnvironmentBridge } from './environment-bridge.js';
+
+// (function () {
+function detectGlobalScope() {
+  if (typeof globalThis !== 'undefined') {
+    return globalThis;
+  }
+  if (typeof window !== 'undefined') {
+    return window;
+  }
+  if (typeof self !== 'undefined') {
+    return self;
+  }
+  if (typeof global !== 'undefined') {
+    return global;
+  }
+  return {};
+}
+
+var PRIMARY_SCOPE = detectGlobalScope();
+
+function collectCandidateScopes(primary) {
+  var scopes = [];
+
+  function pushScope(scope) {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return;
     }
-    if (typeof window !== 'undefined') {
-      return window;
+    if (scopes.indexOf(scope) === -1) {
+      scopes.push(scope);
     }
-    if (typeof self !== 'undefined') {
-      return self;
-    }
-    if (typeof global !== 'undefined') {
-      return global;
-    }
-    return {};
   }
 
-  var PRIMARY_SCOPE = detectGlobalScope();
+  pushScope(primary);
+  if (typeof globalThis !== 'undefined') pushScope(globalThis);
+  if (typeof window !== 'undefined') pushScope(window);
+  if (typeof self !== 'undefined') pushScope(self);
+  if (typeof global !== 'undefined') pushScope(global);
 
-  function collectCandidateScopes(primary) {
-    var scopes = [];
+  return scopes;
+}
 
-    function pushScope(scope) {
-      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
-        return;
-      }
-      if (scopes.indexOf(scope) === -1) {
-        scopes.push(scope);
-      }
+function tryRequireLocal(modulePath) {
+  return null; /* Require removed for ESM */
+}
+
+function resolveFromScopes(propertyName) {
+  var scopes = collectCandidateScopes(PRIMARY_SCOPE);
+  for (var index = 0; index < scopes.length; index += 1) {
+    var candidate = scopes[index];
+    if (candidate && typeof candidate[propertyName] === 'object') {
+      return candidate[propertyName];
     }
-
-    pushScope(primary);
-    if (typeof globalThis !== 'undefined') pushScope(globalThis);
-    if (typeof window !== 'undefined') pushScope(window);
-    if (typeof self !== 'undefined') pushScope(self);
-    if (typeof global !== 'undefined') pushScope(global);
-
-    return scopes;
   }
+  return null;
+}
 
-  function tryRequireLocal(modulePath) {
-    if (typeof require !== 'function') {
-      return null;
-    }
+var MODULE_BASE = (function resolveModuleBase() {
+  if (cineModuleBase && typeof cineModuleBase === 'object') {
+    return cineModuleBase;
+  }
+  return resolveFromScopes('cineModuleBase');
+})();
 
+var MODULE_ENV = (function resolveModuleEnvironment() {
+  if (cineModuleEnvironment && typeof cineModuleEnvironment === 'object') {
+    return cineModuleEnvironment;
+  }
+  return resolveFromScopes('cineModuleEnvironment');
+})();
+
+var ENV_BRIDGE = (function resolveEnvironmentBridge() {
+  if (cineEnvironmentBridge && typeof cineEnvironmentBridge === 'object') {
+    return cineEnvironmentBridge;
+  }
+  return resolveFromScopes('cineEnvironmentBridge');
+})();
+
+var GLOBAL_SCOPE =
+  (ENV_BRIDGE && typeof ENV_BRIDGE.getGlobalScope === 'function'
+    ? ENV_BRIDGE.getGlobalScope()
+    : null)
+  || (MODULE_ENV && typeof MODULE_ENV.getGlobalScope === 'function'
+    ? MODULE_ENV.getGlobalScope()
+    : null)
+  || (MODULE_BASE && typeof MODULE_BASE.getGlobalScope === 'function'
+    ? MODULE_BASE.getGlobalScope()
+    : null)
+  || PRIMARY_SCOPE;
+
+var PENDING_QUEUE_KEY = (function resolvePendingKey() {
+  if (ENV_BRIDGE && typeof ENV_BRIDGE.getPendingQueueKey === 'function') {
     try {
-      return require(modulePath);
+      var bridgedKey = ENV_BRIDGE.getPendingQueueKey();
+      if (typeof bridgedKey === 'string' && bridgedKey) {
+        return bridgedKey;
+      }
     } catch (error) {
       void error;
-      return null;
     }
   }
 
-  function resolveFromScopes(propertyName) {
-    var scopes = collectCandidateScopes(PRIMARY_SCOPE);
-    for (var index = 0; index < scopes.length; index += 1) {
-      var candidate = scopes[index];
-      if (candidate && typeof candidate[propertyName] === 'object') {
-        return candidate[propertyName];
-      }
-    }
+  if (MODULE_ENV && typeof MODULE_ENV.PENDING_QUEUE_KEY === 'string' && MODULE_ENV.PENDING_QUEUE_KEY) {
+    return MODULE_ENV.PENDING_QUEUE_KEY;
+  }
+
+  if (MODULE_BASE && typeof MODULE_BASE.PENDING_QUEUE_KEY === 'string' && MODULE_BASE.PENDING_QUEUE_KEY) {
+    return MODULE_BASE.PENDING_QUEUE_KEY;
+  }
+
+  return '__cinePendingModuleRegistrations__';
+})();
+
+function ensureQueue(scope) {
+  var targetScope = scope || GLOBAL_SCOPE;
+  if (!targetScope || typeof targetScope !== 'object') {
     return null;
   }
 
-  var MODULE_BASE = (function resolveModuleBase() {
-    var required = tryRequireLocal('./base.js');
-    if (required && typeof required === 'object') {
-      return required;
-    }
-    return resolveFromScopes('cineModuleBase');
-  })();
+  var queue = null;
+  try {
+    queue = targetScope[PENDING_QUEUE_KEY];
+  } catch (readError) {
+    void readError;
+    queue = null;
+  }
 
-  var MODULE_ENV = (function resolveModuleEnvironment() {
-    var required = tryRequireLocal('./environment.js');
-    if (required && typeof required === 'object') {
-      return required;
-    }
-    return resolveFromScopes('cineModuleEnvironment');
-  })();
-
-  var ENV_BRIDGE = (function resolveEnvironmentBridge() {
-    var required = tryRequireLocal('./environment-bridge.js');
-    if (required && typeof required === 'object') {
-      return required;
-    }
-    return resolveFromScopes('cineEnvironmentBridge');
-  })();
-
-  var GLOBAL_SCOPE =
-    (ENV_BRIDGE && typeof ENV_BRIDGE.getGlobalScope === 'function'
-      ? ENV_BRIDGE.getGlobalScope()
-      : null)
-    || (MODULE_ENV && typeof MODULE_ENV.getGlobalScope === 'function'
-      ? MODULE_ENV.getGlobalScope()
-      : null)
-    || (MODULE_BASE && typeof MODULE_BASE.getGlobalScope === 'function'
-      ? MODULE_BASE.getGlobalScope()
-      : null)
-    || PRIMARY_SCOPE;
-
-  var PENDING_QUEUE_KEY = (function resolvePendingKey() {
-    if (ENV_BRIDGE && typeof ENV_BRIDGE.getPendingQueueKey === 'function') {
-      try {
-        var bridgedKey = ENV_BRIDGE.getPendingQueueKey();
-        if (typeof bridgedKey === 'string' && bridgedKey) {
-          return bridgedKey;
-        }
-      } catch (error) {
-        void error;
-      }
-    }
-
-    if (MODULE_ENV && typeof MODULE_ENV.PENDING_QUEUE_KEY === 'string' && MODULE_ENV.PENDING_QUEUE_KEY) {
-      return MODULE_ENV.PENDING_QUEUE_KEY;
-    }
-
-    if (MODULE_BASE && typeof MODULE_BASE.PENDING_QUEUE_KEY === 'string' && MODULE_BASE.PENDING_QUEUE_KEY) {
-      return MODULE_BASE.PENDING_QUEUE_KEY;
-    }
-
-    return '__cinePendingModuleRegistrations__';
-  })();
-
-  function ensureQueue(scope) {
-    var targetScope = scope || GLOBAL_SCOPE;
-    if (!targetScope || typeof targetScope !== 'object') {
-      return null;
-    }
-
-    var queue = null;
-    try {
-      queue = targetScope[PENDING_QUEUE_KEY];
-    } catch (readError) {
-      void readError;
-      queue = null;
-    }
-
-    if (Array.isArray(queue)) {
-      return queue;
-    }
-
-    try {
-      Object.defineProperty(targetScope, PENDING_QUEUE_KEY, {
-        configurable: true,
-        enumerable: false,
-        writable: true,
-        value: [],
-      });
-      queue = targetScope[PENDING_QUEUE_KEY];
-    } catch (defineError) {
-      void defineError;
-      try {
-        if (!Array.isArray(targetScope[PENDING_QUEUE_KEY])) {
-          targetScope[PENDING_QUEUE_KEY] = [];
-        }
-        queue = targetScope[PENDING_QUEUE_KEY];
-      } catch (assignmentError) {
-        void assignmentError;
-        return null;
-      }
-    }
-
+  if (Array.isArray(queue)) {
     return queue;
   }
 
-
-
-  function isNodeProcessReference(value) {
-    if (!value) {
-      return false;
-    }
-
-    if (typeof process === 'undefined' || !process) {
-      return false;
-    }
-
-    if (value === process) {
-      return true;
-    }
-
-    if (typeof value === 'object') {
-      try {
-        if (value.constructor && value.constructor.name === 'process') {
-          return true;
-        }
-      } catch (processInspectionError) {
-        void processInspectionError;
+  try {
+    Object.defineProperty(targetScope, PENDING_QUEUE_KEY, {
+      configurable: true,
+      enumerable: false,
+      writable: true,
+      value: [],
+    });
+    queue = targetScope[PENDING_QUEUE_KEY];
+  } catch (defineError) {
+    void defineError;
+    try {
+      if (!Array.isArray(targetScope[PENDING_QUEUE_KEY])) {
+        targetScope[PENDING_QUEUE_KEY] = [];
       }
-
-      if (
-        typeof value.pid === 'number' &&
-        typeof value.nextTick === 'function' &&
-        typeof value.emit === 'function' &&
-        typeof value.binding === 'function'
-      ) {
-        return true;
-      }
+      queue = targetScope[PENDING_QUEUE_KEY];
+    } catch (assignmentError) {
+      void assignmentError;
+      return null;
     }
+  }
 
-    if (typeof value === 'function') {
-      if (
-        value === process.binding ||
-        value === process._linkedBinding ||
-        value === process.dlopen
-      ) {
-        return true;
-      }
+  return queue;
+}
 
-      try {
-        const functionName = value.name || '';
-        if (functionName && (functionName === 'binding' || functionName === 'dlopen')) {
-          const source = Function.prototype.toString.call(value);
-          if (source && source.indexOf('[native code]') !== -1) {
-            return true;
-          }
-        }
-      } catch (functionInspectionError) {
-        void functionInspectionError;
-      }
-    }
 
+
+function isNodeProcessReference(value) {
+  if (!value) {
     return false;
   }
 
-  function shouldBypassDeepFreeze(value) {
-    if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
-      return false;
-    }
+  if (typeof process === 'undefined' || !process) {
+    return false;
+  }
 
-    if (isNodeProcessReference(value)) {
-      return true;
+  if (value === process) {
+    return true;
+  }
+
+  if (typeof value === 'object') {
+    try {
+      if (value.constructor && value.constructor.name === 'process') {
+        return true;
+      }
+    } catch (processInspectionError) {
+      void processInspectionError;
     }
 
     if (
-      typeof process !== 'undefined' &&
-      process &&
-      process.release &&
-      process.release.name === 'node'
+      typeof value.pid === 'number' &&
+      typeof value.nextTick === 'function' &&
+      typeof value.emit === 'function' &&
+      typeof value.binding === 'function'
+    ) {
+      return true;
+    }
+  }
+
+  if (typeof value === 'function') {
+    if (
+      value === process.binding ||
+      value === process._linkedBinding ||
+      value === process.dlopen
     ) {
       return true;
     }
 
     try {
-      if (typeof value.pipe === 'function' && typeof value.unpipe === 'function') {
-        return true;
-      }
-
-      if (typeof value.on === 'function' && typeof value.emit === 'function') {
-        if (typeof value.write === 'function' || typeof value.read === 'function') {
-          return true;
-        }
-
-        var ctorName = '';
-        try {
-          ctorName = value.constructor && value.constructor.name;
-        } catch (ctorError) {
-          void ctorError;
-        }
-
-        if (ctorName && /Stream|Emitter|Port/i.test(ctorName)) {
+      const functionName = value.name || '';
+      if (functionName && (functionName === 'binding' || functionName === 'dlopen')) {
+        const source = Function.prototype.toString.call(value);
+        if (source && source.indexOf('[native code]') !== -1) {
           return true;
         }
       }
-
-      if (typeof Symbol !== 'undefined' && value[Symbol.toStringTag]) {
-        var tag = value[Symbol.toStringTag];
-        if (typeof tag === 'string' && /Stream|Port/i.test(tag)) {
-          return true;
-        }
-      }
-    } catch (inspectionError) {
-      void inspectionError;
+    } catch (functionInspectionError) {
+      void functionInspectionError;
     }
+  }
 
+  return false;
+}
+
+function shouldBypassDeepFreeze(value) {
+  if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
     return false;
   }
 
-  function fallbackFreezeDeep(value, seen) {
-    var localSeen = seen;
-    if (!localSeen) {
-      if (typeof WeakSet === 'function') {
-        localSeen = new WeakSet();
-      } else {
-        var seenValues = [];
-        localSeen = {
-          add: function add(item) {
-            seenValues.push(item);
-          },
-          has: function has(item) {
-            return seenValues.indexOf(item) !== -1;
-          },
-        };
+  if (isNodeProcessReference(value)) {
+    return true;
+  }
+
+  if (
+    typeof process !== 'undefined' &&
+    process &&
+    process.release &&
+    process.release.name === 'node'
+  ) {
+    return true;
+  }
+
+  try {
+    if (typeof value.pipe === 'function' && typeof value.unpipe === 'function') {
+      return true;
+    }
+
+    if (typeof value.on === 'function' && typeof value.emit === 'function') {
+      if (typeof value.write === 'function' || typeof value.read === 'function') {
+        return true;
       }
-    }
 
-    if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
-      return value;
-    }
-
-    if (shouldBypassDeepFreeze(value)) {
-      return value;
-    }
-
-    if (typeof process !== 'undefined' && process && process.env && process.env.JEST_WORKER_ID) {
+      var ctorName = '';
       try {
-        if (typeof Object.freeze === 'function') {
-          Object.freeze(value);
-        }
-      } catch (freezeError) {
-        void freezeError;
+        ctorName = value.constructor && value.constructor.name;
+      } catch (ctorError) {
+        void ctorError;
       }
-      return value;
-    }
 
-    if (
-      value === PRIMARY_SCOPE
-      || (typeof globalThis !== 'undefined' && value === globalThis)
-      || (typeof window !== 'undefined' && value === window)
-      || (typeof self !== 'undefined' && value === self)
-      || (typeof global !== 'undefined' && value === global)
-    ) {
-      return value;
-    }
-
-    try {
-      if (typeof localSeen.has === 'function' && localSeen.has(value)) {
-        return value;
+      if (ctorName && /Stream|Emitter|Port/i.test(ctorName)) {
+        return true;
       }
-    } catch (seenError) {
-      void seenError;
     }
 
-    try {
-      if (typeof localSeen.add === 'function') {
-        localSeen.add(value);
+    if (typeof Symbol !== 'undefined' && value[Symbol.toStringTag]) {
+      var tag = value[Symbol.toStringTag];
+      if (typeof tag === 'string' && /Stream|Port/i.test(tag)) {
+        return true;
       }
-    } catch (addError) {
-      void addError;
     }
+  } catch (inspectionError) {
+    void inspectionError;
+  }
 
+  return false;
+}
+
+function fallbackFreezeDeep(value, seen) {
+  var localSeen = seen;
+  if (!localSeen) {
+    if (typeof WeakSet === 'function') {
+      localSeen = new WeakSet();
+    } else {
+      var seenValues = [];
+      localSeen = {
+        add: function add(item) {
+          seenValues.push(item);
+        },
+        has: function has(item) {
+          return seenValues.indexOf(item) !== -1;
+        },
+      };
+    }
+  }
+
+  if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
+    return value;
+  }
+
+  if (shouldBypassDeepFreeze(value)) {
+    return value;
+  }
+
+  if (typeof process !== 'undefined' && process && process.env && process.env.JEST_WORKER_ID) {
     try {
-      Object.freeze(value);
+      if (typeof Object.freeze === 'function') {
+        Object.freeze(value);
+      }
     } catch (freezeError) {
       void freezeError;
     }
-
-    // Shallow freeze is sufficient for module metadata; traversing nested
-    // properties can cross VM boundaries in Node and trigger V8 assertions.
-    // Returning early keeps runtime bootstrap safe in test environments.
     return value;
-
   }
 
-  var freezeDeep = (function resolveFreezeDeep() {
-    if (ENV_BRIDGE && typeof ENV_BRIDGE.freezeDeep === 'function') {
-      return function bridgeFreezeDeep(value, seen) {
-        try {
-          return ENV_BRIDGE.freezeDeep(value, seen);
-        } catch (error) {
-          void error;
-          return fallbackFreezeDeep(value, seen);
-        }
-      };
+  if (
+    value === PRIMARY_SCOPE
+    || (typeof globalThis !== 'undefined' && value === globalThis)
+    || (typeof window !== 'undefined' && value === window)
+    || (typeof self !== 'undefined' && value === self)
+    || (typeof global !== 'undefined' && value === global)
+  ) {
+    return value;
+  }
+
+  try {
+    if (typeof localSeen.has === 'function' && localSeen.has(value)) {
+      return value;
     }
+  } catch (seenError) {
+    void seenError;
+  }
 
-    if (MODULE_ENV && typeof MODULE_ENV.freezeDeep === 'function') {
-      return MODULE_ENV.freezeDeep;
+  try {
+    if (typeof localSeen.add === 'function') {
+      localSeen.add(value);
     }
+  } catch (addError) {
+    void addError;
+  }
 
-    if (MODULE_BASE && typeof MODULE_BASE.freezeDeep === 'function') {
-      return MODULE_BASE.freezeDeep;
-    }
+  try {
+    Object.freeze(value);
+  } catch (freezeError) {
+    void freezeError;
+  }
 
-    return fallbackFreezeDeep;
-  })();
+  // Shallow freeze is sufficient for module metadata; traversing nested
+  // properties can cross VM boundaries in Node and trigger V8 assertions.
+  // Returning early keeps runtime bootstrap safe in test environments.
+  return value;
 
-  function fallbackSafeWarn(message, detail) {
-    if (typeof console === 'undefined' || typeof console.warn !== 'function') {
-      return;
-    }
+}
 
-    try {
-      if (typeof detail === 'undefined') {
-        console.warn(message);
-      } else {
-        console.warn(message, detail);
+var freezeDeep = (function resolveFreezeDeep() {
+  if (ENV_BRIDGE && typeof ENV_BRIDGE.freezeDeep === 'function') {
+    return function bridgeFreezeDeep(value, seen) {
+      try {
+        return ENV_BRIDGE.freezeDeep(value, seen);
+      } catch (error) {
+        void error;
+        return fallbackFreezeDeep(value, seen);
       }
-    } catch (error) {
-      void error;
-    }
-  }
-
-  var safeWarn = (function resolveSafeWarn() {
-    if (ENV_BRIDGE && typeof ENV_BRIDGE.safeWarn === 'function') {
-      return function bridgeSafeWarn(message, detail) {
-        try {
-          ENV_BRIDGE.safeWarn(message, detail);
-        } catch (error) {
-          void error;
-          fallbackSafeWarn(message, detail);
-        }
-      };
-    }
-
-    if (MODULE_ENV && typeof MODULE_ENV.safeWarn === 'function') {
-      return MODULE_ENV.safeWarn;
-    }
-
-    if (MODULE_BASE && typeof MODULE_BASE.safeWarn === 'function') {
-      return MODULE_BASE.safeWarn;
-    }
-
-    return fallbackSafeWarn;
-  })();
-
-  function fallbackExposeGlobal(name, value, scope, options) {
-    if (!scope || typeof scope !== 'object') {
-      return false;
-    }
-
-    var descriptor = {
-      configurable: !options || options.configurable !== false,
-      enumerable: !!(options && options.enumerable),
-      value: value,
-      writable: !!(options && options.writable === true),
     };
+  }
 
+  if (MODULE_ENV && typeof MODULE_ENV.freezeDeep === 'function') {
+    return MODULE_ENV.freezeDeep;
+  }
+
+  if (MODULE_BASE && typeof MODULE_BASE.freezeDeep === 'function') {
+    return MODULE_BASE.freezeDeep;
+  }
+
+  return fallbackFreezeDeep;
+})();
+
+function fallbackSafeWarn(message, detail) {
+  if (typeof console === 'undefined' || typeof console.warn !== 'function') {
+    return;
+  }
+
+  try {
+    if (typeof detail === 'undefined') {
+      console.warn(message);
+    } else {
+      console.warn(message, detail);
+    }
+  } catch (error) {
+    void error;
+  }
+}
+
+var safeWarn = (function resolveSafeWarn() {
+  if (ENV_BRIDGE && typeof ENV_BRIDGE.safeWarn === 'function') {
+    return function bridgeSafeWarn(message, detail) {
+      try {
+        ENV_BRIDGE.safeWarn(message, detail);
+      } catch (error) {
+        void error;
+        fallbackSafeWarn(message, detail);
+      }
+    };
+  }
+
+  if (MODULE_ENV && typeof MODULE_ENV.safeWarn === 'function') {
+    return MODULE_ENV.safeWarn;
+  }
+
+  if (MODULE_BASE && typeof MODULE_BASE.safeWarn === 'function') {
+    return MODULE_BASE.safeWarn;
+  }
+
+  return fallbackSafeWarn;
+})();
+
+function fallbackExposeGlobal(name, value, scope, options) {
+  if (!scope || typeof scope !== 'object') {
+    return false;
+  }
+
+  var descriptor = {
+    configurable: !options || options.configurable !== false,
+    enumerable: !!(options && options.enumerable),
+    value: value,
+    writable: !!(options && options.writable === true),
+  };
+
+  try {
+    Object.defineProperty(scope, name, descriptor);
+    return true;
+  } catch (error) {
+    void error;
     try {
-      Object.defineProperty(scope, name, descriptor);
+      scope[name] = value;
       return true;
-    } catch (error) {
-      void error;
-      try {
-        scope[name] = value;
-        return true;
-      } catch (assignmentError) {
-        void assignmentError;
-        return false;
-      }
-    }
-  }
-
-  function exposeGlobalInternal(name, value, scope, options) {
-    var targetScope = scope || GLOBAL_SCOPE;
-
-    if (ENV_BRIDGE && typeof ENV_BRIDGE.exposeGlobalScoped === 'function') {
-      try {
-        var bridged = ENV_BRIDGE.exposeGlobalScoped(name, value, targetScope, options || {});
-        if (typeof bridged !== 'undefined') {
-          return bridged;
-        }
-      } catch (error) {
-        void error;
-      }
-    }
-
-    if (ENV_BRIDGE && typeof ENV_BRIDGE.exposeGlobal === 'function') {
-      try {
-        return ENV_BRIDGE.exposeGlobal(name, value, options || {});
-      } catch (bridgeError) {
-        void bridgeError;
-      }
-    }
-
-    if (MODULE_ENV && typeof MODULE_ENV.exposeGlobal === 'function') {
-      try {
-        return MODULE_ENV.exposeGlobal(name, value, targetScope, options || {});
-      } catch (envError) {
-        void envError;
-      }
-    }
-
-    if (MODULE_BASE && typeof MODULE_BASE.exposeGlobal === 'function') {
-      try {
-        return MODULE_BASE.exposeGlobal(name, value, targetScope, options || {});
-      } catch (baseError) {
-        void baseError;
-      }
-    }
-
-    return fallbackExposeGlobal(name, value, targetScope, options);
-  }
-
-  var tryRequire = (function resolveTryRequire() {
-    if (ENV_BRIDGE && typeof ENV_BRIDGE.tryRequire === 'function') {
-      return function bridgeTryRequire(modulePath) {
-        var result = ENV_BRIDGE.tryRequire(modulePath);
-        return typeof result === 'undefined' ? tryRequireLocal(modulePath) : result;
-      };
-    }
-
-    if (MODULE_ENV && typeof MODULE_ENV.tryRequire === 'function') {
-      return MODULE_ENV.tryRequire;
-    }
-
-    if (MODULE_BASE && typeof MODULE_BASE.tryRequire === 'function') {
-      return MODULE_BASE.tryRequire;
-    }
-
-    return tryRequireLocal;
-  })();
-
-  function resolveModuleRegistry(scope) {
-    var targetScope = scope || GLOBAL_SCOPE;
-
-    if (ENV_BRIDGE && typeof ENV_BRIDGE.getModuleRegistry === 'function') {
-      try {
-        var bridged = ENV_BRIDGE.getModuleRegistry(targetScope);
-        if (bridged) {
-          return bridged;
-        }
-      } catch (error) {
-        void error;
-      }
-    }
-
-    if (MODULE_ENV && typeof MODULE_ENV.getModuleRegistry === 'function') {
-      try {
-        var envRegistry = MODULE_ENV.getModuleRegistry(targetScope);
-        if (envRegistry) {
-          return envRegistry;
-        }
-      } catch (envError) {
-        void envError;
-      }
-    }
-
-    if (MODULE_BASE && typeof MODULE_BASE.getModuleRegistry === 'function') {
-      try {
-        var baseRegistry = MODULE_BASE.getModuleRegistry(targetScope);
-        if (baseRegistry) {
-          return baseRegistry;
-        }
-      } catch (baseError) {
-        void baseError;
-      }
-    }
-
-    var required = tryRequire('./registry.js');
-    if (required && typeof required === 'object') {
-      return required;
-    }
-
-    var scopes = collectCandidateScopes(targetScope);
-    for (var index = 0; index < scopes.length; index += 1) {
-      var candidate = scopes[index];
-      if (candidate && typeof candidate.cineModules === 'object') {
-        return candidate.cineModules;
-      }
-    }
-
-    return null;
-  }
-
-  var cachedRegistry = null;
-  var hasCachedRegistry = false;
-
-  function getModuleRegistry(scope) {
-    if (scope && scope !== GLOBAL_SCOPE) {
-      return resolveModuleRegistry(scope);
-    }
-
-    if (!hasCachedRegistry) {
-      cachedRegistry = resolveModuleRegistry(GLOBAL_SCOPE);
-      hasCachedRegistry = true;
-    }
-
-    return cachedRegistry;
-  }
-
-  function shallowCopyOptions(options) {
-    if (!options || typeof options !== 'object') {
-      return {};
-    }
-
-    var copy = {};
-    var keys = [];
-
-    try {
-      keys = Object.keys(options);
-    } catch (error) {
-      void error;
-      keys = [];
-    }
-
-    for (var index = 0; index < keys.length; index += 1) {
-      var key = keys[index];
-      try {
-        copy[key] = options[key];
-      } catch (readError) {
-        void readError;
-      }
-    }
-
-    return copy;
-  }
-
-  function queueModuleRegistration(name, api, options, scope) {
-    if (ENV_BRIDGE && typeof ENV_BRIDGE.queueModuleRegistration === 'function') {
-      try {
-        var bridged = ENV_BRIDGE.queueModuleRegistration(name, api, options);
-        if (typeof bridged !== 'undefined') {
-          return bridged;
-        }
-      } catch (bridgeError) {
-        void bridgeError;
-      }
-    }
-
-    if (MODULE_ENV && typeof MODULE_ENV.queueModuleRegistration === 'function') {
-      try {
-        return MODULE_ENV.queueModuleRegistration(name, api, options, scope || GLOBAL_SCOPE);
-      } catch (envError) {
-        void envError;
-      }
-    }
-
-    if (MODULE_BASE && typeof MODULE_BASE.queueModuleRegistration === 'function') {
-      try {
-        return MODULE_BASE.queueModuleRegistration(name, api, options, scope || GLOBAL_SCOPE);
-      } catch (baseError) {
-        void baseError;
-      }
-    }
-
-    var queue = ensureQueue(scope || GLOBAL_SCOPE);
-    if (!queue) {
+    } catch (assignmentError) {
+      void assignmentError;
       return false;
     }
+  }
+}
 
-    var payload = Object.freeze({
-      name: name,
-      api: api,
-      options: Object.freeze(shallowCopyOptions(options)),
-    });
+function exposeGlobalInternal(name, value, scope, options) {
+  var targetScope = scope || GLOBAL_SCOPE;
 
+  if (ENV_BRIDGE && typeof ENV_BRIDGE.exposeGlobalScoped === 'function') {
     try {
-      queue.push(payload);
+      var bridged = ENV_BRIDGE.exposeGlobalScoped(name, value, targetScope, options || {});
+      if (typeof bridged !== 'undefined') {
+        return bridged;
+      }
     } catch (error) {
       void error;
-      queue[queue.length] = payload;
     }
-
-    return true;
   }
 
-  function registerOrQueueModule(name, api, options, onError, scope, registry) {
-    var targetScope = scope || GLOBAL_SCOPE;
-    var effectiveRegistry = registry || getModuleRegistry(targetScope);
-
-    if (MODULE_BASE && typeof MODULE_BASE.registerOrQueueModule === 'function') {
-      try {
-        var baseRegistered = MODULE_BASE.registerOrQueueModule(name, api, options, onError, targetScope, effectiveRegistry);
-        if (baseRegistered) {
-          recordModule(name, api);
-          return true;
-        }
-      } catch (baseError) {
-        void baseError;
-      }
+  if (ENV_BRIDGE && typeof ENV_BRIDGE.exposeGlobal === 'function') {
+    try {
+      return ENV_BRIDGE.exposeGlobal(name, value, options || {});
+    } catch (bridgeError) {
+      void bridgeError;
     }
+  }
 
-    if (ENV_BRIDGE && typeof ENV_BRIDGE.registerOrQueueModule === 'function') {
-      try {
-        var bridged = ENV_BRIDGE.registerOrQueueModule(name, api, options, onError, targetScope, effectiveRegistry);
-        if (bridged) {
-          recordModule(name, api);
-          return true;
-        }
-      } catch (bridgeError) {
-        void bridgeError;
-      }
+  if (MODULE_ENV && typeof MODULE_ENV.exposeGlobal === 'function') {
+    try {
+      return MODULE_ENV.exposeGlobal(name, value, targetScope, options || {});
+    } catch (envError) {
+      void envError;
     }
+  }
 
-    if (MODULE_ENV && typeof MODULE_ENV.registerOrQueueModule === 'function') {
-      try {
-        var envRegistered = MODULE_ENV.registerOrQueueModule(name, api, options, onError, targetScope, effectiveRegistry);
-        if (envRegistered) {
-          recordModule(name, api);
-          return true;
-        }
-      } catch (envError) {
-        void envError;
-      }
+  if (MODULE_BASE && typeof MODULE_BASE.exposeGlobal === 'function') {
+    try {
+      return MODULE_BASE.exposeGlobal(name, value, targetScope, options || {});
+    } catch (baseError) {
+      void baseError;
     }
+  }
 
-    if (effectiveRegistry && typeof effectiveRegistry.register === 'function') {
-      try {
-        effectiveRegistry.register(name, api, options || {});
+  return fallbackExposeGlobal(name, value, targetScope, options);
+}
+
+var tryRequire = (function resolveTryRequire() {
+  if (ENV_BRIDGE && typeof ENV_BRIDGE.tryRequire === 'function') {
+    return function bridgeTryRequire(modulePath) {
+      var result = ENV_BRIDGE.tryRequire(modulePath);
+      return typeof result === 'undefined' ? tryRequireLocal(modulePath) : result;
+    };
+  }
+
+  if (MODULE_ENV && typeof MODULE_ENV.tryRequire === 'function') {
+    return MODULE_ENV.tryRequire;
+  }
+
+  if (MODULE_BASE && typeof MODULE_BASE.tryRequire === 'function') {
+    return MODULE_BASE.tryRequire;
+  }
+
+  return tryRequireLocal;
+})();
+
+function resolveModuleRegistry(scope) {
+  var targetScope = scope || GLOBAL_SCOPE;
+
+  if (ENV_BRIDGE && typeof ENV_BRIDGE.getModuleRegistry === 'function') {
+    try {
+      var bridged = ENV_BRIDGE.getModuleRegistry(targetScope);
+      if (bridged) {
+        return bridged;
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+
+  if (MODULE_ENV && typeof MODULE_ENV.getModuleRegistry === 'function') {
+    try {
+      var envRegistry = MODULE_ENV.getModuleRegistry(targetScope);
+      if (envRegistry) {
+        return envRegistry;
+      }
+    } catch (envError) {
+      void envError;
+    }
+  }
+
+  if (MODULE_BASE && typeof MODULE_BASE.getModuleRegistry === 'function') {
+    try {
+      var baseRegistry = MODULE_BASE.getModuleRegistry(targetScope);
+      if (baseRegistry) {
+        return baseRegistry;
+      }
+    } catch (baseError) {
+      void baseError;
+    }
+  }
+
+  if (cineModules && typeof cineModules === 'object') {
+    return cineModules;
+  }
+
+  var scopes = collectCandidateScopes(targetScope);
+  for (var index = 0; index < scopes.length; index += 1) {
+    var candidate = scopes[index];
+    if (candidate && typeof candidate.cineModules === 'object') {
+      return candidate.cineModules;
+    }
+  }
+
+  return null;
+}
+
+var cachedRegistry = null;
+var hasCachedRegistry = false;
+
+function getModuleRegistry(scope) {
+  if (scope && scope !== GLOBAL_SCOPE) {
+    return resolveModuleRegistry(scope);
+  }
+
+  if (!hasCachedRegistry) {
+    cachedRegistry = resolveModuleRegistry(GLOBAL_SCOPE);
+    hasCachedRegistry = true;
+  }
+
+  return cachedRegistry;
+}
+
+function shallowCopyOptions(options) {
+  if (!options || typeof options !== 'object') {
+    return {};
+  }
+
+  var copy = {};
+  var keys = [];
+
+  try {
+    keys = Object.keys(options);
+  } catch (error) {
+    void error;
+    keys = [];
+  }
+
+  for (var index = 0; index < keys.length; index += 1) {
+    var key = keys[index];
+    try {
+      copy[key] = options[key];
+    } catch (readError) {
+      void readError;
+    }
+  }
+
+  return copy;
+}
+
+function queueModuleRegistration(name, api, options, scope) {
+  if (ENV_BRIDGE && typeof ENV_BRIDGE.queueModuleRegistration === 'function') {
+    try {
+      var bridged = ENV_BRIDGE.queueModuleRegistration(name, api, options);
+      if (typeof bridged !== 'undefined') {
+        return bridged;
+      }
+    } catch (bridgeError) {
+      void bridgeError;
+    }
+  }
+
+  if (MODULE_ENV && typeof MODULE_ENV.queueModuleRegistration === 'function') {
+    try {
+      return MODULE_ENV.queueModuleRegistration(name, api, options, scope || GLOBAL_SCOPE);
+    } catch (envError) {
+      void envError;
+    }
+  }
+
+  if (MODULE_BASE && typeof MODULE_BASE.queueModuleRegistration === 'function') {
+    try {
+      return MODULE_BASE.queueModuleRegistration(name, api, options, scope || GLOBAL_SCOPE);
+    } catch (baseError) {
+      void baseError;
+    }
+  }
+
+  var queue = ensureQueue(scope || GLOBAL_SCOPE);
+  if (!queue) {
+    return false;
+  }
+
+  var payload = Object.freeze({
+    name: name,
+    api: api,
+    options: Object.freeze(shallowCopyOptions(options)),
+  });
+
+  try {
+    queue.push(payload);
+  } catch (error) {
+    void error;
+    queue[queue.length] = payload;
+  }
+
+  return true;
+}
+
+function registerOrQueueModule(name, api, options, onError, scope, registry) {
+  var targetScope = scope || GLOBAL_SCOPE;
+  var effectiveRegistry = registry || getModuleRegistry(targetScope);
+
+  if (MODULE_BASE && typeof MODULE_BASE.registerOrQueueModule === 'function') {
+    try {
+      var baseRegistered = MODULE_BASE.registerOrQueueModule(name, api, options, onError, targetScope, effectiveRegistry);
+      if (baseRegistered) {
         recordModule(name, api);
         return true;
-      } catch (registryError) {
-        if (typeof onError === 'function') {
-          try {
-            onError(registryError);
-          } catch (callbackError) {
-            void callbackError;
-          }
-        } else {
-          void registryError;
-        }
       }
-    }
-
-    var queued = queueModuleRegistration(name, api, options, targetScope);
-    if (queued) {
-      recordModule(name, api);
-    }
-    return queued;
-  }
-
-  var localModuleMap = Object.create(null);
-  var waitersMap = Object.create(null);
-
-  function notifyWaiters(name, api) {
-    if (!waitersMap[name]) {
-      return;
-    }
-
-    var waiters = waitersMap[name].slice();
-    waitersMap[name].length = 0;
-
-    for (var index = 0; index < waiters.length; index += 1) {
-      var waiter = waiters[index];
-      try {
-        waiter(api);
-      } catch (error) {
-        void error;
-      }
+    } catch (baseError) {
+      void baseError;
     }
   }
 
-  function recordModule(name, api) {
-    if (typeof name !== 'string' || !name || !api) {
-      return false;
-    }
-
-    localModuleMap[name] = api;
-    notifyWaiters(name, api);
-    return true;
-  }
-
-  function getModule(name, options) {
-    if (typeof name !== 'string' || !name) {
-      return null;
-    }
-
-    if (Object.prototype.hasOwnProperty.call(localModuleMap, name)) {
-      return localModuleMap[name];
-    }
-
-    var targetScope = options && options.scope ? options.scope : GLOBAL_SCOPE;
-
+  if (ENV_BRIDGE && typeof ENV_BRIDGE.registerOrQueueModule === 'function') {
     try {
-      if (targetScope && typeof targetScope === 'object' && typeof targetScope[name] !== 'undefined') {
-        return targetScope[name];
+      var bridged = ENV_BRIDGE.registerOrQueueModule(name, api, options, onError, targetScope, effectiveRegistry);
+      if (bridged) {
+        recordModule(name, api);
+        return true;
       }
-    } catch (error) {
-      void error;
+    } catch (bridgeError) {
+      void bridgeError;
     }
+  }
 
-    var registry = getModuleRegistry(targetScope);
-    if (registry && typeof registry.get === 'function') {
-      try {
-        var resolved = registry.get(name);
-        if (resolved) {
-          return resolved;
+  if (MODULE_ENV && typeof MODULE_ENV.registerOrQueueModule === 'function') {
+    try {
+      var envRegistered = MODULE_ENV.registerOrQueueModule(name, api, options, onError, targetScope, effectiveRegistry);
+      if (envRegistered) {
+        recordModule(name, api);
+        return true;
+      }
+    } catch (envError) {
+      void envError;
+    }
+  }
+
+  if (effectiveRegistry && typeof effectiveRegistry.register === 'function') {
+    try {
+      effectiveRegistry.register(name, api, options || {});
+      recordModule(name, api);
+      return true;
+    } catch (registryError) {
+      if (typeof onError === 'function') {
+        try {
+          onError(registryError);
+        } catch (callbackError) {
+          void callbackError;
         }
-      } catch (registryError) {
+      } else {
         void registryError;
       }
     }
+  }
 
+  var queued = queueModuleRegistration(name, api, options, targetScope);
+  if (queued) {
+    recordModule(name, api);
+  }
+  return queued;
+}
+
+var localModuleMap = Object.create(null);
+var waitersMap = Object.create(null);
+
+function notifyWaiters(name, api) {
+  if (!waitersMap[name]) {
+    return;
+  }
+
+  var waiters = waitersMap[name].slice();
+  waitersMap[name].length = 0;
+
+  for (var index = 0; index < waiters.length; index += 1) {
+    var waiter = waiters[index];
+    try {
+      waiter(api);
+    } catch (error) {
+      void error;
+    }
+  }
+}
+
+function recordModule(name, api) {
+  if (typeof name !== 'string' || !name || !api) {
+    return false;
+  }
+
+  localModuleMap[name] = api;
+  notifyWaiters(name, api);
+  return true;
+}
+
+function getModule(name, options) {
+  if (typeof name !== 'string' || !name) {
     return null;
   }
 
-  function whenModuleAvailable(name, callback) {
-    if (typeof name !== 'string' || !name || typeof callback !== 'function') {
-      return false;
-    }
+  if (Object.prototype.hasOwnProperty.call(localModuleMap, name)) {
+    return localModuleMap[name];
+  }
 
-    var existing = getModule(name);
-    if (existing) {
-      try {
-        callback(existing);
-      } catch (error) {
-        void error;
+  var targetScope = options && options.scope ? options.scope : GLOBAL_SCOPE;
+
+  try {
+    if (targetScope && typeof targetScope === 'object' && typeof targetScope[name] !== 'undefined') {
+      return targetScope[name];
+    }
+  } catch (error) {
+    void error;
+  }
+
+  var registry = getModuleRegistry(targetScope);
+  if (registry && typeof registry.get === 'function') {
+    try {
+      var resolved = registry.get(name);
+      if (resolved) {
+        return resolved;
       }
-      return true;
+    } catch (registryError) {
+      void registryError;
     }
+  }
 
-    if (!waitersMap[name]) {
-      waitersMap[name] = [];
+  return null;
+}
+
+function whenModuleAvailable(name, callback) {
+  if (typeof name !== 'string' || !name || typeof callback !== 'function') {
+    return false;
+  }
+
+  var existing = getModule(name);
+  if (existing) {
+    try {
+      callback(existing);
+    } catch (error) {
+      void error;
     }
-    waitersMap[name].push(callback);
     return true;
   }
 
-  function listRecordedModules() {
-    return Object.freeze(Object.keys(localModuleMap));
+  if (!waitersMap[name]) {
+    waitersMap[name] = [];
   }
+  waitersMap[name].push(callback);
+  return true;
+}
 
-  function primeKnownModules() {
-    var descriptors = [
-      { name: 'cineModuleBase', value: MODULE_BASE },
-      { name: 'cineModuleEnvironment', value: MODULE_ENV },
-      { name: 'cineEnvironmentBridge', value: ENV_BRIDGE },
-      { name: 'cineModules', value: getModuleRegistry(GLOBAL_SCOPE) },
-    ];
+function listRecordedModules() {
+  return Object.freeze(Object.keys(localModuleMap));
+}
 
-    for (var index = 0; index < descriptors.length; index += 1) {
-      var descriptor = descriptors[index];
-      if (descriptor.value) {
-        recordModule(descriptor.name, descriptor.value);
+function primeKnownModules() {
+  var descriptors = [
+    { name: 'cineModuleBase', value: MODULE_BASE },
+    { name: 'cineModuleEnvironment', value: MODULE_ENV },
+    { name: 'cineEnvironmentBridge', value: ENV_BRIDGE },
+    { name: 'cineModules', value: getModuleRegistry(GLOBAL_SCOPE) },
+  ];
+
+  for (var index = 0; index < descriptors.length; index += 1) {
+    var descriptor = descriptors[index];
+    if (descriptor.value) {
+      recordModule(descriptor.name, descriptor.value);
+    }
+  }
+}
+
+primeKnownModules();
+
+var globalApi = {
+  scope: GLOBAL_SCOPE,
+  moduleBase: MODULE_BASE,
+  moduleEnvironment: MODULE_ENV,
+  environmentBridge: ENV_BRIDGE,
+  getModuleRegistry: getModuleRegistry,
+  resolveModuleRegistry: resolveModuleRegistry,
+  queueModuleRegistration: queueModuleRegistration,
+  registerOrQueueModule: registerOrQueueModule,
+  freezeDeep: freezeDeep,
+  safeWarn: safeWarn,
+  exposeGlobal: function exposeGlobal(name, value, options) {
+    return exposeGlobalInternal(name, value, GLOBAL_SCOPE, options || {});
+  },
+  exposeGlobalScoped: function exposeGlobalScoped(name, value, scope, options) {
+    return exposeGlobalInternal(name, value, scope || GLOBAL_SCOPE, options || {});
+  },
+  tryRequire: tryRequire,
+  collectCandidateScopes: function collectCandidateScopesShared(scope) {
+    var scopes = collectCandidateScopes(scope || GLOBAL_SCOPE);
+    return Object.freeze(scopes.slice());
+  },
+  getPendingQueueKey: function getPendingQueueKey() {
+    return PENDING_QUEUE_KEY;
+  },
+  ensureQueue: function ensureQueueShared(scope) {
+    return ensureQueue(scope || GLOBAL_SCOPE);
+  },
+  recordModule: recordModule,
+  getModule: getModule,
+  whenModuleAvailable: whenModuleAvailable,
+  listRecordedModules: listRecordedModules,
+};
+
+var existing = null;
+var candidateScopes = collectCandidateScopes(GLOBAL_SCOPE);
+for (var index = 0; index < candidateScopes.length; index += 1) {
+  var scope = candidateScopes[index];
+  if (scope && typeof scope.cineModuleGlobals === 'object') {
+    existing = scope.cineModuleGlobals;
+    break;
+  }
+}
+
+if (existing && existing !== globalApi) {
+  try {
+    var existingKeys = Object.getOwnPropertyNames(existing);
+    for (var mergeIndex = 0; mergeIndex < existingKeys.length; mergeIndex += 1) {
+      var key = existingKeys[mergeIndex];
+      if (typeof globalApi[key] === 'undefined') {
+        globalApi[key] = existing[key];
       }
     }
+  } catch (mergeError) {
+    void mergeError;
   }
 
-  primeKnownModules();
-
-  var globalApi = {
-    scope: GLOBAL_SCOPE,
-    moduleBase: MODULE_BASE,
-    moduleEnvironment: MODULE_ENV,
-    environmentBridge: ENV_BRIDGE,
-    getModuleRegistry: getModuleRegistry,
-    resolveModuleRegistry: resolveModuleRegistry,
-    queueModuleRegistration: queueModuleRegistration,
-    registerOrQueueModule: registerOrQueueModule,
-    freezeDeep: freezeDeep,
-    safeWarn: safeWarn,
-    exposeGlobal: function exposeGlobal(name, value, options) {
-      return exposeGlobalInternal(name, value, GLOBAL_SCOPE, options || {});
-    },
-    exposeGlobalScoped: function exposeGlobalScoped(name, value, scope, options) {
-      return exposeGlobalInternal(name, value, scope || GLOBAL_SCOPE, options || {});
-    },
-    tryRequire: tryRequire,
-    collectCandidateScopes: function collectCandidateScopesShared(scope) {
-      var scopes = collectCandidateScopes(scope || GLOBAL_SCOPE);
-      return Object.freeze(scopes.slice());
-    },
-    getPendingQueueKey: function getPendingQueueKey() {
-      return PENDING_QUEUE_KEY;
-    },
-    ensureQueue: function ensureQueueShared(scope) {
-      return ensureQueue(scope || GLOBAL_SCOPE);
-    },
-    recordModule: recordModule,
-    getModule: getModule,
-    whenModuleAvailable: whenModuleAvailable,
-    listRecordedModules: listRecordedModules,
-  };
-
-  var existing = null;
-  var candidateScopes = collectCandidateScopes(GLOBAL_SCOPE);
-  for (var index = 0; index < candidateScopes.length; index += 1) {
-    var scope = candidateScopes[index];
-    if (scope && typeof scope.cineModuleGlobals === 'object') {
-      existing = scope.cineModuleGlobals;
-      break;
-    }
-  }
-
-  if (existing && existing !== globalApi) {
+  if (typeof existing.listRecordedModules === 'function') {
     try {
-      var existingKeys = Object.getOwnPropertyNames(existing);
-      for (var mergeIndex = 0; mergeIndex < existingKeys.length; mergeIndex += 1) {
-        var key = existingKeys[mergeIndex];
-        if (typeof globalApi[key] === 'undefined') {
-          globalApi[key] = existing[key];
-        }
-      }
-    } catch (mergeError) {
-      void mergeError;
-    }
-
-    if (typeof existing.listRecordedModules === 'function') {
-      try {
-        var names = existing.listRecordedModules();
-        if (Array.isArray(names)) {
-          for (var nameIndex = 0; nameIndex < names.length; nameIndex += 1) {
-            var moduleName = names[nameIndex];
-            if (!localModuleMap[moduleName] && typeof existing.getModule === 'function') {
-              var moduleValue = existing.getModule(moduleName);
-              if (moduleValue) {
-                recordModule(moduleName, moduleValue);
-              }
+      var names = existing.listRecordedModules();
+      if (Array.isArray(names)) {
+        for (var nameIndex = 0; nameIndex < names.length; nameIndex += 1) {
+          var moduleName = names[nameIndex];
+          if (!localModuleMap[moduleName] && typeof existing.getModule === 'function') {
+            var moduleValue = existing.getModule(moduleName);
+            if (moduleValue) {
+              recordModule(moduleName, moduleValue);
             }
           }
         }
-      } catch (syncError) {
-        void syncError;
       }
+    } catch (syncError) {
+      void syncError;
     }
   }
+}
 
-  var frozenApi = freezeDeep(globalApi);
-  recordModule('cineModuleGlobals', frozenApi);
+var frozenApi = freezeDeep(globalApi);
+recordModule('cineModuleGlobals', frozenApi);
 
-  var registered = registerOrQueueModule(
+var registered = registerOrQueueModule(
+  'cineModuleGlobals',
+  frozenApi,
+  {
+    category: 'infrastructure',
+    description: 'Shared module globals for cross-script coordination.',
+    replace: true,
+    connections: ['cineModuleBase', 'cineModuleEnvironment', 'cineEnvironmentBridge'],
+  },
+  function (error) {
+    safeWarn('Unable to register cineModuleGlobals module.', error);
+  },
+  GLOBAL_SCOPE,
+  getModuleRegistry(GLOBAL_SCOPE)
+);
+
+if (!registered) {
+  queueModuleRegistration(
     'cineModuleGlobals',
     frozenApi,
     {
@@ -907,38 +916,23 @@
       replace: true,
       connections: ['cineModuleBase', 'cineModuleEnvironment', 'cineEnvironmentBridge'],
     },
-    function (error) {
-      safeWarn('Unable to register cineModuleGlobals module.', error);
-    },
-    GLOBAL_SCOPE,
-    getModuleRegistry(GLOBAL_SCOPE)
+    GLOBAL_SCOPE
   );
+}
 
-  if (!registered) {
-    queueModuleRegistration(
-      'cineModuleGlobals',
-      frozenApi,
-      {
-        category: 'infrastructure',
-        description: 'Shared module globals for cross-script coordination.',
-        replace: true,
-        connections: ['cineModuleBase', 'cineModuleEnvironment', 'cineEnvironmentBridge'],
-      },
-      GLOBAL_SCOPE
-    );
-  }
+var exposed = exposeGlobalInternal('cineModuleGlobals', frozenApi, GLOBAL_SCOPE, {
+  configurable: true,
+  enumerable: false,
+  writable: false,
+});
 
-  var exposed = exposeGlobalInternal('cineModuleGlobals', frozenApi, GLOBAL_SCOPE, {
-    configurable: true,
-    enumerable: false,
-    writable: false,
-  });
+if (!exposed) {
+  safeWarn('Unable to expose cineModuleGlobals globally.');
+}
 
-  if (!exposed) {
-    safeWarn('Unable to expose cineModuleGlobals globally.');
-  }
+// if (typeof module !== 'undefined' && module && module.exports) {
+//   module.exports = frozenApi;
+// }
+// })();
 
-  if (typeof module !== 'undefined' && module && module.exports) {
-    module.exports = frozenApi;
-  }
-})();
+export const cineModuleGlobals = frozenApi;

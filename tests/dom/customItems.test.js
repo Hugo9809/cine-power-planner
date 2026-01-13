@@ -288,6 +288,9 @@ describe('custom items integration', () => {
             camOpt.value = 'cameras';
             camOpt.textContent = 'Cameras';
             global.newCategorySelect.appendChild(camOpt);
+            console.log('DEBUG SETUP: Added cameras option to newCategorySelect. InnerHTML:', global.newCategorySelect.innerHTML);
+        } else {
+            console.log('DEBUG SETUP: global.newCategorySelect is missing!');
         }
 
         Element.prototype.scrollIntoView = jest.fn();
@@ -356,8 +359,20 @@ describe('custom items integration', () => {
         const name = 'Existing Cam';
         global.devices.cameras[name] = { powerDrawWatts: 10 };
 
+        // Ensure category option exists (fixing sporadic setup issue)
+        if (global.newCategorySelect.options.length === 0) {
+            const camOpt = document.createElement('option');
+            camOpt.value = 'cameras';
+            camOpt.textContent = 'Cameras';
+            global.newCategorySelect.appendChild(camOpt);
+        }
+
         global.newCategorySelect.value = 'cameras';
         global.newNameInput.value = name;
+        if (global.cameraWattInput) global.cameraWattInput.value = '10';
+        if (global.cameraVoltageInput) global.cameraVoltageInput.value = '12';
+        if (global.cameraPortTypeInput) global.cameraPortTypeInput.value = 'XLR';
+
         global.addDeviceBtn.click();
 
         expect(global.alert).toHaveBeenCalledWith(global.texts.en.alertDeviceExists);

@@ -29,10 +29,10 @@ This audit captures UI copy that still appears in English or uses inconsistent t
 
 ## German (`de`)
 
-- [ ] Replace the remaining English labels in the monitor button list:
-  - `projectForm.userButtonFunctions.surroundView` still reads "Surround View". 【F:src/scripts/translations/de.js†L569-L596】
-  - `projectForm.userButtonFunctions.vectorscope` is still "Vectorscope". 【F:src/scripts/translations/de.js†L569-L596】
-  - `projectForm.userButtonFunctions.frameGrab` remains "Frame Grab" and should match the other locales. 【F:src/scripts/translations/de.js†L569-L596】
+- [x] Replace the remaining English labels in the monitor button list:
+  - `projectForm.userButtonFunctions.surroundView` → "Rundumsicht" ✅
+  - `projectForm.userButtonFunctions.vectorscope` → "Vektorskop" ✅
+  - `projectForm.userButtonFunctions.frameGrab` → "Einzelbildaufnahme" ✅
 
 - [ ] Localise the "Gear" terminology across the German gear list flows. Key entries still use the English noun:
   - [x] Section navigation (`gearListNav`, `gearListNavHelp`, `overviewExportTitleSuffix`). 【F:src/scripts/translations/de.js†L61-L65】

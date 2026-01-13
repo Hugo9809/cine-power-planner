@@ -26,13 +26,28 @@
 - [ ] Analysis: Audit existing docs for outdated/legacy info <!-- id: 20 -->
 - [ ] Analysis: Identify "opaque" code patterns difficult for AI to parse <!-- id: 21 -->
 - [ ] Refinement: Standardize JSDoc across all Core modules <!-- id: 22 -->
-- [ ] Refinement: Enhance `tools/` and `tests/` documentation <!-- id: 23 -->
-- [ ] Codebase Comments: Second Pass on "Legacy Shims" and complex UI glue <!-- id: 24 -->
-- [ ] Final Verification: "Rock Solid" AI Readability Check <!-- id: 25 -->
+- [x] Refinement: Enhance `tools/` and `tests/` documentation <!-- id: 23 -->
+- [x] Codebase Comments: Second Pass on "Legacy Shims" and complex UI glue <!-- id: 24 -->
+- [x] Final Verification: "Rock Solid" AI Readability Check <!-- id: 25 -->
 
 ## Documentation Audit Deep Scan (Phase 7)
-- [ ] Audit: Scan all docs for outdated file paths <!-- id: 30 -->
+- [x] Audit: Scan all docs for outdated file paths <!-- id: 30 -->
 - [ ] Audit: Cross-reference module-registry.md with actual cineModules exports <!-- id: 31 -->
 - [ ] Audit: Verify codebase-overview.md matches actual directory structure <!-- id: 32 -->
 - [ ] Audit: Check firebase-architecture.md for placeholder content <!-- id: 33 -->
 - [ ] Fix: Update any outdated or incorrect information found <!-- id: 34 -->
+
+- [x] **Batch 2: Medium Core Utils**
+    - [x] Convert `src/scripts/core/app-core-runtime-candidate-scopes.js`
+    - [x] Convert `src/scripts/core/app-core-ui-helpers.js`
+    - [x] Convert `src/scripts/core/app-core-runtime-global-tools.js`
+    - [x] Convert `src/scripts/runtime/bootstrap.js`
+    - [x] Convert `src/scripts/core/app-core-runtime-helpers.js`
+    - [x] Convert `src/scripts/core/app-core-runtime-support.js`
+    - [x] Update `loader.js` and `main.js`
+    - [x] Verify Build
+- [x] **Batch 3: Environment & Cache**
+    - [x] Convert `src/scripts/core/app-core-environment.js`
+    - [x] Convert `src/scripts/core/modules/ui-cache.js`
+    - [x] Update `loader.js` and `main.js`
+    - [x] Verify Build

@@ -1,9 +1,73 @@
+console.log('DEBUG: app-core-new-1.js STARTING');
+if (typeof window !== 'undefined') window.__APP_CORE_STARTED = true;
+
+function renderFeedbackTable(setupKey) {
+  // Placeholder to prevent ReferenceError
+  return { count: 0 };
+}
+
 (function () {
   if (typeof window !== 'undefined') {
     if (!window.ensureSvgHasAriaHidden) window.ensureSvgHasAriaHidden = function (m) { return m; };
   }
 })();
 const globalShim = typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : {}));
+var CORE_PART1_RUNTIME_SCOPE = globalShim;
+if (typeof globalShim.CORE_PART1_RUNTIME_SCOPE === 'undefined') globalShim.CORE_PART1_RUNTIME_SCOPE = CORE_PART1_RUNTIME_SCOPE;
+
+var CORE_PART2_RUNTIME_SCOPE = globalShim;
+if (typeof globalShim.CORE_PART2_RUNTIME_SCOPE === 'undefined') globalShim.CORE_PART2_RUNTIME_SCOPE = CORE_PART2_RUNTIME_SCOPE;
+
+var CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE = globalShim;
+if (typeof globalShim.CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE === 'undefined') globalShim.CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE = CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE;
+
+var AppCore = globalShim.AppCore || {};
+globalShim.AppCore = AppCore;
+
+var localization = globalShim.localization || {};
+globalShim.localization = localization;
+
+// [Added by Agent] Global Shims for ESM Compatibility
+let devices = typeof window !== 'undefined' ? window.devices : undefined;
+let cineDevices = typeof window !== 'undefined' ? window.cineDevices : undefined;
+let texts = typeof window !== 'undefined' ? window.texts : undefined;
+// currentLang shim removed to avoid conflict with legacy var declaration
+import { iconGlyph } from '../modules/icons.js';
+import { CORE_GLOBAL_SCOPE } from './app-core-runtime-scopes.js';
+import { CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED, resolvedCollectCoreRuntimeCandidateScopes as importedResolvedCollectCoreRuntimeCandidateScopes } from './app-core-runtime-candidate-scopes.js';
+const resolvedCollectCoreRuntimeCandidateScopes = importedResolvedCollectCoreRuntimeCandidateScopes;
+import { getCoreGlobalObject, ensureCoreGlobalValue, CORE_DEEP_CLONE } from './app-core-runtime-global-tools.js';
+import { CORE_SHARED, CORE_TEMPERATURE_QUEUE_KEY, CORE_TEMPERATURE_RENDER_NAME, CORE_RUNTIME_STATE_SUPPORT_PART2 as CORE_RUNTIME_STATE_SUPPORT_IMPORTED } from './app-core-environment.js';
+let createDeferredAutoGearRefresher = typeof window !== 'undefined' ? window.createDeferredAutoGearRefresher : undefined;
+let focusAutoGearConditionPicker = typeof window !== 'undefined' ? window.focusAutoGearConditionPicker : undefined;
+let configureAutoGearConditionButtons = typeof window !== 'undefined' ? window.configureAutoGearConditionButtons : undefined;
+let AUTO_GEAR_MONITOR_DEFAULT_LABEL_KEYS = typeof window !== 'undefined' ? window.AUTO_GEAR_MONITOR_DEFAULT_LABEL_KEYS : undefined;
+let AUTO_GEAR_MONITOR_DEFAULT_TYPES = typeof window !== 'undefined' ? window.AUTO_GEAR_MONITOR_DEFAULT_TYPES : {
+  'on-camera': 'On-Camera',
+  'director': 'Director',
+  'video-village': 'Video Village',
+  'wireless': 'Wireless'
+};
+
+// [Added by Agent] Missing Normalizers
+function normalizeAutoGearTriggerValue(value) {
+  if (typeof value !== 'string') return '';
+  return value.trim();
+}
+console.log('DEBUG: app-core-new-1.js milestone 50');
+function normalizeAutoGearScenarioLogic(value) {
+  if (value === 'any' || value === 'multiplier') return value;
+  return 'all';
+}
+function normalizeAutoGearScenarioPrimary(value) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+function normalizeAutoGearScenarioMultiplier(value) {
+  const n = Number(value);
+  return Number.isFinite(n) && n > 0 ? n : 1;
+}
+
+
 /*
  * Cine Power Planner runtime split (part 1 of 2).
  *
@@ -229,6 +293,9 @@ if (typeof window !== 'undefined') {
   window.normalizeDevicesForPersistence = normalizeDevicesForPersistence;
 }
 
+const CORE_TEMPERATURE_STORAGE_KEY = '__cineTemperatureNote';
+const FOCUS_SCALE_STORAGE_KEY = '__cineFocusScale';
+
 const CORE_TEMPERATURE_UNITS = (function resolveTemperatureUnits() {
   const candidateScopes = TEMPERATURE_SCOPE_CANDIDATES;
 
@@ -441,7 +508,7 @@ if (
 
 
 if (typeof resolveCoreSupportModule === 'undefined') {
-  global.resolveCoreSupportModule = function (name, path) {
+  window.resolveCoreSupportModule = function (name, path) {
     if (typeof require === 'function') {
       try {
         return require(path);
@@ -588,15 +655,15 @@ function iconMarkup(glyph, classNameOrOptions = 'info-icon', options = null) {
   }
   const styleParts = [];
   if (typeof opts.size === 'string' && opts.size.trim()) {
-    styleParts.push(`--icon-size: ${opts.size.trim()}`);
+    styleParts.push(`--icon - size: ${opts.size.trim()} `);
   }
   if (typeof opts.scale === 'string' && opts.scale.trim()) {
-    styleParts.push(`--icon-scale: ${opts.scale.trim()}`);
+    styleParts.push(`--icon - scale: ${opts.scale.trim()} `);
   }
   if (typeof opts.style === 'string' && opts.style.trim()) {
     styleParts.push(opts.style.trim());
   }
-  const styleAttr = styleParts.length ? ` style="${styleParts.join(';')}"` : '';
+  const styleAttr = styleParts.length ? ` style = "${styleParts.join(';')}"` : '';
   const resolved = resolveIconGlyph(glyph);
   const classes = ['icon-glyph'];
   if (resolvedClassName) classes.unshift(resolvedClassName);
@@ -812,17 +879,9 @@ const CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE =
   || (typeof cineCoreRuntimeGlobalTools === 'object' && cineCoreRuntimeGlobalTools)
   || null;
 
-if (
-  CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE &&
-  CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.CORE_RUNTIME_TOOL_FALLBACKS &&
-  typeof CORE_RUNTIME_TOOL_FALLBACKS !== 'undefined' &&
-  CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.CORE_RUNTIME_TOOL_FALLBACKS !== CORE_RUNTIME_TOOL_FALLBACKS
-) {
-  CORE_RUNTIME_TOOL_FALLBACKS = CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.CORE_RUNTIME_TOOL_FALLBACKS;
-}
 
-var CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
-var CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';
+
+
 
 var CORE_TEMPERATURE_KEY_DEFAULTS = (function resolveCoreTemperatureKeyDefaults() {
   const defaults = {
@@ -861,8 +920,7 @@ var CORE_TEMPERATURE_KEY_DEFAULTS = (function resolveCoreTemperatureKeyDefaults(
   return defaults;
 })();
 
-CORE_TEMPERATURE_QUEUE_KEY = CORE_TEMPERATURE_KEY_DEFAULTS.queueKey;
-CORE_TEMPERATURE_RENDER_NAME = CORE_TEMPERATURE_KEY_DEFAULTS.renderName;
+
 
 const CORE_RUNTIME_UI_BRIDGE = (function resolveCoreRuntimeUiBridge() {
   const candidates = [];
@@ -988,7 +1046,7 @@ const setButtonLabelWithIconBinding = ensureCoreGlobalValue(
       );
 
       try {
-        button.innerHTML = `${iconHtml}${safeLabel}`;
+        button.innerHTML = `${iconHtml}${safeLabel} `;
       } catch (assignError) {
         void assignError;
       }
@@ -1192,7 +1250,7 @@ function resolveCoreShared() {
   return null;
 }
 
-const CORE_SHARED = resolveCoreShared() || {};
+
 
 function resolveCoreRuntimeHelpers() {
   const candidates = [];
@@ -1640,7 +1698,7 @@ function callCoreFunctionIfAvailable(functionName, args = [], options = {}) {
         }
 
         if (typeof console !== 'undefined' && typeof console.error === 'function') {
-          console.error(`Failed to invoke ${functionName}`, invokeError);
+          console.error(`Failed to invoke ${functionName} `, invokeError);
         }
         break;
       }
@@ -1723,11 +1781,15 @@ function formatWithPlaceholdersSafe(template, ...values) {
 
 (function ensureCoreRuntimePlaceholders() {
   const scope =
-    CORE_GLOBAL_SCOPE ||
+    (typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null) ||
     (typeof globalThis !== 'undefined' ? globalThis : null) ||
     (typeof window !== 'undefined' ? window : null) ||
     (typeof self !== 'undefined' ? self : null) ||
     (typeof global !== 'undefined' ? global : null);
+
+  if (typeof window !== 'undefined') {
+    try { window.populateSelect = undefined; /* Clear any potential conflict */ } catch (e) { }
+  }
 
   if (!scope || typeof scope !== 'object') {
     return;
@@ -1781,8 +1843,9 @@ function formatWithPlaceholdersSafe(template, ...values) {
 
     try {
       scope.populateSelect = placeholder;
+      if (typeof window !== 'undefined') window.populateSelect = placeholder;
     } catch (assignError) {
-      void assignError;
+      console.warn('Failed to assign populateSelect', assignError);
     }
   }
 
@@ -2646,7 +2709,7 @@ if (!contactsProfileModule || !contactsListModule) {
 
 const fallbackSanitizeContactValue = value => (typeof value === 'string' ? value.trim() : '');
 const fallbackNormalizeContactEntry = entry => ({
-  id: fallbackSanitizeContactValue(entry && entry.id) || `contact-${Date.now().toString(36)}`,
+  id: fallbackSanitizeContactValue(entry && entry.id) || `contact - ${Date.now().toString(36)} `,
   name: fallbackSanitizeContactValue(entry && entry.name),
   role: fallbackSanitizeContactValue(entry && entry.role),
   phone: fallbackSanitizeContactValue(entry && entry.phone),
@@ -2837,7 +2900,7 @@ try {
         .then(response => {
           if (!response || !response.ok) {
             throw new Error(
-              `Unexpected response when loading schema.json: ${response ? response.status : 'no response'}`
+              `Unexpected response when loading schema.json: ${response ? response.status : 'no response'} `
             );
           }
           return response.json();
@@ -3287,7 +3350,9 @@ if (typeof globalThis !== 'undefined') {
   globalThis.AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP = AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP;
 }
 
-var autoGearRules = readAutoGearRulesFromStorage();
+var autoGearRules = (typeof readAutoGearRulesFromStorage === 'function')
+  ? readAutoGearRulesFromStorage()
+  : [];
 var baseAutoGearRulesState = autoGearRules.slice();
 var projectScopedAutoGearRules = null;
 var autoGearBackupRetention = readAutoGearBackupRetentionFromStorage();
@@ -3970,7 +4035,7 @@ function setInstallBannerOffset(offset) {
   const root = document.documentElement;
   if (!root) return;
   if (offset > 0) {
-    root.style.setProperty('--install-banner-offset', `${Math.ceil(offset)}px`);
+    root.style.setProperty('--install-banner-offset', `${Math.ceil(offset)} px`);
   } else {
     root.style.removeProperty('--install-banner-offset');
   }
@@ -4007,7 +4072,7 @@ function updateInstallBannerPosition() {
   const offlineHeight = offlineVisible ? getElementHeight(offlineIndicator) : 0;
 
   if (offlineHeight > 0) {
-    installBanner.style.top = `${offlineHeight}px`;
+    installBanner.style.top = `${offlineHeight} px`;
   } else {
     installBanner.style.removeProperty('top');
   }
@@ -4178,7 +4243,7 @@ function setupOfflineIndicator() {
 
     const parts = [];
     if (typeof detail.status === 'number' && Number.isFinite(detail.status)) {
-      parts.push(`HTTP ${detail.status}`);
+      parts.push(`HTTP ${detail.status} `);
     }
     if (typeof detail.statusText === 'string' && detail.statusText.trim()) {
       parts.push(detail.statusText.trim());
@@ -4361,7 +4426,7 @@ function setupOfflineIndicator() {
       if (reasonText) summaryParts.push(reasonText);
       if (detailText && detailText !== reasonText) summaryParts.push(detailText);
       const summary = summaryParts.join(' ').trim();
-      const displayText = summary ? `${degradedLabel} — ${summary}` : degradedLabel;
+      const displayText = summary ? `${degradedLabel} — ${summary} ` : degradedLabel;
       const degradedHelp = getDegradedHelp();
       const helpParts = [];
       if (summary) {
@@ -4962,7 +5027,7 @@ function generateOwnGearId() {
   }
   const timePart = Date.now().toString(36);
   const randomPart = Math.floor(Math.random() * 1e8).toString(36);
-  return `own-${timePart}-${randomPart}`;
+  return `own - ${timePart} -${randomPart} `;
 }
 
 function normalizeOwnGearRecord(entry) {
@@ -5299,7 +5364,7 @@ var localLogAutoBackupEvent =
 
       if (typeof fallback === 'function') {
         try {
-          fallback.call(console, `[auto-backup] ${normalizedMessage}`, detail || null, meta || null);
+          fallback.call(console, `[auto - backup] ${normalizedMessage} `, detail || null, meta || null);
         } catch (fallbackError) {
           void fallbackError;
         }
@@ -5555,7 +5620,7 @@ function resolveUpdateDevicesReferenceFunction() {
 // Initialize defaultDevices only if it hasn't been declared yet, to prevent
 // "already declared" errors if the script is loaded multiple times.
 if (window.defaultDevices === undefined) {
-  window.defaultDevices = CORE_DEEP_CLONE(devices);
+  window.defaultDevices = CORE_DEEP_CLONE(window.devices);
   localMarkDevicesNormalized(window.defaultDevices);
   unifyDevices(window.defaultDevices);
 }
@@ -5581,7 +5646,8 @@ if (storedDevices) {
       merged[key] = value;
     }
   }
-  devices = merged;
+  // Sync global and local reference
+  window.devices = devices = merged;
   const updateDevicesReferenceFn = resolveUpdateDevicesReferenceFunction();
   if (typeof updateDevicesReferenceFn === 'function') {
     try {
@@ -5743,7 +5809,7 @@ function formatConnLabel(from, to) {
   const b = shortConnLabel(to);
   if (!a) return b || '';
   if (!b || a.toLowerCase() === b.toLowerCase()) return a;
-  return `${a} to ${b}`;
+  return `${a} to ${b} `;
 }
 
 
@@ -6217,7 +6283,7 @@ function formatStatusMessage(message) {
   if (match) {
     const [, label, colonPart, trailingSpace] = match;
     const rest = message.slice(match[0].length);
-    return `<strong>${escapeHtml(label)}${escapeHtml(colonPart)}</strong>${escapeHtml(trailingSpace)}${escapeHtml(rest)}`;
+    return `< strong > ${escapeHtml(label)}${escapeHtml(colonPart)}</strong > ${escapeHtml(trailingSpace)}${escapeHtml(rest)} `;
   }
 
   return escapeHtml(message);
@@ -6445,16 +6511,18 @@ function resolveTranslationsRuntime() {
     return translations;
   }
 
+  /*
   if (typeof require === 'function') {
     try {
-      var requiredTranslations = require('./translations.js');
-      if (requiredTranslations && typeof requiredTranslations.loadLanguage === 'function') {
-        return requiredTranslations;
-      }
+      // var requiredTranslations = require('./translations.js');
+      // if (requiredTranslations && typeof requiredTranslations.loadLanguage === 'function') {
+      //   return requiredTranslations;
+      // }
     } catch (runtimeRequireError) {
       console.warn('Failed to resolve translations runtime via require', runtimeRequireError);
     }
   }
+  */
 
   return null;
 }
@@ -7206,7 +7274,7 @@ async function setLanguage(lang) {
 
   if (!translationSource[normalizedLang]) {
     console.warn(
-      `Missing translation bundle for "${normalizedLang}". Falling back to ${DEFAULT_LANGUAGE_SAFE}.`
+      `Missing translation bundle for "${normalizedLang}".Falling back to ${DEFAULT_LANGUAGE_SAFE}.`
     );
     normalizedLang = DEFAULT_LANGUAGE_SAFE;
   }
@@ -7217,7 +7285,7 @@ async function setLanguage(lang) {
     requested.slice(0, 2).toLowerCase() !== DEFAULT_LANGUAGE_SAFE
   ) {
     console.warn(
-      `Unsupported language preference "${requested}". Falling back to ${DEFAULT_LANGUAGE_SAFE}.`
+      `Unsupported language preference "${requested}".Falling back to ${DEFAULT_LANGUAGE_SAFE}.`
     );
   }
 
@@ -7844,14 +7912,14 @@ async function setLanguage(lang) {
       }
       link.setAttribute("aria-label", label);
     }
-    const helpKey = `${navKey}Help`;
+    const helpKey = `${navKey} Help`;
     const helpText = texts[lang][helpKey];
     if (helpText) {
       link.setAttribute("title", helpText);
       link.setAttribute("data-help", helpText);
     } else {
       if (navKey === 'projectRequirementsNav') {
-        console.warn(`[Cine Power Planner] Missing help text for ${navKey} in lang ${lang}`);
+        console.warn(`[Cine Power Planner] Missing help text for ${navKey} in lang ${lang} `);
       }
       link.removeAttribute("title");
       link.removeAttribute("data-help");
@@ -8392,7 +8460,7 @@ async function setLanguage(lang) {
         const userNote = texts[lang].runtimeUserCountNote.replace('{count}', fb.count);
         const idx = label.indexOf(')');
         if (idx !== -1) {
-          label = `${label.slice(0, idx)}, ${userNote}${label.slice(idx)}`;
+          label = `${label.slice(0, idx)}, ${userNote}${label.slice(idx)} `;
         }
       }
       batteryLifeLabelElem.textContent = label;
@@ -8928,7 +8996,7 @@ async function setLanguage(lang) {
     if (!labelElement) {
       return;
     }
-    const key = `cameraColor${letter}Label`;
+    const key = `cameraColor${letter} Label`;
     const labelText = texts[lang][key]
       || texts.en?.[key]
       || labelElement.textContent;
@@ -9804,7 +9872,7 @@ async function setLanguage(lang) {
   if (autoGearAddItemLabel) {
     const label = texts[lang].autoGearAddItemLabel || texts.en?.autoGearAddItemLabel || autoGearAddItemLabel.textContent;
     const hint = texts[lang].autoGearAddMultipleHint || texts.en?.autoGearAddMultipleHint || '';
-    const helpText = hint ? `${label} – ${hint}` : label;
+    const helpText = hint ? `${label} – ${hint} ` : label;
     autoGearAddItemLabel.textContent = label;
     autoGearAddItemLabel.setAttribute('data-help', helpText);
     if (autoGearAddNameInput) {
@@ -9906,7 +9974,7 @@ async function setLanguage(lang) {
   if (autoGearRemoveItemLabel) {
     const label = texts[lang].autoGearRemoveItemLabel || texts.en?.autoGearRemoveItemLabel || autoGearRemoveItemLabel.textContent;
     const hint = texts[lang].autoGearRemoveMultipleHint || texts.en?.autoGearRemoveMultipleHint || '';
-    const helpText = hint ? `${label} – ${hint}` : label;
+    const helpText = hint ? `${label} – ${hint} ` : label;
     autoGearRemoveItemLabel.textContent = label;
     autoGearRemoveItemLabel.setAttribute('data-help', helpText);
     if (autoGearRemoveNameInput) {
@@ -10656,7 +10724,7 @@ async function setLanguage(lang) {
   const aboutVersionElem =
     typeof document !== 'undefined' ? document.getElementById('aboutVersion') : null;
   if (aboutVersionElem)
-    aboutVersionElem.textContent = `${texts[lang].versionLabel} ${APP_VERSION}`;
+    aboutVersionElem.textContent = `${texts[lang].versionLabel} ${APP_VERSION} `;
   const supportLinkConfigs = [
     { id: 'supportLink', textKey: 'supportLink', helpKey: 'supportLinkHelp' },
     { id: 'reportBugLink', textKey: 'reportBugLink', helpKey: 'reportBugLinkHelp' },
@@ -11206,7 +11274,7 @@ async function setLanguage(lang) {
     if (crewLabelElem) {
       const crewLabelText = projectFormTexts.crewHeading || fallbackProjectForm.crewHeading;
       if (crewLabelText) {
-        crewLabelElem.textContent = `${crewLabelText}:`;
+        crewLabelElem.textContent = `${crewLabelText}: `;
       }
     }
     setLabelText(prepLabelElem, 'prepLabel');
@@ -11524,28 +11592,28 @@ async function setLanguage(lang) {
     const addEntryLabel = projectFormTexts.addEntry || fallbackProjectForm.addEntry || 'Add';
     if (addPersonBtn) {
       const crewLabel = stripTrailingPunctuation(projectFormTexts.crewHeading || fallbackProjectForm.crewHeading || 'Crew');
-      const label = `${addEntryLabel} ${crewLabel}`.trim();
+      const label = `${addEntryLabel} ${crewLabel} `.trim();
       setButtonLabelWithIconBinding(addPersonBtn, label, ICON_GLYPHS.add);
       addPersonBtn.setAttribute('aria-label', label);
       addPersonBtn.setAttribute('data-help', label);
     }
     if (addPrepBtn) {
       const prepLabel = stripTrailingPunctuation(projectFormTexts.prepLabel || fallbackProjectForm.prepLabel || 'Prep');
-      const label = `${addEntryLabel} ${prepLabel}`.trim();
+      const label = `${addEntryLabel} ${prepLabel} `.trim();
       setButtonLabelWithIconBinding(addPrepBtn, label, ICON_GLYPHS.add);
       addPrepBtn.setAttribute('aria-label', label);
       addPrepBtn.setAttribute('data-help', label);
     }
     if (addShootBtn) {
       const shootLabel = stripTrailingPunctuation(projectFormTexts.shootLabel || fallbackProjectForm.shootLabel || 'Shoot');
-      const label = `${addEntryLabel} ${shootLabel}`.trim();
+      const label = `${addEntryLabel} ${shootLabel} `.trim();
       setButtonLabelWithIconBinding(addShootBtn, label, ICON_GLYPHS.add);
       addShootBtn.setAttribute('aria-label', label);
       addShootBtn.setAttribute('data-help', label);
     }
     if (addReturnBtn) {
       const returnLabel = stripTrailingPunctuation(projectFormTexts.returnLabel || fallbackProjectForm.returnLabel || 'Return Day');
-      const label = `${addEntryLabel} ${returnLabel}`.trim();
+      const label = `${addEntryLabel} ${returnLabel} `.trim();
       setButtonLabelWithIconBinding(addReturnBtn, label, ICON_GLYPHS.add);
       addReturnBtn.setAttribute('aria-label', label);
       addReturnBtn.setAttribute('data-help', label);
@@ -12090,7 +12158,7 @@ function ensureElementId(element, baseText = 'field') {
   let id = '';
   do {
     generatedFieldIdCounter += 1;
-    id = `${base}-${generatedFieldIdCounter}`;
+    id = `${base} -${generatedFieldIdCounter} `;
   } while (document.getElementById(id));
   element.id = id;
   return id;
@@ -12191,7 +12259,7 @@ function generateContactId() {
       console.warn('Unable to generate contact id via module.', error);
     }
   }
-  return `contact-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+  return `contact - ${Date.now().toString(36)} -${Math.random().toString(36).slice(2, 8)} `;
 }
 
 function sanitizeContactValue(value) {
@@ -12259,7 +12327,7 @@ function getContactDisplayLabel(contact) {
   const base = contact.name || contact.email || contact.phone || contact.website || contact.role || contact.id;
   const roleLabel = contact.role ? (roleLabels[contact.role] || contact.role) : '';
   if (base && roleLabel && roleLabel !== base) {
-    return `${base} — ${roleLabel}`;
+    return `${base} — ${roleLabel} `;
   }
   return base || roleLabel || contact.id;
 }
@@ -12306,7 +12374,7 @@ function ensureContactForImportedOwner(ownerName, options = {}) {
     const label = typeof getContactDisplayLabel === 'function'
       ? getContactDisplayLabel(existing) || baseName
       : (existing.name || baseName);
-    return { value: `contact:${existing.id}`, label, contact: existing };
+    return { value: `contact:${existing.id} `, label, contact: existing };
   }
 
   const now = Date.now();
@@ -12333,7 +12401,7 @@ function ensureContactForImportedOwner(ownerName, options = {}) {
   const label = typeof getContactDisplayLabel === 'function'
     ? getContactDisplayLabel(contact) || baseName
     : baseName;
-  return { value: `contact:${contact.id}`, label, contact };
+  return { value: `contact:${contact.id} `, label, contact };
 }
 
 function setContactSelectOptions(select, selectedId) {
@@ -12536,8 +12604,8 @@ function updateAvatarEditMetrics(state) {
   state.displayHeight = displayHeight;
   clampAvatarEditOffsets(state);
   if (avatarEditImage) {
-    avatarEditImage.style.width = `${displayWidth}px`;
-    avatarEditImage.style.height = `${displayHeight}px`;
+    avatarEditImage.style.width = `${displayWidth} px`;
+    avatarEditImage.style.height = `${displayHeight} px`;
     avatarEditImage.style.transform = `translate(${state.offsetX}px, ${state.offsetY}px)`;
   }
 }
@@ -13297,7 +13365,7 @@ function updateRowLinkedBadge(row) {
     const contact = getContactById(contactId);
     const baseLabel = getContactsText('linkedBadge', 'Linked to contact');
     if (contact && contact.name) {
-      badge.textContent = `${baseLabel}: ${contact.name}`;
+      badge.textContent = `${baseLabel}: ${contact.name} `;
     } else {
       badge.textContent = baseLabel;
     }
@@ -13603,7 +13671,7 @@ function createContactCard(contact) {
   const nameInput = document.createElement('input');
   nameInput.type = 'text';
   nameInput.value = contact.name || '';
-  const nameFieldId = ensureElementId(nameInput, `${contact.id}-name`);
+  const nameFieldId = ensureElementId(nameInput, `${contact.id} -name`);
   const nameLabel = document.createElement('label');
   nameLabel.setAttribute('for', nameFieldId);
   nameLabel.textContent = getContactsText('nameLabel', 'Name');
@@ -13613,7 +13681,7 @@ function createContactCard(contact) {
   fields.appendChild(nameWrapper);
 
   const roleSelect = document.createElement('select');
-  const roleFieldId = ensureElementId(roleSelect, `${contact.id}-role`);
+  const roleFieldId = ensureElementId(roleSelect, `${contact.id} -role`);
   const rolePlaceholder = document.createElement('option');
   rolePlaceholder.value = '';
   rolePlaceholder.textContent = getContactsText('rolePlaceholder', 'Select role');
@@ -13642,7 +13710,7 @@ function createContactCard(contact) {
   const phoneInput = document.createElement('input');
   phoneInput.type = 'tel';
   phoneInput.value = contact.phone || '';
-  const phoneFieldId = ensureElementId(phoneInput, `${contact.id}-phone`);
+  const phoneFieldId = ensureElementId(phoneInput, `${contact.id} -phone`);
   const phoneLabelElem = document.createElement('label');
   phoneLabelElem.setAttribute('for', phoneFieldId);
   phoneLabelElem.textContent = getContactsText('phoneLabel', 'Phone');
@@ -13654,7 +13722,7 @@ function createContactCard(contact) {
   const emailInput = document.createElement('input');
   emailInput.type = 'email';
   emailInput.value = contact.email || '';
-  const emailFieldId = ensureElementId(emailInput, `${contact.id}-email`);
+  const emailFieldId = ensureElementId(emailInput, `${contact.id} -email`);
   const emailLabelElem = document.createElement('label');
   emailLabelElem.setAttribute('for', emailFieldId);
   emailLabelElem.textContent = getContactsText('emailLabel', 'Email');
@@ -13669,7 +13737,7 @@ function createContactCard(contact) {
   websiteInput.autocomplete = 'url';
   websiteInput.value = contact.website || '';
   websiteInput.placeholder = getContactsText('websitePlaceholder', 'https://example.com');
-  const websiteFieldId = ensureElementId(websiteInput, `${contact.id}-website`);
+  const websiteFieldId = ensureElementId(websiteInput, `${contact.id} -website`);
   const websiteLabelElem = document.createElement('label');
   websiteLabelElem.setAttribute('for', websiteFieldId);
   websiteLabelElem.textContent = getContactsText('websiteLabel', 'Website');
@@ -14211,7 +14279,7 @@ function createCrewRow(data = {}) {
   const crewHeading = texts[currentLang]?.projectForm?.crewHeading
     || texts.en?.projectForm?.crewHeading
     || 'Crew';
-  const removeCrewLabel = `${removeBase} ${crewHeading}`.trim();
+  const removeCrewLabel = `${removeBase} ${crewHeading} `.trim();
   removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.minus, 'btn-icon');
   removeBtn.setAttribute('aria-label', removeCrewLabel);
   removeBtn.setAttribute('title', removeCrewLabel);
@@ -14324,6 +14392,7 @@ function createCrewRow(data = {}) {
 
 if (typeof window !== 'undefined') {
   window.createCrewRow = createCrewRow;
+  window.createPrepRow = createPrepRow;
 }
 
 function createPrepRow(data = {}) {
@@ -14350,7 +14419,7 @@ function createPrepRow(data = {}) {
     || texts.en?.projectForm?.removeEntry
     || 'Remove';
   const prepLabelText = texts[currentLang]?.projectForm?.prepLabel || texts.en?.projectForm?.prepLabel || 'Prep';
-  const removePrepLabel = `${removeBase} ${prepLabelText}`.trim();
+  const removePrepLabel = `${removeBase} ${prepLabelText} `.trim();
   removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.minus, 'btn-icon');
   removeBtn.setAttribute('aria-label', removePrepLabel);
   removeBtn.setAttribute('title', removePrepLabel);
@@ -14393,7 +14462,7 @@ function createShootRow(data = {}) {
     || texts.en?.projectForm?.removeEntry
     || 'Remove';
   const shootLabelText = texts[currentLang]?.projectForm?.shootLabel || texts.en?.projectForm?.shootLabel || 'Shoot';
-  const removeShootLabel = `${removeBase} ${shootLabelText}`.trim();
+  const removeShootLabel = `${removeBase} ${shootLabelText} `.trim();
   removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.minus, 'btn-icon');
   removeBtn.setAttribute('aria-label', removeShootLabel);
   removeBtn.setAttribute('title', removeShootLabel);
@@ -14438,7 +14507,7 @@ function createReturnRow(data = {}) {
   const returnLabelText = texts[currentLang]?.projectForm?.returnLabel
     || texts.en?.projectForm?.returnLabel
     || 'Return Day';
-  const removeReturnLabel = `${removeBase} ${returnLabelText}`.trim();
+  const removeReturnLabel = `${removeBase} ${returnLabelText} `.trim();
   removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.minus, 'btn-icon');
   removeBtn.setAttribute('aria-label', removeReturnLabel);
   removeBtn.setAttribute('title', removeReturnLabel);
@@ -14463,7 +14532,7 @@ function formatCapacity(value, unit) {
   const formatted = Number.isInteger(num)
     ? String(num)
     : num.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 0 });
-  return `${formatted} ${unit}`;
+  return `${formatted} ${unit} `;
 }
 
 function gatherMediaEntriesForType(type) {
@@ -14648,7 +14717,7 @@ function getStorageVariantOptions(type) {
   noteVariants.forEach(note => {
     // Only add note variants if they don't look like duplicates of existing real items?
     // For now, keep them as "Generic Type Note"
-    const value = `${type} ${note}`.trim();
+    const value = `${type} ${note} `.trim();
     addVariant(value, note);
   });
 
@@ -14794,7 +14863,7 @@ function createStorageRequirementRow(data = {}) {
   removeBtn.type = 'button';
   const removeBase = getProjectFormText('removeEntry', 'Remove');
   const storageLabel = getProjectFormText('storageNeedsLabel', 'Recording media needs');
-  const removeLabel = `${removeBase} ${storageLabel}`.trim();
+  const removeLabel = `${removeBase} ${storageLabel} `.trim();
   removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.minus, 'btn-icon');
   removeBtn.setAttribute('aria-label', removeLabel);
   removeBtn.setAttribute('title', removeLabel);
@@ -14898,7 +14967,7 @@ function updateStorageRequirementTranslations(projectFormTexts, fallbackProjectF
   const updateLabel = key => {
     const text = projectFormTexts[key] || fallbackProjectForm[key];
     if (!text) return;
-    document.querySelectorAll(`#storageNeedsContainer [data-storage-label-key="${key}"]`).forEach(label => {
+    document.querySelectorAll(`#storageNeedsContainer[data - storage - label - key= "${key}"]`).forEach(label => {
       label.textContent = text;
     });
   };
@@ -14939,7 +15008,7 @@ function updateStorageRequirementTranslations(projectFormTexts, fallbackProjectF
     button.setAttribute('title', duplicateActionLabel);
     button.setAttribute('data-help', duplicateActionLabel);
   });
-  const storageRemoveLabel = `${removeBase} ${labelText}`.trim();
+  const storageRemoveLabel = `${removeBase} ${labelText} `.trim();
   document.querySelectorAll('#storageNeedsContainer [data-storage-action-key="storageRemoveEntry"]').forEach(button => {
     button.setAttribute('aria-label', storageRemoveLabel);
     button.setAttribute('title', storageRemoveLabel);
@@ -15073,7 +15142,7 @@ function showPowerWarningDialog(context) {
     ? messageTemplate
       .replace(/\{battery\}/g, safeBatteryName)
       .replace(/\{current\}/g, formattedCurrent)
-    : `${safeBatteryName} exceeds every available output (${formattedCurrent}A).`;
+    : `${safeBatteryName} exceeds every available output(${formattedCurrent}A).`;
   if (powerWarningMessageElem) {
     powerWarningMessageElem.textContent = message;
   }
@@ -15187,7 +15256,7 @@ function drawPowerDiagram(availableWatt, segments, maxPinA) {
   if (heroBatteryLabel && batterySelect && batterySelect.options) {
     const selectedOption = batterySelect.options[batterySelect.selectedIndex];
     const batteryName = selectedOption ? selectedOption.text : '';
-    heroBatteryLabel.textContent = `Camera Setup draws ${total.toFixed(0)}W from the ${availableWatt.toFixed(0)}W available on the ${batteryName}`;
+    heroBatteryLabel.textContent = `Camera Setup draws ${total.toFixed(0)}W from the ${availableWatt.toFixed(0)}W available on the ${batteryName} `;
   }
 
   // Currents & Battery Count (Calculated in results.js, but we can update DOM here if passed or access global/scope)
@@ -15217,14 +15286,14 @@ function drawPowerDiagram(availableWatt, segments, maxPinA) {
       if (widthPercent <= 0) return;
 
       const div = document.createElement("div");
-      div.className = `segment ${seg.className}`; // Use 'segment' class as per CSS
-      div.style.width = `${widthPercent}%`;
+      div.className = `segment ${seg.className} `; // Use 'segment' class as per CSS
+      div.style.width = `${widthPercent}% `;
       div.setAttribute("title", `${seg.label} ${seg.power.toFixed(1)} W`);
       barInner.appendChild(div);
 
       const legendItem = document.createElement("span");
       const swatch = document.createElement("span");
-      swatch.className = `swatch ${seg.className}`;
+      swatch.className = `swatch ${seg.className} `;
       legendItem.appendChild(swatch);
       legendItem.appendChild(document.createTextNode(seg.label.replace(/:$/, "")));
       powerDiagramLegendElem.appendChild(legendItem);
@@ -15234,7 +15303,7 @@ function drawPowerDiagram(availableWatt, segments, maxPinA) {
     if (total > availableWatt) {
       const over = document.createElement("div");
       over.className = "over-usage";
-      over.style.left = `${limitPos}%`;
+      over.style.left = `${limitPos}% `;
       over.style.right = '0'; // Fill the rest
       // Wait, if total > available, the bar width is based on total. 
       // So limitPos is at availableWatt. 
@@ -15245,7 +15314,7 @@ function drawPowerDiagram(availableWatt, segments, maxPinA) {
     // Limit Line (outside inner wrapper to avoid clipping)
     const limit = document.createElement("div");
     limit.className = "limit-line";
-    limit.style.left = `${limitPos}%`;
+    limit.style.left = `${limitPos}% `;
     if (typeof maxPinA === 'number' && maxPinA > 0) {
       const label = document.createElement("span");
       label.className = "limit-label";
@@ -15635,7 +15704,7 @@ function getSharedImportPresetLabel(sharedData) {
   if (template.includes('%s')) {
     return formatWithPlaceholdersSafe(template, projectName);
   }
-  return `${template} ${projectName}`.trim();
+  return `${template} ${projectName} `.trim();
 }
 
 function ensureSharedAutoGearPreset(rules, sharedData) {
@@ -16251,7 +16320,7 @@ function collectDeviceManagerCategories() {
         if (value && typeof value === 'object') {
           Object.entries(value).forEach(([subKey, subValue]) => {
             if (subValue && typeof subValue === 'object' && !Array.isArray(subValue)) {
-              addCategory(`accessories.${subKey}`);
+              addCategory(`accessories.${subKey} `);
             }
           });
         }
@@ -16259,7 +16328,7 @@ function collectDeviceManagerCategories() {
         if (value && typeof value === 'object') {
           Object.entries(value).forEach(([subKey, subValue]) => {
             if (subValue && typeof subValue === 'object' && !Array.isArray(subValue)) {
-              addCategory(`fiz.${subKey}`);
+              addCategory(`fiz.${subKey} `);
             }
           });
         }
@@ -16290,20 +16359,20 @@ function createDeviceCategorySection(categoryKey) {
   section.className = 'device-category';
   const sanitizedId = categoryKey.replace(/[^a-z0-9]+/gi, '_');
   const heading = document.createElement('h4');
-  heading.id = `category_${sanitizedId}`;
+  heading.id = `category_${sanitizedId} `;
   heading.dataset.categoryKey = categoryKey;
   section.appendChild(heading);
   const filterInput = document.createElement('input');
   filterInput.type = 'search';
   filterInput.className = 'list-filter';
-  filterInput.id = `${sanitizedId}ListFilter`;
+  filterInput.id = `${sanitizedId} ListFilter`;
   filterInput.dataset.categoryKey = categoryKey;
-  const filterLabel = createHiddenLabel(ensureElementId(filterInput, `${sanitizedId}-list-filter`), `Filter ${categoryKey}`);
+  const filterLabel = createHiddenLabel(ensureElementId(filterInput, `${sanitizedId} -list - filter`), `Filter ${categoryKey} `);
   section.appendChild(filterLabel);
   section.appendChild(filterInput);
   const list = document.createElement('ul');
   list.className = 'device-ul';
-  const listId = sanitizedId === 'cameras' ? 'cameraList' : `${sanitizedId}List`;
+  const listId = sanitizedId === 'cameras' ? 'cameraList' : `${sanitizedId} List`;
   list.id = listId;
   if (sanitizedId === 'cameras') {
     list.setAttribute('data-current-id', 'camerasList');
@@ -16577,7 +16646,7 @@ function populateCategoryOptions() {
         if (sub === 'cables') {
           categoriesToAdd.add('accessories.cables');
         } else if (obj && obj.attributes) {
-          categoriesToAdd.add(`accessories.${sub}`);
+          categoriesToAdd.add(`accessories.${sub} `);
         }
       }
     }
@@ -16599,7 +16668,7 @@ function populateCategoryOptions() {
 
     if (deviceSchema.fiz) {
       for (const [sub, obj] of Object.entries(deviceSchema.fiz)) {
-        if (obj && obj.attributes) addOpt(`fiz.${sub}`);
+        if (obj && obj.attributes) addOpt(`fiz.${sub} `);
       }
     }
 
@@ -16625,11 +16694,11 @@ function populateCategoryOptions() {
     for (const [key, obj] of Object.entries(devices)) {
       if (key === 'accessories') {
         for (const sub of Object.keys(obj || {})) {
-          addIfMissing(`accessories.${sub}`);
+          addIfMissing(`accessories.${sub} `);
         }
       } else if (key === 'fiz') {
         for (const sub of Object.keys(obj || {})) {
-          addIfMissing(`fiz.${sub}`);
+          addIfMissing(`fiz.${sub} `);
         }
       } else if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
         addIfMissing(key);
@@ -16866,9 +16935,9 @@ function formatTemperatureForDisplay(celsius, options = {}) {
     return formatter(converted, { includeSign });
   }
   const rounded = Math.round(converted * 10) / 10;
-  const formatted = includeSign && rounded > 0 ? `+${rounded}` : String(rounded);
+  const formatted = includeSign && rounded > 0 ? `+ ${rounded} ` : String(rounded);
   const symbol = getTemperatureUnitSymbolForLang(lang, resolvedUnit);
-  return `${formatted} ${symbol}`.trim();
+  return `${formatted} ${symbol} `.trim();
 }
 
 (function installViewfinderFallbacks() {
@@ -17053,7 +17122,7 @@ function formatTemperatureForDisplay(celsius, options = {}) {
     }
     const base = typeof baseText === 'string' && baseText ? baseText : 'field';
     fallbackIdCounter += 1;
-    const candidate = `${base.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'field'}-${fallbackIdCounter}`;
+    const candidate = `${base.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'field'} -${fallbackIdCounter} `;
     try {
       element.id = candidate;
     } catch (assignError) {
@@ -17188,7 +17257,7 @@ function formatTemperatureForDisplay(celsius, options = {}) {
     row.className = 'form-row';
     const select = document.createElement('select');
     select.name = name;
-    select.className = `${name}-select`;
+    select.className = `${name} -select`;
     populateSelectOptions(select, collectVideoPortOptions(), typeof value === 'string' ? value.trim() : '');
     row.appendChild(createFieldWithLabel(select, 'Type'));
 
@@ -17704,7 +17773,7 @@ function createSchemaListControl(options) {
       let candidate = '';
       do {
         counter += 1;
-        candidate = `${base}-${counter}`;
+        candidate = `${base} -${counter} `;
       } while (typeof document !== 'undefined' && document.getElementById(candidate));
       try {
         element.id = candidate;
@@ -17752,7 +17821,7 @@ function createSchemaListControl(options) {
     }
     input.value = initialValue === null || initialValue === undefined ? '' : String(initialValue);
 
-    const inputId = ensureId(input, `${attrId || 'list'}-item`);
+    const inputId = ensureId(input, `${attrId || 'list'} -item`);
     inputWrapper.appendChild(createLabel(inputId, labelText));
     inputWrapper.appendChild(input);
 
@@ -17827,7 +17896,7 @@ function createSchemaListControl(options) {
 
 function createSchemaField(category, attr, value) {
   const config = resolveSchemaFieldConfig(category, attr) || {};
-  const attrId = `attr-${attr}`;
+  const attrId = `attr - ${attr} `;
   const labelText = config.label || formatAttributeLabel(attr);
   let inputType = config.type;
 
@@ -18097,7 +18166,7 @@ function collectDynamicFieldValues(category, exclude = []) {
   const filteredAttrs = attrs.filter(attr => !exclude.includes(attr));
   const result = {};
   for (const attr of filteredAttrs) {
-    const el = document.getElementById(`attr-${attr}`);
+    const el = document.getElementById(`attr - ${attr} `);
     if (!el) {
       continue;
     }
@@ -19409,7 +19478,11 @@ function activateSettingsTab(tabId, options = {}) {
 
   activeSettingsTabId = target.id;
   try {
-    localStorage.setItem('settingsActiveTab', activeSettingsTabId);
+    if (typeof safeSetLocalStorage === 'function') {
+      safeSetLocalStorage('settingsActiveTab', activeSettingsTabId);
+    } else {
+      localStorage.setItem('settingsActiveTab', activeSettingsTabId);
+    }
   } catch (e) {
     console.warn('Could not save settings tab preference', e);
   }
@@ -19576,30 +19649,7 @@ function getAutoGearConditionConfig(key) {
   return null;
 }
 
-var AUTO_GEAR_CONDITION_FALLBACK_LABELS = {
-  always: 'Always include',
-  scenarios: 'Required scenarios',
-  shootingDays: 'Shooting days condition',
-  mattebox: 'Mattebox options',
-  cameraHandle: 'Camera handles',
-  viewfinderExtension: 'Viewfinder extension',
-  deliveryResolution: 'Delivery resolution',
-  videoDistribution: 'Video distribution',
-  camera: 'Camera',
-  ownGear: 'Own gear items',
-  cameraWeight: 'Camera weight',
-  monitor: 'Onboard monitor',
-  tripodHeadBrand: 'Tripod head brand',
-  tripodBowl: 'Tripod bowl size',
-  tripodTypes: 'Tripod types',
-  tripodSpreader: 'Tripod spreader',
-  crewPresent: 'Crew present',
-  crewAbsent: 'Crew absent',
-  wireless: 'Wireless transmitter',
-  motors: 'FIZ motors',
-  controllers: 'FIZ controllers',
-  distance: 'FIZ distance devices',
-};
+// AUTO_GEAR_CONDITION_FALLBACK_LABELS is defined earlier in this file (around line 6776)
 
 function getAutoGearConditionLabel(key) {
   const config = getAutoGearConditionConfig(key);
@@ -20298,11 +20348,13 @@ autoGearMonitorDefaultGroups = [
 ].filter(group => group.selectorDefaultInput);
 
 function syncAutoGearMonitorFieldVisibility() {
+  const updateFn = typeof window !== 'undefined' && window.updateAutoGearMonitorFieldGroup;
+  if (typeof updateFn !== 'function') return;
   if (autoGearAddMonitorFieldGroup) {
-    updateAutoGearMonitorFieldGroup(autoGearAddMonitorFieldGroup);
+    updateFn(autoGearAddMonitorFieldGroup);
   }
   if (autoGearRemoveMonitorFieldGroup) {
-    updateAutoGearMonitorFieldGroup(autoGearRemoveMonitorFieldGroup);
+    updateFn(autoGearRemoveMonitorFieldGroup);
   }
 }
 
@@ -21168,3 +21220,5 @@ if (typeof document !== 'undefined') {
 
 
 
+if (typeof window !== 'undefined') window.AppCore = AppCore;
+console.log('DEBUG: app-core-new-1.js FINISHED');

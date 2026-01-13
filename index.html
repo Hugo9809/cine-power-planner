@@ -18,7 +18,7 @@
   <meta name="application-name" content="Cine Power Planner" />
   <meta name="apple-mobile-web-app-title" content="Cine Power Planner" />
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; connect-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';" />
+    content="default-src 'self'; connect-src 'self' ws:; img-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';" />
   <meta name="referrer" content="no-referrer" />
   <meta name="color-scheme" content="light dark" />
   <title>Cine Power Planner</title>
@@ -40,6 +40,7 @@
   <link rel="icon" href="src/icons/app-icon.png" type="image/png" />
   <link rel="apple-touch-icon" href="src/icons/app-icon.png" />
   <link rel="manifest" href="manifest.webmanifest">
+
 </head>
 
 <body>
@@ -342,7 +343,7 @@
       </section>
 
       <!-- Auto Gear Rules View -->
-      <div id="view-rules" class="app-view hidden">
+      <div id="view-rules" class="app-view">
         <header class="v2-view-header">
           <button class="v2-mobile-menu-toggle" aria-label="Open menu">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -6546,17 +6547,21 @@
       </footer>
     </form>
   </dialog>
-  <script src="app-version.js" defer></script>
-  <script src="src/scripts/emergency-modal-cleanup.js" defer></script>
-
-  <script src="src/scripts/shims/commonjs-shim.js" defer></script>
-  <script src="src/scripts/shims/globals-legacy-shim.js" defer></script>
-  <script src="src/scripts/globals-bootstrap.js" defer></script>
-  <script src="src/scripts/loading-indicator-bootstrap.js" defer></script>
-  <script type="module" src="src/scripts/ui-feedback.js"></script>
-  <script src="src/scripts/modules/features/print-preview.js" defer></script>
-  <script src="src/scripts/loader.js?v=3" defer></script>
-  <script src="src/scripts/v2/bootstrap.js" defer></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
+  </script>
+  <!-- Main Vite Entry Point -->
+  <script type="module" src="/src/main.js"></script>
 </body>
 
 </html>

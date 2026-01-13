@@ -1,6 +1,4 @@
-/* global resolveCoreSupportModule, CORE_PART1_RUNTIME_SCOPE,
-          CORE_GLOBAL_SCOPE */
-/* exported createInlineRuntimeSharedFallback, localizationBootstrapWiring */
+
 
 /*
  * Thin wrapper around modules/app-core/bootstrap.js
@@ -21,45 +19,35 @@
  *
  * This separation allows the Core logic to stay pure while this "harness" handles the plumbing.
  */
-const APP_CORE_BOOTSTRAP_TOOLS = resolveCoreSupportModule(
-  'cineCoreAppCoreBootstrap',
-  './modules/app-core/bootstrap.js'
-);
+import { resolveCoreSupportModule } from './app-core-runtime-support.js';
+import {
+  cineCoreAppCoreBootstrap,
+  cineCoreAppCoreBootstrapResolver,
+  cineCoreAppCoreBootstrapFallbacks,
+  cineCoreAppCoreBootstrapEnvironment,
+  cineCoreAppCoreBootstrapResults,
+} from './modules/app-core/bootstrap.js';
+import {
+  cineCoreAppLocalizationSupport,
+  cineCoreAppLocalizationBootstrap,
+  cineCoreAppRuntimeLocalization,
+} from './modules/app-core/localization-fixed.js';
 
-const APP_CORE_LOCALIZATION_RUNTIME_TOOLS = resolveCoreSupportModule(
-  'cineCoreAppRuntimeLocalization',
-  './modules/app-core/localization.js'
-);
+const APP_CORE_BOOTSTRAP_TOOLS = cineCoreAppCoreBootstrap;
 
-const APP_CORE_LOCALIZATION_SUPPORT_TOOLS = resolveCoreSupportModule(
-  'cineCoreAppLocalizationSupport',
-  './modules/app-core/localization.js'
-);
+const APP_CORE_LOCALIZATION_RUNTIME_TOOLS = cineCoreAppRuntimeLocalization;
 
-const APP_CORE_LOCALIZATION_BOOTSTRAP_TOOLS = resolveCoreSupportModule(
-  'cineCoreAppLocalizationBootstrap',
-  './modules/app-core/localization.js'
-);
+const APP_CORE_LOCALIZATION_SUPPORT_TOOLS = cineCoreAppLocalizationSupport;
 
-const APP_CORE_BOOTSTRAP_RESOLVER_DIRECT = resolveCoreSupportModule(
-  'cineCoreAppCoreBootstrapResolver',
-  './modules/app-core/bootstrap.js'
-);
+const APP_CORE_LOCALIZATION_BOOTSTRAP_TOOLS = cineCoreAppLocalizationBootstrap;
 
-const APP_CORE_BOOTSTRAP_FALLBACK_DIRECT = resolveCoreSupportModule(
-  'cineCoreAppCoreBootstrapFallbacks',
-  './modules/app-core/bootstrap.js'
-);
+const APP_CORE_BOOTSTRAP_RESOLVER_DIRECT = cineCoreAppCoreBootstrapResolver;
 
-const APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS_DIRECT = resolveCoreSupportModule(
-  'cineCoreAppCoreBootstrapEnvironment',
-  './modules/app-core/bootstrap.js'
-);
+const APP_CORE_BOOTSTRAP_FALLBACK_DIRECT = cineCoreAppCoreBootstrapFallbacks;
 
-const APP_CORE_BOOTSTRAP_RESULTS_TOOLS_DIRECT = resolveCoreSupportModule(
-  'cineCoreAppCoreBootstrapResults',
-  './modules/app-core/bootstrap.js'
-);
+const APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS_DIRECT = cineCoreAppCoreBootstrapEnvironment;
+
+const APP_CORE_BOOTSTRAP_RESULTS_TOOLS_DIRECT = cineCoreAppCoreBootstrapResults;
 
 function getDefaultRuntimeScope() {
   return typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' && CORE_PART1_RUNTIME_SCOPE
@@ -140,22 +128,20 @@ const localizationBootstrapWiring =
       localizationBootstrapResult,
     })) || null;
 
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = {
-    localizationBootstrapWiring,
-    APP_CORE_BOOTSTRAP_SUITE,
-    APP_CORE_BOOTSTRAP_TOOLS,
-    APP_CORE_BOOTSTRAP_ENVIRONMENT,
-    APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS,
-    APP_CORE_BOOTSTRAP_RESULTS_TOOLS,
-    APP_CORE_BOOTSTRAP_RESOLVER_TOOLS,
-    APP_CORE_BOOTSTRAP_FALLBACK_TOOLS,
-    APP_CORE_BOOTSTRAP_RESOLVER_DIRECT,
-    APP_CORE_BOOTSTRAP_FALLBACK_DIRECT,
-    APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS_DIRECT,
-    APP_CORE_BOOTSTRAP_RESULTS_DIRECT: APP_CORE_BOOTSTRAP_RESULTS_TOOLS_DIRECT,
-  };
-}
+export {
+  localizationBootstrapWiring,
+  APP_CORE_BOOTSTRAP_SUITE,
+  APP_CORE_BOOTSTRAP_TOOLS,
+  APP_CORE_BOOTSTRAP_ENVIRONMENT,
+  APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS,
+  APP_CORE_BOOTSTRAP_RESULTS_TOOLS,
+  APP_CORE_BOOTSTRAP_RESOLVER_TOOLS,
+  APP_CORE_BOOTSTRAP_FALLBACK_TOOLS,
+  APP_CORE_BOOTSTRAP_RESOLVER_DIRECT,
+  APP_CORE_BOOTSTRAP_FALLBACK_DIRECT,
+  APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS_DIRECT,
+  APP_CORE_BOOTSTRAP_RESULTS_TOOLS_DIRECT as APP_CORE_BOOTSTRAP_RESULTS_DIRECT,
+};
 
 if (typeof globalThis !== 'undefined') {
   globalThis.localizationBootstrapWiring = localizationBootstrapWiring;

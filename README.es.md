@@ -93,18 +93,21 @@ La aplicación ahora cuenta con una interfaz de usuario V2 completamente redise�
    ```bash
    git clone /path/to/cine-power-planner.git
    cd cine-power-planner
+   npm install
    ```
    (Si recibiste un bundle offline, descomprímelo en una carpeta local.)
-2. Abre `index.html` directamente en un navegador compatible. Los assets se
-   cargan desde el repositorio, así que puedes desconectarte de inmediato.
-3. (Opcional) Sirve la carpeta con `http://localhost` para habilitar el service
-   worker y el aviso de instalación PWA. Cualquier servidor estático funciona
-   offline:
+2. Inicia el servidor de desarrollo:
    ```bash
-   python -m http.server
-   # o
-   npm run serve
+   npm run dev
    ```
+   Esto abre la app en `http://localhost:3000` con hot module replacement.
+3. Para builds de producción:
+   ```bash
+   npm run build      # Build a dist/
+   npm run preview    # Vista previa del build de producción
+   ```
+4. (Uso offline) Abre `index.html` directamente en un navegador compatible
+   para uso completamente offline. Los assets cargan sin conexión a red.
 
 ## Traducciones
 

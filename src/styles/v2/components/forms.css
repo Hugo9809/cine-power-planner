@@ -107,6 +107,8 @@
  * ===================== */
 .v2-select {
     width: 100%;
+    min-width: 200px;
+    height: auto !important;
     padding: 12px 14px;
     padding-right: 36px;
     /* Space for arrow */

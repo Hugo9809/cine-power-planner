@@ -1,0 +1,1 @@
+(function(s){s.APP_VERSION='1.0.52';if(typeof module!=='undefined')module.exports=s.APP_VERSION;})(typeof self!=='undefined'?self:this);

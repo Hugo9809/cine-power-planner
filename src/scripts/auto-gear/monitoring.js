@@ -16,16 +16,12 @@
 //   3. Decide if any of the selects contain a relevant value and show/hide the
 //      surrounding rows accordingly.
 //
+//
 // The helper is intentionally dependency free so that it remains robust when
 // executed in isolation by legacy entry points or during service worker driven
 // offline restores.
-(function () {
-  'use strict';
 
-  if (typeof document === 'undefined') {
-    return;
-  }
-
+if (typeof document !== 'undefined') {
   // Identifier of the master scenario select element. We still observe it so
   // that scenario changes and translations can trigger a visibility refresh.
   var SCENARIO_SELECT_ID = 'autoGearScenarios';
@@ -407,4 +403,10 @@
       performUpdate();
     };
   }
-})();
+}
+
+export function refresh() {
+  if (typeof window !== 'undefined' && window.autoGearMonitoringVisibility && window.autoGearMonitoringVisibility.refresh) {
+    window.autoGearMonitoringVisibility.refresh();
+  }
+}

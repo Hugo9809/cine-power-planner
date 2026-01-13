@@ -93,18 +93,21 @@ L'applicazione ora dispone di un'interfaccia utente V2 completamente riprogettat
    ```bash
    git clone /path/to/cine-power-planner.git
    cd cine-power-planner
+   npm install
    ```
    (Se hai ricevuto un bundle offline, decomprimilo in una cartella locale.)
-2. Apri `index.html` direttamente in un browser supportato. Tutti gli asset si
-   caricano dal repository, quindi puoi disconnetterti subito.
-3. (Opzionale) Servi la cartella su `http://localhost` per abilitare il service
-   worker e il prompt di installazione PWA. Qualsiasi server statico funziona
-   offline:
+2. Avvia il server di sviluppo:
    ```bash
-   python -m http.server
-   # oppure
-   npm run serve
+   npm run dev
    ```
+   Questo apre l'app su `http://localhost:3000` con hot module replacement.
+3. Per build di produzione:
+   ```bash
+   npm run build      # Build su dist/
+   npm run preview    # Anteprima del build di produzione
+   ```
+4. (Uso offline) Apri `index.html` direttamente in un browser supportato
+   per uso completamente offline. Gli asset si caricano senza connessione.
 
 ## Traduzioni
 

@@ -4,6 +4,12 @@
 
 const path = require('path');
 
+jest.mock('../../../src/scripts/modules/base.js', () => ({
+  get cineModuleBase() {
+    return global.cineModuleBase;
+  },
+}));
+
 describe('onboarding tour manual start', () => {
   let documentListeners = [];
   let globalListeners = [];

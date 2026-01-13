@@ -1,6 +1,35 @@
 const FAVORITES_KEY = 'cameraPowerPlanner_favorites';
 const DEVICE_KEY = 'cameraPowerPlanner_devices';
 const SESSION_FALLBACK_ALERT_FLAG_NAME = '__cameraPowerPlannerSessionFallbackAlertShown';
+global.BroadcastChannel = jest.fn();
+
+jest.mock('../../src/scripts/modules/storage/StorageRepository.js', () => ({
+  storageRepo: {
+    getItem: jest.fn(),
+    setItem: jest.fn(),
+    switchDriver: jest.fn(),
+    getKeys: jest.fn().mockResolvedValue([]),
+  },
+}));
+jest.mock('../../src/scripts/modules/storage/StorageMigrationService.js', () => ({
+  migrationService: {
+    runMigrationIfNeeded: jest.fn().mockResolvedValue(false),
+    init: jest.fn().mockResolvedValue(false),
+  },
+}));
+jest.mock('../../src/scripts/modules/storage/drivers/IndexedDBAdapter.js', () => jest.fn());
+jest.mock('../../src/scripts/console-helpers.js', () => ({}));
+jest.mock('../../src/scripts/modules/logging-resolver.js', () => ({}));
+jest.mock('../../src/scripts/modules/features/contacts.js', () => ({}));
+jest.mock('../../src/scripts/modules/gear/GearRepository.js', () => ({
+  gearRepo: {},
+}));
+jest.mock('../../src/scripts/modules/core/UserContext.js', () => ({
+  userContext: {},
+}));
+jest.mock('../../src/scripts/modules/storage/DataVault.js', () => ({
+  dataVault: {},
+}));
 
 const createQuotaStorage = (initialData = {}) => {
   const store = { ...initialData };
@@ -81,8 +110,8 @@ describe('SAFE_LOCAL_STORAGE fallback behaviour', () => {
       setItem: jest.fn(() => {
         throw new Error('blocked');
       }),
-      removeItem: jest.fn(() => {}),
-      clear: jest.fn(() => {}),
+      removeItem: jest.fn(() => { }),
+      clear: jest.fn(() => { }),
     };
 
     const defineBlockedDescriptor = (target) => {
@@ -102,6 +131,9 @@ describe('SAFE_LOCAL_STORAGE fallback behaviour', () => {
     }
 
     storageModule = require('../../src/scripts/storage');
+    if (storageModule && storageModule.default) {
+      storageModule = storageModule.default;
+    }
   });
 
   afterEach(() => {
@@ -152,9 +184,9 @@ describe('SAFE_LOCAL_STORAGE fallback behaviour', () => {
       if (local && typeof local.getItem === 'function') {
         localStorageValue = local.getItem(FAVORITES_KEY);
       }
-      } catch (storageAccessError) {
-        localStorageValue = null;
-        void storageAccessError;
+    } catch (storageAccessError) {
+      localStorageValue = null;
+      void storageAccessError;
     }
 
     expect(localStorageValue).toBeNull();
@@ -304,7 +336,7 @@ describe('SAFE_LOCAL_STORAGE compressed entry handling', () => {
       },
     };
 
-    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
   });
 
   afterEach(() => {
@@ -348,7 +380,10 @@ describe('SAFE_LOCAL_STORAGE compressed entry handling', () => {
   });
 
   test('recovers from backup when compressed primary value cannot be decoded', () => {
-    const storageModule = require('../../src/scripts/storage');
+    let storageModule = require('../../src/scripts/storage');
+    if (storageModule && storageModule.default) {
+      storageModule = storageModule.default;
+    }
     const result = storageModule.loadFavorites();
 
     expect(result).toEqual({ cameraSelect: ['Backup'] });
@@ -404,11 +439,11 @@ describe('SAFE_LOCAL_STORAGE alternate localStorage discovery', () => {
     });
 
     let realLocalStorage = null;
-      try {
-        realLocalStorage = global.localStorage;
-      } catch (storageAccessError) {
-        realLocalStorage = null;
-        void storageAccessError;
+    try {
+      realLocalStorage = global.localStorage;
+    } catch (storageAccessError) {
+      realLocalStorage = null;
+      void storageAccessError;
     }
 
     const blockedStorage = {
@@ -420,8 +455,8 @@ describe('SAFE_LOCAL_STORAGE alternate localStorage discovery', () => {
       setItem: jest.fn(() => {
         throw new Error('blocked');
       }),
-      removeItem: jest.fn(() => {}),
-      clear: jest.fn(() => {}),
+      removeItem: jest.fn(() => { }),
+      clear: jest.fn(() => { }),
     };
 
     Object.defineProperty(global.window, 'localStorage', {
@@ -446,6 +481,9 @@ describe('SAFE_LOCAL_STORAGE alternate localStorage discovery', () => {
     }
 
     storageModule = require('../../src/scripts/storage');
+    if (storageModule && storageModule.default) {
+      storageModule = storageModule.default;
+    }
   });
 
   afterEach(() => {
@@ -595,10 +633,13 @@ describe('SAFE_LOCAL_STORAGE downgrade handling', () => {
     global.localStorage = toggleStorage;
     global.sessionStorage = session;
 
-    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
+    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
 
     storageModule = require('../../src/scripts/storage');
+    if (storageModule && storageModule.default) {
+      storageModule = storageModule.default;
+    }
   });
 
   afterEach(() => {
@@ -734,7 +775,7 @@ describe('SAFE_LOCAL_STORAGE quota handling', () => {
       value: activeSession,
     });
 
-    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
   });
 
   afterEach(() => {
@@ -783,7 +824,11 @@ describe('SAFE_LOCAL_STORAGE quota handling', () => {
     });
     global.localStorage = quotaStorage;
 
-    const { getSafeLocalStorage, loadFavorites } = require('../../src/scripts/storage');
+    let storageModule = require('../../src/scripts/storage');
+    if (storageModule && storageModule.default) {
+      storageModule = storageModule.default;
+    }
+    const { getSafeLocalStorage, loadFavorites } = storageModule;
 
     expect(getSafeLocalStorage()).toBe(quotaStorage);
     expect(loadFavorites()).toEqual({ cameraSelect: ['Alexa Mini'] });
@@ -805,7 +850,11 @@ describe('SAFE_LOCAL_STORAGE quota handling', () => {
     });
     global.localStorage = quotaStorage;
 
-    const { getSafeLocalStorage, saveFavorites } = require('../../src/scripts/storage');
+    let storageModule = require('../../src/scripts/storage');
+    if (storageModule && storageModule.default) {
+      storageModule = storageModule.default;
+    }
+    const { getSafeLocalStorage, saveFavorites } = storageModule;
 
     expect(getSafeLocalStorage()).toBe(global.sessionStorage);
 
@@ -867,8 +916,8 @@ describe('SAFE_LOCAL_STORAGE upgrade behaviour', () => {
       setItem: jest.fn(() => {
         throw new Error('blocked');
       }),
-      removeItem: jest.fn(() => {}),
-      clear: jest.fn(() => {}),
+      removeItem: jest.fn(() => { }),
+      clear: jest.fn(() => { }),
     };
 
     Object.defineProperty(global.window, 'localStorage', {
@@ -958,7 +1007,11 @@ describe('SAFE_LOCAL_STORAGE upgrade behaviour', () => {
   });
 
   test('upgrades fallback storage to localStorage when it becomes available', () => {
-    const { saveFavorites, loadFavorites, getSafeLocalStorage } = require('../../src/scripts/storage');
+    let storageModule = require('../../src/scripts/storage');
+    if (storageModule && storageModule.default) {
+      storageModule = storageModule.default;
+    }
+    const { saveFavorites, loadFavorites, getSafeLocalStorage } = storageModule;
 
     const fallbackStorage = getSafeLocalStorage();
 
