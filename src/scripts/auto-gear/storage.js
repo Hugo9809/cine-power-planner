@@ -582,3 +582,47 @@ if (typeof globalThis !== 'undefined') {
         : (globalThis.AUTO_GEAR_STORAGE_EXPORTS = {});
     Object.assign(target, AUTO_GEAR_STORAGE_EXPORTS);
 }
+(function exposeAutoGearStorageGlobals() {
+    var candidateScopes = [
+        typeof globalThis !== 'undefined' ? globalThis : null,
+        typeof window !== 'undefined' ? window : null,
+        typeof self !== 'undefined' ? self : null,
+        typeof global !== 'undefined' ? global : null,
+    ];
+    var assignGlobal = function (scope, name, value) {
+        if (!scope || (typeof scope !== 'object' && typeof scope !== 'function'))
+            return;
+        if (typeof scope[name] === 'function')
+            return;
+        try {
+            scope[name] = value;
+        }
+        catch (assignError) {
+            void assignError;
+            try {
+                Object.defineProperty(scope, name, {
+                    configurable: true,
+                    enumerable: false,
+                    writable: true,
+                    value: value,
+                });
+            }
+            catch (defineError) {
+                void defineError;
+            }
+        }
+    };
+    var exportKeys = Object.keys(AUTO_GEAR_STORAGE_EXPORTS);
+    for (var scopeIndex = 0; scopeIndex < candidateScopes.length; scopeIndex += 1) {
+        var scope = candidateScopes[scopeIndex];
+        if (!scope)
+            continue;
+        for (var keyIndex = 0; keyIndex < exportKeys.length; keyIndex += 1) {
+            var name_1 = exportKeys[keyIndex];
+            var value = AUTO_GEAR_STORAGE_EXPORTS[name_1];
+            if (typeof value === 'function') {
+                assignGlobal(scope, name_1, value);
+            }
+        }
+    }
+})();

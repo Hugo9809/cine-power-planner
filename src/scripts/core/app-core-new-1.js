@@ -14456,6 +14456,8 @@ function createCrewRow(data = {}) {
 if (typeof window !== 'undefined') {
   window.createCrewRow = createCrewRow;
   window.createPrepRow = createPrepRow;
+  window.createShootRow = createShootRow;
+  window.createReturnRow = createReturnRow;
 }
 
 function createPrepRow(data = {}) {
@@ -16869,6 +16871,107 @@ var videoVideoInputsContainer = document.getElementById("videoVideoInputsContain
 var videoVideoOutputsContainer = document.getElementById("videoVideoOutputsContainer");
 var videoFrequencyInput = document.getElementById("videoFrequency");
 var videoLatencyInput = document.getElementById("videoLatency");
+
+function resolveFeedbackTemperatureBounds() {
+  const min = typeof FEEDBACK_TEMPERATURE_MIN_VALUE === 'number'
+    ? FEEDBACK_TEMPERATURE_MIN_VALUE
+    : typeof FEEDBACK_TEMPERATURE_MIN === 'number'
+      ? FEEDBACK_TEMPERATURE_MIN
+      : -20;
+  const max = typeof FEEDBACK_TEMPERATURE_MAX_VALUE === 'number'
+    ? FEEDBACK_TEMPERATURE_MAX_VALUE
+    : typeof FEEDBACK_TEMPERATURE_MAX_LIMIT === 'number'
+      ? FEEDBACK_TEMPERATURE_MAX_LIMIT
+      : 50;
+  return { min, max };
+}
+
+function ensureFeedbackTemperatureOptions(select) {
+  if (!select) return;
+  const { min, max } = resolveFeedbackTemperatureBounds();
+  const expectedOptions = max - min + 2;
+  const storedMin = select.getAttribute('data-temp-min');
+  const storedMax = select.getAttribute('data-temp-max');
+  if (
+    select.options.length === expectedOptions
+    && storedMin === String(min)
+    && storedMax === String(max)
+  ) {
+    return;
+  }
+  const previousValue = select.value;
+  select.innerHTML = '';
+  const emptyOpt = document.createElement('option');
+  emptyOpt.value = '';
+  emptyOpt.textContent = '';
+  select.appendChild(emptyOpt);
+  for (let temp = min; temp <= max; temp += 1) {
+    const opt = document.createElement('option');
+    opt.value = String(temp);
+    opt.textContent = String(temp);
+    select.appendChild(opt);
+  }
+  select.setAttribute('data-temp-min', String(min));
+  select.setAttribute('data-temp-max', String(max));
+  if (previousValue) {
+    const previousOption = Array.from(select.options).find(option => option.value === previousValue);
+    if (previousOption) {
+      select.value = previousValue;
+    }
+  }
+}
+
+function refreshFeedbackTemperatureLabel(lang = currentLang, unit) {
+  const labelText = getTemperatureColumnLabelForLang(
+    lang,
+    typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit
+  );
+  const label = document.getElementById('fbTemperatureLabelText');
+  if (label) {
+    label.textContent = `${labelText}:`;
+  }
+  const helpLinks = document.querySelectorAll('a.help-link[href="#fbTemperature"]');
+  helpLinks.forEach(link => {
+    if (link) {
+      link.textContent = labelText;
+    }
+  });
+}
+
+function updateFeedbackTemperatureOptions(lang = currentLang, unit) {
+  const tempSelect = document.getElementById('fbTemperature');
+  if (!tempSelect) return;
+  ensureFeedbackTemperatureOptions(tempSelect);
+  const resolvedLang = typeof lang === 'string' ? lang : currentLang;
+  const resolvedUnit = typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit;
+  const symbol = getTemperatureUnitSymbolForLang(resolvedLang, resolvedUnit);
+  Array.from(tempSelect.options).forEach(option => {
+    if (!option) return;
+    if (option.value === '') {
+      option.textContent = '';
+      return;
+    }
+    const numeric = Number(option.value);
+    if (!Number.isFinite(numeric)) {
+      option.textContent = option.value;
+      return;
+    }
+    const formatted = typeof formatTemperatureForDisplay === 'function'
+      ? formatTemperatureForDisplay(numeric, {
+        unit: resolvedUnit,
+        lang: resolvedLang,
+        includeSign: false,
+      })
+      : '';
+    option.textContent = formatted || `${numeric} ${symbol}`.trim();
+  });
+}
+
+if (typeof window !== 'undefined') {
+  window.ensureFeedbackTemperatureOptions = ensureFeedbackTemperatureOptions;
+  window.refreshFeedbackTemperatureLabel = refreshFeedbackTemperatureLabel;
+  window.updateFeedbackTemperatureOptions = updateFeedbackTemperatureOptions;
+}
 
 function normalizeTemperatureUnit(unit) {
   if (typeof unit === 'string') {

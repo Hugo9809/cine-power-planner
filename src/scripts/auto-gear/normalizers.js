@@ -18,6 +18,83 @@ var AUTO_GEAR_NORMALIZER_SCOPE = (typeof globalThis !== 'undefined' && globalThi
     || (typeof self !== 'undefined' && self)
     || (typeof global !== 'undefined' && global)
     || {};
+var stableStringify = (function resolveStableStringify() {
+    var candidateScopes = [
+        AUTO_GEAR_NORMALIZER_SCOPE,
+        AUTO_GEAR_NORMALIZER_SCOPE && AUTO_GEAR_NORMALIZER_SCOPE.global,
+        typeof globalThis !== 'undefined' ? globalThis : null,
+        typeof window !== 'undefined' ? window : null,
+        typeof self !== 'undefined' ? self : null,
+        typeof global !== 'undefined' ? global : null,
+    ];
+    for (var index = 0; index < candidateScopes.length; index += 1) {
+        var scope = candidateScopes[index];
+        if (!scope || (typeof scope !== 'object' && typeof scope !== 'function'))
+            continue;
+        if (typeof scope.stableStringify === 'function') {
+            return scope.stableStringify;
+        }
+        if (scope.cineCoreShared && typeof scope.cineCoreShared.stableStringify === 'function') {
+            return scope.cineCoreShared.stableStringify;
+        }
+    }
+    function fallbackStableStringify(value) {
+        if (value === null)
+            return 'null';
+        if (value === undefined)
+            return 'undefined';
+        if (Array.isArray(value)) {
+            var serialized = '[';
+            for (var index_1 = 0; index_1 < value.length; index_1 += 1) {
+                if (index_1 > 0) {
+                    serialized += ',';
+                }
+                serialized += fallbackStableStringify(value[index_1]);
+            }
+            serialized += ']';
+            return serialized;
+        }
+        if (typeof value === 'object') {
+            var keys = Object.keys(value).sort();
+            var serialized = '{';
+            for (var keyIndex = 0; keyIndex < keys.length; keyIndex += 1) {
+                var key = keys[keyIndex];
+                if (keyIndex > 0) {
+                    serialized += ',';
+                }
+                serialized += "".concat(JSON.stringify(key), ":").concat(fallbackStableStringify(value[key]));
+            }
+            serialized += '}';
+            return serialized;
+        }
+        return JSON.stringify(value);
+    }
+    for (var index_2 = 0; index_2 < candidateScopes.length; index_2 += 1) {
+        var scope = candidateScopes[index_2];
+        if (!scope || (typeof scope !== 'object' && typeof scope !== 'function'))
+            continue;
+        if (typeof scope.stableStringify !== 'function') {
+            try {
+                scope.stableStringify = fallbackStableStringify;
+            }
+            catch (assignError) {
+                void assignError;
+                try {
+                    Object.defineProperty(scope, 'stableStringify', {
+                        configurable: true,
+                        enumerable: false,
+                        writable: true,
+                        value: fallbackStableStringify,
+                    });
+                }
+                catch (defineError) {
+                    void defineError;
+                }
+            }
+        }
+    }
+    return fallbackStableStringify;
+})();
 function resolveAutoGearDefaultLanguageSource() {
     var candidateScopes = [
         AUTO_GEAR_NORMALIZER_SCOPE,

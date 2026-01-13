@@ -1074,6 +1074,44 @@ function getCoreRuntimeScopesSnapshot() {
   return CORE_RUNTIME_CANDIDATE_SCOPES.slice();
 }
 
+(function exposeCoreRuntimeScopesSnapshot() {
+  var candidateScopes = [
+    typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null,
+    typeof globalThis !== 'undefined' ? globalThis : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null,
+  ];
+
+  var assignSnapshot = function (scope) {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return;
+    }
+    if (typeof scope.getCoreRuntimeScopesSnapshot === 'function') {
+      return;
+    }
+    try {
+      scope.getCoreRuntimeScopesSnapshot = getCoreRuntimeScopesSnapshot;
+    } catch (assignError) {
+      void assignError;
+      try {
+        Object.defineProperty(scope, 'getCoreRuntimeScopesSnapshot', {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: getCoreRuntimeScopesSnapshot,
+        });
+      } catch (defineError) {
+        void defineError;
+      }
+    }
+  };
+
+  for (var index = 0; index < candidateScopes.length; index += 1) {
+    assignSnapshot(candidateScopes[index]);
+  }
+})();
+
 var CORE_PART2_RUNTIME_SCOPE =
   CORE_RUNTIME_SHARED && typeof CORE_RUNTIME_SHARED.ensurePrimaryScope === 'function'
     ? (function resolvePrimaryScopeWithShared() {
