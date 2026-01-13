@@ -339,15 +339,15 @@ if (GLOBAL_SCOPE) {
           const migrated = await migrationService.runMigrationIfNeeded();
           if (migrated) {
             console.log('[storage.js] Migration successful. Switching to IndexedDB.');
-            storageRepo.switchDriver(new IndexedDBAdapter());
-            hydrateProjectCache();
+            await storageRepo.switchDriver(new IndexedDBAdapter());
+            await hydrateProjectCache();
           }
         } else if (migrationService && typeof migrationService.init === 'function') {
           // Fallback for V2 init method
           const migrated = await migrationService.init();
           if (migrated) {
-            storageRepo.switchDriver(new IndexedDBAdapter());
-            hydrateProjectCache();
+            await storageRepo.switchDriver(new IndexedDBAdapter());
+            await hydrateProjectCache();
           }
         }
       } catch (migrationError) {
@@ -18093,7 +18093,6 @@ console.log('DEBUG: storage.js execution finished');
 
 export const cineStorage = STORAGE_API;
 export default STORAGE_API;
-
 
 
 
