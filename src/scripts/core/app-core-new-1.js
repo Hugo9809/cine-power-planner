@@ -55,6 +55,38 @@ function resolveAutoGearUIHelper(name) {
   return undefined;
 }
 
+// [Added by Agent] Helper to resolve auto-gear normalizers
+function resolveAutoGearNormalizer(name) {
+  if (typeof window !== 'undefined' && typeof window[name] === 'function') {
+    return window[name];
+  }
+  const scope = (typeof globalThis !== 'undefined' && globalThis) || (typeof window !== 'undefined' && window) || {};
+  if (typeof scope[name] === 'function') {
+    return scope[name];
+  }
+  const exports = scope.AUTO_GEAR_NORMALIZER_EXPORTS;
+  if (exports && typeof exports[name] === 'function') {
+    return exports[name];
+  }
+  return undefined;
+}
+
+// [Added by Agent] Helper to resolve auto-gear storage functions
+function resolveAutoGearStorageHelper(name) {
+  if (typeof window !== 'undefined' && typeof window[name] === 'function') {
+    return window[name];
+  }
+  const scope = (typeof globalThis !== 'undefined' && globalThis) || (typeof window !== 'undefined' && window) || {};
+  if (typeof scope[name] === 'function') {
+    return scope[name];
+  }
+  const exports = scope.AUTO_GEAR_STORAGE_EXPORTS;
+  if (exports && typeof exports[name] === 'function') {
+    return exports[name];
+  }
+  return undefined;
+}
+
 // Fallback implementation matching the signature in auto-gear/ui.js
 function createDeferredAutoGearRefresherFallback(functionName) {
   return function (selected) {
@@ -77,25 +109,62 @@ let AUTO_GEAR_MONITOR_DEFAULT_TYPES = (typeof window !== 'undefined' && window.A
   'on-camera': 'On-Camera',
   'director': 'Director',
   'video-village': 'Video Village',
-  'wireless': 'Wireless'
+  'wireless': 'Wireless',
 };
 
-// [Added by Agent] Missing Normalizers
-function normalizeAutoGearTriggerValue(value) {
-  if (typeof value !== 'string') return '';
-  return value.trim();
-}
-console.log('DEBUG: app-core-new-1.js milestone 50');
-function normalizeAutoGearScenarioLogic(value) {
-  if (value === 'any' || value === 'multiplier') return value;
-  return 'all';
-}
-function normalizeAutoGearScenarioPrimary(value) {
-  return typeof value === 'string' ? value.trim() : '';
-}
-function normalizeAutoGearScenarioMultiplier(value) {
-  const n = Number(value);
-  return Number.isFinite(n) && n > 0 ? n : 1;
+// [Added by Agent] Missing Normalizers with resolution strategy
+const normalizeAutoGearTriggerValue = (value) => (resolveAutoGearNormalizer('normalizeAutoGearTriggerValue') || ((v) => typeof v === 'string' ? v.trim() : ''))(value);
+const normalizeAutoGearScenarioLogic = (value) => (resolveAutoGearNormalizer('normalizeAutoGearScenarioLogic') || ((v) => (v === 'any' || v === 'multiplier') ? v : 'all'))(value);
+const normalizeAutoGearScenarioPrimary = (value) => (resolveAutoGearNormalizer('normalizeAutoGearScenarioPrimary') || ((v) => typeof v === 'string' ? v.trim() : ''))(value);
+const normalizeAutoGearScenarioMultiplier = (value) => (resolveAutoGearNormalizer('normalizeAutoGearScenarioMultiplier') || ((v) => { const n = Number(v); return Number.isFinite(n) && n > 0 ? n : 1; }))(value);
+const normalizeAutoGearSelectorType = (value) => (resolveAutoGearNormalizer('normalizeAutoGearSelectorType') || ((v) => typeof v === 'string' ? v.trim() : 'none'))(value);
+const normalizeAutoGearSelectorDefault = (type, value) => (resolveAutoGearNormalizer('normalizeAutoGearSelectorDefault') || ((t, v) => typeof v === 'string' ? v.trim() : ''))(type, value);
+const normalizeAutoGearMonitorDefaults = (value) => (resolveAutoGearNormalizer('normalizeAutoGearMonitorDefaults') || ((v) => ({ focus: '', handheld7: '', combo15: '', director15: '' })))(value);
+const normalizeAutoGearRule = (rule) => (resolveAutoGearNormalizer('normalizeAutoGearRule') || ((r) => r))(rule);
+const normalizeAutoGearPreset = (preset) => (resolveAutoGearNormalizer('normalizeAutoGearPreset') || ((p) => p))(preset);
+const normalizeAutoGearItem = (item) => (resolveAutoGearNormalizer('normalizeAutoGearItem') || ((i) => i))(item);
+const normalizeAutoGearConditionLogic = (value) => (resolveAutoGearNormalizer('normalizeAutoGearConditionLogic') || ((v) => v))(value);
+const normalizeAutoGearShootingDaysCondition = (value) => (resolveAutoGearNormalizer('normalizeAutoGearShootingDaysCondition') || ((v) => v))(value);
+
+// [Added by Agent] Missing Storage Helpers with resolution strategy
+const readAutoGearRulesFromStorage = () => (resolveAutoGearStorageHelper('readAutoGearRulesFromStorage') || (() => []))();
+const readAutoGearBackupRetentionFromStorage = () => (resolveAutoGearStorageHelper('readAutoGearBackupRetentionFromStorage') || (() => 0))();
+const readAutoGearBackupsFromStorage = (retention) => (resolveAutoGearStorageHelper('readAutoGearBackupsFromStorage') || (() => []))(retention);
+const readAutoGearPresetsFromStorage = () => (resolveAutoGearStorageHelper('readAutoGearPresetsFromStorage') || (() => []))();
+const readActiveAutoGearPresetIdFromStorage = () => (resolveAutoGearStorageHelper('readActiveAutoGearPresetIdFromStorage') || (() => null))();
+const readAutoGearAutoPresetIdFromStorage = () => (resolveAutoGearStorageHelper('readAutoGearAutoPresetIdFromStorage') || (() => ''))();
+const readAutoGearBackupVisibilityFromStorage = () => (resolveAutoGearStorageHelper('readAutoGearBackupVisibilityFromStorage') || (() => false))();
+const readAutoGearMonitorDefaultsFromStorage = () => (resolveAutoGearStorageHelper('readAutoGearMonitorDefaultsFromStorage') || (() => ({})))();
+const persistAutoGearBackupRetention = (value) => (resolveAutoGearStorageHelper('persistAutoGearBackupRetention') || (() => { }))(value);
+
+// Expose these to globalThis for compatibility
+if (typeof globalThis !== 'undefined') {
+  globalThis.createDeferredAutoGearRefresher = createDeferredAutoGearRefresher;
+  globalThis.focusAutoGearConditionPicker = focusAutoGearConditionPicker;
+  globalThis.configureAutoGearConditionButtons = configureAutoGearConditionButtons;
+  globalThis.AUTO_GEAR_MONITOR_DEFAULT_LABEL_KEYS = AUTO_GEAR_MONITOR_DEFAULT_LABEL_KEYS;
+  globalThis.AUTO_GEAR_MONITOR_DEFAULT_TYPES = AUTO_GEAR_MONITOR_DEFAULT_TYPES;
+  globalThis.normalizeAutoGearTriggerValue = normalizeAutoGearTriggerValue;
+  globalThis.normalizeAutoGearScenarioLogic = normalizeAutoGearScenarioLogic;
+  globalThis.normalizeAutoGearScenarioPrimary = normalizeAutoGearScenarioPrimary;
+  globalThis.normalizeAutoGearScenarioMultiplier = normalizeAutoGearScenarioMultiplier;
+  globalThis.normalizeAutoGearSelectorType = normalizeAutoGearSelectorType;
+  globalThis.normalizeAutoGearSelectorDefault = normalizeAutoGearSelectorDefault;
+  globalThis.normalizeAutoGearMonitorDefaults = normalizeAutoGearMonitorDefaults;
+  globalThis.normalizeAutoGearRule = normalizeAutoGearRule;
+  globalThis.normalizeAutoGearPreset = normalizeAutoGearPreset;
+  globalThis.normalizeAutoGearItem = normalizeAutoGearItem;
+  globalThis.normalizeAutoGearConditionLogic = normalizeAutoGearConditionLogic;
+  globalThis.normalizeAutoGearShootingDaysCondition = normalizeAutoGearShootingDaysCondition;
+  globalThis.readAutoGearRulesFromStorage = readAutoGearRulesFromStorage;
+  globalThis.readAutoGearBackupRetentionFromStorage = readAutoGearBackupRetentionFromStorage;
+  globalThis.readAutoGearBackupsFromStorage = readAutoGearBackupsFromStorage;
+  globalThis.readAutoGearPresetsFromStorage = readAutoGearPresetsFromStorage;
+  globalThis.readActiveAutoGearPresetIdFromStorage = readActiveAutoGearPresetIdFromStorage;
+  globalThis.readAutoGearAutoPresetIdFromStorage = readAutoGearAutoPresetIdFromStorage;
+  globalThis.readAutoGearBackupVisibilityFromStorage = readAutoGearBackupVisibilityFromStorage;
+  globalThis.readAutoGearMonitorDefaultsFromStorage = readAutoGearMonitorDefaultsFromStorage;
+  globalThis.persistAutoGearBackupRetention = persistAutoGearBackupRetention;
 }
 
 
