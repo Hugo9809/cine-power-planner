@@ -1,5 +1,6 @@
 import { dataVault } from '../../modules/storage/DataVault.js';
 import { storageRepo } from '../../modules/storage/StorageRepository.js';
+import { unwrapMetadata } from '../../modules/storage/SyncMetadata.js';
 
 const VIEW_ID = 'backups';
 
@@ -67,9 +68,7 @@ export const cineBackupsView = {
 
             let html = '<ul class="v2-list">';
             for (const filename of snapshots) {
-                // Parse timestamp from filename "snapshot_TIMESTAMP.json"
-                // Assuming format: project_ID_TIMESTAMP.json or similar
-                const displayName = filename.replace('.json', '').replace('snapshot_', '');
+                const displayName = filename.replace(/\.json$/i, '').replace(/^snapshot_/, '');
 
                 html += `
                     <li class="v2-list-item">
@@ -95,19 +94,28 @@ export const cineBackupsView = {
         if (!confirm(`Are you sure you want to restore ${filename}? This will overwrite current data.`)) return;
 
         try {
-            const data = await dataVault.restoreSnapshot(filename);
+            const snapshot = await dataVault.restoreSnapshot(filename);
+            const { data: projectData, meta } = unwrapMetadata(snapshot);
+            const fallbackId = filename.replace(/\.json$/i, '');
+            const projectId = (meta && meta.docId) || (projectData && projectData.id) || fallbackId;
 
-            // Restore logic: This depends on what the snapshot contains.
-            // Assuming it's a project export or full dump.
-            // For now, let's assume it's a project object.
-
-            if (data.id && data.name) {
-                await storageRepo.saveProject(data.id, data);
-                alert('Project restored successfully!');
-                // Reload or navigate
-            } else {
+            if (!projectData) {
                 alert('Unknown backup format.');
+                return;
             }
+
+            const sanitizedMeta = meta ? { ...meta, lock: null } : null;
+            const result = await storageRepo.saveProject(projectId, projectData, sanitizedMeta);
+            if (!result || result.success === false) {
+                const reason = result && result.error === 'PROJECT_LOCKED'
+                    ? 'This project is locked by another session.'
+                    : 'Unknown error.';
+                alert(`Restore failed. ${reason}`);
+                return;
+            }
+
+            alert('Project restored successfully!');
+            // Reload or navigate
         } catch (e) {
             alert('Failed to restore: ' + e.message);
         }
