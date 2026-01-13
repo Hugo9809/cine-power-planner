@@ -20,6 +20,77 @@ const AUTO_GEAR_NORMALIZER_SCOPE =
   || (typeof self !== 'undefined' && self)
   || (typeof global !== 'undefined' && global)
   || {};
+const stableStringify = (() => {
+  const candidateScopes = [
+    AUTO_GEAR_NORMALIZER_SCOPE,
+    AUTO_GEAR_NORMALIZER_SCOPE && AUTO_GEAR_NORMALIZER_SCOPE.global,
+    typeof globalThis !== 'undefined' ? globalThis : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null,
+  ];
+  for (let index = 0; index < candidateScopes.length; index += 1) {
+    const scope = candidateScopes[index] as any;
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) continue;
+    if (typeof scope.stableStringify === 'function') {
+      return scope.stableStringify;
+    }
+    if (scope.cineCoreShared && typeof scope.cineCoreShared.stableStringify === 'function') {
+      return scope.cineCoreShared.stableStringify;
+    }
+  }
+  const fallbackStableStringify = (value: any): string => {
+    if (value === null) return 'null';
+    if (value === undefined) return 'undefined';
+    if (Array.isArray(value)) {
+      let serialized = '[';
+      for (let index = 0; index < value.length; index += 1) {
+        if (index > 0) {
+          serialized += ',';
+        }
+        serialized += fallbackStableStringify(value[index]);
+      }
+      serialized += ']';
+      return serialized;
+    }
+    if (typeof value === 'object') {
+      const keys = Object.keys(value).sort();
+      let serialized = '{';
+      for (let keyIndex = 0; keyIndex < keys.length; keyIndex += 1) {
+        const key = keys[keyIndex];
+        if (keyIndex > 0) {
+          serialized += ',';
+        }
+        serialized += `${JSON.stringify(key)}:${fallbackStableStringify((value as any)[key])}`;
+      }
+      serialized += '}';
+      return serialized;
+    }
+    return JSON.stringify(value);
+  };
+  for (let index = 0; index < candidateScopes.length; index += 1) {
+    const scope = candidateScopes[index] as any;
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) continue;
+    if (typeof scope.stableStringify !== 'function') {
+      try {
+        scope.stableStringify = fallbackStableStringify;
+      } catch (assignError) {
+        void assignError;
+        try {
+          Object.defineProperty(scope, 'stableStringify', {
+            configurable: true,
+            enumerable: false,
+            writable: true,
+            value: fallbackStableStringify,
+          });
+        } catch (defineError) {
+          void defineError;
+        }
+      }
+    }
+  }
+  return fallbackStableStringify;
+})();
 
 function resolveAutoGearDefaultLanguageSource() {
   const candidateScopes = [
@@ -1731,4 +1802,3 @@ if (typeof globalThis !== 'undefined') {
   globalThis.AUTO_GEAR_MONITOR_DEFAULT_TYPES = AUTO_GEAR_MONITOR_DEFAULT_TYPES;
   globalThis.normalizeAutoGearMonitorDefaults = normalizeAutoGearMonitorDefaults;
 }
-
