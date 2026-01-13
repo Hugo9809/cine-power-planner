@@ -14865,6 +14865,7 @@ if (typeof window !== 'undefined') {
   window.getAvailableStorageMediaTypes = getAvailableStorageMediaTypes;
   window.getStorageVariantOptions = getStorageVariantOptions;
   window.updateStorageRequirementTypeOptions = updateStorageRequirementTypeOptions;
+  window.createStorageRequirementRow = createStorageRequirementRow;
 }
 
 function createStorageRequirementRow(data = {}) {
@@ -15032,7 +15033,7 @@ function updateStorageRequirementTranslations(projectFormTexts, fallbackProjectF
   const updateLabel = key => {
     const text = projectFormTexts[key] || fallbackProjectForm[key];
     if (!text) return;
-    document.querySelectorAll(`#storageNeedsContainer[data - storage - label - key= "${key}"]`).forEach(label => {
+    document.querySelectorAll(`#storageNeedsContainer [data-storage-label-key="${key}"]`).forEach(label => {
       label.textContent = text;
     });
   };
