@@ -18,9 +18,7 @@ function detectGlobalScope() {
 const GLOBAL_SCOPE = detectGlobalScope();
 
 function resolveModuleBase(scope) {
-  if (typeof cineModuleBase === 'object' && cineModuleBase) {
-    return cineModuleBase;
-  }
+
 
   if (typeof require === 'function') {
     try {
