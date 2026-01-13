@@ -1,4 +1,16 @@
 
+/**
+ * Cine Power Planner - Storage Orchestration
+ * 
+ * This module manages all persistence operations, project indexing, and data backups.
+ * It implements a hybrid architecture:
+ * 1. Synchronous Memory Cache: For near-instant reads and Auto-Gear compatibility.
+ * 2. Asynchronous Storage Drivers: Leveraging LocalStorage (legacy) and IndexedDB (modern).
+ * 3. Cross-Tab Coordination: synchronizing state across multiple open tabs via BroadcastChannel.
+ * 
+ * The module also handles the critical migration path from monolithic LocalStorage 
+ * to granular IndexedDB shards to ensure no data loss during application updates.
+ */
 console.log('DEBUG: storage.js execution started');
 // storage.js - Handles reading from and writing to localStorage.
 import * as consoleHelpersImport from './console-helpers.js';
@@ -18,6 +30,14 @@ let projectMemoryCache = {};
 let isProjectCacheHydrated = false;
 
 // Helper to hydrate cache from StorageRepository
+/**
+ * Synchronous Project Cache Hydration
+ * 
+ * RATIONALE: Certain application features (like Auto-Gear) require synchronous 
+ * access to project data. Since modern storage (IndexedDB) is inherently asynchronous, 
+ * we hydrate an in-memory cache on startup to provide the necessary performance 
+ * and compatibility guarantees.
+ */
 async function hydrateProjectCache() {
   if (isProjectCacheHydrated) return;
   console.log('[storage.js] Hydrating project cache from storage...');
@@ -241,6 +261,14 @@ if (GLOBAL_SCOPE && GLOBAL_SCOPE.__cineStorageInitialized) {
 }
 
 // [Added by Agent] Lifecycle channel for cross-tab coordination
+/**
+ * Lifecycle Channel (Cross-Tab Coordination)
+ * 
+ * RATIONALE: To ensure a consistent user experience when multiple tabs are open, 
+ * this channel broadcasts critical events like factory resets or project changes. 
+ * This prevents data corruption and ensures that all instances of the app 
+ * reflect the same underlying state.
+ */
 const LIFECYCLE_CHANNEL_NAME = 'cine-power-planner-lifecycle';
 let lifecycleChannel = null;
 const isJestWorker = typeof process !== 'undefined' && process && process.env && process.env.JEST_WORKER_ID;
@@ -327,12 +355,14 @@ if (GLOBAL_SCOPE) {
       value: true,
     });
 
-    // [Agent] Trigger Storage Migration
-    // We fire this asynchronously so we don't block the UI thread on startup.
-    // The Repository defaults to LocalStorage, so the app works immediately.
-    // Once migration finishes, we swap the driver to IndexedDB.
-    // [Agent] Trigger Storage Migration
-    // We fire this asynchronously so we don't block the UI thread on startup.
+    /**
+     * Storage Migration and Driver Initialization
+     * 
+     * RATIONALE: We fire the migration asynchronously to avoid blocking the main 
+     * thread during UI boot. The StorageRepository defaults to LocalStorage 
+     * for immediate availability, then upgrades to IndexedDB once the migration 
+     * (the "sharding" process) is safely completed.
+     */
     (async () => {
       try {
         if (migrationService && typeof migrationService.runMigrationIfNeeded === 'function') {
@@ -520,6 +550,15 @@ function storageCreateResilientDeepClone(scope) {
     return storageJsonDeepClone;
   }
 
+  /**
+   * Resilient Deep Clone Strategy
+   * 
+   * RATIONALE: Persistence operations frequently involve creating snapshots of large 
+   * project objects. To prevent accidental mutations of shared state, we use a 
+   * resilient cloning strategy that prioritizes native structuredClone, 
+   * falls back to JSON serialization, and finally uses a manual deep clone for 
+   * complex objects that cannot be normally serialized.
+   */
   return function storageResilientDeepClone(value) {
     if (value === null || typeof value !== 'object') {
       return value;

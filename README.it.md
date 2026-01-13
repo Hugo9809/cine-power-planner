@@ -59,6 +59,7 @@ workflow così ogni routine è documentata una sola volta.
   di crew ed esporta bundle o backup senza rischio di perdita dati.
 - **Operatività offline-first.** Ogni asset è nel repo, quindi auto-salvataggio,
   backup, ripristino, condivisione e help funzionano senza rete.
+- **Integrazione Firebase Studio.** Sincronizza facoltativamente i tuoi progetti sul cloud per la collaborazione in tempo reale e l'accesso da più dispositivi.
 - **Riepiloghi di compatibilità al ripristino.** Ogni ripristino elenca le
   sezioni mancanti e crea un backup di sicurezza prima della promozione.
 

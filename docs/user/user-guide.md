@@ -26,6 +26,7 @@ This guide expands on the workflows, features, and safety practices for using Ci
   with the repo. Autosave, backup, restore, share and help systems run entirely
   on-device so crews can rehearse and operate in fully disconnected
   environments.
+- **Firebase Studio Integration.** Optionally sync your projects to the cloud for real-time collaboration and multi-device access.
 - **Local backup vault resilience.** When automatic downloads are blocked, the
   planner queues backups in a local vault and surfaces a banner action so
   exports still happen offline without losing a snapshot.

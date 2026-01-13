@@ -172,6 +172,147 @@
         };
     }
 
+    // Auto-Gear ReferenceError Shims
+    if (typeof window.autoGearBackups === "undefined") window.autoGearBackups = [];
+    if (typeof window.autoGearBackupEmptyMessage === "undefined") window.autoGearBackupEmptyMessage = null;
+    if (typeof window.autoGearEditorActiveItem === "undefined") window.autoGearEditorActiveItem = null;
+    if (typeof window.autoGearShowBackupsCheckbox === "undefined") window.autoGearShowBackupsCheckbox = null;
+    if (typeof window.autoGearMonitorCatalogUpdatePending === "undefined") window.autoGearMonitorCatalogUpdatePending = false;
+    if (typeof window.autoGearAutoPresetIdState === "undefined") window.autoGearAutoPresetIdState = '';
+
+    if (typeof window.actionMap === "undefined") window.actionMap = new Map();
+
+    if (typeof window.autoGearScenarioFilter === "undefined") window.autoGearScenarioFilter = 'all';
+    if (typeof window.hasSeededAutoGearDefaults !== 'function') window.hasSeededAutoGearDefaults = function () { return false; };
+
+    if (typeof window.autoGearRules === "undefined") window.autoGearRules = [];
+    if (typeof window.baseAutoGearRulesState === "undefined") window.baseAutoGearRulesState = [];
+    if (typeof window.projectScopedAutoGearRules === "undefined") window.projectScopedAutoGearRules = null;
+    if (typeof window.autoGearPresets === "undefined") window.autoGearPresets = [];
+    if (typeof window.autoGearBackupsVisible === "undefined") window.autoGearBackupsVisible = false;
+    if (typeof window.autoGearMonitorDefaults === "undefined") window.autoGearMonitorDefaults = {};
+    if (typeof window.autoGearEditorDraft === "undefined") window.autoGearEditorDraft = null;
+    if (typeof window.autoGearSearchQuery === "undefined") window.autoGearSearchQuery = '';
+    if (typeof window.autoGearSummaryFocus === "undefined") window.autoGearSummaryFocus = 'all';
+
+    // Additional UI Reference Shims
+    if (typeof window.autoGearSearchInput === "undefined") window.autoGearSearchInput = document.getElementById('autoGearSearch');
+    if (typeof window.autoGearFilterScenarioSelect === "undefined") window.autoGearFilterScenarioSelect = document.getElementById('autoGearFilterScenario');
+    if (typeof window.autoGearFilterClearButton === "undefined") window.autoGearFilterClearButton = document.getElementById('autoGearFilterClear');
+    if (typeof window.autoGearDeletePresetButton === "undefined") window.autoGearDeletePresetButton = document.getElementById('autoGearDeletePreset');
+    if (typeof window.autoGearDraftPendingWarnings === "undefined") window.autoGearDraftPendingWarnings = null;
+    if (typeof window.autoGearBackupsHiddenNotice === "undefined") window.autoGearBackupsHiddenNotice = document.getElementById('autoGearBackupsHiddenNotice');
+    if (typeof window.batteryCountElem === "undefined") window.batteryCountElem = document.getElementById('batteryCount');
+    if (typeof window.autoGearDraftImpactList === "undefined") window.autoGearDraftImpactList = document.getElementById('autoGearDraftImpactList');
+    if (typeof window.autoGearDraftWarningList === "undefined") window.autoGearDraftWarningList = document.getElementById('autoGearDraftWarningList');
+    if (typeof window.autoGearDraftWarningContainer === "undefined") window.autoGearDraftWarningContainer = document.getElementById('autoGearDraftWarningContainer');
+    if (typeof window.autoGearBackupsSection === "undefined") window.autoGearBackupsSection = document.getElementById('autoGearBackupsSection');
+    if (typeof window.autoGearBackupControls === "undefined") window.autoGearBackupControls = document.getElementById('autoGearBackupControls');
+    if (typeof window.autoGearBackupSelect === "undefined") window.autoGearBackupSelect = document.getElementById('autoGearBackupSelect');
+    if (typeof window.autoGearBackupRestoreButton === "undefined") window.autoGearBackupRestoreButton = document.getElementById('autoGearBackupRestore');
+    if (typeof window.autoGearRulesList === "undefined") window.autoGearRulesList = document.getElementById('autoGearRulesList');
+    if (typeof window.autoGearPresetSelect === "undefined") window.autoGearPresetSelect = document.getElementById('autoGearPresetSelect');
+    if (typeof window.autoGearSavePresetButton === "undefined") window.autoGearSavePresetButton = document.getElementById('autoGearSavePreset');
+    if (typeof window.autoGearEditor === "undefined") window.autoGearEditor = document.getElementById('autoGearEditor');
+
+    if (typeof window.applyFilterSelectionsToGearList !== 'function') window.applyFilterSelectionsToGearList = function () { };
+    if (typeof window.openDialog !== 'function') window.openDialog = function () { };
+    if (typeof window.isDialogOpen !== 'function') window.isDialogOpen = function () { return false; };
+
+    // Categorized Auto-Gear Selectors
+    var autoGearSelectors = [
+        'autoGearCameraSelect', 'autoGearOwnGearSelect', 'autoGearMonitorSelect',
+        'autoGearMotorsSelect', 'autoGearControllersSelect', 'autoGearDistanceSelect',
+        'autoGearWirelessSelect', 'autoGearVideoDistributionSelect', 'autoGearTripodHeadBrandSelect',
+        'autoGearTripodBowlSelect', 'autoGearTripodTypesSelect', 'autoGearTripodSpreaderSelect',
+        'autoGearCrewPresentSelect', 'autoGearCrewAbsentSelect', 'autoGearDeliveryResolutionSelect',
+        'autoGearMatteboxSelect', 'autoGearViewfinderExtensionSelect', 'autoGearScenariosSelect',
+        'autoGearAddOwnGearSelect', 'autoGearRemoveOwnGearSelect', 'autoGearAddCategorySelect',
+        'autoGearRemoveCategorySelect', 'autoGearScenarioModeSelect', 'autoGearCameraWeightModeSelect',
+        'autoGearCameraModeSelect', 'autoGearOwnGearModeSelect', 'autoGearMonitorModeSelect',
+        'autoGearMotorsModeSelect', 'autoGearControllersModeSelect', 'autoGearDistanceModeSelect',
+        'autoGearWirelessModeSelect', 'autoGearVideoDistributionModeSelect', 'autoGearTripodHeadBrandModeSelect',
+        'autoGearTripodBowlModeSelect', 'autoGearTripodTypesModeSelect', 'autoGearTripodSpreaderModeSelect',
+        'autoGearCrewPresentModeSelect', 'autoGearCrewAbsentModeSelect', 'autoGearDeliveryResolutionModeSelect',
+        'autoGearMatteboxModeSelect', 'autoGearViewfinderExtensionModeSelect',
+        'autoGearAddNameInput', 'autoGearAddQuantityInput', 'autoGearAddScreenSizeInput',
+        'autoGearAddNotesInput', 'autoGearRemoveNameInput', 'autoGearRemoveQuantityInput',
+        'autoGearRemoveScreenSizeInput', 'autoGearRemoveNotesInput', 'autoGearImportInput',
+        'autoGearBackupRetentionInput', 'autoGearAddItemButton', 'autoGearRemoveItemButton',
+        'autoGearSaveRuleButton', 'autoGearCancelEditButton', 'autoGearExportButton',
+        'autoGearImportButton', 'autoGearAddList', 'autoGearRemoveList',
+        'autoGearDraftImpactContainer', 'autoGearDraftImpactList',
+        'autoGearDraftWarningContainer', 'autoGearDraftWarningList',
+        'autoGearAddSelectorDefaultInput', 'autoGearRemoveSelectorDefaultInput',
+        'autoGearSummarySection', 'autoGearSummaryHeadingElem', 'autoGearSummaryDescriptionElem',
+        'autoGearSummaryCards', 'autoGearSummaryDetails', 'autoGearSummaryLast',
+        'autoGearMonitorDefaultsSection', 'autoGearCameraWeightSection',
+        'autoGearHeadingElem', 'autoGearMonitorDefaultsHeading', 'autoGearAddItemsHeading',
+        'autoGearRemoveItemsHeading', 'autoGearDraftImpactHeading', 'autoGearDraftWarningHeading',
+        'autoGearBackupsHeading', 'autoGearDescriptionElem', 'autoGearMonitorDefaultsDescription',
+        'autoGearSearchLabel', 'autoGearFilterScenarioLabel', 'autoGearPresetDescription',
+        'autoGearPresetLabel', 'autoGearConditionSelectLabel', 'autoGearAlwaysLabel',
+        'autoGearAlwaysHelp', 'autoGearDefaultFocusMonitorLabel', 'autoGearDefaultHandheldMonitorLabel',
+        'autoGearDefaultComboMonitorLabel', 'autoGearDefaultDirectorMonitorLabel',
+        'autoGearBackupsDescription', 'autoGearDraftImpactDescription',
+        'autoGearDefaultFocusMonitorSelect', 'autoGearDefaultHandheldMonitorSelect',
+        'autoGearDefaultComboMonitorSelect', 'autoGearDefaultDirectorMonitorSelect',
+        'autoGearConditionSelect', 'autoGearSavePresetButton', 'autoGearDeletePresetButton',
+        'autoGearAddRuleBtn', 'autoGearResetFactoryButton', 'autoGearConditionAddButton',
+        'autoGearMonitorDefaultControls', 'autoGearRulesList', 'autoGearConditionControls',
+        'autoGearConditionList', 'autoGearConditionAddShortcuts', 'autoGearConditionRemoveButtons',
+        'autoGearSummaryFocus'
+    ];
+
+    autoGearSelectors.forEach(function (name) {
+        if (typeof window[name] === "undefined") {
+            var id = name.replace('Select', '').replace('autoGear', 'autoGear'); // Fallback logic
+            // Most of these follow a pattern, but some don't. document.getElementById is safest.
+            window[name] = document.getElementById(name.replace('Select', '')) || null;
+        }
+    });
+
+    if (typeof window.getAutoGearOwnGearItems !== 'function') window.getAutoGearOwnGearItems = function () { return []; };
+    if (typeof window.findAutoGearOwnGearById !== 'function') window.findAutoGearOwnGearById = function () { return null; };
+    if (typeof window.formatOwnGearQuantityText !== 'function') window.formatOwnGearQuantityText = function (q) { return q; };
+    if (typeof window.collectAutoGearSelectedValues !== 'function') window.collectAutoGearSelectedValues = function () { return []; };
+    if (typeof window.buildFilterGearEntries !== 'function') window.buildFilterGearEntries = function () { return []; };
+    if (typeof window.collectFilterAccessories !== 'function') window.collectFilterAccessories = function () { return []; };
+    if (typeof window.buildFilterSelectHtml !== 'function') window.buildFilterSelectHtml = function () { return ''; };
+    if (typeof window.gearItemTranslations === 'undefined') window.gearItemTranslations = {};
+
+    if (typeof window.refreshAutoGearScenarioFilterOptions !== 'function') {
+        window.refreshAutoGearScenarioFilterOptions = function () { };
+    }
+    if (typeof window.updateAutoGearMonitorCatalogOptions !== 'function') {
+        window.updateAutoGearMonitorCatalogOptions = function () { };
+    }
+    if (typeof window.sortAutoGearPresets !== 'function') {
+        window.sortAutoGearPresets = function (presets) { return Array.isArray(presets) ? presets : []; };
+    }
+    if (typeof window.activateSettingsTab !== 'function') {
+        window.activateSettingsTab = function () { };
+    }
+    if (typeof window.activeSettingsTabId === 'undefined') {
+        window.activeSettingsTabId = '';
+    }
+    if (typeof window.ensureGearListActions !== 'function') {
+        window.ensureGearListActions = function () { };
+    }
+    if (typeof window.setInstallBannerOffset !== 'function') {
+        window.setInstallBannerOffset = function () { };
+    }
+    if (typeof window.parseFilterTokens !== 'function') {
+        // Fallback that will be overridden by app-session.js once it loads
+        window.parseFilterTokens = function (str) {
+            if (!str) return [];
+            return str.split(',').map(s => {
+                const parts = s.split(':').map(p => p.trim());
+                return { type: parts[0], size: parts[1] || '4x5.65', values: parts[2] ? parts[2].split('|') : [] };
+            }).filter(t => t.type);
+        };
+    }
+
     console.log("Legacy globals shim executed. Global UI references and localeSort restored.");
 
     // Helper functions restored for app-session.js

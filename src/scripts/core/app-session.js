@@ -18275,6 +18275,13 @@ const setupHelpSystem = () => {
     return val.trim().toLowerCase();
   };
 
+  function normalizeGearNameForComparison(name) {
+    if (typeof name !== 'string') return '';
+    return name.trim().toLowerCase().replace(/\s+/g, ' ');
+  }
+  if (typeof window !== 'undefined') {
+    window.normalizeGearNameForComparison = normalizeGearNameForComparison;
+  }
   const recordFeatureSearchUsage = (key, type, label) => {
     // Placeholder for usage tracking
     if (typeof console !== 'undefined' && console.debug) {
@@ -20769,6 +20776,7 @@ function buildFilterGearEntries(filters = []) {
   });
   return entries;
 }
+if (typeof window !== 'undefined') window.buildFilterGearEntries = buildFilterGearEntries;
 
 function updateGearListFilterEntries(entries = []) {
   if (!gearListOutput) return;
@@ -21298,10 +21306,12 @@ function normalizeGearNameForComparison(name) {
   normalized = normalized.toLowerCase();
   return normalized.replace(/[^a-z0-9]+/g, '');
 }
+if (typeof window !== 'undefined') window.applyFilterSelectionsToGearList = applyFilterSelectionsToGearList;
 
 function buildFilterSelectHtml() {
   return '<div id="gearListFilterDetails" class="hidden" aria-live="polite"></div>';
 }
+if (typeof window !== 'undefined') window.buildFilterSelectHtml = buildFilterSelectHtml;
 
 function collectFilterAccessories(filters = []) {
   const items = [];
@@ -21316,6 +21326,7 @@ function collectFilterAccessories(filters = []) {
   });
   return items;
 }
+if (typeof window !== 'undefined') window.collectFilterAccessories = collectFilterAccessories;
 
 const USER_BUTTON_FUNCTION_ITEMS = [
   { key: 'toggleLut', value: 'Toggle LUT' },

@@ -63,6 +63,7 @@ Routine nur einmal dokumentiert ist.
   Anforderungen und exportiere Bundles oder Backups ohne Datenverlust.
 - **Offline-first Betrieb.** Jedes Asset ist im Repo enthalten, sodass Autosave,
   Backup, Restore, Sharing und Hilfe vollständig offline funktionieren.
+- **Firebase Studio Integration.** Synchronisiere deine Projekte optional in die Cloud für Echtzeit-Zusammenarbeit und Zugriff von mehreren Geräten.
 - **Restore-Kompatibilitätsübersichten.** Jeder Restore listet fehlende
   Abschnitte und erstellt ein Sicherheits-Backup, bevor Daten übernommen werden.
 

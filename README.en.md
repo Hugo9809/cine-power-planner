@@ -58,6 +58,7 @@ workflow so each routine is documented once.
   requirements, then export bundles or backups without risking data loss.
 - **Offline-first operation.** Every asset ships with the repo, so autosave,
   backup, restore, share, and help stay fully functional without a network.
+- **Firebase Studio Integration.** Optionally sync your projects to the cloud for real-time collaboration and multi-device access.
 - **Restore compatibility summaries.** Every restore lists missing sections and
   keeps a pre-restore safety backup so crews can verify changes before
   promotion.

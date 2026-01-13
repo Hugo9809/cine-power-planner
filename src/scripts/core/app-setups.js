@@ -6447,11 +6447,17 @@ function populateProjectForm(info = {}) {
     if (typeof setSliderBowlValue === 'function') {
       setSliderBowlValue(info.sliderBowl || '');
     }
-    setEasyrigValue(info.easyrig || '');
-    const filterTokens = parseFilterTokens(info.filter);
-    populateFilterDropdown(filterTokens.map(t => t.type));
+    if (typeof setEasyrigValue === 'function') {
+      setEasyrigValue(info.easyrig || '');
+    }
+    const filterTokens = typeof parseFilterTokens === 'function' ? parseFilterTokens(info.filter) : [];
+    if (typeof populateFilterDropdown === 'function') {
+      populateFilterDropdown(filterTokens.map(t => t.type));
+    }
     setMulti('filter', filterTokens.map(t => t.type));
-    renderFilterDetails(filterTokens);
+    if (typeof renderFilterDetails === 'function') {
+      renderFilterDetails(filterTokens);
+    }
     filterTokens.forEach(({ type, size, values }) => {
       const sizeSel = document.getElementById(`filter-size-${filterId(type)}`);
       if (sizeSel) sizeSel.value = size;

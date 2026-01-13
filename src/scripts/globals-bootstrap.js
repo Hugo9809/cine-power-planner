@@ -218,6 +218,14 @@ function __cineFallbackResolveAutoGearBackupRetentionDefault(scope) {
   return fallback;
 }
 
+/**
+ * Global Protocol Orchestration
+ * 
+ * RATIONALE: This bootstrap wrapper ensures that critical globals like 'autoGearAutoPresetId' 
+ * are correctly initialized and mirrored across the provided window and module scopes. 
+ * Using the 'ensure*' pattern, it prevents double-initialization while guaranteeing 
+ * that the application state remains predictable across diverse runtimes (Browser, ESM, Jest).
+ */
 (function bootstrapCoreRuntimeGlobals() {
   var scope =
     (typeof globalThis !== 'undefined' && globalThis) ||

@@ -1,32 +1,45 @@
-# Implementation Plan - Fix Boot and CSP Errors
+# Implementation Plan - Improve Codebase Comments
 
-An error in `src/scripts/storage.js` is preventing the application from booting. Additionally, a Content Security Policy (CSP) violation is blocking the service worker or HMR worker.
-
-## User Review Required
-> [!IMPORTANT]
-> I will be modifying `src/scripts/storage.js` to move logging statements after imports.
-> I will also check and potentially modify `index.html` or `vite.config.js` to adjust CSP settings if needed, but primarily focusing on `storage.js` first.
+This plan outlines the approach to enhance the quality and depth of comments across the Cine Power Planner codebase, specifically focusing on the core runtime and storage orchestration. The goal is to adhere to the **Semantic Code Mandate**, prioritizing "why" over "what" and documenting complex logic and public interfaces.
 
 ## Proposed Changes
 
-### Storage Module
-#### [MODIFY] [storage.js](file:///Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js)
-- Move `console.log('DEBUG: storage.js execution started');` to after the import statements.
-- Ensure no other statements precede imports.
+### Core Runtime Layer
+Enhance documentation for the dual-part core architecture, specifically explaining the resolution strategies and ESM/legacy compatibility layers.
 
-### CSP / Service Worker (Investigation)
-- Analyze `index.html` for CSP meta tags.
-- If a CSP meta tag exists, update it to allow `blob:` for `worker-src` or `script-src` to fix the `client:935` error (which seems to be Vite's HMR worker).
+#### [MODIFY] [app-core-new-1.js](file:///Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/core/app-core-new-1.js)
+- Add comprehensive module-level documentation explaining Part 1's role in the bootstrap process.
+- Document the `resolveAutoGearUIHelper` and `createSafeShim` patterns, explaining why they are used to prevent recursion and handle dynamic resolution.
+- Enhance comments for the `TEMPERATURE_SCENARIOS` and `focusScaleValues` resolution logic.
+
+#### [MODIFY] [app-core-new-2.js](file:///Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/core/app-core-new-2.js)
+- Add module-level documentation explaining Part 2's role in UI orchestration and event handling.
+- Document the `resolveRuntimeScopeFunction` and `createDynamicScopeFunctionResolver` patterns, explaining how they facilitate a flexible event-driven architecture.
+- Explain the `declareCoreFallbackBinding` mechanism and its importance for resilience.
+
+### Storage and Persistence Layer
+Improve documentation for the storage orchestration, including the migration path from LocalStorage to IndexedDB and the cache hydration strategy.
+
+#### [MODIFY] [storage.js](file:///Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/storage.js)
+- Document the hybrid storage architecture (Synchronous Cache + Asynchronous IDB).
+- Explain the rationale behind the `hydrateProjectCache` logic and its deterministic ordering.
+- Add intent-based comments to the `LIFECYCLE_CHANNEL` logic for cross-tab coordination.
+- Document the resilient deep clone strategy and why multiple fallbacks are necessary.
+
+### Other Modules
+Minor improvements to smaller, yet critical modules.
+
+#### [MODIFY] [globals-bootstrap.js](file:///Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/globals-bootstrap.js)
+- Document the global initialization sequence and its impact on the rest of the application.
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `npm run lint` to ensure `storage.js` is lint-free.
-- Run `npm run test:unit` (or specific storage tests) to ensure no regressions.
+I will run existing unit and integration tests to ensure that the added comments do not introduce any syntax errors or regressions (via accidental edits).
+- `npm run test` or `npx jest tests/unit/storage.test.js`
+- `npx jest tests/unit/runtimeModule.test.js`
 
 ### Manual Verification
-- Start the server `npm run dev`.
-- detailed-check: Warning logs for `storage.js` 500 error should disappear.
-- detailed-check: The application should load (no white screen).
-- Check console for "storage.js execution started" log.
-- Check if the CSP error "violates the following Content Security Policy directive" is resolved.
+- Start the development server using `npm run dev`.
+- Verify the application boots without errors in the browser console.
+- Perform basic storage operations (save/load project) to ensure persistence logic remains sound.

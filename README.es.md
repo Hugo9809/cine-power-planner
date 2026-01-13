@@ -59,6 +59,7 @@ workflow para que cada rutina se documente una sola vez.
   requisitos de crew, y exporta bundles o backups sin riesgo de pérdida.
 - **Funcionamiento offline-first.** Cada asset está en el repo, por lo que
   autoguardado, backup, restauración, compartir y ayuda funcionan sin red.
+- **Integración con Firebase Studio.** Sincroniza opcionalmente tus proyectos en la nube para colaboración en tiempo real y acceso desde múltiples dispositivos.
 - **Resúmenes de compatibilidad al restaurar.** Cada restauración muestra
   secciones faltantes y crea un backup previo para verificar cambios.
 

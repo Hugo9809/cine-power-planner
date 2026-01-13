@@ -1,3 +1,16 @@
+/**
+ * Cine Power Planner - Core Runtime Part 2
+ * 
+ * This module orchestrates the application's UI interactions, event handling, 
+ * and high-level business logic. Key responsibilities include:
+ * 1. UI Bridge Resolution: Connecting core logic to browser DOM operations.
+ * 2. Dynamic Scope Resolution: Enabling a flexible event-driven architecture 
+ *    that can safely call functions across different modules and global namespaces.
+ * 3. State Management Support: Facilitating project info tracking and setup state signatures.
+ * 
+ * Part 2 relies on the foundation established by Part 1 and provides the reactive layer 
+ * that users interact with.
+ */
 /* global CORE_GLOBAL_SCOPE, CORE_PART2_RUNTIME_HELPERS, setSelectValue */
 
 if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initialized) {
@@ -473,6 +486,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
 
 
+    /**
+     * Resilient Function Resolution Across Runtime Scopes
+     * 
+     * RATIONALE: The application architecture uses multiple "scopes" (Global, Shared, Part 2, etc.) 
+     * to hold logic. This helper allows the application to find a specific function by name 
+     * by traversing these scopes in a prioritized order. This is critical for supporting 
+     * a modular system where different parts might be loaded or updated independently.
+     * 
+     * @param {string} name - The name of the function to resolve.
+     * @param {Array|function} exclude - Functions to ignore during resolution (to prevent recursion).
+     * @returns {function|null} - The resolved function reference.
+     */
     function resolveRuntimeScopeFunction(name, exclude) {
       if (typeof name !== 'string' || !name) {
         return null;
@@ -586,6 +611,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return null;
     }
 
+    /**
+     * Dynamic Scope Function Proxy Creator
+     * 
+     * RATIONALE: Instead of calling functions directly, the core uses these proxies 
+     * to resolve the "live" implementation at runtime. This allows modules to be patched 
+     * or swapped without breaking existing references. If no implementation is found, 
+     * the proxy executes a safe fallback.
+     * 
+     * @param {string} name - The name of the function to proxy.
+     * @param {function} fallback - The safety implementation if resolution fails.
+     * @returns {function} - A proxy function that resolves dynamically on every call.
+     */
     function createDynamicScopeFunctionResolver(name, fallback) {
       const fallbackFn = typeof fallback === 'function'
         ? fallback
@@ -717,6 +754,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     ensureGlobalFunctionBinding('getCurrentSetupKey', getCurrentSetupKey);
     ensureGlobalFunctionBinding('updateStorageSummary', updateStorageSummary);
 
+    /**
+     * Declare Core Fallback Bindings
+     * 
+     * RATIONALE: Some state or functions are critical for the application's survival. 
+     * This mechanism ensures that even if the primary source fails, a resilient 
+     * fallback (often involving storage recovery) is established and shared 
+     * across all active runtime scopes.
+     */
     var autoGearAutoPresetIdState = declareCoreFallbackBinding('autoGearAutoPresetId', () => {
       if (typeof loadAutoGearAutoPresetId === 'function') {
         try {
@@ -1742,6 +1787,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     // Note: autoGearAutoPresetIdState is declared at line ~720 with declareCoreFallbackBinding
     let activeAutoGearPresetId = null;
     let autoGearPresets = [];
+    let autoGearBackups = [];
     let autoGearPresetNameDialog = null;
     let autoGearPresetNameForm = null;
     let autoGearPresetNameLabel = null;
@@ -19495,6 +19541,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ['runFeatureSearch', () => runFeatureSearch],
       ['collectAutoGearCatalogNames', () => collectAutoGearCatalogNames],
       ['featureMap', () => featureMap],
+      ['actionMap', () => actionMap],
       ['buildDefaultVideoDistributionAutoGearRules', () => buildDefaultVideoDistributionAutoGearRules],
       ['applyAutoGearRulesToTableHtml', () => applyAutoGearRulesToTableHtml],
       ['importAutoGearRulesFromData', () => importAutoGearRulesFromData],
@@ -19884,6 +19931,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       globalThis.getRecordingMedia = getRecordingMedia;
       globalThis.getBatteryPlates = getBatteryPlates;
       globalThis.getViewfinders = getViewfinders;
+      globalThis.renderAutoGearBackupControls = renderAutoGearBackupControls;
+      globalThis.renderAutoGearBackupRetentionControls = renderAutoGearBackupRetentionControls;
     } else if (typeof window !== 'undefined') {
       window.checkSetupChanged = checkSetupChanged;
       window.updateCalculations = updateCalculations;
@@ -19899,6 +19948,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       window.getRecordingMedia = getRecordingMedia;
       window.getBatteryPlates = getBatteryPlates;
       window.getViewfinders = getViewfinders;
+      window.renderAutoGearBackupControls = renderAutoGearBackupControls;
+      window.renderAutoGearBackupRetentionControls = renderAutoGearBackupRetentionControls;
     }
     console.log('app-core-new-2.js: corePart2Runtime complete');
   }

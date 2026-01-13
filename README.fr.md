@@ -61,6 +61,7 @@ routine soit documentée une seule fois.
   besoins d’équipe, puis exportez des bundles ou backups sans perte de données.
 - **Fonctionnement offline-first.** Chaque asset est dans le repo, donc autosave,
   backup, restauration, partage et aide restent pleinement hors ligne.
+- **Intégration Firebase Studio.** Synchronisez vos projets optionnellement dans le cloud pour une collaboration en temps réel et un accès multi‑appareils.
 - **Résumé de compatibilité de restauration.** Chaque restauration liste les
   sections manquantes et crée un backup préalable pour vérifier les changements.
 

@@ -104,6 +104,37 @@ The codebase uses ES Modules:
 | `src/scripts/core/` | IIFE (legacy) | Legacy runtime modules |
 | `src/scripts/runtime/` | ESM | Shared runtime bootstrap |
 | `src/scripts/auto-gear/` | ESM + TypeScript | Automatic gear features |
+| `src/scripts/shims/` | ESM/Legacy | `legacy-globals-shim.js` for interop |
+
+### Architecture: Shims & Global Interop
+
+To bridge the gap between modern ES Modules and legacy IIFE-based core scripts, the project uses a robust shimming strategy:
+
+- **`legacy-globals-shim.js`**: This file acts as a central registry for global variables that legacy scripts expect to find on the `window` object. It ensures that variables like `autoGearFilterScenarioSelect` or `batteryCountElem` are safely initialized or shimmed before the legacy core attempts to access them.
+- **`GLOBAL_SCOPE` Detection**: Modules use a resilient `detectGlobalScope` helper to find the best available global object (`globalThis`, `window`, etc.), ensuring compatibility across different runtime environments (browser, tests, etc.).
+- **`cineModuleBase`**: A core utility that provides safe freezing, global exposure, and module registration services.
+
+### Feature Deep Dive: Auto-Gear Rules
+
+The **Auto-Gear Rules** engine (`src/scripts/modules/features/auto-gear-rules.js`) is a high-complexity module that automates equipment recommendations based on project scenarios.
+
+**Key Architectural Patterns:**
+1. **Soft Dependencies**: It uses `resolveAutoGearHelperFunction` to lookup UI functions by string name. This prevents circular imports between the logic engine and the UI components that render the results.
+2. **Resilient Defaults**: Every external helper lookup has a corresponding `ensureFallbackAutoGearHelper` implementation. If a UI component fails to load or register, the engine continues to function using safe fallbacks.
+3. **Data Immutability**: The engine leans heavily on a resilient deep clone (`MODULE_DEEP_CLONE`) to prevent accidental mutations of shared state, which is critical for maintaining consistency in the automated recommendations.
+
+### Best Practices: Global Symbols
+
+When working with global state or bridging modules, follow these rules to avoid `ReferenceError` and "already declared" errors:
+
+1. **Check Before Declaring**: Always verify if a symbol exists before assigning it to the global scope.
+   ```javascript
+   if (typeof window.myGlobal === 'undefined') {
+     window.myGlobal = implementation;
+   }
+   ```
+2. **Use `typeof` Guards**: Never access a potential global variable directly without a `typeof` check if it might not be defined.
+3. **Registry Over Globals**: Prefer registering your API with the `cineModules` registry via `cineModuleBase.registerOrQueueModule` instead of attaching raw objects to `window`.
 
 ### Troubleshooting Common Issues
 

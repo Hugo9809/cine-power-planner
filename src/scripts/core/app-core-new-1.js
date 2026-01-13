@@ -1,3 +1,15 @@
+/**
+ * Cine Power Planner - Core Runtime Part 1
+ * 
+ * This module initiates the primary application bootstrap sequence. Its core responsibilities
+ * include:
+ * 1. Establishing global scopes and runtime bridges (CORE_GLOBAL_SCOPE, globalShim).
+ * 2. Setting up defensive resolution strategies for shared modules (Auto-Gear, UI helpers).
+ * 3. Initializing critical environment state (Temperature units, Focus scales).
+ * 
+ * Part 1 is designed to be the "opening act" of the core runtime, ensuring that basic
+ * mechanisms are in place before Part 2 (UI and Event Orchestration) takes over.
+ */
 console.log('DEBUG: app-core-new-1.js STARTING');
 if (typeof window !== 'undefined') window.__APP_CORE_STARTED = true;
 
@@ -39,7 +51,17 @@ const resolvedCollectCoreRuntimeCandidateScopes = importedResolvedCollectCoreRun
 import { getCoreGlobalObject, ensureCoreGlobalValue, CORE_DEEP_CLONE } from './app-core-runtime-global-tools.js';
 import { CORE_SHARED, CORE_TEMPERATURE_QUEUE_KEY, CORE_TEMPERATURE_RENDER_NAME, CORE_RUNTIME_STATE_SUPPORT_PART2 as CORE_RUNTIME_STATE_SUPPORT_IMPORTED } from './app-core-environment.js';
 
-// Helper to resolve auto-gear UI functions from various possible locations
+/**
+ * Helper to resolve auto-gear UI functions from various possible locations.
+ * 
+ * RATIONALE: The application supports both monolithic (legacy) and modular (modern) 
+ * resolution. Since UI components might be loaded asynchronously or attached to different 
+ * global namespaces, this helper provides a uniform interface to find functions without 
+ * hard-coding their location.
+ * 
+ * @param {string} name - The name of the function to resolve.
+ * @returns {function|undefined} - The resolved function or undefined if not found.
+ */
 function resolveAutoGearUIHelper(name) {
   // Try window directly first
   if (typeof window !== 'undefined' && typeof window[name] === 'function') {
@@ -112,30 +134,62 @@ let AUTO_GEAR_MONITOR_DEFAULT_TYPES = (typeof window !== 'undefined' && window.A
   'wireless': 'Wireless',
 };
 
-// [Added by Agent] Missing Normalizers with resolution strategy
-const normalizeAutoGearTriggerValue = (value) => (resolveAutoGearNormalizer('normalizeAutoGearTriggerValue') || ((v) => typeof v === 'string' ? v.trim() : ''))(value);
-const normalizeAutoGearScenarioLogic = (value) => (resolveAutoGearNormalizer('normalizeAutoGearScenarioLogic') || ((v) => (v === 'any' || v === 'multiplier') ? v : 'all'))(value);
-const normalizeAutoGearScenarioPrimary = (value) => (resolveAutoGearNormalizer('normalizeAutoGearScenarioPrimary') || ((v) => typeof v === 'string' ? v.trim() : ''))(value);
-const normalizeAutoGearScenarioMultiplier = (value) => (resolveAutoGearNormalizer('normalizeAutoGearScenarioMultiplier') || ((v) => { const n = Number(v); return Number.isFinite(n) && n > 0 ? n : 1; }))(value);
-const normalizeAutoGearSelectorType = (value) => (resolveAutoGearNormalizer('normalizeAutoGearSelectorType') || ((v) => typeof v === 'string' ? v.trim() : 'none'))(value);
-const normalizeAutoGearSelectorDefault = (type, value) => (resolveAutoGearNormalizer('normalizeAutoGearSelectorDefault') || ((t, v) => typeof v === 'string' ? v.trim() : ''))(type, value);
-const normalizeAutoGearMonitorDefaults = (value) => (resolveAutoGearNormalizer('normalizeAutoGearMonitorDefaults') || ((v) => ({ focus: '', handheld7: '', combo15: '', director15: '' })))(value);
-const normalizeAutoGearRule = (rule) => (resolveAutoGearNormalizer('normalizeAutoGearRule') || ((r) => r))(rule);
-const normalizeAutoGearPreset = (preset) => (resolveAutoGearNormalizer('normalizeAutoGearPreset') || ((p) => p))(preset);
-const normalizeAutoGearItem = (item) => (resolveAutoGearNormalizer('normalizeAutoGearItem') || ((i) => i))(item);
-const normalizeAutoGearConditionLogic = (value) => (resolveAutoGearNormalizer('normalizeAutoGearConditionLogic') || ((v) => v))(value);
-const normalizeAutoGearShootingDaysCondition = (value) => (resolveAutoGearNormalizer('normalizeAutoGearShootingDaysCondition') || ((v) => v))(value);
+/**
+ * Factory to create non-recursive shims for global functions.
+ * 
+ * RATIONALE: Many core functions are resolved dynamically from the global scope. 
+ * To avoid 'Maximum call stack size exceeded' errors during initialization, this 
+ * factory ensures that if a shim resolves to itself (an infinite loop), it 
+ * gracefully falls back to a provided implementation.
+ * 
+ * @param {string} name - The name of the function to resolve.
+ * @param {function} resolver - The resolution strategy to use.
+ * @param {function} fallback - The implementation to use if resolution fails or is recursive.
+ * @returns {function} - A safe proxy function.
+ */
+function createSafeShim(name, resolver, fallback) {
+  const shim = (...args) => {
+    const resolved = resolver(name);
+    if (resolved && resolved !== shim && typeof resolved === 'function') {
+      return resolved(...args);
+    }
+    return fallback(...args);
+  };
+  return shim;
+}
 
+// [Added by Agent] Missing Normalizers with resolution strategy
+const normalizeAutoGearTriggerValue = createSafeShim('normalizeAutoGearTriggerValue', resolveAutoGearNormalizer, (v) => typeof v === 'string' ? v.trim() : '');
+const normalizeAutoGearScenarioLogic = createSafeShim('normalizeAutoGearScenarioLogic', resolveAutoGearNormalizer, (v) => (v === 'any' || v === 'multiplier') ? v : 'all');
+const normalizeAutoGearScenarioPrimary = createSafeShim('normalizeAutoGearScenarioPrimary', resolveAutoGearNormalizer, (v) => typeof v === 'string' ? v.trim() : '');
+const normalizeAutoGearScenarioMultiplier = createSafeShim('normalizeAutoGearScenarioMultiplier', resolveAutoGearNormalizer, (v) => { const n = Number(v); return Number.isFinite(n) && n > 0 ? n : 1; });
+const normalizeAutoGearSelectorType = createSafeShim('normalizeAutoGearSelectorType', resolveAutoGearNormalizer, (v) => typeof v === 'string' ? v.trim() : 'none');
+const normalizeAutoGearSelectorDefault = createSafeShim('normalizeAutoGearSelectorDefault', resolveAutoGearNormalizer, (t, v) => typeof v === 'string' ? v.trim() : '');
+const normalizeAutoGearMonitorDefaults = createSafeShim('normalizeAutoGearMonitorDefaults', resolveAutoGearNormalizer, (v) => ({ focus: '', handheld7: '', combo15: '', director15: '' }));
+const normalizeAutoGearRule = createSafeShim('normalizeAutoGearRule', resolveAutoGearNormalizer, (r) => r);
+const normalizeAutoGearPreset = createSafeShim('normalizeAutoGearPreset', resolveAutoGearNormalizer, (p) => p);
+const normalizeAutoGearItem = createSafeShim('normalizeAutoGearItem', resolveAutoGearNormalizer, (i) => i);
+const normalizeAutoGearConditionLogic = createSafeShim('normalizeAutoGearConditionLogic', resolveAutoGearNormalizer, (v) => v);
+const normalizeAutoGearShootingDaysCondition = createSafeShim('normalizeAutoGearShootingDaysCondition', resolveAutoGearNormalizer, (v) => v);
+
+/**
+ * Storage Resolution Shims
+ * 
+ * These shims provide a bridge to the storage layer (storage.js). 
+ * They allow code in app-core.js to perform persistent operations even before 
+ * the storage module is fully initialized or if specific helpers are missing, 
+ * using safe default behaviors in the meantime.
+ */
 // [Added by Agent] Missing Storage Helpers with resolution strategy
-const readAutoGearRulesFromStorage = () => (resolveAutoGearStorageHelper('readAutoGearRulesFromStorage') || (() => []))();
-const readAutoGearBackupRetentionFromStorage = () => (resolveAutoGearStorageHelper('readAutoGearBackupRetentionFromStorage') || (() => 0))();
-const readAutoGearBackupsFromStorage = (retention) => (resolveAutoGearStorageHelper('readAutoGearBackupsFromStorage') || (() => []))(retention);
-const readAutoGearPresetsFromStorage = () => (resolveAutoGearStorageHelper('readAutoGearPresetsFromStorage') || (() => []))();
-const readActiveAutoGearPresetIdFromStorage = () => (resolveAutoGearStorageHelper('readActiveAutoGearPresetIdFromStorage') || (() => null))();
-const readAutoGearAutoPresetIdFromStorage = () => (resolveAutoGearStorageHelper('readAutoGearAutoPresetIdFromStorage') || (() => ''))();
-const readAutoGearBackupVisibilityFromStorage = () => (resolveAutoGearStorageHelper('readAutoGearBackupVisibilityFromStorage') || (() => false))();
-const readAutoGearMonitorDefaultsFromStorage = () => (resolveAutoGearStorageHelper('readAutoGearMonitorDefaultsFromStorage') || (() => ({})))();
-const persistAutoGearBackupRetention = (value) => (resolveAutoGearStorageHelper('persistAutoGearBackupRetention') || (() => { }))(value);
+const readAutoGearRulesFromStorage = createSafeShim('readAutoGearRulesFromStorage', resolveAutoGearStorageHelper, () => []);
+const readAutoGearBackupRetentionFromStorage = createSafeShim('readAutoGearBackupRetentionFromStorage', resolveAutoGearStorageHelper, () => 0);
+const readAutoGearBackupsFromStorage = createSafeShim('readAutoGearBackupsFromStorage', resolveAutoGearStorageHelper, (retention) => []);
+const readAutoGearPresetsFromStorage = createSafeShim('readAutoGearPresetsFromStorage', resolveAutoGearStorageHelper, () => []);
+const readActiveAutoGearPresetIdFromStorage = createSafeShim('readActiveAutoGearPresetIdFromStorage', resolveAutoGearStorageHelper, () => null);
+const readAutoGearAutoPresetIdFromStorage = createSafeShim('readAutoGearAutoPresetIdFromStorage', resolveAutoGearStorageHelper, () => '');
+const readAutoGearBackupVisibilityFromStorage = createSafeShim('readAutoGearBackupVisibilityFromStorage', resolveAutoGearStorageHelper, () => false);
+const readAutoGearMonitorDefaultsFromStorage = createSafeShim('readAutoGearMonitorDefaultsFromStorage', resolveAutoGearStorageHelper, () => ({}));
+const persistAutoGearBackupRetention = createSafeShim('persistAutoGearBackupRetention', resolveAutoGearStorageHelper, (value) => { });
 
 // Expose these to globalThis for compatibility
 if (typeof globalThis !== 'undefined') {
@@ -165,6 +219,8 @@ if (typeof globalThis !== 'undefined') {
   globalThis.readAutoGearBackupVisibilityFromStorage = readAutoGearBackupVisibilityFromStorage;
   globalThis.readAutoGearMonitorDefaultsFromStorage = readAutoGearMonitorDefaultsFromStorage;
   globalThis.persistAutoGearBackupRetention = persistAutoGearBackupRetention;
+  globalThis.ensureGearListActions = createSafeShim('ensureGearListActions', resolveAutoGearUIHelper, () => { });
+  globalThis.setInstallBannerOffset = createSafeShim('setInstallBannerOffset', resolveAutoGearUIHelper, () => { });
 }
 
 
@@ -396,6 +452,14 @@ if (typeof window !== 'undefined') {
 const CORE_TEMPERATURE_STORAGE_KEY = '__cineTemperatureNote';
 const FOCUS_SCALE_STORAGE_KEY = '__cineFocusScale';
 
+/**
+ * Temperature Unit Resolution Logic
+ * 
+ * This self-invoking function identifies the prefered temperature unit strategy 
+ * across all valid runtime candidate scopes. This ensures that environmental 
+ * feedback (e.g. overheating alerts) uses the user's preferred unit (Metric vs Imperial) 
+ * consistently throughout the session.
+ */
 const CORE_TEMPERATURE_UNITS = (function resolveTemperatureUnits() {
   const candidateScopes = TEMPERATURE_SCOPE_CANDIDATES;
 
@@ -3746,6 +3810,176 @@ if (typeof window !== 'undefined') {
   window.collectAutoGearMonitorNames = collectAutoGearMonitorNames;
   window.collectAutoGearTripodNames = collectAutoGearTripodNames;
   window.collectDeviceManagerCategories = collectDeviceManagerCategories;
+  window.hasSeededAutoGearDefaults = hasSeededAutoGearDefaults;
+  window.activateSettingsTab = activateSettingsTab;
+  window.clearAllAutoGearConditions = clearAllAutoGearConditions;
+  window.callCoreFunctionIfAvailable = callCoreFunctionIfAvailable;
+
+  // Robust Live Variable Exposure
+  const liveVariables = [
+    'autoScenarioFilter',
+    'autoGearRules',
+    'baseAutoGearRulesState',
+    'projectScopedAutoGearRules',
+    'autoGearBackups',
+    'autoGearPresets',
+    'autoGearAutoPresetIdState',
+    'autoGearBackupsVisible',
+    'autoGearMonitorDefaults',
+    'autoGearEditorDraft',
+    'autoGearEditorActiveItem',
+    'autoGearDraftPendingWarnings',
+    'autoGearSearchQuery',
+    'autoGearSummaryFocus',
+    'autoGearSearchInput',
+    'autoGearFilterClearButton',
+    'autoGearRulesList',
+    'autoGearPresetSelect',
+    'autoGearSavePresetButton',
+    'autoGearDeletePresetButton',
+    'autoGearEditor',
+    'autoGearFilterScenarioSelect',
+    'activeSettingsTabId',
+    'gearItemTranslations',
+    'openDialog',
+    'isDialogOpen',
+    'clearAllAutoGearConditions',
+    'callCoreFunctionIfAvailable',
+    'autoGearCameraSelect',
+    'autoGearOwnGearSelect',
+    'autoGearMonitorSelect',
+    'autoGearMotorsSelect',
+    'autoGearControllersSelect',
+    'autoGearDistanceSelect',
+    'autoGearWirelessSelect',
+    'autoGearVideoDistributionSelect',
+    'autoGearTripodHeadBrandSelect',
+    'autoGearTripodBowlSelect',
+    'autoGearTripodTypesSelect',
+    'autoGearTripodSpreaderSelect',
+    'autoGearCrewPresentSelect',
+    'autoGearCrewAbsentSelect',
+    'autoGearDeliveryResolutionSelect',
+    'autoGearMatteboxSelect',
+    'autoGearViewfinderExtensionSelect',
+    'autoGearScenariosSelect',
+    'autoGearAddOwnGearSelect',
+    'autoGearRemoveOwnGearSelect',
+    'autoGearAddCategorySelect',
+    'autoGearRemoveCategorySelect',
+    'autoGearScenarioModeSelect',
+    'autoGearCameraWeightModeSelect',
+    'autoGearAddSelectorTypeSelect',
+    'autoGearRemoveSelectorTypeSelect',
+    'autoGearAddSelectorDefaultInput',
+    'autoGearRemoveSelectorDefaultInput',
+    'getAutoGearOwnGearItems',
+    'findAutoGearOwnGearById',
+    'formatOwnGearQuantityText',
+    'collectAutoGearSelectedValues',
+    'autoGearAddNameInput',
+    'autoGearAddQuantityInput',
+    'autoGearAddScreenSizeInput',
+    'autoGearAddNotesInput',
+    'autoGearRemoveNameInput',
+    'autoGearRemoveQuantityInput',
+    'autoGearRemoveScreenSizeInput',
+    'autoGearRemoveNotesInput',
+    'autoGearImportInput',
+    'autoGearBackupRetentionInput',
+    'autoGearAddItemButton',
+    'autoGearRemoveItemButton',
+    'autoGearSaveRuleButton',
+    'autoGearCancelEditButton',
+    'autoGearExportButton',
+    'autoGearImportButton',
+    'autoGearAddList',
+    'autoGearRemoveList',
+    'autoGearDraftImpactContainer',
+    'autoGearDraftImpactList',
+    'autoGearDraftWarningContainer',
+    'autoGearDraftWarningList',
+    'autoGearSummarySection',
+    'autoGearSummaryHeadingElem',
+    'autoGearSummaryDescriptionElem',
+    'autoGearSummaryCards',
+    'autoGearSummaryDetails',
+    'autoGearSummaryLast',
+    'autoGearMonitorDefaultsSection',
+    'autoGearCameraWeightSection',
+    'autoGearHeadingElem',
+    'autoGearMonitorDefaultsHeading',
+    'autoGearAddItemsHeading',
+    'autoGearRemoveItemsHeading',
+    'autoGearDraftImpactHeading',
+    'autoGearDraftWarningHeading',
+    'autoGearBackupsHeading',
+    'autoGearDescriptionElem',
+    'autoGearMonitorDefaultsDescription',
+    'autoGearSearchLabel',
+    'autoGearFilterScenarioLabel',
+    'autoGearPresetDescription',
+    'autoGearPresetLabel',
+    'autoGearConditionSelectLabel',
+    'autoGearAlwaysLabel',
+    'autoGearAlwaysHelp',
+    'autoGearDefaultFocusMonitorLabel',
+    'autoGearDefaultHandheldMonitorLabel',
+    'autoGearDefaultComboMonitorLabel',
+    'autoGearDefaultDirectorMonitorLabel',
+    'autoGearBackupsDescription',
+    'autoGearDraftImpactDescription',
+    'autoGearDefaultFocusMonitorSelect',
+    'autoGearDefaultHandheldMonitorSelect',
+    'autoGearDefaultComboMonitorSelect',
+    'autoGearDefaultDirectorMonitorSelect',
+    'autoGearConditionSelect',
+    'autoGearSavePresetButton',
+    'autoGearDeletePresetButton',
+    'autoGearAddRuleBtn',
+    'autoGearResetFactoryButton',
+    'autoGearConditionAddButton',
+    'autoGearMonitorDefaultControls',
+    'autoGearRulesList',
+    'autoGearConditionControls',
+    'autoGearConditionList',
+    'autoGearConditionAddShortcuts',
+    'autoGearConditionRemoveButtons',
+    'autoGearSummaryFocus'
+  ];
+
+  liveVariables.forEach(name => {
+    try {
+      Object.defineProperty(window, name, {
+        configurable: true,
+        enumerable: true,
+        get: () => {
+          try {
+            return eval(name);
+          } catch (e) {
+            return undefined;
+          }
+        },
+        set: (val) => {
+          try {
+            eval(`${name} = val`);
+          } catch (e) {
+            // Read-only or error
+          }
+        }
+      });
+    } catch (err) {
+      // Fallback to simple assignment if property already exists non-configurably
+      try { window[name] = eval(name); } catch (e) { }
+    }
+  });
+
+  // Specifically for backward compatibility with naming variations
+  if (typeof window.autoGearScenarioFilter === 'undefined') {
+    Object.defineProperty(window, 'autoGearScenarioFilter', {
+      configurable: true, get: () => autoGearScenarioFilter, set: (v) => { autoGearScenarioFilter = v; }
+    });
+  }
 }
 
 function usingProjectAutoGearRules() {
