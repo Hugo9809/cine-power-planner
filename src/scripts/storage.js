@@ -13278,7 +13278,21 @@ function saveProject(name, project, options = {}) {
     ? createStableValueSignature(initialExistingEntry)
     : null;
 
-  // ... (Re-read and Resolve Logic) ...
+  /*
+   * We re-read the projects after the initial snapshot because another tab can write to storage
+   * between our first check and this save. An offline-first app must treat that window as unsafe
+   * for user data, so we verify the latest state before touching anything.
+   *
+   * This second read mitigates cross-tab race conditions by ensuring we evaluate the most recent
+   * project list and signatures. It lets us detect late-arriving changes and take backup paths
+   * instead of overwriting or deleting user data from a different session.
+   *
+   * The resolveProjectKey lookup compares the requested name against the latest index so we know
+   * whether it is safe to overwrite, or if we should write to a preferred key and delete a rename.
+   * Signature comparisons then confirm that any overwrite or rename cleanup only happens when the
+   * entry we saw initially still matches the stored data, keeping backups intact and preventing
+   * data loss across tabs.
+   */
 
   const latestSnapshot = readAllProjectsFromStorage({ forMutation: true });
   const projects = isPlainObject(latestSnapshot.projects) ? latestSnapshot.projects : {};
