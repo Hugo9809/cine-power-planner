@@ -326,6 +326,7 @@ async function loadV2Assets() {
         await import('./project-dashboard.js');
         await import('./project-detail.js'); // Also needed
 
+        await import('./views/sidebar-view.js');
         await import('./sidebar.js');
         await import('./views/rules-view.mjs');
         await import('./views/device-library-view.js');
@@ -352,7 +353,10 @@ async function loadV2Assets() {
         // Note: In a pure module system, we would return the exports, 
         // but we kept the global assignments in the modules for backward compatibility.
 
-        // Initialize Sidebar
+        // Initialize Sidebar Shell + Logic
+        if (global.cineV2SidebarView && typeof global.cineV2SidebarView.mount === 'function') {
+            global.cineV2SidebarView.mount();
+        }
         if (global.cineV2Sidebar && typeof global.cineV2Sidebar.init === 'function') {
             global.cineV2Sidebar.init();
         }
@@ -513,4 +517,3 @@ if (typeof globalThis !== 'undefined') {
 //         setTimeout(init, 100);
 //     }
 // }
-
