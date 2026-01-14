@@ -2,6 +2,8 @@
 
 <img src="src/icons/app-icon.png" alt="Icône Cine Power Planner" width="160">
 
+**Version actuelle :** 1.0.52 | **Licence :** ISC | **Node :** >=18 (outils de développement)
+
 Cine Power Planner est une application web autonome pour créer, auditer et
 partager des plans d’alimentation caméra professionnels sans que les données ne
 quittent votre machine. Planifiez des rigs V‑Mount, B‑Mount ou Gold‑Mount,
@@ -15,6 +17,8 @@ partageables — entièrement dans votre navigateur, même hors ligne. Toutes le
 - **Stockage local uniquement.** Projets, listes d’équipement, feedback de
   runtime, exports et backups restent sur votre machine ; l’app ne dépend d’aucun
   service externe.
+- **Sync cloud optionnelle.** Connectez-vous à Firebase Studio pour synchroniser
+  les projets entre appareils sans perdre la propriété locale.
 - **Filets de sécurité en couches.** Sauvegarde, autosave, partage, import,
   backup et restauration créent toujours des snapshots de sécurité pour pouvoir
   récupérer avant promotion.
@@ -33,6 +37,19 @@ partageables — entièrement dans votre navigateur, même hors ligne. Toutes le
    restauration sûr.
 4. Déconnectez le réseau et rechargez. Vérifiez que les projets, l’aide et
    **Force reload** fonctionnent toujours sans toucher aux données sauvegardées.
+
+## Workflow de sécurité des données (chaque session)
+
+1. **Sauvegarde + autosave.** Sauvegardez après des modifications importantes ;
+   l’autosave conserve des snapshots locaux continus en cas de retour arrière.
+2. **Partage/export = copie, pas déplacement.** Les bundles de projet et backups
+   du planner dupliquent toujours les données. Stockez au moins deux copies hors
+   ligne avant de supprimer quoi que ce soit.
+3. **Import/restauration avec vérification.** Chaque restauration crée un backup
+   préalable et liste des notes de compatibilité avant promotion.
+4. **Exercice de récupération.** Testez régulièrement une restauration depuis un
+   backup ou un bundle partagé pour confirmer que ce poste peut récupérer les
+   données de bout en bout.
 
 ## Index de documentation
 

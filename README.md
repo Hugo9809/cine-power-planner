@@ -1,10 +1,8 @@
 # Cine Power Planner
 
-![Version](https://img.shields.io/badge/version-1.0.52-blue)
-![License](https://img.shields.io/badge/license-ISC-green)
-![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen)
-
 <img src="src/icons/app-icon.png" alt="Cine Power Planner icon" width="160">
+
+**Current release:** 1.0.52 | **License:** ISC | **Node:** >=18 (dev tooling)
 
 Cine Power Planner is a standalone web app for building, auditing, and sharing
 professional camera power plans that never leave your machine. Plan V‑Mount,
@@ -19,13 +17,14 @@ without phoning home.
 - **Local-only by default.** Projects, gear lists, runtime feedback, exports, and
   backups live on your machine; the planner does not depend on external
   services.
-- **Optional Cloud Sync.** Connect to Firebase Studio to seamlessly sync projects
-  across devices without sacrificing local ownership.
+- **Optional Cloud Sync.** Connect to Firebase Studio to sync projects across
+  devices without sacrificing local ownership.
 - **Layered safety nets.** Save, autosave, share, import, backup, and restore
   workflows always create safety snapshots so recovery is possible before any
   data is promoted.
-- **Offline by design.** All core features including icons, fonts, and helper scripts
-  are stored in this repo, so offline usage never degrades usability or data protection.
+- **Offline by design.** All core features including icons, Uicons, fonts, and
+  helper scripts are stored in this repo, so offline usage never degrades
+  usability or data protection.
 
 ## Start here (short drill)
 
@@ -37,6 +36,17 @@ without phoning home.
    Store them on separate offline media to establish a safe restore point.
 4. Disconnect from the network and reload. Confirm projects, help, and the
    **Force reload** action still work without touching saved data.
+
+## Data safety workflow (every session)
+
+1. **Save + autosave.** Save after meaningful edits; autosave keeps rolling local
+   snapshots in case you need to roll back.
+2. **Share/export = copy, not move.** Project bundles and planner backups always
+   duplicate data. Store at least two offline copies before deleting anything.
+3. **Import/restore with verification.** Each restore creates a pre-restore
+   safety backup and lists compatibility notes before promotion.
+4. **Drill recovery.** Run a restore test from a backup or share bundle
+   periodically to confirm this workstation can recover data end-to-end.
 
 ## Documentation index
 

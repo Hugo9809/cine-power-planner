@@ -2,6 +2,8 @@
 
 <img src="src/icons/app-icon.png" alt="Icono de Cine Power Planner" width="160">
 
+**Versión actual:** 1.0.52 | **Licencia:** ISC | **Node:** >=18 (herramientas de desarrollo)
+
 Cine Power Planner es una aplicación web independiente para crear, auditar y
 compartir planes de energía de cámaras profesionales sin que los datos salgan
 de tu máquina. Planifica rigs V‑Mount, B‑Mount o Gold‑Mount, modela la duración,
@@ -15,6 +17,8 @@ portátiles de campo o archivos aislados.
 - **Almacenamiento solo local.** Proyectos, listas de equipo, feedback de
   runtime, exportaciones y copias de seguridad permanecen en tu equipo; la app
   no depende de servicios externos.
+- **Sincronización en la nube opcional.** Conéctate a Firebase Studio para
+  sincronizar proyectos entre dispositivos sin perder la propiedad local.
 - **Capas de seguridad.** Guardar, autoguardado, compartir, importar, backup y
   restaurar crean siempre snapshots de seguridad para recuperar datos antes de
   promoverlos.
@@ -32,6 +36,20 @@ portátiles de campo o archivos aislados.
    ambos en medios offline separados para tener un punto de restauración seguro.
 4. Desconecta la red y recarga. Comprueba que proyectos, ayuda y **Force
    reload** siguen funcionando sin tocar los datos guardados.
+
+## Flujo de seguridad de datos (cada sesión)
+
+1. **Guardar + autoguardado.** Guarda después de cambios importantes; el
+   autoguardado mantiene snapshots locales continuos por si necesitas volver
+   atrás.
+2. **Compartir/exportar = copiar, no mover.** Los bundles de proyecto y los
+   backups del planner siempre duplican datos. Guarda al menos dos copias
+   offline antes de borrar nada.
+3. **Importar/restaurar con verificación.** Cada restauración crea un backup
+   previo y lista notas de compatibilidad antes de promover los datos.
+4. **Ensayo de recuperación.** Ejecuta periódicamente una restauración desde un
+   backup o bundle compartido para confirmar que esta estación puede recuperar
+   datos de extremo a extremo.
 
 ## Índice de documentación
 
