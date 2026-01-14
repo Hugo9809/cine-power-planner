@@ -275,9 +275,37 @@ function updateProjectMetadata(projectName, metadata = {}) {
                 window.saveProject(projectName, project);
 
                 // Update cache manually to reflect changes immediately in UI
-                if (_cachedProjectData && _cachedProjectData[projectName]) {
+                if (_cachedProjectData) {
+                    if (!_cachedProjectData[projectName]) {
+                        _cachedProjectData[projectName] = {};
+                    }
                     Object.assign(_cachedProjectData[projectName], metadata);
                 }
+                return true;
+            }
+
+            if (metadata && Object.keys(metadata).length > 0) {
+                const fallbackProject = {
+                    gearList: '',
+                    projectInfo: null,
+                    gearListAndProjectRequirementsGenerated: false,
+                    ...metadata
+                };
+
+                if (!fallbackProject.lastModified) {
+                    fallbackProject.lastModified = new Date().toISOString();
+                }
+
+                window.saveProject(projectName, fallbackProject, { skipOverwriteBackup: true });
+
+                if (_cachedProjectData) {
+                    _cachedProjectData[projectName] = {
+                        ...(_cachedProjectData[projectName] || {}),
+                        ...metadata,
+                        lastModified: fallbackProject.lastModified
+                    };
+                }
+
                 return true;
             }
         } catch (e) {
@@ -1667,4 +1695,3 @@ if (typeof document !== 'undefined') {
 }
 
 export { ProjectDashboard };
-
