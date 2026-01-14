@@ -37,23 +37,21 @@
 
         const grouped = service.getGroupedSections();
 
-        // 1. Render Getting Started (Guide)
-        if (grouped.guide && grouped.guide.items.length > 0) {
-            renderCategory(target, grouped.guide.title, grouped.guide.items, tocInfo);
-        }
+        const categories = [
+            grouped.essentials,
+            grouped.guide,
+            grouped.reference
+        ].filter(category => category && category.items.length > 0);
 
-        // Divider if both exist
-        if (grouped.guide && grouped.guide.items.length > 0 &&
-            grouped.reference && grouped.reference.items.length > 0) {
-            const divider = document.createElement('hr');
-            divider.className = 'v2-help-divider';
-            target.appendChild(divider);
-        }
+        categories.forEach((category, index) => {
+            renderCategory(target, category.title, category.items, tocInfo);
 
-        // 2. Render Reference
-        if (grouped.reference && grouped.reference.items.length > 0) {
-            renderCategory(target, grouped.reference.title, grouped.reference.items, tocInfo);
-        }
+            if (index < categories.length - 1) {
+                const divider = document.createElement('hr');
+                divider.className = 'v2-help-divider';
+                target.appendChild(divider);
+            }
+        });
 
         // Add Empty State container for Search
         const emptyState = document.createElement('div');
