@@ -825,10 +825,25 @@ function clearBackupVault() {
         });
         request.addEventListener('blocked', () => {
           console.warn('Backup vault database deletion blocked');
-          // If blocked, we resolve true to avoid hanging the entire factory reset process.
-          // The database might not be deleted if another tab holds it open, but we prevent
-          // the app from getting stuck in an invalid state.
-          resolve(true);
+          // If blocked, attempt to clear the store to reduce retained data, then resolve.
+          withBackupVaultStore('readwrite', (store) => {
+            if (!store) return false;
+            return new Promise((clearResolve, clearReject) => {
+              const clearRequest = store.clear();
+              clearRequest.onsuccess = () => clearResolve(true);
+              clearRequest.onerror = () => clearReject(clearRequest.error);
+            });
+          }).then(() => {
+            resolve(true);
+          }).catch((clearError) => {
+            console.warn('Failed to clear backup vault store after blocked deletion', clearError);
+            dispatchBackupVaultEvent('cineBackupVault:clearBlocked', {
+              reason: 'blocked',
+              error: clearError ? String(clearError) : 'unknown',
+            });
+            // Resolve to avoid hanging the factory reset process.
+            resolve(true);
+          });
         });
       } catch (deleteError) {
         reject(deleteError);
@@ -836,19 +851,23 @@ function clearBackupVault() {
     });
   })();
 
-  return Promise.all([
+  return Promise.allSettled([
     dbDeletionPromise,
     writeFallbackVaultRecords([]), // Clear fallback storage
     memoryBackupVault.list().then(list => { // Clear memory vault
       return Promise.all(list.map(item => memoryBackupVault.remove(item.id)));
     })
-  ]).then(() => {
+  ]).then((results) => {
+    const rejected = results.filter(result => result.status === 'rejected');
+    if (rejected.length) {
+      console.warn('clearBackupVault encountered errors', rejected.map(result => result.reason));
+      dispatchBackupVaultEvent('cineBackupVault:clearFailed', {
+        reason: 'partial',
+        failedCount: rejected.length,
+      });
+    }
     refreshBackupVaultFallbackMode();
     backupVaultTransientRecords.clear();
-    return true;
-  }).catch(error => {
-    console.warn('clearBackupVault encountered errors', error);
-    // Return true anyway to allow factory reset to continue
     return true;
   });
 }
