@@ -13577,6 +13577,10 @@ function renameProject(oldName, newName) {
 
   const projectData = projects[resolvedKey];
   projectData.name = targetName; // Update internal name
+  if (!isPlainObject(projectData.projectInfo)) {
+    projectData.projectInfo = {};
+  }
+  projectData.projectInfo.projectName = targetName;
 
   // Update Memory Cache
   if (isProjectCacheHydrated) {
