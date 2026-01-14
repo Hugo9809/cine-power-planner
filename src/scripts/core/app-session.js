@@ -5256,7 +5256,7 @@ function autoSaveCurrentSetup() {
 
   const name = setupNameInputRef.value.trim();
   if (!name) {
-    saveCurrentSession({ skipGearList: true });
+    saveCurrentSession({ skipGearList: false });
     checkSetupChanged();
     return false;
   }
@@ -5268,7 +5268,7 @@ function autoSaveCurrentSetup() {
   // This avoids creating partial copies while typing, as autosave should only persist
   // the currently loaded project's state.
   if (!selectedName || name !== selectedName) {
-    saveCurrentSession({ skipGearList: true });
+    saveCurrentSession({ skipGearList: false });
     checkSetupChanged();
     return false;
   }
@@ -5280,7 +5280,7 @@ function autoSaveCurrentSetup() {
   // Fix for potential ReferenceError: getSetups is not defined
   const setups = typeof getSetups === 'function' ? getSetups() : {};
   if (!setups || typeof setups !== 'object' || !Object.prototype.hasOwnProperty.call(setups, name)) {
-    saveCurrentSession({ skipGearList: true });
+    saveCurrentSession({ skipGearList: false });
     checkSetupChanged();
     return false;
 
