@@ -2,6 +2,8 @@
 
 <img src="src/icons/app-icon.png" alt="Icona Cine Power Planner" width="160">
 
+**Versione attuale:** 1.0.52 | **Licenza:** ISC | **Node:** >=18 (strumenti di sviluppo)
+
 Cine Power Planner è una web app standalone per creare, verificare e condividere
 piani di alimentazione professionali per camere senza che i dati lascino la
 macchina. Pianifica rig V‑Mount, B‑Mount o Gold‑Mount, modella le aspettative di
@@ -15,6 +17,8 @@ archivi isolati.
 - **Archiviazione solo locale.** Progetti, liste gear, feedback di runtime,
   export e backup restano sulla tua macchina; l’app non dipende da servizi
   esterni.
+- **Sync cloud opzionale.** Collegati a Firebase Studio per sincronizzare i
+  progetti tra dispositivi senza perdere la proprietà locale.
 - **Reti di sicurezza a strati.** Salvataggio, auto-salvataggio, condivisione,
   importazione, backup e ripristino creano sempre snapshot di sicurezza per
   recuperare i dati prima della promozione.
@@ -32,6 +36,19 @@ archivi isolati.
    entrambi su supporti offline separati per avere un punto di ripristino sicuro.
 4. Disconnetti la rete e ricarica. Verifica che progetti, help e **Force reload**
    funzionino ancora senza toccare i dati salvati.
+
+## Workflow di sicurezza dei dati (ogni sessione)
+
+1. **Salvataggio + auto-salvataggio.** Salva dopo modifiche importanti;
+   l’auto-salvataggio mantiene snapshot locali continui in caso di rollback.
+2. **Condivisione/esportazione = copia, non spostamento.** I bundle di progetto
+   e i backup del planner duplicano sempre i dati. Conserva almeno due copie
+   offline prima di eliminare qualsiasi cosa.
+3. **Importazione/ripristino con verifica.** Ogni ripristino crea un backup di
+   sicurezza prima e mostra note di compatibilità prima della promozione.
+4. **Drill di recupero.** Esegui regolarmente un ripristino da un backup o
+   bundle condiviso per confermare che questa macchina può recuperare i dati
+   end-to-end.
 
 ## Indice della documentazione
 

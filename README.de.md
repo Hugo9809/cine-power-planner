@@ -2,6 +2,8 @@
 
 <img src="src/icons/app-icon.png" alt="Cine Power Planner Symbol" width="160">
 
+**Aktuelle Version:** 1.0.52 | **Lizenz:** ISC | **Node:** >=18 (Dev-Tooling)
+
 Cine Power Planner ist eine eigenständige Web-App, mit der professionelle
 Kamera-Strompläne erstellt, geprüft und geteilt werden, ohne dass Daten das
 lokale Gerät verlassen. Plane V‑Mount-, B‑Mount- oder Gold‑Mount-Rigs, modelliere
@@ -15,6 +17,8 @@ Feld-Laptops oder luftgetrennten Archiven funktioniert.
 - **Nur lokale Speicherung.** Projekte, Kit-Listen, Laufzeit-Feedback,
   Exporte und Backups bleiben auf deinem Rechner; die App benötigt keine
   externen Dienste.
+- **Optionaler Cloud-Sync.** Verbinde dich mit Firebase Studio, um Projekte
+  geräteübergreifend zu synchronisieren, ohne lokale Kontrolle abzugeben.
 - **Mehrstufige Sicherheitsnetze.** Speichern, Autosave, Teilen, Importieren,
   Backup und Restore erzeugen immer Sicherheits-Snapshots, damit eine
   Wiederherstellung möglich ist, bevor Daten übernommen werden.
@@ -35,6 +39,19 @@ Feld-Laptops oder luftgetrennten Archiven funktioniert.
 4. Trenne die Netzwerkverbindung und lade neu. Stelle sicher, dass Projekte,
    Hilfe und **Force reload** weiterhin funktionieren, ohne gespeicherte Daten
    anzutasten.
+
+## Datensicherheits-Workflow (jede Session)
+
+1. **Speichern + Autosave.** Speichere nach wichtigen Änderungen; Autosave hält
+   rollierende lokale Snapshots, falls du zurückrollen musst.
+2. **Teilen/Exportieren = Kopieren, nicht Verschieben.** Projekt-Bundles und
+   Planner-Backups duplizieren Daten. Lege mindestens zwei Offline-Kopien ab,
+   bevor du etwas löschst.
+3. **Import/Restore mit Prüfung.** Jeder Restore erstellt ein Sicherheits-Backup
+   vorab und listet Kompatibilitätsnotizen vor der Übernahme.
+4. **Recovery-Drill.** Teste regelmäßig eine Wiederherstellung aus Backup oder
+   Share-Bundle, um sicherzustellen, dass dieses Gerät Daten vollständig
+   wiederherstellen kann.
 
 ## Dokumentationsindex
 
