@@ -12,6 +12,8 @@ import {
 } from './SyncMetadata.js';
 import { projectLockService } from './ProjectLockService.js';
 
+const PROJECT_KEY_PREFIX = 'cine_project:';
+
 /**
  * @class StorageRepository
  * The main entry point for data persistence.
@@ -93,6 +95,33 @@ export class StorageRepository {
             .map(k => k.slice(prefix.length));
     }
 
+    getProjectKeyPrefix() {
+        return PROJECT_KEY_PREFIX;
+    }
+
+    getProjectStorageKey(projectKey) {
+        return `${PROJECT_KEY_PREFIX}${projectKey}`;
+    }
+
+    getProjectKeyFromStorageKey(storageKey) {
+        if (typeof storageKey !== 'string') return storageKey;
+        if (!storageKey.startsWith(PROJECT_KEY_PREFIX)) {
+            return storageKey;
+        }
+        return storageKey.slice(PROJECT_KEY_PREFIX.length);
+    }
+
+    isProjectStorageKey(storageKey) {
+        return typeof storageKey === 'string' && storageKey.startsWith(PROJECT_KEY_PREFIX);
+    }
+
+    async getProjectKeys() {
+        const keys = await this.getKeys();
+        return keys
+            .filter(key => this.isProjectStorageKey(key))
+            .map(key => this.getProjectKeyFromStorageKey(key));
+    }
+
     // --- Sync-Aware Project Methods ---
 
     /**
@@ -101,7 +130,8 @@ export class StorageRepository {
      * @returns {Promise<{ data: any, meta: Object|null }>}
      */
     async loadProject(projectKey) {
-        const raw = await this.getItem(projectKey);
+        const storageKey = this.getProjectStorageKey(projectKey);
+        const raw = await this.getItem(storageKey);
         return unwrapMetadata(raw);
     }
 
@@ -143,7 +173,8 @@ export class StorageRepository {
         });
 
         // Save to storage
-        await this.setItem(projectKey, wrapped);
+        const storageKey = this.getProjectStorageKey(projectKey);
+        await this.setItem(storageKey, wrapped);
 
         // Best-effort OPFS DataVault snapshot: optional for local saves, never blocks the
         // primary save path, and exists to strengthen offline recovery resilience.
@@ -166,7 +197,8 @@ export class StorageRepository {
      * @returns {Promise<Object|null>}
      */
     async getProjectMeta(projectKey) {
-        const raw = await this.getItem(projectKey);
+        const storageKey = this.getProjectStorageKey(projectKey);
+        const raw = await this.getItem(storageKey);
         if (!hasMetadata(raw)) return null;
         return raw._meta;
     }
@@ -178,14 +210,15 @@ export class StorageRepository {
      * @returns {Promise<boolean>}
      */
     async markProjectSynced(projectKey, serverTimestamp = null) {
-        const raw = await this.getItem(projectKey);
+        const storageKey = this.getProjectStorageKey(projectKey);
+        const raw = await this.getItem(storageKey);
         if (!hasMetadata(raw)) {
             console.warn('[StorageRepository] Cannot mark as synced - no metadata');
             return false;
         }
 
         raw._meta = markAsSynced(raw._meta, serverTimestamp);
-        await this.setItem(projectKey, raw);
+        await this.setItem(storageKey, raw);
         return true;
     }
 
@@ -196,11 +229,12 @@ export class StorageRepository {
      * @returns {Promise<boolean>}
      */
     async markProjectConflict(projectKey, errorMessage) {
-        const raw = await this.getItem(projectKey);
+        const storageKey = this.getProjectStorageKey(projectKey);
+        const raw = await this.getItem(storageKey);
         if (!hasMetadata(raw)) return false;
 
         raw._meta = markAsConflict(raw._meta, errorMessage);
-        await this.setItem(projectKey, raw);
+        await this.setItem(storageKey, raw);
         return true;
     }
 
@@ -209,7 +243,7 @@ export class StorageRepository {
      * @returns {Promise<Array<{ key: string, meta: Object }>>}
      */
     async getPendingSyncProjects() {
-        const keys = await this.getKeys();
+        const keys = await this.getProjectKeys();
         const pending = [];
 
         for (const key of keys) {
@@ -230,7 +264,7 @@ export class StorageRepository {
      * @returns {Promise<Array<{ key: string, data: any, meta: Object|null }>>}
      */
     async listProjects() {
-        const keys = await this.getKeys();
+        const keys = await this.getProjectKeys();
         const projects = [];
 
         for (const key of keys) {
@@ -282,6 +316,63 @@ export class StorageRepository {
      */
     onLockChange(callback) {
         return projectLockService.subscribe(callback);
+    }
+
+    async removeProject(projectKey) {
+        const storageKey = this.getProjectStorageKey(projectKey);
+        return this.removeItem(storageKey);
+    }
+
+    async migrateUnprefixedProjectRecords({ projectIndexKeys = [] } = {}) {
+        if (!this.initialized) await this.init();
+
+        const keys = await this.getKeys();
+        const prefixedKeys = new Set(keys.filter(key => this.isProjectStorageKey(key)));
+        const candidates = new Set();
+        const indexKeys = Array.isArray(projectIndexKeys) ? projectIndexKeys : [];
+
+        indexKeys.forEach((key) => {
+            const rawKey = this.getProjectKeyFromStorageKey(key);
+            if (typeof rawKey === 'string' && rawKey) {
+                candidates.add(rawKey);
+            }
+        });
+
+        for (const key of keys) {
+            if (this.isProjectStorageKey(key)) continue;
+            if (candidates.has(key)) continue;
+
+            const value = await this.getItem(key);
+            if (hasMetadata(value) && value._meta && value._meta.docType === 'project') {
+                candidates.add(key);
+            }
+        }
+
+        const migrated = [];
+
+        for (const rawKey of candidates) {
+            if (typeof rawKey !== 'string' || !rawKey) continue;
+            const prefixedKey = this.getProjectStorageKey(rawKey);
+            if (prefixedKeys.has(prefixedKey)) {
+                continue;
+            }
+
+            const value = await this.getItem(rawKey);
+            if (value === null || value === undefined) {
+                continue;
+            }
+
+            try {
+                await this.setItem(prefixedKey, value);
+                await this.removeItem(rawKey);
+                prefixedKeys.add(prefixedKey);
+                migrated.push(rawKey);
+            } catch (migrationError) {
+                console.warn(`[StorageRepository] Failed to migrate project key "${rawKey}"`, migrationError);
+            }
+        }
+
+        return { migratedKeys: migrated };
     }
 }
 
