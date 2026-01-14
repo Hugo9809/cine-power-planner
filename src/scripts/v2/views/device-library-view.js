@@ -25,6 +25,7 @@
     // =====================
     let isInitialized = false;
     let isReparented = false;
+    let legacyVisibilityState = null;
 
     // =====================
     // HELPER: Translations
@@ -99,6 +100,7 @@
         // into our view. This preserves event delegation on #device-manager.
 
         // 1. Create a placeholder to know where to put it back later
+        legacyVisibilityState = legacyContainer.classList.contains('hidden');
         const placeholder = document.createElement('div');
         placeholder.id = 'device-manager-placeholder';
         placeholder.style.display = 'none';
@@ -309,6 +311,12 @@
             legacyContainer.classList.remove('device-library-layout');
 
             // 2. Put #device-manager back to placeholder
+            if (legacyVisibilityState === true) {
+                legacyContainer.classList.add('hidden');
+            } else if (legacyVisibilityState === false) {
+                legacyContainer.classList.remove('hidden');
+            }
+
             if (placeholder && placeholder.parentNode) {
                 placeholder.parentNode.insertBefore(legacyContainer, placeholder);
                 placeholder.remove();
