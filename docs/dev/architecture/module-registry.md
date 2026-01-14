@@ -24,43 +24,69 @@ module must follow.
 
 ## Available tokens
 
-The following canonical tokens are available to feature modules. Reference these
-instead of importing files directly so tests and offline bundles can swap
-implementations if needed.
+The following canonical tokens are registered with the module registry. These
+names are used by `cineModules.get()` and by pending registrations flushed from
+the module queues. Reference these instead of importing files directly so tests
+and offline bundles can swap implementations if needed.
 
-### Core Infrastructure
-
-| Token | Provides | Notes |
-| --- | --- | --- |
-| `cineModuleImmutability` | Deep freeze helpers that prevent accidental mutations of registered APIs. | Core infrastructure—loaded very early. |
-| `cineModuleArchitectureHelpers` | Utility functions for module creation, normalization, and dependency resolution. | Used by other architecture modules. |
-| `cineModuleArchitectureKernel` | The "kernel" that boots the module registry and wires low-level primitives. | Loaded before other modules. |
-| `cineEnvironmentBridge` | Safe access to `window`, `globalThis`, workers and Node-style globals. | Never mutate the returned references. |
-| `cineRuntimeBootstrap` | Core runtime initialization, boot queue, and scope detection utilities. | From `src/scripts/runtime/bootstrap.js`. |
-
-### Persistence & Offline
+### Infrastructure & Architecture
 
 | Token | Provides | Notes |
 | --- | --- | --- |
-| `cinePersistence` | Redundant save/autosave/backup helpers that wrap `storage.js`. | All user data writes must flow through this token. |
-| `cineOffline` | Service worker handshake, cache verification drills and bundle checksum utilities. | Works even when the service worker is unavailable. |
-| `cineRuntime` | Error boundaries, crash protection, and runtime guard logic. | Wraps critical operations to prevent data loss. |
+| `cineModuleBase` | Shared helpers for module registration, freezing, and safe global exposure. | Core infrastructure—loaded early. |
+| `cineModuleArchitectureKernel` | Unified kernel for module detection, registry resolution, and queue management. | Bootstraps registry usage. |
+| `cineModuleArchitectureHelpers` | Architecture helpers for scope detection, registry resolution, and queue management. | Used by kernel and legacy shims. |
+| `cineModuleEnvironment` | Shared environment bootstrap that harmonizes module communication across bundles. | Wraps scope detection and queues. |
+| `cineEnvironmentBridge` | Consistent global environment access between Cine modules. | Bridges `window`, `globalThis`, and workers safely. |
+| `cineModuleGlobals` | Shared module globals for cross-script coordination. | Provides registry helpers and global caching. |
+| `cineModuleContext` | Context helpers that unify architecture, system, and registry lookups. | Used by runtime safety checks. |
+| `cineModuleImmutability` | Deep freeze helpers that prevent accidental mutations of registered APIs. | Guards shared exports. |
 
-### UI & Views
+### Runtime, Persistence & Offline
 
 | Token | Provides | Notes |
 | --- | --- | --- |
-| `cineUi` | UI helpers, modal management, and DOM utilities. | Coordinate with View Manager for V2. |
-| `cineV2ViewManager` | V2 hash-based routing, view transitions, and navigation state. | See [V2 Views Architecture](v2-views.md). |
-| `cineFeatureSearch` | Global search normalization, highlighting, and suggestion ranking. | Powers the command palette and search bar. |
+| `cinePersistence` | Data integrity facade for storage, autosave, backups, restore, and share flows. | All user data writes must flow through this token. |
+| `cineOffline` | Offline helpers for service worker registration and cache recovery. | Safe when service worker is unavailable. |
+| `cineRuntime` | Runtime orchestrator ensuring persistence, offline, and UI safeguards stay intact. | Guards critical operations to prevent data loss. |
+| `cineRuntimeGuard` | Runtime backfill and integrity helpers reused by the legacy entry point. | Used by bootstrap probes. |
+
+### Diagnostics & Shared Utilities
+
+| Token | Provides | Notes |
+| --- | --- | --- |
+| `cineLogging` | Structured logging utilities for debugging and diagnostics. | Adds persistence-safe logging history. |
+| `cineLoggingResolver` | Helpers to resolve cineLogging instances and console fallbacks across runtimes. | Keeps diagnostics resilient. |
+| `cineCoreShared` | Shared helpers for deterministic stringification, weights, and version markers. | Also exposes `APP_VERSION`. |
+| `cineLocale` | Language helpers shared between the runtime core and UI modules. | Handles RTL metadata updates. |
+
+### UI & Presentation
+
+| Token | Provides | Notes |
+| --- | --- | --- |
+| `cineUi` | UI controller registry for dialogs, interactions, orchestration, and help copy. | Coordinate with help and routing. |
+| `cineHelp` | Shared registry for in-app help entries and resolvers. | Drives the help drawer contents. |
+| `cineSettingsAppearance` | Appearance and settings helpers for the application UI. | Manages themes and preferences. |
+| `cineResults` | Power summary localisation and runtime feedback coordination. | Used by results rendering. |
+| `cineGearList` | Gear list generation, serialization, and DOM extraction helpers. | Supports print/export flows. |
 
 ### Feature Modules
 
 | Token | Provides | Notes |
 | --- | --- | --- |
-| `autoGearRulesApi` | Automatic gear rule builder, validation logic and rehearsal checkpoints. | Stores redundant mirrors before applying changes. |
-| `cineContactsApi` | Crew contact roster CRUD operations and vCard import/export. | Persists with planner backups. |
-| `cineOwnGearApi` | Personal equipment inventory tracking and quantity management. | Integrates with auto gear rule conditions. |
+| `cineFeatureAutoGearRules` | Automatic gear rule cloning, factory defaults, and seeding helpers. | Supports auto-gear flows. |
+| `cineFeatureBackup` | Backup and restore helpers for snapshots, payload normalization, downloads, and diff metadata. | Protects user data. |
+| `cineFeaturePrint` | Print orchestration for overview exports and PDF generation. | Triggers print workflows. |
+| `cineFeaturePrintPreview` | Print preview modal helpers. | Coordinates preview UI. |
+| `cine.features.connectionDiagram` | Connection diagram rendering and interactions. | Powers wiring diagrams. |
+| `cine.features.contacts` | Shared helpers for contacts management. | Persists with planner backups. |
+| `cine.features.featureSearchNormalization` | Normalization helpers for feature search, including measurement units and punctuation folding. | Feeds feature search. |
+| `cine.features.featureSearchEngine` | Search engine utilities for normalising values, tokenising queries, and ranking feature results. | Core search engine. |
+| `cine.features.featureSearch` | Helpers for feature search normalisation, highlighting, and detail formatting. | UI search support. |
+| `cine.features.help` | Helpers for install guidance, platform detection, and iOS PWA help lifecycle. | Used by onboarding flows. |
+| `cine.features.helpContent` | Populates the help dialog with topics from translations. | Keeps help copy in sync. |
+| `cine.features.onboardingTour` | Guided onboarding tutorial for Cine Power Planner workflows. | Runs the first-run tour. |
+| `cine.features.ownGear` | Shared helpers for personal gear persistence. | Integrates with auto gear rules. |
 
 
 > **Tip:** Add new tokens only after updating the [Documentation Coverage
