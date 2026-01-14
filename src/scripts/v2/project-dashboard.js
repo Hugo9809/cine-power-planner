@@ -43,6 +43,271 @@ let currentFilter = {
 
 // Cache for project data to avoid O(N) localStorage parsing
 let _cachedProjectData = null;
+let dataProvider = null;
+
+// =====================
+// DATA PROVIDERS
+// =====================
+
+function createDefaultDataProvider() {
+    return {
+        loadProjectMetadata() {
+            if (typeof window.loadProjectMetadata === 'function') {
+                try {
+                    return window.loadProjectMetadata() || {};
+                } catch (e) {
+                    console.warn('[V2] Failed to load project metadata via storage API:', e);
+                }
+            }
+
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    return JSON.parse(stored);
+                }
+            } catch (e) {
+                console.error('[V2] Failed to parse project data:', e);
+            }
+            return {};
+        },
+        getProjectNames() {
+            const metadata = this.loadProjectMetadata();
+            const names = Object.keys(metadata).filter(name => name && !name.startsWith('auto-backup-'));
+            if (names.length > 0) return names;
+
+            if (global.cineLegacyShim && typeof global.cineLegacyShim.getProjectNames === 'function') {
+                const legacyNames = global.cineLegacyShim.getProjectNames();
+                if (legacyNames.length > 0) return legacyNames;
+            }
+
+            const setupSelect = document.getElementById('setupSelect');
+            if (setupSelect && setupSelect.options.length > 1) {
+                const selectNames = Array.from(setupSelect.options)
+                    .map(opt => opt.value)
+                    .filter(val => val !== '');
+                if (selectNames.length > 0) return [...new Set(selectNames)];
+            }
+
+            return [];
+        },
+        getProjectMetadata(projectName) {
+            const metadata = this.loadProjectMetadata();
+            return metadata[projectName] || null;
+        },
+        loadProject(projectName) {
+            if (typeof window.loadProject === 'function') {
+                try {
+                    return window.loadProject(projectName);
+                } catch (e) {
+                    console.warn('[V2] Failed to load project via storage API:', e);
+                }
+            }
+
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    const data = JSON.parse(stored);
+                    return data[projectName] || null;
+                }
+            } catch (e) {
+                console.error('[V2] Failed to parse project data:', e);
+            }
+
+            return null;
+        },
+        saveProject(projectName, projectData, options = {}) {
+            if (typeof window.saveProject === 'function') {
+                window.saveProject(projectName, projectData, options);
+                return true;
+            }
+
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                const data = stored ? JSON.parse(stored) : {};
+                data[projectName] = projectData;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                return true;
+            } catch (e) {
+                console.error('[V2] Failed to save project data:', e);
+                return false;
+            }
+        },
+        updateProjectMetadata(projectName, metadata = {}) {
+            if (typeof window.loadProject === 'function' && typeof window.saveProject === 'function') {
+                try {
+                    const project = window.loadProject(projectName);
+                    if (project) {
+                        if (metadata.color) project.color = metadata.color;
+                        if (metadata.icon) project.icon = metadata.icon;
+                        if (metadata.prepDays) project.prepDays = metadata.prepDays;
+                        if (metadata.shootingDays) project.shootingDays = metadata.shootingDays;
+                        if (metadata.returnDays) project.returnDays = metadata.returnDays;
+                        if (typeof metadata.archived !== 'undefined') project.archived = metadata.archived;
+                        if (metadata.status) project.status = metadata.status;
+
+                        window.saveProject(projectName, project);
+                        return { success: true, lastModified: project.lastModified || null };
+                    }
+
+                    if (metadata && Object.keys(metadata).length > 0) {
+                        const fallbackProject = {
+                            gearList: '',
+                            projectInfo: null,
+                            gearListAndProjectRequirementsGenerated: false,
+                            ...metadata
+                        };
+
+                        if (!fallbackProject.lastModified) {
+                            fallbackProject.lastModified = new Date().toISOString();
+                        }
+
+                        window.saveProject(projectName, fallbackProject, { skipOverwriteBackup: true });
+                        return { success: true, lastModified: fallbackProject.lastModified };
+                    }
+                } catch (e) {
+                    console.error('[V2] Failed to update project via storage API:', e);
+                    return { success: false };
+                }
+            }
+
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                const data = stored ? JSON.parse(stored) : {};
+                if (data && data[projectName]) {
+                    if (metadata.color) data[projectName].color = metadata.color;
+                    if (metadata.icon) data[projectName].icon = metadata.icon;
+                    if (metadata.prepDays) data[projectName].prepDays = metadata.prepDays;
+                    if (metadata.shootingDays) data[projectName].shootingDays = metadata.shootingDays;
+                    if (metadata.returnDays) data[projectName].returnDays = metadata.returnDays;
+                    if (typeof metadata.archived !== 'undefined') data[projectName].archived = metadata.archived;
+                    if (metadata.status) data[projectName].status = metadata.status;
+
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                    return { success: true, lastModified: data[projectName].lastModified || null };
+                }
+            } catch (e) {
+                console.error('[V2] Failed to update project metadata:', e);
+            }
+            return { success: false };
+        },
+        deleteProject(projectName) {
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (!stored) return false;
+                const data = JSON.parse(stored);
+                if (!data[projectName]) return false;
+                delete data[projectName];
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                return true;
+            } catch (e) {
+                console.error('[V2] Failed to delete project:', e);
+                return false;
+            }
+        },
+        duplicateProject(projectName) {
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (!stored) return { success: false };
+                const data = JSON.parse(stored);
+                const originalData = data[projectName];
+                if (!originalData) return { success: false };
+
+                let newName = `${projectName} (Copy)`;
+                let counter = 2;
+                while (data[newName]) {
+                    newName = `${projectName} (Copy ${counter})`;
+                    counter++;
+                }
+
+                const newData = JSON.parse(JSON.stringify(originalData));
+                newData.created = new Date().toISOString();
+                newData.lastModified = new Date().toISOString();
+
+                data[newName] = newData;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+                return { success: true, newName };
+            } catch (e) {
+                console.error('Failed to duplicate project:', e);
+                return { success: false };
+            }
+        },
+        renameProject(oldName, newName, metadata = {}) {
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (!stored) return { success: false };
+                const data = JSON.parse(stored);
+                const oldData = data[oldName];
+                if (!oldData) return { success: false };
+
+                data[newName] = { ...oldData, ...metadata };
+                data[newName].lastModified = new Date().toISOString();
+                delete data[oldName];
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                return { success: true, lastModified: data[newName].lastModified };
+            } catch (e) {
+                console.error('Rename failed', e);
+                return { success: false };
+            }
+        },
+        createProject(projectName) {
+            if (global.cineLegacyShim) {
+                return new Promise((resolve) => {
+                    global.cineLegacyShim.createProject(projectName);
+
+                    const waitForProject = (attempts = 0) => {
+                        const maxAttempts = 50;
+                        const stored = localStorage.getItem(STORAGE_KEY);
+                        if (stored) {
+                            try {
+                                const data = JSON.parse(stored);
+                                if (data && data[projectName]) {
+                                    resolve(true);
+                                    return;
+                                }
+                            } catch (_e) { void _e; }
+                        }
+                        if (attempts < maxAttempts) {
+                            setTimeout(() => waitForProject(attempts + 1), 100);
+                        } else {
+                            console.warn('[V2] Timed out waiting for project to be saved:', projectName);
+                            resolve(false);
+                        }
+                    };
+                    waitForProject();
+                });
+            }
+
+            return Promise.resolve(false);
+        }
+    };
+}
+
+function createUiOnlyDataProvider() {
+    return {
+        loadProjectMetadata: () => ({}),
+        getProjectNames: () => [],
+        getProjectMetadata: () => null,
+        loadProject: () => null,
+        saveProject: () => false,
+        updateProjectMetadata: () => ({ success: false }),
+        deleteProject: () => false,
+        duplicateProject: () => ({ success: false }),
+        renameProject: () => ({ success: false }),
+        createProject: () => Promise.resolve(false)
+    };
+}
+
+function setDataProvider(provider) {
+    dataProvider = provider || createDefaultDataProvider();
+}
+
+function getDataProvider() {
+    if (!dataProvider) {
+        dataProvider = createDefaultDataProvider();
+    }
+    return dataProvider;
+}
 
 // =====================
 // HELPERS
@@ -139,26 +404,9 @@ function _t(path, params = {}) {
  * Uses the optimized loadProjectMetadata API from storage.js if available.
  */
 function refreshProjectDataCache() {
-    // [New V2] Use optimized metadata loader from storage.js
-    if (typeof window.loadProjectMetadata === 'function') {
-        try {
-            _cachedProjectData = window.loadProjectMetadata();
-            return;
-        } catch (e) {
-            console.warn('[V2] Failed to load project metadata via storage API:', e);
-        }
-    }
-
-    // [Fallback] Legacy direct read
-    try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-            _cachedProjectData = JSON.parse(stored);
-        } else {
-            _cachedProjectData = {};
-        }
-    } catch (e) {
-        console.error('[V2] Failed to parse project data:', e);
+    const provider = getDataProvider();
+    _cachedProjectData = provider.loadProjectMetadata();
+    if (!_cachedProjectData || typeof _cachedProjectData !== 'object') {
         _cachedProjectData = {};
     }
 }
@@ -168,38 +416,10 @@ function refreshProjectDataCache() {
  * Uses a fallback chain to ensure data availability even during initialization
  */
 function getProjectNames() {
-    // Priority 1: Read from cached project data (Fastest & Most Accurate)
     if (_cachedProjectData) {
         return Object.keys(_cachedProjectData).filter(name => name && !name.startsWith('auto-backup-'));
     }
-
-    // Priority 2: Use legacy shim if available
-    if (global.cineLegacyShim && typeof global.cineLegacyShim.getProjectNames === 'function') {
-        const names = global.cineLegacyShim.getProjectNames();
-        if (names.length > 0) return names;
-    }
-
-    // Priority 3: Read from setupSelect (if populated)
-    const setupSelect = document.getElementById('setupSelect');
-    if (setupSelect && setupSelect.options.length > 1) {
-        const names = Array.from(setupSelect.options)
-            .map(opt => opt.value)
-            .filter(val => val !== '');
-        if (names.length > 0) return [...new Set(names)];
-    }
-
-    // Priority 4: Direct localStorage fallback
-    try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-            const data = JSON.parse(stored);
-            return Object.keys(data).filter(name => name && !name.startsWith('auto-backup-'));
-        }
-    } catch (_e) {
-        void _e;
-    }
-
-    return [];
+    return getDataProvider().getProjectNames();
 }
 
 /**
@@ -259,87 +479,20 @@ function getProjectMetadata(projectName) {
  * Update project metadata (color, icon, dates)
  */
 function updateProjectMetadata(projectName, metadata = {}) {
-    // [New V2] Use storage API to safely update project shards
-    if (typeof window.loadProject === 'function' && typeof window.saveProject === 'function') {
-        try {
-            const project = window.loadProject(projectName);
-            if (project) {
-                if (metadata.color) project.color = metadata.color;
-                if (metadata.icon) project.icon = metadata.icon;
-                if (metadata.prepDays) project.prepDays = metadata.prepDays;
-                if (metadata.shootingDays) project.shootingDays = metadata.shootingDays;
-                if (metadata.returnDays) project.returnDays = metadata.returnDays;
-                if (typeof metadata.archived !== 'undefined') project.archived = metadata.archived;
-                if (metadata.status) project.status = metadata.status;
-
-                window.saveProject(projectName, project);
-
-                // Update cache manually to reflect changes immediately in UI
-                if (_cachedProjectData) {
-                    if (!_cachedProjectData[projectName]) {
-                        _cachedProjectData[projectName] = {};
-                    }
-                    Object.assign(_cachedProjectData[projectName], metadata);
-                }
-                return true;
+    const provider = getDataProvider();
+    const result = provider.updateProjectMetadata(projectName, metadata);
+    if (result && result.success) {
+        if (_cachedProjectData) {
+            if (!_cachedProjectData[projectName]) {
+                _cachedProjectData[projectName] = {};
             }
-
-            if (metadata && Object.keys(metadata).length > 0) {
-                const fallbackProject = {
-                    gearList: '',
-                    projectInfo: null,
-                    gearListAndProjectRequirementsGenerated: false,
-                    ...metadata
-                };
-
-                if (!fallbackProject.lastModified) {
-                    fallbackProject.lastModified = new Date().toISOString();
-                }
-
-                window.saveProject(projectName, fallbackProject, { skipOverwriteBackup: true });
-
-                if (_cachedProjectData) {
-                    _cachedProjectData[projectName] = {
-                        ...(_cachedProjectData[projectName] || {}),
-                        ...metadata,
-                        lastModified: fallbackProject.lastModified
-                    };
-                }
-
-                return true;
+            const nextMetadata = { ...metadata };
+            if (result.lastModified) {
+                nextMetadata.lastModified = result.lastModified;
             }
-        } catch (e) {
-            console.error('[V2] Failed to update project via storage API:', e);
-            return false;
+            Object.assign(_cachedProjectData[projectName], nextMetadata);
         }
-    }
-
-    // [Legacy Fallback] - ONLY use if storage API is missing
-    try {
-        // Ensure cache is fresh before read-modify-write
-        refreshProjectDataCache();
-        const data = _cachedProjectData || {};
-
-        if (data && data[projectName]) {
-            // Merge new metadata
-            if (metadata.color) data[projectName].color = metadata.color;
-            if (metadata.icon) data[projectName].icon = metadata.icon;
-            if (metadata.prepDays) data[projectName].prepDays = metadata.prepDays;
-            if (metadata.shootingDays) data[projectName].shootingDays = metadata.shootingDays;
-            if (metadata.returnDays) data[projectName].returnDays = metadata.returnDays;
-            if (typeof metadata.archived !== 'undefined') data[projectName].archived = metadata.archived;
-            if (metadata.status) data[projectName].status = metadata.status;
-
-            // Persist
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-
-            // Update cache reference
-            _cachedProjectData = data;
-
-            return true;
-        }
-    } catch (e) {
-        console.error('[V2] Failed to update project metadata:', e);
+        return true;
     }
     return false;
 }
@@ -894,17 +1047,11 @@ function deleteProject(projectName) {
     }
 
     try {
-        // 1. Delete from storage
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-            const data = JSON.parse(stored);
-            if (data[projectName]) {
-                delete data[projectName];
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-
-                // UPDATE REVISION for cross-tab sync
-                updateProjectRevision();
-            }
+        const provider = getDataProvider();
+        const deleted = provider.deleteProject(projectName);
+        if (deleted) {
+            updateProjectRevision();
+            refreshProjectDataCache();
         }
 
         // 2. Notify legacy shim if available (to clean up its internal state if any)
@@ -937,44 +1084,16 @@ function archiveProject(projectName) {
  * Duplicate Project
  */
 function duplicateProject(projectName) {
-    try {
-        // 1. Get original data
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (!stored) return;
-        const data = JSON.parse(stored);
-        const originalData = data[projectName];
-        if (!originalData) return;
-
-        // 2. Generate new unique name
-        let newName = `${projectName} (Copy)`;
-        let counter = 2;
-        while (data[newName]) {
-            newName = `${projectName} (Copy ${counter})`;
-            counter++;
-        }
-
-        // 3. Clone data
-        const newData = JSON.parse(JSON.stringify(originalData));
-        newData.created = new Date().toISOString();
-        newData.lastModified = new Date().toISOString();
-
-        // 4. Save
-        data[newName] = newData;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-
-        // UPDATE REVISION for cross-tab sync
+    const provider = getDataProvider();
+    const result = provider.duplicateProject(projectName);
+    if (result && result.success) {
         updateProjectRevision();
-
-        // Refresh Grid
+        refreshProjectDataCache();
         renderProjectGrid();
 
-        // Notify legacy shim if available
         if (global.cineLegacyShim && typeof global.cineLegacyShim.refreshProjects === 'function') {
             global.cineLegacyShim.refreshProjects();
         }
-
-    } catch (e) {
-        console.error('Failed to duplicate project:', e);
     }
 }
 
@@ -998,14 +1117,11 @@ function showCreateProjectDialog(existingProject = null) {
 
     // If editing, load existing data
     if (isEditing) {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-            const data = JSON.parse(stored);
-            if (data[existingProject]) {
-                existingMetadata = data[existingProject];
-                if (existingMetadata.color) selectedColor = existingMetadata.color;
-                if (existingMetadata.icon) selectedIcon = existingMetadata.icon;
-            }
+        refreshProjectDataCache();
+        existingMetadata = getDataProvider().getProjectMetadata(existingProject);
+        if (existingMetadata) {
+            if (existingMetadata.color) selectedColor = existingMetadata.color;
+            if (existingMetadata.icon) selectedIcon = existingMetadata.icon;
         }
     }
 
@@ -1404,42 +1520,22 @@ function showCreateProjectDialog(existingProject = null) {
         if (isEditing) {
             // Rename Checks
             if (projectName !== existingProject) {
-                // RENAME LOGIC: Duplicate then Delete
-                try {
-                    const stored = localStorage.getItem(STORAGE_KEY);
-                    if (stored) {
-                        const data = JSON.parse(stored);
-                        const oldData = data[existingProject];
-                        if (oldData) {
-                            // Create New Entry
-                            data[projectName] = { ...oldData, ...metadata };
-                            data[projectName].lastModified = new Date().toISOString();
-                            // Delete Old Entry
-                            delete data[existingProject];
-                            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                const provider = getDataProvider();
+                const renamed = provider.renameProject(existingProject, projectName, metadata);
+                if (renamed && renamed.success) {
+                    updateProjectRevision();
+                    refreshProjectDataCache();
 
-                            // UPDATE REVISION for cross-tab sync
-                            updateProjectRevision();
-
-                            // If we are renaming the currently active project, we need to update the global session
-                            const setupSelect = document.getElementById('setupSelect');
-                            if (setupSelect && setupSelect.value === existingProject) {
-                                // We can't easily update the active session fully without a reload or deep app-session calls
-                                // But for the dashboard view, we just need to refresh the grid.
-                                // Ideally, we should switch the active project to the new name if it was open.
-                                // For now, let's just refresh the grid which is the primary goal.
-                            }
-
-                            renderProjectGrid();
-
-                            // If the user has the legacy shim, we might need to refresh it
-                            if (global.cineLegacyShim && typeof global.cineLegacyShim.refreshProjects === 'function') {
-                                global.cineLegacyShim.refreshProjects();
-                            }
-                        }
+                    const setupSelect = document.getElementById('setupSelect');
+                    if (setupSelect && setupSelect.value === existingProject) {
+                        // Refresh the grid to reflect the rename in the dashboard UI.
                     }
-                } catch (e) {
-                    console.error('Rename failed', e);
+
+                    renderProjectGrid();
+
+                    if (global.cineLegacyShim && typeof global.cineLegacyShim.refreshProjects === 'function') {
+                        global.cineLegacyShim.refreshProjects();
+                    }
                 }
             } else {
                 // UPDATE Existing (Same Name)
@@ -1482,54 +1578,21 @@ function showCreateProjectDialog(existingProject = null) {
  * Create a new project
  */
 async function createProject(projectName, metadata = {}) {
-    if (global.cineLegacyShim) {
-        // Return a promise that resolves when the project is saved
-        return new Promise((resolve, reject) => {
-            global.cineLegacyShim.createProject(projectName);
-
-            // Wait for the project to be saved before updating metadata
-            // The legacy save is async (triggered via button click), so we poll
-            const waitForProjectAndUpdateMetadata = (attempts = 0) => {
-                const maxAttempts = 50; // ~5 seconds max (increased from 2s)
-                const stored = localStorage.getItem(STORAGE_KEY);
-                if (stored) {
-                    try {
-                        const data = JSON.parse(stored);
-                        if (data && data[projectName]) {
-                            updateProjectMetadata(projectName, metadata);
-                            // Navigate after successful save
-                            if (global.cineViewManager) {
-                                global.cineViewManager.showView('projectDetail', {
-                                    projectId: projectName,
-                                    tab: 'camera'
-                                });
-                            }
-                            resolve(true);
-                            return;
-                        }
-                    } catch (_e) { void _e; }
-                }
-                if (attempts < maxAttempts) {
-                    setTimeout(() => waitForProjectAndUpdateMetadata(attempts + 1), 100);
-                } else {
-                    console.warn('[V2] Timed out waiting for project to be saved:', projectName);
-                    // Try to navigate anyway? Or show error?
-                    // Let's resolve false
-                    resolve(false);
-                }
-            };
-            waitForProjectAndUpdateMetadata();
-        });
+    const provider = getDataProvider();
+    const created = await provider.createProject(projectName);
+    if (!created) {
+        return false;
     }
 
-    // Fallback if no legacy shim (shouldn't happen in this app)
+    updateProjectMetadata(projectName, metadata);
+
     if (global.cineViewManager) {
         global.cineViewManager.showView('projectDetail', {
             projectId: projectName,
             tab: 'camera'
         });
     }
-    return Promise.resolve(true);
+    return true;
 }
 
 /**
@@ -1604,12 +1667,19 @@ function createDashboardView() {
 /**
  * Initialize the project dashboard
  */
-function init() {
+function init(options = {}) {
     if (isInitialized) {
         console.warn('[ProjectDashboard] Already initialized, skipping.');
         return;
     }
     isInitialized = true;
+
+    if (options.dataProvider) {
+        setDataProvider(options.dataProvider);
+        _cachedProjectData = null;
+    } else if (!dataProvider) {
+        setDataProvider(createDefaultDataProvider());
+    }
 
     console.log('[ProjectDashboard] init() called');
 
@@ -1666,7 +1736,9 @@ const ProjectDashboard = {
     getProjectNames,
     createDashboardView,
     formatDate,
-    formatDateRange
+    formatDateRange,
+    createDefaultDataProvider,
+    createUiOnlyDataProvider
 };
 
 // Expose to global scope
