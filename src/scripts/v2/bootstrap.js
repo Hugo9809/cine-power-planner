@@ -132,7 +132,10 @@ function enableV2() {
         // Initialize and render the project dashboard
         if (global.cineProjectDashboard) {
             if (typeof global.cineProjectDashboard.init === 'function') {
-                global.cineProjectDashboard.init();
+                const uiOnlyProvider = typeof global.cineProjectDashboard.createUiOnlyDataProvider === 'function'
+                    ? global.cineProjectDashboard.createUiOnlyDataProvider()
+                    : null;
+                global.cineProjectDashboard.init({ dataProvider: uiOnlyProvider });
             }
             // renderProjectGrid handled by v2:viewchange event
         }
