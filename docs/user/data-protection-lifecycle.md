@@ -20,6 +20,18 @@ Every step below assumes offline operation is possible at any time. Use the
 [Operations Checklist](../ops/operations-checklist.md) to rehearse the flow on each
 workstation before crews depend on it in the field.
 
+## Data protection priorities
+
+- **Do not delete or overwrite evidence.** Source exports, backups, and
+  verification logs are authoritative records. Keep them read-only until the
+  rehearsal confirms parity and the handoff is signed off.
+- **Prefer redundancy over cleanup.** If you are unsure whether a save or
+  backup is current, export again and keep both files. Redundant offline copies
+  are safer than premature cleanup.
+- **Keep offline capability intact.** All steps must succeed without a network
+  connection. If an action appears to require connectivity, stop and capture
+  logs before attempting again.
+
 ## Step-by-step lifecycle
 
 ### 1) Manual save
@@ -33,6 +45,8 @@ workstation before crews depend on it in the field.
 **Evidence to capture**
 - Screenshot or log of the selector entry timestamp.
 - Exported diff log from **Compare versions** if you need an audit trail.
+- A note in the verification log stating the workstation remained offline (or
+  when it was disconnected) during the save.
 
 **Reference**
 - Detailed save behaviors and schema notes live in
@@ -50,6 +64,7 @@ workstation before crews depend on it in the field.
 **Evidence to capture**
 - Screenshot of the auto-backup entry or **Latest activity** timeline.
 - Timestamp notes in the verification log.
+- The latest autosave ledger entry that matches the save you will export.
 
 **Reference**
 - Autosave cadence and safeguards are detailed in
@@ -66,6 +81,7 @@ workstation before crews depend on it in the field.
 **Evidence to capture**
 - Vault export logs and the queued backup files themselves.
 - Notes in the verification log describing why the vault was used.
+- A copy of the vault entry list to show no queued exports were skipped.
 
 **Reference**
 - Vault behavior and safeguards are detailed in
@@ -81,6 +97,7 @@ workstation before crews depend on it in the field.
 **Evidence to capture**
 - The exported files plus checksum notes or filenames in the verification log.
 - A brief note confirming the export location(s).
+- Confirmation that the original exports were preserved and not renamed.
 
 **Reference**
 - Export formats and fields are documented in
@@ -99,6 +116,7 @@ workstation before crews depend on it in the field.
 **Evidence to capture**
 - Screenshot of the restore compatibility summary and safety backup filename.
 - Console capture of `window.__cineRuntimeIntegrity` or rehearsal notes.
+- A note confirming the source exports were kept intact during rehearsal.
 
 **Reference**
 - Restore rehearsal controls and compatibility checks are covered in
@@ -116,6 +134,7 @@ workstation before crews depend on it in the field.
 **Evidence to capture**
 - The pre-restore safety backup filename (recorded in the verification log).
 - Updated verification log entries noting date, machine, operator and outcome.
+- The autosave ledger entry showing the post-promotion manual save.
 
 **Reference**
 - Promotion behavior, backups and rollbacks are described in
@@ -131,6 +150,9 @@ workstation before crews depend on it in the field.
 - **Offline caches are local.** Service worker caches and local storage do not
   sync across machines; treat them as separate vaults that require deliberate
   exports.
+- **Never clear storage during a handoff.** Do not clear site data or cache
+  while a restore, export, or rehearsal is in progress. Clear only after the
+  verification packet is complete and redundant copies exist.
 
 ### Safe path for moving between machines
 
