@@ -2357,6 +2357,13 @@ export const data = {
     "diagramMoveHint": "Drag nodes to rearrange; drag empty space to pan.",
     "v2": {
       "dashboard": {
+        "header": {
+          "title": "Projects"
+        },
+        "actions": {
+          "newProject": "New Project",
+          "importProject": "Import Project"
+        },
         "projects": "Projects",
         "newProject": "New Project",
         "projectLocked": "The project '{projectName}' is already open in another tab.",

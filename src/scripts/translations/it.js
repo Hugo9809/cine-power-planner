@@ -2201,6 +2201,13 @@ export const data = {
     "diagramMoveHint": "Trascina i nodi per spostarli. Trascina uno spazio vuoto per spostare il diagramma.",
     "v2": {
       "dashboard": {
+        "header": {
+          "title": "Progetti"
+        },
+        "actions": {
+          "newProject": "Nuovo progetto",
+          "importProject": "Importa progetto"
+        },
         "projects": "Progetti",
         "newProject": "Nuovo progetto",
         "emptyState": {
