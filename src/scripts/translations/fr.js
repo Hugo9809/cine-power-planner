@@ -2176,6 +2176,13 @@ export const data = {
     "diagramMoveHint": "Déplacez les nœuds par glisser-déposer. Faites glisser un espace vide pour déplacer le diagramme.",
     "v2": {
       "dashboard": {
+        "header": {
+          "title": "Projets"
+        },
+        "actions": {
+          "newProject": "Nouveau projet",
+          "importProject": "Importer un projet"
+        },
         "projects": "Projets",
         "newProject": "Nouveau projet",
         "emptyState": {
