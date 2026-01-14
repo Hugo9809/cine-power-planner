@@ -1560,9 +1560,16 @@ function createDashboardView() {
 
     const view = document.createElement('section');
     view.id = VIEW_ID;
-    view.className = 'app-view v2-app';
+    view.className = 'app-view';
     view.innerHTML = `
       <header class="view-header">
+        <button class="v2-mobile-menu-toggle" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
         <h1>Projects</h1>
         <div class="view-header-actions">
           <button type="button" class="v2-btn v2-btn-secondary" id="v2HeaderImportBtn" style="margin-right: 8px;">
