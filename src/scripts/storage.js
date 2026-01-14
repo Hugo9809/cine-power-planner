@@ -99,6 +99,14 @@ async function hydrateProjectCache() {
         storageRepo.getItem(key).then(val => { if (val) autoGearAutoPresetIdCache = val; });
         continue;
       }
+      if (key === AUTO_GEAR_BACKUPS_STORAGE_KEY) {
+        storageRepo.getItem(key).then(val => {
+          if (Array.isArray(val)) {
+            autoGearBackupsCache = val;
+          }
+        });
+        continue;
+      }
       if (key === AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY) {
         storageRepo.getItem(key).then(val => { if (val) autoGearBackupRetentionCache = val; });
         continue;
@@ -12375,6 +12383,26 @@ function resolveProjectKey(projects, lookup, name, options = {}) {
   return null;
 }
 
+function buildProjectLookupFromProjects(projects = {}) {
+  const rawKeyLookup = new Map();
+  const normalizedKeyLookup = new Map();
+  const entries = projects && typeof projects === 'object' ? Object.keys(projects) : [];
+
+  entries.forEach((key) => {
+    if (typeof key !== 'string') {
+      return;
+    }
+    rawKeyLookup.set(key, key);
+    const normalized = normalizeProjectStorageKey(key);
+    if (!normalizedKeyLookup.has(normalized)) {
+      normalizedKeyLookup.set(normalized, []);
+    }
+    normalizedKeyLookup.get(normalized).push(key);
+  });
+
+  return { raw: rawKeyLookup, normalized: normalizedKeyLookup };
+}
+
 function readAllProjectsFromStorage(options = {}) {
   const {
     forceRefresh = false,
@@ -12388,31 +12416,15 @@ function readAllProjectsFromStorage(options = {}) {
   }
 
   // [Refactor] Hybrid Approach: Use Memory Cache if Hydrated (IndexedDB active)
-  if (isProjectCacheHydrated) {
-    // Return a clone to prevent mutation unless strictly for reference, but legacy expects copies usually.
-    // `projects` is the map of name -> project
+  if (isProjectCacheHydrated && !forceRefresh) {
+    const projectsSnapshot = { ...projectMemoryCache };
+    const lookupSnapshot = buildProjectLookupFromProjects(projectsSnapshot);
     return {
-      projects: { ...projectMemoryCache },
+      projects: projectsSnapshot,
       changed: false,
       originalValue: { ...projectMemoryCache },
-      lookup: { raw: new Map(), normalized: new Map() } // Simplification: we might need to rebuild lookup if used heavily
+      lookup: cloneProjectLookupSnapshotForReturn(lookupSnapshot),
     };
-    // Note: The `lookup` object was used for case-insensitive matching. 
-    // If we drop it, `resolveProjectKey` might fail.
-    // Let's implement a basic lookup generator on the fly or maintain it in cache.
-    // For now, let's regenerate it from the cache keys:
-    /*
-    const rawMap = new Map();
-    const normalizedMap = new Map();
-    Object.keys(projectMemoryCache).forEach(k => {
-        rawMap.set(k, k);
-        const norm = normalizeProjectStorageKey(k);
-        if (!normalizedMap.has(norm)) normalizedMap.set(norm, []);
-        normalizedMap.get(norm).push(k);
-    });
-    return { projects: { ... }, lookup: { raw: rawMap, normalized: normalizedMap }, ... }
-    */
-    // Actually, let's keep it simple. If legacy code needs lookup, it calls this.
   }
 
   // Fallback to Legacy LocalStorage Logic
@@ -14953,6 +14965,14 @@ function saveAutoGearRules(rules, options = {}) {
 function loadAutoGearBackups() {
   applyLegacyStorageMigrations();
 
+  if (Array.isArray(autoGearBackupsCache) && autoGearBackupsCache.length) {
+    const { normalized: normalizedCached, changed } = normalizeLegacyLongGopBackups(autoGearBackupsCache);
+    if (changed) {
+      saveAutoGearBackups(normalizedCached, { skipNormalization: true });
+    }
+    return normalizedCached;
+  }
+
   // [Agent Migration] Read form Memory/IndexedDB first
   // Note: Since this is a synchronous load for UI, and backups might be large,
   // we rely on hydration if available, or force a sync read if possible/cached.
@@ -14993,6 +15013,7 @@ function loadAutoGearBackups() {
   if (changed) {
     saveAutoGearBackups(normalizedBackups, { skipNormalization: true });
   }
+  autoGearBackupsCache = normalizedBackups;
   return normalizedBackups;
 }
 
@@ -15003,6 +15024,7 @@ function saveAutoGearBackups(backups, options = {}) {
   const { normalized: normalizedBackups } = skipNormalization
     ? { normalized: safeBackups, changed: false }
     : normalizeLegacyLongGopBackups(safeBackups);
+  autoGearBackupsCache = normalizedBackups;
   const safeStorage = getSafeLocalStorage();
   ensurePreWriteMigrationBackup(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY);
 
@@ -15016,9 +15038,25 @@ function saveAutoGearBackups(backups, options = {}) {
     // For now, we will piggyback on the existing pattern if a cache exists, 
     // or just ensure proper async persistence.
 
+    const isIndexedDBActive = typeof storageRepo !== 'undefined'
+      && storageRepo.driver
+      && storageRepo.driver.constructor.name === 'IndexedDBAdapter';
+
     if (typeof storageRepo !== 'undefined') {
       storageRepo.setItem(AUTO_GEAR_BACKUPS_STORAGE_KEY, normalizedBackups).catch(err => {
         console.warn('[Storage] Failed to async persist Auto Gear Backups to IDB:', err);
+        if (isIndexedDBActive) {
+          try {
+            saveJSONToStorage(
+              safeStorage,
+              AUTO_GEAR_BACKUPS_STORAGE_KEY,
+              normalizedBackups,
+              "Error saving automatic gear rule backups to localStorage:",
+            );
+          } catch (fallbackError) {
+            console.warn('[Storage] Failed to persist Auto Gear Backups fallback to localStorage:', fallbackError);
+          }
+        }
       });
     }
   }
@@ -15124,6 +15162,7 @@ function loadAutoGearPresets() {
 let autoGearMonitorDefaultsCache = null;
 let autoGearActivePresetIdCache = null;
 let autoGearAutoPresetIdCache = null;
+let autoGearBackupsCache = null;
 let autoGearBackupRetentionCache = null;
 let autoGearBackupVisibilityCache = null;
 let customFontsCache = null;
@@ -16696,8 +16735,46 @@ function safeSetLocalStorage(key, value) {
   if (!storage) return;
   const useBackup = RAW_STORAGE_BACKUP_KEYS.has(key);
   const backupKey = `${key}${STORAGE_BACKUP_SUFFIX}`;
+  const isIndexedDB = Boolean(
+    storageRepo
+    && storageRepo.driver
+    && storageRepo.driver.constructor
+    && storageRepo.driver.constructor.name === 'IndexedDBAdapter',
+  );
+
+  const clearCacheForKey = () => {
+    if (key === CUSTOM_FONT_STORAGE_KEY_DEFAULT) { customFontsCache = null; }
+    if (key === CUSTOM_LOGO_STORAGE_KEY) { customLogoCache = null; }
+    if (key === CAMERA_COLOR_STORAGE_KEY) { cameraColorsCache = null; }
+    if (key === PRINT_PREFERENCES_STORAGE_KEY) { printPreferencesCache = null; }
+    if (key === CONTACTS_STORAGE_KEY) { contactsCache = null; }
+    if (key === OWN_GEAR_STORAGE_KEY) { ownGearCache = null; }
+    if (key === USER_PROFILE_STORAGE_KEY) { userProfileCache = null; }
+    if (key === FAVORITES_STORAGE_KEY) { favoritesCache = null; }
+    if (key === TEMPERATURE_UNIT_STORAGE_KEY_NAME) { temperatureUnitCache = null; }
+    if (key === FOCUS_SCALE_STORAGE_KEY_NAME) { focusScaleCache = null; }
+    if (key === getMountVoltageStorageKeyName()) { mountVoltagesCache = null; }
+  };
+
+  const writeLegacyStorage = (storedValue) => {
+    storage.setItem(key, storedValue);
+    if (useBackup) {
+      try {
+        storage.setItem(backupKey, storedValue);
+      } catch (backupError) {
+        console.warn('Unable to update backup key during import', backupKey, backupError);
+        downgradeSafeLocalStorageToMemory('write access', backupError, storage);
+        alertStorageError();
+      }
+    }
+  };
+
   try {
     if (value === null || value === undefined) {
+      clearCacheForKey();
+      if (storageRepo) {
+        storageRepo.removeItem(key).catch(e => console.warn('Failed to remove key from repo', key, e));
+      }
       storage.removeItem(key);
       if (useBackup) {
         try {
@@ -16724,22 +16801,25 @@ function safeSetLocalStorage(key, value) {
       if (key === getMountVoltageStorageKeyName()) { mountVoltagesCache = storedValue; }
 
       if (storageRepo) {
-        storageRepo.setItem(key, storedValue).catch(e => console.warn('Failed to save key to repo', key, e));
-        // Skip legacy write if IndexedDB is active
-        const isIndexedDB = storageRepo.driver && storageRepo.driver.constructor && storageRepo.driver.constructor.name === 'IndexedDBAdapter';
-        if (isIndexedDB) return;
+        storageRepo.setItem(key, storedValue).catch(e => {
+          console.warn('Failed to save key to repo', key, e);
+          try {
+            writeLegacyStorage(storedValue);
+          } catch (legacyError) {
+            console.warn('Unable to persist fallback legacy storage key during repo failure', key, legacyError);
+            downgradeSafeLocalStorageToMemory('write access', legacyError, storage);
+            if (useBackup) {
+              alertStorageError();
+            }
+          }
+        });
       }
 
-      storage.setItem(key, storedValue);
-      if (useBackup) {
-        try {
-          storage.setItem(backupKey, storedValue);
-        } catch (backupError) {
-          console.warn('Unable to update backup key during import', backupKey, backupError);
-          downgradeSafeLocalStorageToMemory('write access', backupError, storage);
-          alertStorageError();
-        }
+      if (isIndexedDB) {
+        return;
       }
+
+      writeLegacyStorage(storedValue);
     }
   } catch (error) {
     console.warn('Unable to persist storage key during import', key, error);
@@ -18162,6 +18242,3 @@ console.log('DEBUG: storage.js execution finished');
 
 export const cineStorage = STORAGE_API;
 export default STORAGE_API;
-
-
-
