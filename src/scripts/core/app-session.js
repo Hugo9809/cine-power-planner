@@ -33,11 +33,41 @@ import {
   openSideMenu,
   setupSideMenu,
   setupResponsiveControls,
-  updateTripodOptions
+  updateTripodOptions,
+  detectBrand,
+  connectionLabel
 } from './app-core-new-1.js';
+
+import {
+  ensureList,
+  normalizeVideoType,
+  normalizeFizConnectorType,
+  normalizeViewfinderType,
+  normalizePowerPortType,
+  fixPowerInput
+} from '../modules/device-normalization.js';
+
+import { generateConnectorSummary } from './app-setups.js';
 
 // Fallack for non-ESM globals
 const adjustGearListSelectWidths = (typeof window !== 'undefined' ? window.adjustGearListSelectWidths : null) || (() => { });
+const cameraFizPort = (typeof window !== 'undefined' ? window.cameraFizPort : null) || '';
+const controllerCamPort = (typeof window !== 'undefined' ? window.controllerCamPort : null) || '';
+const controllerDistancePort = (typeof window !== 'undefined' ? window.controllerDistancePort : null) || '';
+
+// Shims for dynamic globals
+const setBatteryPlates = (typeof window !== 'undefined' ? window.setBatteryPlates : null) || (() => { });
+const getBatteryPlates = (typeof window !== 'undefined' ? window.getBatteryPlates : null) || (() => []);
+const setRecordingMedia = (typeof window !== 'undefined' ? window.setRecordingMedia : null) || (() => { });
+const getRecordingMedia = (typeof window !== 'undefined' ? window.getRecordingMedia : null) || (() => []);
+const runFeatureSearch = (typeof window !== 'undefined' ? window.runFeatureSearch : null) || (() => { });
+const featureMap = (typeof window !== 'undefined' ? window.featureMap : null) || {};
+const actionMap = (typeof window !== 'undefined' ? window.actionMap : null) || {};
+const deviceMap = (typeof window !== 'undefined' ? window.deviceMap : null) || {};
+const helpMap = (typeof window !== 'undefined' ? window.helpMap : null) || {};
+const featureSearchEntries = (typeof window !== 'undefined' ? window.featureSearchEntries : null) || [];
+const featureSearchDefaultOptions = (typeof window !== 'undefined' ? window.featureSearchDefaultOptions : null) || [];
+const featureSearch = (typeof window !== 'undefined' ? window.featureSearch : null) || null;
 
 
 // Alias for session usage
@@ -5296,6 +5326,14 @@ let projectAutoSaveTimer = null;
 let projectAutoSaveFailureCount = 0;
 let projectAutoSavePendingWhileRestoring = null;
 let factoryResetInProgress = false;
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'factoryResetInProgress', {
+    get: () => factoryResetInProgress,
+    set: (val) => { factoryResetInProgress = val; },
+    configurable: true
+  });
+}
+
 let projectAutoSaveOverrides = null;
 let projectAutoSaveLastRequestContext = null;
 
@@ -7313,6 +7351,13 @@ function getSessionMountVoltagePreferencesClone() {
     console.warn('cineSession: Failed to clone mount voltage preferences', error);
     return {};
   }
+}
+
+function cloneMountVoltageDefaultsForSession() {
+  if (cineCoreMountVoltage && typeof cineCoreMountVoltage.cloneMountVoltageMap === 'function') {
+    return cineCoreMountVoltage.cloneMountVoltageMap();
+  }
+  return {};
 }
 
 const warnMountVoltageHelper = typeof warnMissingMountVoltageHelper === 'function'

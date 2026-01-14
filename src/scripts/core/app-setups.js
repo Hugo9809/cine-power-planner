@@ -16180,4 +16180,4 @@ window.bindGearListEyeLeatherListener = bindGearListEyeLeatherListener;
 window.bindGearListProGaffTapeListener = bindGearListProGaffTapeListener;
 window.bindGearListDirectorMonitorListener = bindGearListDirectorMonitorListener;
 
-export { ensureZoomRemoteSetup, saveCurrentGearList };
+export { ensureZoomRemoteSetup, saveCurrentGearList, generateConnectorSummary };

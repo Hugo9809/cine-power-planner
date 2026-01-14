@@ -19,6 +19,14 @@ body.dark-mode {
     --v2-surface-inverse: #ffffff;
 
     /* =====================
+    * REFINED SURFACE PALETTE (Settings/Forms override)
+    * ===================== */
+    --v2-surface-0: #1c1c1e;
+    --v2-surface-1: #2c2c2f;
+    --v2-surface-2: #3a3a3d;
+    --v2-surface-3: #48484b;
+
+    /* =====================
    * TEXT COLORS
    * ===================== */
     --v2-text-primary: #f0f0f0;

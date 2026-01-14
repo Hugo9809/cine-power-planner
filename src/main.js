@@ -55,6 +55,7 @@ import './scripts/modules/logging.js';
 import './scripts/modules/persistence.js';
 import './scripts/modules/environment.js';
 import './scripts/modules/environment-bridge.js';
+import './scripts/modules/offline.js';
 import './scripts/modules/globals.js';
 import './scripts/modules/system.js';
 import './scripts/modules/context.js';

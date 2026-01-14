@@ -1,34 +1,31 @@
-# Fix ReferenceError: bindGearListCageListener is not defined
+# Bug Fix: Runtime ReferenceErrors
 
 ## Goal Description
-The application fails to initialize with a `ReferenceError: bindGearListCageListener is not defined` in `app-session.js`. This is because `bindGearListCageListener` and related event listeners are defined locally in `app-setups.js` but are not exposed to the global scope, while `app-session.js` attempts to call them directly.
+Fix `Uncaught ReferenceError`s preventing stable application runtime:
+1. `lastSetupName` is not defined in `app-events.js`.
+2. `factoryResetInProgress` is not defined in `app-setups.js`.
 
-This plan involves exposing these functions globally in `app-setups.js` so they can be accessed by `app-session.js`.
+## User Review Required
+No major design changes. Fixing global/module scope variable access.
 
 ## Proposed Changes
 
-### Core Logic
+### Core Scripts
+
+#### [MODIFY] [app-events.js](file:///Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/core/app-events.js)
+- Declare `let lastSetupName = '';` at the module top level.
+
 #### [MODIFY] [app-setups.js](file:///Users/lucazanner/Documents/GitHub/cine-power-planner/src/scripts/core/app-setups.js)
--   Expose the following functions to `window` (and `globalThis`):
-    -   `bindGearListCageListener`
-    -   `bindGearListEasyrigListener`
-    -   `bindGearListSliderBowlListener`
-    -   `bindGearListEyeLeatherListener`
-    -   `bindGearListProGaffTapeListener`
-    -   `bindGearListDirectorMonitorListener`
+-  Check if `factoryResetInProgress` is available on `window` or import it if possible.
+-  If it relies on a global from `app-session.js`, ensure it is accessed defensively (e.g., `window.factoryResetInProgress` or `typeof factoryResetInProgress !== 'undefined'`).
 
 ## Verification Plan
 
 ### Automated Tests
--   **Build Check**: Run `npm run build` to ensure no build errors.
--   **Lint Check**: Run `npm run lint` to check for new lint errors.
+- None available for these specific UI interaction flows.
 
 ### Manual Verification
-1.  **Start Server**: Run `npm run dev`.
-2.  **Browser Check**: Open the application in the browser (http://localhost:3000).
-3.  **Console Check**: Verify that the `ReferenceError: bindGearListCageListener is not defined` is gone.
-4.  **Functionality Check**:
-    -   Load a project or ensure the gear list is visible.
-    -   INTERACT with the "Camera Cage" dropdown in the gear list.
-    -   Verify that changes are reflected (e.g. valid selection persists).
-    -   Check other exposed listeners (Easyrig, Slider Bowl, etc.) if possible.
+1.  **Reload the App**: Ensure no `ReferenceError`s appear in the console on load.
+2.  **Change Setup**: Switch projects in the dropdown (`setupSelect`). Verify `lastSetupName` logic works (no errors).
+3.  **Delete Setup**: Try deleting a setup (triggers `handleDeleteSetupClickInternal` which uses `lastSetupName`).
+4.  **Save Gear List**: Trigger a save (autosave or manual) to ensure `saveCurrentGearListImplementation` doesn't crash on `factoryResetInProgress` check.

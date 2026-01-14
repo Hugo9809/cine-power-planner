@@ -18617,9 +18617,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function updateCalculations() {
       const cineResultsModule = typeof cineResults === 'object' ? cineResults : null;
       const runModuleUpdate =
-        cineResultsModule && typeof cineResultsModule.updateCalculations === 'function'
-          ? cineResultsModule.updateCalculations
-          : null;
+        (cineResultsModule && typeof cineResultsModule.updateCalculations === 'function' ? cineResultsModule.updateCalculations : null) ||
+        (typeof window !== 'undefined' && window.cineCoreSession && typeof window.cineCoreSession.updateCalculations === 'function' ? window.cineCoreSession.updateCalculations : null) ||
+        (typeof globalThis !== 'undefined' && globalThis.cineCoreSession && typeof globalThis.cineCoreSession.updateCalculations === 'function' ? globalThis.cineCoreSession.updateCalculations : null);
       if (!runModuleUpdate) {
         console.warn('cineResults.updateCalculations not available');
         return;
@@ -19458,6 +19458,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ['controllerDistancePort', () => controllerDistancePort],
       ['detectBrand', () => detectBrand],
       ['connectionLabel', () => connectionLabel],
+      ['setBatteryPlates', () => setBatteryPlatesLocal],
+      ['getBatteryPlates', () => getBatteryPlates],
+      ['setRecordingMedia', () => setRecordingMediaLocal],
+      ['getRecordingMedia', () => getRecordingMedia],
       ['generateConnectorSummary', () => generateConnectorSummary],
       ['diagramConnectorIcons', () => diagramConnectorIcons],
       ['DIAGRAM_MONITOR_ICON', () => DIAGRAM_MONITOR_ICON],
@@ -19835,6 +19839,21 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           'generateConnectorSummary',
           'diagramConnectorIcons',
           'DIAGRAM_MONITOR_ICON',
+          'cameraFizPort',
+          'controllerCamPort',
+          'controllerDistancePort',
+          'checkSetupChanged',
+          'getCurrentProjectInfo',
+          'setBatteryPlates',
+          'getBatteryPlates',
+          'setRecordingMedia',
+          'getRecordingMedia',
+          'runFeatureSearch',
+          'featureMap',
+          'actionMap',
+          'deviceMap',
+          'helpMap',
+          'featureSearch'
         ],
       };
 

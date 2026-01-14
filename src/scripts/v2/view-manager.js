@@ -63,6 +63,11 @@ const VIEWS = {
         id: 'view-own-gear',
         title: 'Owned Gear',
         pattern: /^#?\/?own-gear\/?$/i
+    },
+    backups: {
+        id: 'view-backups',
+        title: 'Cloud Backups',
+        pattern: /^#?\/?backups\/?$/i
     }
 };
 

@@ -1,933 +1,448 @@
-/**
- * Cine Power Planner V2 - Auto Gear Rules View
- * ============================================
- * Manages the "Auto Gear Rules" view in the V2 UI.
- */
+import { View } from '../view.js';
 
-// Removed IIFE wrapper for ES Module conversion
-// (function (global) {
-//    'use strict';
-
-// Polyfill global for legacy code
-const global = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : {};
-
-
-// =====================
-// CONFIGURATION
-// =====================
-const VIEW_ID = 'view-rules';
-
-// =====================
-// CONSTANTS
-// =====================
-const SCENARIOS = [
-    'Indoor', 'Outdoor', 'Studio', 'Tripod', 'Handheld', 'Easyrig',
-    'Cine Saddle', 'Steadybag', 'Dolly', 'Slider', 'Steadicam',
-    'Gimbal', 'Trinity', 'Rollcage', 'Car Mount', 'Technocrane',
-    'Crane', 'Jib', 'Ultimate Arm', 'Russian Arm', 'Special'
-];
-
-const CREW_ROLES = [
-    'DoP', '1st AC', '2nd AC', 'Camera Operator', 'DIT', 'Data Wrangler',
-    'VTR/Playback', 'Gaffer', 'Best Boy', 'Key Grip', 'Grip',
-    'Sound Mixer', 'Boom Operator', 'PA', 'Director', 'Producer',
-    'Script Supervisor', 'Make-up Artist', 'Production Designer'
-];
-
-// =====================
-// STATE
-// =====================
-let isInitialized = false;
-
-// =====================
-// HELPER: SAFE COLLECT
-// =====================
-function safeCollectKeys(obj) {
-    return (obj && typeof obj === 'object') ? Object.keys(obj).sort() : [];
-}
-
-function safeCollectCall(fnName, arg) {
-    if (typeof window[fnName] === 'function') {
-        try {
-            const res = window[fnName](arg);
-            // If the result is array of objects {value, label}, map to value
-            if (Array.isArray(res) && res.length > 0 && typeof res[0] === 'object') {
-                return res.map(o => o.value);
-            }
-            return Array.isArray(res) ? res : [];
-        } catch (e) {
-            console.warn(`[RulesView] Error calling ${fnName}`, e);
-            return [];
-        }
+export class RulesView extends View {
+    constructor() {
+        super('rules');
+        this.devicesLocal = {};
     }
-    return [];
-}
 
-function _t(key) {
-    if (typeof window !== 'undefined' && window.texts) {
-        const langSelect = document.getElementById('languageSelect');
-        const lang = (langSelect && langSelect.value) ||
-            (typeof window.currentLanguage === 'string' && window.currentLanguage) ||
-            'en';
-
-        const dict = window.texts[lang] || window.texts['en'];
-
-        if (dict) {
-            return key.split('.').reduce((o, i) => (o ? o[i] : null), dict) || key;
-        }
-    }
-    return key;
-}
-
-
-// =====================
-// PUBLIC API
-// =====================
-const RulesView = {
-    container: null,
-
-    init() {
-        this.container = document.getElementById(VIEW_ID);
-        if (!this.container) {
-            console.error(`[RulesView] Container element with ID '${VIEW_ID}' not found.`);
-            return;
-        }
-
-        if (!isInitialized) {
-            console.log('[RulesView] Initializing...');
-
-            // Render on view change
-            document.addEventListener('v2:viewchange', (e) => {
-                if (e.detail && e.detail.view === 'rules') {
-                    this.render();
-                }
-            });
-
-            // Listen for the 'cine:ready' event which fires when core modules are loaded
-            document.addEventListener('cine:ready', () => {
-                console.log('[RulesView] cine:ready event received, re-rendering...');
-                this.render();
-            });
-
-            // Also listen for loader completion signal (dispatched by loader.js)
-            document.addEventListener('cine-loader-complete', () => {
-                console.log('[RulesView] cine-loader-complete event received, re-rendering...');
-                this.render();
-            });
-
-            isInitialized = true;
-            console.log('[RulesView] Initialized');
-        }
-    },
-
-    render() {
-        if (!this.container) {
-            this.init();
-            if (!this.container) return;
-        }
-
-        // Check if global function is available
-        const rulesAvailable = (typeof window.getAutoGearRules === 'function');
-
-        if (!rulesAvailable) {
-            // Track retry attempts
-            if (typeof this._retryCount === 'undefined') {
-                this._retryCount = 0;
-            }
-
-            const maxRetries = 10;
-            const isRetrying = this._retryCount < maxRetries;
-
-            // Show loading or error state depending on retry count
+    async render() {
+        if (!window.getAutoGearRules) {
+            // Core not ready? Retry.
             this.container.innerHTML = `
-                    <div class="rules-header">
-                        <div class="rules-title">
-                            <h1>${_t('rulesViewTitle')}</h1>
-                            <p>${_t('rulesViewSubtitle')}</p>
-                        </div>
-                    </div>
-                    <div class="v2-empty-state">
-                        ${isRetrying ? '<div class="v2-spinner"></div>' : '<span class="icon" style="font-size: 48px; color: var(--warning-color);">warning</span>'}
-                        <p>${isRetrying ? (_t('loadingRules') || 'Loading rules system...') : (_t('rulesLoadError') || 'Unable to load rules system')}</p>
-                        <p class="text-muted" style="font-size: 12px; margin-top: 8px;">${isRetrying ? 'Waiting for core modules...' : 'Please refresh the page to try again.'}</p>
-                        ${!isRetrying ? '<button class="v2-btn v2-btn-secondary" style="margin-top: 16px;" onclick="window.location.reload()">Refresh Page</button>' : ''}
-                    </div>
-                `;
-
-            // Retry with increasing delays (exponential backoff with max 5s)
-            if (isRetrying && !this._loadCheckTimer) {
-                const delay = Math.min(500 * Math.pow(1.5, this._retryCount), 5000);
-                console.log(`[RulesView] Retry ${this._retryCount + 1}/${maxRetries} in ${delay}ms...`);
-
-                this._loadCheckTimer = setTimeout(() => {
-                    this._loadCheckTimer = null;
-                    this._retryCount++;
-                    if (typeof window.getAutoGearRules === 'function') {
-                        this._retryCount = 0; // Reset on success
-                        this.render();
-                    } else if (this._retryCount < maxRetries) {
-                        this.render(); // Retry again
-                    } else {
-                        console.error('[RulesView] Max retries reached. Rules module unavailable.');
-                        this.render(); // Show error state
-                    }
-                }, delay);
-            }
+                <div class="v2-loading-state">
+                    <div class="v2-spinner"></div>
+                    <p class="v2-text-muted">Loading Auto Gear Core...</p>
+                </div>
+            `;
+            setTimeout(() => this.render(), 500);
             return;
         }
 
-        // Reset retry count on successful load
-        this._retryCount = 0;
+        const rules = window.getAutoGearRules() || [];
+        const rulesCount = rules.length;
 
         const header = `
-                <div class="rules-header">
-                    <div class="rules-title">
-                        <h1>${_t('rulesViewTitle')}</h1>
-                        <p>${_t('rulesViewSubtitle')}</p>
+            <div class="v2-view-header">
+                <div>
+                    <h1 class="v2-view-title">Auto Gear Rules</h1>
+                    <p class="v2-view-subtitle">Define automatic equipment packages based on shoot conditions.</p>
+                </div>
+                <div class="v2-actions-group">
+                    <button class="v2-btn v2-btn-secondary" id="v2-ag-import">Import</button>
+                    <button class="v2-btn v2-btn-secondary" id="v2-ag-export">Export</button>
+                    <button class="v2-btn v2-btn-primary" id="v2-ag-add">
+                        <span class="v2-icon">add</span> New Rule
+                    </button>
+                </div>
+            </div>
+        `;
+
+        if (rulesCount === 0) {
+            this.container.innerHTML = header + `
+                <div class="v2-empty-state">
+                    <div class="v2-empty-icon">rule</div>
+                    <h3>No Rules Defined</h3>
+                    <p>Create rules to automatically add gear (like specific monitors for a director) based on the scenario.</p>
+                    <button class="v2-btn v2-btn-primary" id="v2-ag-add-empty">Create First Rule</button>
+                </div>
+            `;
+        } else {
+            this.container.innerHTML = header + `
+                <div class="v2-rules-grid">
+                    ${rules.map((rule, idx) => this.renderRuleCard(rule, idx)).join('')}
+                </div>
+            `;
+        }
+
+        this.attachListeners();
+    }
+
+    renderRuleCard(rule, index) {
+        const actionCount = (rule.addItems || []).length;
+        const conditionCount = this.countConditions(rule);
+
+        return `
+            <div class="v2-card v2-rule-card" data-index="${index}">
+                <div class="v2-card-header">
+                    <div class="v2-rule-title-group">
+                        <div class="v2-rule-status ${rule.enabled ? 'active' : 'inactive'}"></div>
+                        <h3 class="v2-card-title">${this.escapeHtml(rule.name || 'Unnamed Rule')}</h3>
                     </div>
-                    <div class="rules-header-actions">
-                         ${this.renderToolbar()}
-                         <button class="v2-btn v2-btn-primary" id="btn-add-rule">
-                            <span class="icon">add</span>
-                            <span>${_t('buttonAddRule')}</span>
-                        </button>
+                     <div class="v2-card-actions">
+                        <button class="v2-btn-icon" data-action="edit" data-index="${index}" title="Edit">edit</button>
+                        <button class="v2-btn-icon v2-danger-hover" data-action="delete" data-index="${index}" title="Delete">delete</button>
                     </div>
                 </div>
-                ${this.renderDefaultsSection()}
-            `;
-
-        let rulesHtml = '<div class="rules-list">';
-        const rules = window.getAutoGearRules();
-
-        if (rules.length === 0) {
-            rulesHtml += `
-                    <div class="rule-empty-state">
-                        <h3>${_t('rulesEmptyTitle')}</h3>
-                        <p>${_t('rulesEmptyText')}</p>
+                <div class="v2-card-body">
+                    <div class="v2-rule-meta">
+                        <span class="v2-tag">${rule.scenarioMode || 'All Scenarios'}</span>
+                        <span class="v2-tag v2-tag-outline">${conditionCount} Conditions</span>
+                        <span class="v2-tag v2-tag-outline">${actionCount} Actions</span>
                     </div>
-                `;
-        } else {
-            rules.forEach(rule => {
-                const conditionCount = this.countConditions(rule);
-                const addCount = Array.isArray(rule.add) ? rule.add.length : 0;
-
-                rulesHtml += `
-                        <div class="rule-card" data-rule-id="${rule.id}">
-                             <div class="rule-status">
-                                <label class="rule-toggle">
-                                    <input type="checkbox" ${rule.enabled !== false ? 'checked' : ''} disabled>
-                                    <span class="slider round"></span>
-                                </label>
-                            </div>
-                            <div class="rule-content">
-                                <div class="rule-header">
-                                    <h3 class="rule-name">${this.escapeHtml(rule.label) || 'Untitled Rule'}</h3>
-                                    ${rule.always ? `<span class="v2-badge v2-badge-primary">${_t('ruleBadgeAlways')}</span>` : ''}
-                                </div>
-                                <div class="rule-conditions">
-                                    <span class="condition-tag"><strong>${conditionCount}</strong> ${_t('ruleTagConditions')}</span>
-                                    <span class="condition-tag"><strong>${addCount}</strong> ${_t('ruleTagItemsAdded')}</span>
-                                </div>
-                            </div>
-                            <div class="rule-actions">
-                                <button class="v2-btn v2-btn-icon v2-btn-ghost btn-edit-rule" title="${_t('buttonEdit')}">
-                                    <span class="icon">edit</span>
-                                </button>
-                                <button class="v2-btn v2-btn-icon v2-btn-ghost btn-delete-rule" title="${_t('buttonDelete')}">
-                                    <span class="icon">delete</span>
-                                </button>
-                            </div>
-                        </div>
-                    `;
-            });
-        }
-        rulesHtml += '</div>';
-
-        this.container.innerHTML = header + rulesHtml;
-        this.attachListeners();
-    },
+                    ${rule.always ? '<div class="v2-badge v2-badge-accent">Always Active</div>' : ''}
+                </div>
+            </div>
+        `;
+    }
 
     countConditions(rule) {
-        if (!rule) return 0;
         let count = 0;
-        if (rule.always) count++;
-        ['scenarios', 'camera', 'mattebox', 'monitor', 'tripodHeadBrand', 'tripodBowl', 'tripodTypes', 'crewPresent'].forEach(key => {
-            if (rule[key] && rule[key].length > 0) count += rule[key].length;
-        });
-        return count;
-    },
+        if (rule.scenarios && rule.scenarios.length) count += rule.scenarios.length;
+        if (rule.cameras && rule.cameras.length) count++;
+        if (rule.cameraHandles && rule.cameraHandles.length) count++;
+        if (rule.monitors && rule.monitors.length) count++;
+        return count; // Simplified count
+    }
 
     attachListeners() {
-        const addBtn = this.container.querySelector('#btn-add-rule');
-        if (addBtn) addBtn.onclick = () => this.showAddRuleModal();
+        const importBtn = this.container.querySelector('#v2-ag-import');
+        if (importBtn) importBtn.addEventListener('click', () => this.handleImport());
 
-        this.container.querySelectorAll('.btn-edit-rule').forEach(btn => {
-            btn.onclick = (e) => {
-                const card = e.target.closest('.rule-card');
-                this.showEditRuleModal(card.dataset.ruleId);
-            };
+        const exportBtn = this.container.querySelector('#v2-ag-export');
+        if (exportBtn) exportBtn.addEventListener('click', () => this.handleExport());
+
+        const addBtns = this.container.querySelectorAll('#v2-ag-add, #v2-ag-add-empty');
+        addBtns.forEach(btn => btn.addEventListener('click', () => this.showEditRuleModal({}, true)));
+
+        this.container.querySelectorAll('[data-action="edit"]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = parseInt(e.currentTarget.dataset.index, 10);
+                const rules = window.getAutoGearRules();
+                if (rules && rules[idx]) {
+                    this.showEditRuleModal(rules[idx], false, idx);
+                }
+            });
         });
 
-        this.container.querySelectorAll('.btn-delete-rule').forEach(btn => {
-            btn.onclick = (e) => {
-                const card = e.target.closest('.rule-card');
-                if (confirm(_t('confirmDeleteRule'))) {
-                    this.deleteRule(card.dataset.ruleId);
-                }
-            };
+        this.container.querySelectorAll('[data-action="delete"]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = parseInt(e.currentTarget.dataset.index, 10);
+                this.deleteRule(idx);
+            });
         });
+    }
 
-        // Defaults (using event delegation or direct bind since they are static in render)
-        this.container.querySelectorAll('.default-monitor-select').forEach(select => {
-            select.onchange = (e) => {
-                const key = e.target.dataset.key;
-                const val = e.target.value;
-                if (window.setAutoGearDefault) {
-                    window.setAutoGearDefault(key, val);
-                } else {
-                    localStorage.setItem('auto_gear_default_' + key, val);
-                }
-            };
-        });
-
-        const exportBtn = this.container.querySelector('#btn-export-rules');
-        if (exportBtn) exportBtn.onclick = () => this.exportRules();
-
-        const importBtn = this.container.querySelector('#btn-import-rules');
-        if (importBtn) importBtn.onclick = () => this.triggerImport();
-
-        const resetBtn = this.container.querySelector('#btn-reset-rules');
-        if (resetBtn) resetBtn.onclick = () => this.resetRules();
-    },
-
-    exportRules() {
-        if (window.exportAutoGearPresets) {
-            window.exportAutoGearPresets();
-        } else {
-            console.warn('[RulesView] Export helper not found');
-        }
-    },
-
-    triggerImport() {
-        const input = document.getElementById('autoGearImportInput');
-        if (input) input.click();
-        else {
-            // Fallback: create temporary input
-            const tempInput = document.createElement('input');
-            tempInput.type = 'file';
-            tempInput.accept = '.json,application/json';
-            tempInput.onchange = (e) => this.handleImport(e.target.files[0]);
-            tempInput.click();
-        }
-    },
-
-    handleImport(file) {
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const data = JSON.parse(e.target.result);
-                if (window.importAutoGearRules) {
-                    window.importAutoGearRules(data);
-                    this.render();
-                }
-            } catch (err) {
-                console.error('Import failed', err);
-                alert('Invalid rules file');
-            }
+    // --- Data Collection Helper ---
+    collectData() {
+        // Collect data from window.devices or fallback
+        const d = window.devices || {};
+        return {
+            cameras: Object.keys(d.cameras || {}).sort(),
+            monitors: Object.keys(d.monitors || {}).sort(),
+            video: Object.keys(d.video || {}).sort(), // Video Distribution
+            cameraHandles: this.getHardcodedOptions('cameraHandle'), // Predefined list
+            scenarios: window.SCENARIOS || ['Studio', 'Location', 'Handheld', 'Gimbal', 'Steadicam', 'Crane', 'Drone', 'Underwater', 'Car Mount'],
+            viewfinders: Object.keys(d.viewfinders || {}).sort(),
+            matteboxes: Object.keys(d.matteboxes || {}).sort(),
+            tripodHeads: Object.keys(d.tripodHeads || {}).sort(),
+            tripodBowls: ['75mm', '100mm', '150mm', 'Flat', 'Mitchell'], // Common bowls
+            wireless: Object.keys(d.wireless || {}).sort()
         };
-        reader.readAsText(file);
-    },
+    }
 
-    resetRules() {
-        if (confirm(_t('confirmResetRules'))) {
-            if (window.clearAutoGearDefaultsSeeded) window.clearAutoGearDefaultsSeeded(); // Logic specific to app
-            // We might need to call a reset helper
-            if (typeof window.resetAutoGearRules === 'function') {
-                window.resetAutoGearRules();
-                this.render();
-            }
+    getHardcodedOptions(type) {
+        if (type === 'cameraHandle') {
+            return ['Blue Shape Top Handle', 'ARRI CCH-4', 'ARRI HEB-3', 'Wooden Camera Master Top Handle'];
         }
-    },
-
-    deleteRule(id) {
-        if (window.getAutoGearRules && window.setAutoGearRules) {
-            const currentRules = window.getAutoGearRules();
-            const newRules = currentRules.filter(r => r.id !== id);
-            window.setAutoGearRules(newRules);
-            this.render();
+        if (type === 'deliveryResolution') {
+            return ['1080p', '2K', '4K UHD', '4K DCI', '6K', '8K'];
         }
-    },
+        return [];
+    }
 
-    showAddRuleModal() {
-        this.showEditRuleModal(null);
-    },
+    // --- Edit Modal ---
+    showEditRuleModal(rule, isNew, ruleIndex = -1) {
+        const data = this.collectData();
 
-    renderToolbar() {
-        return `
-                <div class="v2-toolbar-group">
-                    <button class="v2-btn v2-btn-ghost" id="btn-export-rules" title="${_t('buttonExportRules')}">
-                        <span class="icon">download</span>
-                    </button>
-                    <button class="v2-btn v2-btn-ghost" id="btn-import-rules" title="${_t('buttonImportRules')}">
-                        <span class="icon">upload</span>
-                    </button>
-                     <button class="v2-btn v2-btn-ghost" id="btn-reset-rules" title="${_t('buttonResetRules')}">
-                        <span class="icon">restart_alt</span>
-                    </button>
-                </div>
-            `;
-    },
+        // Deep clone rule to avoid live edits
+        const currentRule = JSON.parse(JSON.stringify(rule));
+        if (!currentRule.scenarios) currentRule.scenarios = [];
+        if (!currentRule.addItems) currentRule.addItems = [];
 
-    renderDefaultsSection() {
-        // Collect monitor options
-        const monitors = [...safeCollectCall('collectAutoGearMonitorNames', 'monitor'), ...safeCollectCall('collectAutoGearMonitorNames', 'directorMonitor')];
-
-        // Helper to render select options
-        const renderOptions = (selected) => {
-            return [
-                `<option value="">${_t('optionNone')}</option>`,
-                ...monitors.map(m => `<option value="${this.escapeHtml(m)}" ${m === selected ? 'selected' : ''}>${this.escapeHtml(m)}</option>`)
-            ].join('');
-        };
-
-        // Get current values (fallback to localStorage if global helper missing)
-        const getVal = (key) => {
-            if (window.getAutoGearDefault) return window.getAutoGearDefault(key);
-            return localStorage.getItem('auto_gear_default_' + key) || '';
-        };
-
-        return `
-                <div class="v2-card rules-defaults-card">
-                    <div class="v2-card-header">
-                        <h3>${_t('headingMonitorDefaults')}</h3>
-                    </div>
-                    <div class="v2-card-body">
-                         <div class="defaults-grid">
-                            <div class="v2-form-group">
-                                <label class="v2-label">${_t('labelFocusMonitor')}</label>
-                                <select class="v2-select default-monitor-select" data-key="focusMonitor">
-                                    ${renderOptions(getVal('focusMonitor'))}
-                                </select>
-                            </div>
-                            <div class="v2-form-group">
-                                <label class="v2-label">${_t('labelHandheldMonitor')}</label>
-                                <select class="v2-select default-monitor-select" data-key="handheldMonitor">
-                                    ${renderOptions(getVal('handheldMonitor'))}
-                                </select>
-                            </div>
-                             <div class="v2-form-group">
-                                <label class="v2-label">${_t('labelComboMonitor')}</label>
-                                <select class="v2-select default-monitor-select" data-key="comboMonitor">
-                                    ${renderOptions(getVal('comboMonitor'))}
-                                </select>
-                            </div>
-                             <div class="v2-form-group">
-                                <label class="v2-label">${_t('labelDirectorMonitor')}</label>
-                                <select class="v2-select default-monitor-select" data-key="directorMonitor">
-                                    ${renderOptions(getVal('directorMonitor'))}
-                                </select>
-                            </div>
-                         </div>
-                    </div>
-                </div>
-            `;
-    },
-
-    // ============================================================
-    //  EDIT MODAL (DEEP DIVE IMPLEMENTATION)
-    // ============================================================
-    showEditRuleModal(ruleId) {
-        let rule = null;
-        let isNew = true;
-
-        if (ruleId && window.getAutoGearRules) {
-            const rules = window.getAutoGearRules();
-            const found = rules.find(r => r.id === ruleId);
-            if (found) {
-                rule = JSON.parse(JSON.stringify(found));
-                isNew = false;
-            }
-        }
-
-        if (!rule) {
-            rule = {
-                id: 'rule_' + Date.now(),
-                label: '',
-                enabled: true,
-                always: false,
-                // Context
-                scenarios: [],
-                scenarioMode: 'all', // 'all', 'any', 'multiplier'
-                scenarioBase: '',
-                scenarioFactor: 1,
-                shootingDays: null,
-                shootingDaysMode: 'minimum', // 'minimum', 'maximum', 'every'
-                // Camera
-                camera: [],
-                mattebox: [],
-                viewfinderExtension: [],
-                // Monitor
-                monitor: [], // Includes director monitors in legacy model often mixed or separates? Legacy has separate `directorMonitor` in some places but rule object usually just `monitor`. We'll rely on collection logic.
-                videoDistribution: [],
-                wireless: [],
-                // Support
-                tripodHeadBrand: [],
-                tripodBowl: [],
-                tripodTypes: [],
-                tripodSpreader: [],
-                // Crew
-                crewPresent: [],
-                crewAbsent: [],
-                // Actions
-                add: [],
-                remove: []
-            };
-        }
-
-        const existing = document.querySelector('.v2-modal-backdrop');
-        if (existing) existing.remove();
+        // Determine Scenarios value
+        const scenarioVal = currentRule.scenarios || [];
 
         const backdrop = document.createElement('div');
         backdrop.className = 'v2-modal-backdrop';
 
-        // --- DATA COLLECTION ---
-        const d = window.devices || {};
-
-        const data = {
-            // Context
-            scenarios: SCENARIOS,
-
-            // Camera
-            cameras: safeCollectKeys(d.cameras),
-            matteboxes: safeCollectKeys(d.matteboxes), // Fallback if direct mapping exists
-            // If devices.matteboxes doesn't exist, try collect functions?
-            // Actually devices.accessories?.matteboxes is likely used if distinct?
-            // Let's assume devices.matteboxes might not exist. If so, leave empty for now or use `safeCollectKeys(d.accessories?.matteboxes)`.
-            viewfinders: safeCollectCall('getAllViewfinderTypes'),
-
-            // Monitoring
-            monitors: [...safeCollectCall('collectAutoGearMonitorNames', 'monitor'), ...safeCollectCall('collectAutoGearMonitorNames', 'directorMonitor')],
-            wireless: safeCollectKeys(d.wireless), // or d.wirelessTransmitters?
-
-            // Support
-            tripodHeads: safeCollectCall('collectAutoGearTripodNames', 'tripodHead'),
-            tripodBowls: safeCollectCall('collectAutoGearTripodNames', 'tripodBowl'),
-            tripodTypes: safeCollectCall('collectAutoGearTripodNames', 'tripodType'),
-            tripodSpreaders: safeCollectCall('collectAutoGearTripodNames', 'tripodSpreader'),
-
-            // Crew
-            crew: CREW_ROLES
-        };
-
-        // Fix for Matteboxes if not found directly
-        if (data.matteboxes.length === 0 && d.matteboxes) data.matteboxes = Object.keys(d.matteboxes);
-
-        // Gear Catalog for Add Item
-        const gearNames = safeCollectCall('collectAutoGearCatalogNames');
-        const categories = safeCollectCall('collectDeviceManagerCategories');
-        if (!categories.length) categories.push('Power', 'Video', 'Support', 'Cabling', 'Accessories');
-
-
-        // --- HTML GENERATION ---
         backdrop.innerHTML = `
-                <div class="v2-modal v2-modal-lg">
-                    <div class="v2-modal-header">
-                        <h3 class="v2-modal-title">${isNew ? _t('modalTitleCreateRule') : _t('modalTitleEditRule')}</h3>
-                        <button type="button" class="v2-modal-close v2-btn v2-btn-ghost"><span class="icon">close</span></button>
+            <div class="v2-modal v2-modal-lg">
+                <div class="v2-modal-header">
+                    <h2>${isNew ? 'New Rule' : 'Edit Rule'}</h2>
+                    <button class="v2-modal-close">&times;</button>
+                </div>
+                <div class="v2-modal-body v2-layout-sidebar">
+                    <div class="v2-sidebar-nav">
+                        <button class="v2-nav-item active" data-tab="general">General</button>
+                        <button class="v2-nav-item" data-tab="camera">Camera</button>
+                        <button class="v2-nav-item" data-tab="monitoring">Monitoring</button>
+                        <button class="v2-nav-item" data-tab="support">Support</button>
+                        <button class="v2-nav-item" data-tab="crew">Crew</button>
+                        <button class="v2-nav-item" data-tab="actions">Actions</button>
                     </div>
-                    <div class="v2-modal-body rules-modal-body">
-                        <datalist id="gearCatalogList">
-                            ${gearNames.map(name => `<option value="${this.escapeHtml(name)}">`).join('')}
-                        </datalist>
-
-                        <div class="rules-modal-tabs">
-                            <button class="rules-tab-btn active" data-tab="general">${_t('tabGeneral')}</button>
-                            <button class="rules-tab-btn" data-tab="context">${_t('tabContext')}</button>
-                            <button class="rules-tab-btn" data-tab="camera">${_t('tabCamera')}</button>
-                            <button class="rules-tab-btn" data-tab="monitor">${_t('tabMonitoring')}</button>
-                            <button class="rules-tab-btn" data-tab="support">${_t('tabSupport')}</button>
-                            <button class="rules-tab-btn" data-tab="crew">${_t('tabCrew')}</button>
-                            <button class="rules-tab-btn" data-tab="actions">${_t('tabActions')}</button>
+                    <div class="v2-tab-content active" id="tab-general">
+                        <div class="v2-form-group">
+                            <label>Rule Name</label>
+                            <input type="text" class="v2-input" id="rule-name" value="${this.escapeHtml(currentRule.name || '')}" placeholder="e.g. Director's Monitor">
                         </div>
-
-                        <!-- 1. GENERAL -->
-                        <div class="rules-tab-content active" id="tab-general">
-                            <div class="v2-form-group">
-                                <label for="ruleLabel" class="v2-label">${_t('labelRuleName')}</label>
-                                <input type="text" id="ruleLabel" class="v2-input" value="${this.escapeHtml(rule.label)}" placeholder="${_t('placeholderRuleName')}">
-                            </div>
-                            <div class="v2-form-group">
-                                <label class="v2-checkbox-label">
-                                    <input type="checkbox" id="ruleEnabled" ${rule.enabled !== false ? 'checked' : ''}>
-                                    <span>${_t('labelRuleEnabled')}</span>
-                                </label>
-                            </div>
-                            <div class="v2-form-group">
-                                <label class="v2-checkbox-label">
-                                    <input type="checkbox" id="ruleAlways" ${rule.always ? 'checked' : ''}>
-                                    <span>${_t('labelRuleAlways')}</span>
-                                </label>
-                                <p class="v2-help-text">${_t('helpRuleAlways')}</p>
+                        <div class="v2-form-check">
+                            <input type="checkbox" id="rule-enabled" ${currentRule.enabled !== false ? 'checked' : ''}>
+                            <label for="rule-enabled">Rule Enabled</label>
+                        </div>
+                        <div class="v2-form-check">
+                            <input type="checkbox" id="rule-always" ${currentRule.always ? 'checked' : ''}>
+                            <label for="rule-always">Always Apply (Ignore Scenarios)</label>
+                        </div>
+                        <hr class="v2-divider">
+                        <div class="v2-form-group">
+                            <label>Scenario Logic</label>
+                            <select class="v2-select" id="rule-scenario-mode">
+                                <option value="any" ${currentRule.scenarioMode === 'any' ? 'selected' : ''}>Match ANY selected scenario</option>
+                                <option value="all" ${currentRule.scenarioMode === 'all' ? 'selected' : ''}>Match ALL selected scenarios</option>
+                            </select>
+                        </div>
+                        <div class="v2-form-group">
+                            <label>Scenarios</label>
+                            <div class="v2-checkbox-grid">
+                                ${data.scenarios.map(s => `
+                                    <label class="v2-checkbox-label">
+                                        <input type="checkbox" class="scenario-check" value="${s}" ${scenarioVal.includes(s) ? 'checked' : ''}>
+                                        ${s}
+                                    </label>
+                                `).join('')}
                             </div>
                         </div>
-
-                        <!-- 2. CONTEXT -->
-                        <div class="rules-tab-content" id="tab-context">
-                            <div class="form-section">
-                                <span class="form-section-title">${_t('sectionScenarios')}</span>
-                                <div class="v2-form-group">
-                                    <label class="v2-label">${_t('labelScenarioMode')}</label>
-                                    <select id="ruleScenarioMode" class="v2-select">
-                                        <option value="all" ${rule.scenarioMode === 'all' ? 'selected' : ''}>${_t('optionScenarioAll')}</option>
-                                        <option value="any" ${rule.scenarioMode === 'any' ? 'selected' : ''}>${_t('optionScenarioAny')}</option>
-                                        <option value="multiplier" ${rule.scenarioMode === 'multiplier' ? 'selected' : ''}>${_t('optionScenarioMultiplier')}</option>
-                                    </select>
-                                </div>
-                                <div id="scenarioMultiplierConfig" style="display: ${rule.scenarioMode === 'multiplier' ? 'block' : 'none'}; padding-left: 10px; border-left: 2px solid var(--border-color);">
-                                     <div class="v2-form-group">
-                                        <label class="v2-label">${_t('labelScenarioFactor')}</label>
-                                        <input type="number" id="ruleScenarioFactor" class="v2-input" value="${rule.scenarioFactor || 1}" min="1">
-                                    </div>
-                                </div>
-                                <div class="condition-grid">
-                                    ${this.renderCheckboxGroup(data.scenarios, rule.scenarios, 'scenarios')}
-                                </div>
-                            </div>
-
-                            <div class="form-section">
-                                <span class="form-section-title">${_t('sectionShootingDays')}</span>
-                                <div class="v2-form-group">
-                                    <label class="v2-label">${_t('labelShootingDaysMode')}</label>
-                                    <select id="ruleShootingDaysMode" class="v2-select">
-                                        <option value="minimum" ${rule.shootingDaysMode === 'minimum' ? 'selected' : ''}>${_t('optionDaysMinimum')}</option>
-                                        <option value="maximum" ${rule.shootingDaysMode === 'maximum' ? 'selected' : ''}>${_t('optionDaysMaximum')}</option>
-                                        <option value="every" ${rule.shootingDaysMode === 'every' ? 'selected' : ''}>${_t('optionDaysEvery')}</option>
-                                    </select>
-                                </div>
-                                <div class="v2-form-group">
-                                    <label class="v2-label">${_t('labelShootingDaysValue')}</label>
-                                    <input type="number" id="ruleShootingDays" class="v2-input" value="${rule.shootingDays !== null ? rule.shootingDays : ''}" placeholder="${_t('placeholderOptional')}">
-                                    <p class="v2-help-text">${_t('helpShootingDays')}</p>
-                                </div>
-                            </div>
+                        <div class="v2-form-group">
+                             <label>Shooting Days (Optional)</label>
+                             <div class="v2-row-gap">
+                                <select class="v2-select" id="rule-days-cond">
+                                    <option value="">(Ignore)</option>
+                                    <option value="min" ${currentRule.shootingDaysCondition === 'min' ? 'selected' : ''}>Minimum Days</option>
+                                    <option value="max" ${currentRule.shootingDaysCondition === 'max' ? 'selected' : ''}>Maximum Days</option>
+                                </select>
+                                <input type="number" class="v2-input v2-input-sm" id="rule-days-val" value="${currentRule.shootingDaysValue || ''}" min="1">
+                             </div>
                         </div>
-
-                        <!-- 3. CAMERA -->
-                        <div class="rules-tab-content" id="tab-camera">
-                            <div class="form-section">
-                                <span class="form-section-title">${_t('sectionCameraModels')}</span>
-                                <div class="condition-grid">
-                                    ${this.renderCheckboxGroup(data.cameras, rule.camera, 'camera')}
-                                </div>
-                            </div>
-                            <div class="form-section">
-                                <span class="form-section-title">${_t('sectionMatteboxes')}</span>
-                                <div class="condition-grid">
-                                    ${this.renderCheckboxGroup(data.matteboxes, rule.mattebox, 'mattebox')}
-                                </div>
-                            </div>
-                             <div class="form-section">
-                                <span class="form-section-title">${_t('sectionViewfinders')}</span>
-                                <div class="condition-grid">
-                                    ${this.renderCheckboxGroup(data.viewfinders, rule.viewfinderExtension, 'viewfinderExtension')}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 4. MONITORING -->
-                        <div class="rules-tab-content" id="tab-monitor">
-                             <div class="form-section">
-                                <span class="form-section-title">${_t('sectionMonitors')}</span>
-                                <div class="condition-grid">
-                                    ${this.renderCheckboxGroup(data.monitors, rule.monitor, 'monitor')}
-                                </div>
-                            </div>
-                             <div class="form-section">
-                                <span class="form-section-title">${_t('sectionWireless')}</span>
-                                <div class="condition-grid">
-                                    ${this.renderCheckboxGroup(data.wireless, rule.wireless, 'wireless')}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 5. SUPPORT -->
-                        <div class="rules-tab-content" id="tab-support">
-                            <div class="form-section">
-                                <span class="form-section-title">${_t('sectionTripodHeads')}</span>
-                                <div class="condition-grid">
-                                    ${this.renderCheckboxGroup(data.tripodHeads, rule.tripodHeadBrand, 'tripodHeadBrand')}
-                                </div>
-                            </div>
-                            <div class="form-section">
-                                <span class="form-section-title">${_t('sectionBowlSize')}</span>
-                                <div class="condition-grid">
-                                    ${this.renderCheckboxGroup(data.tripodBowls, rule.tripodBowl, 'tripodBowl')}
-                                </div>
-                            </div>
-                             <div class="form-section">
-                                <span class="form-section-title">${_t('sectionLegTypes')}</span>
-                                <div class="condition-grid">
-                                    ${this.renderCheckboxGroup(data.tripodTypes, rule.tripodTypes, 'tripodTypes')}
-                                </div>
-                            </div>
-                             <div class="form-section">
-                                <span class="form-section-title">${_t('sectionSpreaders')}</span>
-                                <div class="condition-grid">
-                                    ${this.renderCheckboxGroup(data.tripodSpreaders, rule.tripodSpreader, 'tripodSpreader')}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 6. CREW -->
-                        <div class="rules-tab-content" id="tab-crew">
-                            <div class="form-section">
-                                <span class="form-section-title">${_t('sectionCrewPresent')}</span>
-                                <div class="condition-grid">
-                                    ${this.renderCheckboxGroup(data.crew, rule.crewPresent, 'crewPresent')}
-                                </div>
-                            </div>
-                            <div class="form-section">
-                                <span class="form-section-title">${_t('sectionCrewAbsent')}</span>
-                                <div class="condition-grid">
-                                    ${this.renderCheckboxGroup(data.crew, rule.crewAbsent, 'crewAbsent')}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 7. ACTIONS -->
-                        <div class="rules-tab-content" id="tab-actions">
-                            <div class="form-section">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                    <span class="form-section-title" style="margin: 0;">${_t('sectionItemsToAdd')}</span>
-                                    <button class="v2-btn v2-btn-sm v2-btn-secondary btn-show-add-item" data-type="add">${_t('buttonAddItem')}</button>
-                                </div>
-                                <div class="add-item-form-container" id="add-item-form-add" style="display: none; margin-bottom: 10px; padding: 10px; background: var(--bg-surface-active); border-radius: 4px;">
-                                    ${this.renderAddItemForm('add', categories)}
-                                </div>
-                                <div class="action-list" id="action-list-add">
-                                    ${this.renderActionList(rule.add, 'add')}
-                                </div>
-                            </div>
-                             <div class="form-section">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                    <span class="form-section-title" style="margin: 0;">${_t('sectionItemsToRemove')}</span>
-                                    <button class="v2-btn v2-btn-sm v2-btn-secondary btn-show-add-item" data-type="remove">${_t('buttonAddItem')}</button>
-                                </div>
-                                <div class="add-item-form-container" id="add-item-form-remove" style="display: none; margin-bottom: 10px; padding: 10px; background: var(--bg-surface-active); border-radius: 4px;">
-                                    ${this.renderAddItemForm('remove', categories)}
-                                </div>
-                                <div class="action-list" id="action-list-remove">
-                                    ${this.renderActionList(rule.remove, 'remove')}
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
-                    <div class="v2-modal-footer">
-                        <button type="button" class="v2-btn v2-btn-secondary" id="btn-cancel-rule">${_t('buttonCancel')}</button>
-                        <button type="button" class="v2-btn v2-btn-primary" id="btn-save-rule">${_t('buttonSaveRule')}</button>
+
+                    <div class="v2-tab-content" id="tab-camera" style="display:none;">
+                        ${this.renderMultiSelect('Cameras', 'cameras', data.cameras, currentRule.cameras)}
+                        ${this.renderMultiSelect('Matteboxes', 'matteboxes', data.matteboxes, currentRule.matteboxes)}
+                        ${this.renderMultiSelect('Camera Handles', 'cameraHandles', data.cameraHandles, currentRule.cameraHandles)}
+                        ${this.renderMultiSelect('Viewfinders', 'viewfinders', data.viewfinders, currentRule.viewfinders)}
+                         <div class="v2-form-group">
+                            <label>Delivery Resolution</label>
+                            <select class="v2-select" id="rule-delivery-res">
+                                <option value="">(Any)</option>
+                                ${this.getHardcodedOptions('deliveryResolution').map(r => `<option value="${r}" ${currentRule.deliveryResolution === r ? 'selected' : ''}>${r}</option>`).join('')}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="v2-tab-content" id="tab-monitoring" style="display:none;">
+                         ${this.renderMultiSelect('Monitors', 'monitors', data.monitors, currentRule.monitors)}
+                         ${this.renderMultiSelect('Video Distribution', 'videoDist', data.video, currentRule.videoDistribution)}
+                         ${this.renderMultiSelect('Wireless Video', 'wireless', data.wireless, currentRule.wireless)}
+                    </div>
+
+                    <div class="v2-tab-content" id="tab-support" style="display:none;">
+                        ${this.renderMultiSelect('Tripod Heads', 'tripodHeads', data.tripodHeads, currentRule.tripodHeads)}
+                        ${this.renderMultiSelect('Tripod Bowls', 'tripodBowls', data.tripodBowls, currentRule.tripodBowls)}
+                    </div>
+
+                    <div class="v2-tab-content" id="tab-crew" style="display:none;">
+                        <p class="v2-text-muted">Requires specific crew members to be present/absent.</p>
+                         <div class="v2-form-group">
+                            <label>Crew Present (Comma separated)</label>
+                            <input type="text" class="v2-input" id="rule-crew-present" value="${(currentRule.crewPresent || []).join(', ')}">
+                        </div>
+                        <div class="v2-form-group">
+                            <label>Crew Absent (Comma separated)</label>
+                            <input type="text" class="v2-input" id="rule-crew-absent" value="${(currentRule.crewAbsent || []).join(', ')}">
+                        </div>
+                    </div>
+
+                    <div class="v2-tab-content" id="tab-actions" style="display:none;">
+                        <h3>Items to Add</h3>
+                        <p class="v2-text-muted">When rule matches, these items are added to the list.</p>
+                        
+                        <div class="v2-action-list" id="rule-action-list">
+                            ${this.renderActionListItems(currentRule.addItems)}
+                        </div>
+                        
+                        <div class="v2-add-item-row">
+                            <input type="text" class="v2-input" id="new-item-name" placeholder="Search item...">
+                            <input type="number" class="v2-input v2-input-sm" id="new-item-qty" value="1" min="1">
+                            <button class="v2-btn v2-btn-secondary" id="btn-add-action-item">Add</button>
+                        </div>
                     </div>
                 </div>
-            `;
+                <div class="v2-modal-footer">
+                    <button class="v2-btn v2-btn-ghost" id="v2-modal-cancel">Cancel</button>
+                    <button class="v2-btn v2-btn-primary" id="v2-modal-save">Save Rule</button>
+                </div>
+            </div>
+        `;
 
         document.body.appendChild(backdrop);
-        requestAnimationFrame(() => backdrop.classList.add('open'));
-        this.bindModalEvents(backdrop, rule, isNew);
-    },
 
-    // --- RENDER HELPERS ---
-    renderCheckboxGroup(items, selectedItems, groupName) {
-        const selectedSet = new Set(selectedItems || []);
-        if (!items || items.length === 0) return `<div class="v2-empty-text">${_t('textNoOptions')}</div>`;
-
-        return items.map(item => `
-                <label class="condition-item">
-                    <input type="checkbox" data-group="${groupName}" value="${this.escapeHtml(item)}" ${selectedSet.has(item) ? 'checked' : ''}>
-                    <span>${this.escapeHtml(item)}</span>
-                </label>
-            `).join('');
-    },
-
-    renderAddItemForm(type, categories) {
-        return `
-                 <div style="display: grid; grid-template-columns: 2fr 1fr 0.5fr auto; gap: 8px; align-items: end;">
-                    <div>
-                        <label class="v2-label" style="font-size: 11px;">${_t('labelItemName')}</label>
-                        <input type="text" class="v2-input input-item-name" list="gearCatalogList" placeholder="${_t('placeholderItemSearch')}" data-type="${type}">
-                    </div>
-                    <div>
-                        <label class="v2-label" style="font-size: 11px;">${_t('labelCategory')}</label>
-                        <select class="v2-select select-item-category" data-type="${type}">
-                            ${categories.map(c => `<option value="${c}">${c}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div>
-                        <label class="v2-label" style="font-size: 11px;">${_t('labelQty')}</label>
-                        <input type="number" class="v2-input input-item-qty" value="1" min="1" data-type="${type}">
-                    </div>
-                    <div style="display: flex; gap: 4px;">
-                        <button class="v2-btn v2-btn-primary btn-confirm-add-item" data-type="${type}">${_t('buttonAdd')}</button>
-                    </div>
-                </div>
-            `;
-    },
-
-    renderActionList(items, type) {
-        // Same as before
-        if (!items || !items.length) {
-            return `<div class="v2-empty-text">${_t('textNoItems')}</div>`;
-        }
-        return items.map((item, index) => `
-                <div class="action-item-row">
-                    <span style="font-weight: 500; flex: 1;">${this.escapeHtml(item.name)}</span>
-                    <span class="v2-badge">${item.category}</span>
-                    <span class="v2-badge v2-badge-outline">x${item.quantity}</span>
-                    <button type="button" class="v2-btn v2-btn-icon v2-btn-ghost btn-delete-action-item" 
-                            data-type="${type}" data-index="${index}" title="Remove Item">
-                        <span class="icon" style="font-size: 16px;">close</span>
-                    </button>
-                </div>
-            `).join('');
-    },
-
-    // --- EVENT BINDING ---
-    bindModalEvents(backdrop, rule, isNew) {
-        // 1. Tabs
-        backdrop.querySelectorAll('.rules-tab-btn').forEach(btn => {
-            btn.onclick = () => {
-                backdrop.querySelectorAll('.rules-tab-btn').forEach(b => b.classList.remove('active'));
-                backdrop.querySelectorAll('.rules-tab-content').forEach(c => c.classList.remove('active'));
-                btn.classList.add('active');
-                backdrop.querySelector(`#tab-${btn.dataset.tab}`).classList.add('active');
-            };
-        });
-
-        // 2. Action Items (Show/Add)
-        backdrop.querySelectorAll('.btn-show-add-item').forEach(btn => {
-            btn.onclick = () => {
-                const type = btn.dataset.type;
-                const form = backdrop.querySelector(`#add-item-form-${type}`);
-                form.style.display = form.style.display === 'none' ? 'block' : 'none';
-            };
-        });
-
-        backdrop.querySelectorAll('.btn-confirm-add-item').forEach(btn => {
-            btn.onclick = () => {
-                const type = btn.dataset.type;
-                const container = backdrop.querySelector(`#add-item-form-${type}`);
-                const name = container.querySelector('.input-item-name').value.trim();
-                const category = container.querySelector('.select-item-category').value;
-                const quantity = parseInt(container.querySelector('.input-item-qty').value, 10) || 1;
-
-                if (!name) return;
-
-                if (!rule[type]) rule[type] = [];
-                rule[type].push({ name, category, quantity });
-
-                container.querySelector('.input-item-name').value = '';
-                container.style.display = 'none';
-
-                // Re-render
-                const listContainer = backdrop.querySelector(`#action-list-${type}`);
-                listContainer.innerHTML = this.renderActionList(rule[type], type);
-                bindDeleteActions();
-            };
-        });
-
-        // 3. Action Items (Delete)
-        const bindDeleteActions = () => {
-            backdrop.querySelectorAll('.btn-delete-action-item').forEach(btn => {
-                btn.onclick = (e) => {
-                    e.stopPropagation();
-                    const type = btn.dataset.type;
-                    const index = parseInt(btn.dataset.index, 10);
-                    if (rule[type]) {
-                        rule[type].splice(index, 1);
-                        backdrop.querySelector(`#action-list-${type}`).innerHTML = this.renderActionList(rule[type], type);
-                        bindDeleteActions();
-                    }
-                };
-            });
-        };
-        bindDeleteActions();
-
-        // 4. Save / Close
+        // Bind Events
         const close = () => {
-            backdrop.classList.remove('open');
-            setTimeout(() => backdrop.remove(), 200);
+            backdrop.remove();
         };
 
         backdrop.querySelector('.v2-modal-close').onclick = close;
-        backdrop.querySelector('#btn-cancel-rule').onclick = close;
+        backdrop.querySelector('#v2-modal-cancel').onclick = close;
 
-        backdrop.querySelector('#btn-save-rule').onclick = () => {
-            // General
-            rule.label = backdrop.querySelector('#ruleLabel').value.trim();
-            rule.enabled = backdrop.querySelector('#ruleEnabled').checked;
-            rule.always = backdrop.querySelector('#ruleAlways').checked;
+        // Tabs
+        const tabs = backdrop.querySelectorAll('.v2-nav-item');
+        const contents = backdrop.querySelectorAll('.v2-tab-content');
+        tabs.forEach(t => {
+            t.onclick = () => {
+                tabs.forEach(x => x.classList.remove('active'));
+                contents.forEach(x => { x.style.display = 'none'; x.classList.remove('active'); });
+                t.classList.add('active');
+                const target = backdrop.querySelector(`#tab-${t.dataset.tab}`);
+                if (target) {
+                    target.style.display = 'block';
+                    // force layout check
+                    setTimeout(() => target.classList.add('active'), 10);
+                }
+            };
+        });
 
-            if (!rule.label) {
-                alert(_t('alertEnterRuleName'));
+        // Add Item Action
+        const actionListEl = backdrop.querySelector('#rule-action-list');
+        const addItemBtn = backdrop.querySelector('#btn-add-action-item');
+        const newItemName = backdrop.querySelector('#new-item-name');
+        const newItemQty = backdrop.querySelector('#new-item-qty');
+
+        addItemBtn.onclick = () => {
+            const name = newItemName.value.trim();
+            const qty = parseInt(newItemQty.value, 10);
+            if (name) {
+                currentRule.addItems.push({ name, qty });
+                actionListEl.innerHTML = this.renderActionListItems(currentRule.addItems);
+                newItemName.value = '';
+                this.bindRemoveActionEvents(actionListEl, currentRule);
+            }
+        };
+
+        this.bindRemoveActionEvents(actionListEl, currentRule);
+
+        // Save
+        backdrop.querySelector('#v2-modal-save').onclick = () => {
+            // Collect Form Data
+            const updatedRule = {
+                ...currentRule,
+                name: backdrop.querySelector('#rule-name').value.trim(),
+                enabled: backdrop.querySelector('#rule-enabled').checked,
+                always: backdrop.querySelector('#rule-always').checked,
+                scenarioMode: backdrop.querySelector('#rule-scenario-mode').value,
+                scenarios: Array.from(backdrop.querySelectorAll('.scenario-check:checked')).map(el => el.value),
+                shootingDaysCondition: backdrop.querySelector('#rule-days-cond').value,
+                shootingDaysValue: parseInt(backdrop.querySelector('#rule-days-val').value, 10) || 0,
+                // Multi-selects
+                cameras: this.collectMultiSelect(backdrop, 'cameras'),
+                matteboxes: this.collectMultiSelect(backdrop, 'matteboxes'),
+                cameraHandles: this.collectMultiSelect(backdrop, 'cameraHandles'),
+                viewfinders: this.collectMultiSelect(backdrop, 'viewfinders'),
+                monitors: this.collectMultiSelect(backdrop, 'monitors'),
+                videoDistribution: this.collectMultiSelect(backdrop, 'videoDist'),
+                wireless: this.collectMultiSelect(backdrop, 'wireless'),
+                tripodHeads: this.collectMultiSelect(backdrop, 'tripodHeads'),
+                tripodBowls: this.collectMultiSelect(backdrop, 'tripodBowls'),
+
+                deliveryResolution: backdrop.querySelector('#rule-delivery-res').value,
+                crewPresent: backdrop.querySelector('#rule-crew-present').value.split(',').map(s => s.trim()).filter(s => s),
+                crewAbsent: backdrop.querySelector('#rule-crew-absent').value.split(',').map(s => s.trim()).filter(s => s),
+            };
+
+            if (!updatedRule.name) {
+                alert('Rule name is required');
                 return;
             }
 
-            // Collect Checkboxes
-            const collect = (group) => {
-                return Array.from(backdrop.querySelectorAll(`input[data-group="${group}"]:checked`)).map(cb => cb.value);
-            };
-
-            rule.scenarios = collect('scenarios');
-            rule.scenarioMode = backdrop.querySelector('#ruleScenarioMode').value;
-            rule.scenarioFactor = parseFloat(backdrop.querySelector('#ruleScenarioFactor').value) || 1;
-
-            rule.shootingDaysMode = backdrop.querySelector('#ruleShootingDaysMode').value;
-            const sDays = backdrop.querySelector('#ruleShootingDays').value;
-            rule.shootingDays = sDays !== '' ? parseInt(sDays, 10) : null;
-
-            rule.camera = collect('camera');
-            rule.mattebox = collect('mattebox');
-            rule.viewfinderExtension = collect('viewfinderExtension');
-            rule.monitor = collect('monitor');
-            rule.wireless = collect('wireless');
-            rule.tripodHeadBrand = collect('tripodHeadBrand');
-            rule.tripodBowl = collect('tripodBowl');
-            rule.tripodTypes = collect('tripodTypes');
-            rule.tripodSpreader = collect('tripodSpreader');
-            rule.crewPresent = collect('crewPresent');
-            rule.crewAbsent = collect('crewAbsent');
-
-            this.saveRule(rule, isNew);
+            this.saveRule(updatedRule, isNew, ruleIndex);
             close();
         };
-    },
-
-    saveRule(rule, isNew) {
-        if (window.getAutoGearRules && window.setAutoGearRules) {
-            const currentRules = window.getAutoGearRules();
-            let newRules;
-            if (isNew) {
-                newRules = [...currentRules, rule];
-            } else {
-                newRules = currentRules.map(r => r.id === rule.id ? rule : r);
-            }
-            window.setAutoGearRules(newRules);
-            this.render();
-        }
-    },
-
-    escapeHtml(str) {
-        if (typeof str !== 'string') return '';
-        return str.replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
     }
-};
 
-global.cineRulesView = RulesView;
+    renderMultiSelect(label, id, options, selected = []) {
+        if (!options || options.length === 0) return '';
+        const safeSelected = selected || [];
+        return `
+            <div class="v2-form-group">
+                <label>${label}</label>
+                <div class="v2-multi-select-container">
+                    ${options.map(opt => `
+                         <label class="v2-checkbox-label">
+                            <input type="checkbox" class="multi-${id}" value="${this.escapeHtml(opt)}" ${safeSelected.includes(opt) ? 'checked' : ''}>
+                            <span>${this.escapeHtml(opt)}</span>
+                        </label>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
 
-// Removed IIFE end
-export { RulesView };
+    collectMultiSelect(parent, id) {
+        return Array.from(parent.querySelectorAll(`.multi-${id}:checked`)).map(el => el.value);
+    }
 
+    renderActionListItems(items) {
+        if (!items || !items.length) return '<p class="v2-text-muted">No items added yet.</p>';
+        return items.map((item, idx) => `
+            <div class="v2-action-item">
+                <span class="v2-badge v2-badge-outline item-qty">${item.qty}x</span>
+                <span class="item-name">${this.escapeHtml(item.name)}</span>
+                <button class="v2-btn-icon-sm v2-danger-hover remove-action-item" data-idx="${idx}">&times;</button>
+            </div>
+        `).join('');
+    }
+
+    bindRemoveActionEvents(container, currentRule) {
+        container.querySelectorAll('.remove-action-item').forEach(btn => {
+            btn.onclick = (e) => {
+                const idx = parseInt(e.target.dataset.idx, 10);
+                currentRule.addItems.splice(idx, 1);
+                container.innerHTML = this.renderActionListItems(currentRule.addItems);
+                this.bindRemoveActionEvents(container, currentRule);
+            };
+        });
+    }
+
+    saveRule(rule, isNew, index) {
+        const rules = window.getAutoGearRules() || [];
+        if (isNew) {
+            rules.push(rule);
+        } else {
+            rules[index] = rule;
+        }
+
+        if (window.setAutoGearRules) {
+            window.setAutoGearRules(rules);
+            // Trigger autosave if possible
+            if (window.requestAutoSave) window.requestAutoSave();
+            this.render();
+        } else {
+            console.error('Core function setAutoGearRules not available');
+        }
+    }
+
+    deleteRule(index) {
+        if (!confirm('Are you sure you want to delete this rule?')) return;
+        const rules = window.getAutoGearRules() || [];
+        rules.splice(index, 1);
+        window.setAutoGearRules(rules);
+        if (window.requestAutoSave) window.requestAutoSave();
+        this.render();
+    }
+
+}
+
+// Instantiate and expose globally so bootstrap can init it
+if (typeof window !== 'undefined') {
+    window.cineRulesView = new RulesView();
+}

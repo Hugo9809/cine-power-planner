@@ -496,7 +496,8 @@ globalScope.cineDeviceNormalization = {
     normalizeVideoType,
     normalizeFizConnectorType,
     normalizeViewfinderType,
-    normalizePowerPortType
+    normalizePowerPortType,
+    ensureList
 };
 
 // Expose individual functions for backward compatibility if needed
@@ -514,5 +515,6 @@ export {
     normalizeVideoType,
     normalizeFizConnectorType,
     normalizeViewfinderType,
-    normalizePowerPortType
+    normalizePowerPortType,
+    ensureList
 };

@@ -126,12 +126,23 @@ function requestDeferredLoad(scope, reason) {
         return;
       }
 
+      if (currentScope.cineFeaturesOnboardingTour) {
+        resolve(true);
+        return;
+      }
+
       let ensureFn = null;
       try {
         ensureFn = currentScope.cineEnsureDeferredScriptsLoaded;
       } catch (ensureError) {
         void ensureError;
         ensureFn = null;
+      }
+
+      if (typeof ensureFn !== 'function') {
+        // Assume bundled/ESM environment where scripts load automatically
+        resolve(true);
+        return;
       }
 
       if (typeof ensureFn === 'function') {

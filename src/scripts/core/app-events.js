@@ -24,6 +24,9 @@ console.log('DEBUG: app-events.js START');
           applyPendingProjectNameCollisionResolution,
           SAFE_LOCAL_STORAGE */
 
+// Global state tracking
+let lastSetupName = '';
+
 const EVENTS_UI_HELPERS = cineCoreUiHelpers || {};
 
 const UI_CACHE = cineUiCache || {

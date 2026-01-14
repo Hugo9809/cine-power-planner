@@ -111,14 +111,18 @@
 
                 const contacts = contactsModule.loadStoredContacts();
 
+                // Swiss Utility Header: Clean, Typography-led, Solid
                 const header = `
-                    <header class="view-header">
+                    <header class="view-header swiss-header">
                         <div class="header-content">
-                            <h1>${_t('contactsViewTitle')}</h1>
-                            <p class="header-subtitle">${_t('contactsViewSubtitle')}</p>
+                            <h1 class="swiss-title">${_t('contactsViewTitle')}</h1>
+                            <div class="swiss-subtitle">
+                                <span class="count-badge">${contacts ? contacts.length : 0}</span>
+                                ${_t('contactsViewSubtitle') || 'Production Directory'}
+                            </div>
                         </div>
                         <div class="view-header-actions">
-                            <button class="v2-btn v2-btn-primary" id="btn-add-contact">
+                            <button class="swiss-btn swiss-btn-primary" id="btn-add-contact">
                                 <span class="icon">add</span>
                                 <span>${_t('buttonAddContact')}</span>
                             </button>
@@ -126,24 +130,23 @@
                     </header>
                 `;
 
-                let contentHtml = '<div class="view-content">';
+                let contentHtml = '<div class="view-content swiss-content">';
 
                 if (!contacts || contacts.length === 0) {
                     contentHtml += `
-                        <div class="view-empty-state">
-                             <div class="view-empty-state-icon">
-                                <span class="icon">group</span>
+                        <div class="view-empty-state swiss-empty-state">
+                             <div class="swiss-empty-icon">
+                                <span class="icon">group_off</span>
                             </div>
                             <h2>${_t('contactsEmptyTitle')}</h2>
-                            <p class="text-muted" style="margin-bottom: 24px;">${_t('contactsEmptyText')}</p>
-                            <button class="v2-btn v2-btn-primary" id="btn-add-contact-empty">
-                                <span class="icon">add</span>
+                            <p>${_t('contactsEmptyText')}</p>
+                            <button class="swiss-btn swiss-btn-primary" id="btn-add-contact-empty">
                                 ${_t('buttonAddFirstContact')}
                             </button>
                         </div>
                     `;
                 } else {
-                    contentHtml += '<div class="contacts-grid">';
+                    contentHtml += '<div class="swiss-grid">';
                     contacts.forEach(contact => {
                         contentHtml += this.renderContactCard(contact);
                     });
@@ -158,7 +161,7 @@
             } catch (err) {
                 console.error('[ContactsView] Render failed', err);
                 if (this.container) {
-                    this.container.innerHTML = `<div class="v2-error-state"><p>Error loading view: ${err.message}</p></div>`;
+                    this.container.innerHTML = `<div class="swiss-error-state"><p>Error loading view: ${err.message}</p></div>`;
                 }
             }
         },
@@ -169,61 +172,66 @@
                 : '?';
 
             const avatarHtml = contact.avatar
-                ? `<img src="${contact.avatar}" alt="${escapeHtml(contact.name)}">`
-                : initials;
+                ? `<img src="${contact.avatar}" alt="${escapeHtml(contact.name)}" class="avatar-img">`
+                : `<span class="avatar-initials">${initials}</span>`;
 
-            const phoneLink = contact.phone ? `<a href="tel:${escapeHtml(contact.phone)}" onclick="event.stopPropagation()">${escapeHtml(contact.phone)}</a>` : '';
-            const emailLink = contact.email ? `<a href="mailto:${escapeHtml(contact.email)}" onclick="event.stopPropagation()">${escapeHtml(contact.email)}</a>` : '';
-            const websiteLink = contact.website ? `<a href="${escapeHtml(contact.website)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${_t('linkWebsite')}</a>` : '';
+            // Contact Actions (Clean links)
+            const phoneLink = contact.phone ? `<a href="tel:${escapeHtml(contact.phone)}" class="swiss-link" onclick="event.stopPropagation()">${escapeHtml(contact.phone)}</a>` : '<span class="swiss-placeholder">—</span>';
+            const emailLink = contact.email ? `<a href="mailto:${escapeHtml(contact.email)}" class="swiss-link" onclick="event.stopPropagation()">${escapeHtml(contact.email)}</a>` : '<span class="swiss-placeholder">—</span>';
 
-            // Using Standard V2 Card Structure
+            // Website link logic - shorten for display
+            let displayWebsite = contact.website || '';
+            if (displayWebsite.includes('://')) displayWebsite = displayWebsite.split('://')[1];
+            if (displayWebsite.endsWith('/')) displayWebsite = displayWebsite.slice(0, -1);
+
+            const websiteLink = contact.website ? `<a href="${escapeHtml(contact.website)}" target="_blank" rel="noopener noreferrer" class="swiss-link" onclick="event.stopPropagation()">${escapeHtml(displayWebsite)}</a>` : '';
+
+            // Layout: Swiss Utility Card
+            // Left: Avatar / ID
+            // Right: Data Grid
             return `
-                <div class="v2-card v2-card-interactive contact-card" data-contact-id="${escapeHtml(contact.id)}" tabindex="0" role="button">
-                    <div class="v2-card-header">
-                        <div class="contact-avatar">
-                            ${avatarHtml}
+                <div class="swiss-card contact-card" data-contact-id="${escapeHtml(contact.id)}" tabindex="0" role="button">
+                    <div class="swiss-card-main">
+                        <div class="swiss-card-identity">
+                            <div class="swiss-avatar">
+                                ${avatarHtml}
+                            </div>
+                            <div class="swiss-identity-text">
+                                <h3 class="swiss-name">${escapeHtml(contact.name || _t('contactUnnamed'))}</h3>
+                                <div class="swiss-role">${escapeHtml(contact.role || _t('contactNoRole'))}</div>
+                            </div>
                         </div>
-                        <div class="v2-tile-info">
-                            <h3 class="v2-card-title">${escapeHtml(contact.name || _t('contactUnnamed'))}</h3>
-                            <div class="v2-card-subtitle">${escapeHtml(contact.role || _t('contactNoRole'))}</div>
-                        </div>
-                        <div class="v2-card-actions">
-                            <button class="v2-btn v2-btn-icon v2-btn-ghost btn-edit-contact" title="${_t('buttonEdit')}">
+                        <div class="swiss-card-actions-overlay">
+                             <button class="swiss-icon-btn btn-edit-contact" title="${_t('buttonEdit')}">
                                 <span class="icon">edit</span>
                             </button>
-                            <button class="v2-btn v2-btn-icon v2-btn-ghost btn-delete-contact" title="${_t('buttonDelete')}">
+                             <button class="swiss-icon-btn btn-delete-contact" title="${_t('buttonDelete')}">
                                 <span class="icon">delete</span>
                             </button>
                         </div>
                     </div>
                     
-                    <div class="v2-card-body">
-                        <div class="contact-details">
-                            ${contact.phone ? `
-                                <div class="contact-detail-row">
-                                    <span class="icon">call</span>
-                                    ${phoneLink}
-                                </div>
-                            ` : ''}
-                            ${contact.email ? `
-                                <div class="contact-detail-row">
-                                    <span class="icon">mail</span>
-                                    ${emailLink}
-                                </div>
-                            ` : ''}
-                            ${contact.website ? `
-                                <div class="contact-detail-row">
-                                    <span class="icon">language</span>
-                                    ${websiteLink}
-                                </div>
-                            ` : ''}
-                             ${contact.notes ? `
-                                <div class="contact-detail-row" style="margin-top: 8px; font-style: italic; opacity: 0.8; align-items: flex-start;">
-                                    <span class="icon" style="margin-top:2px;">description</span>
-                                    <div>${escapeHtml(contact.notes)}</div>
-                                </div>
-                            ` : ''}
+                    <div class="swiss-card-data-grid">
+                        <div class="data-cell">
+                            <span class="data-label">Phone</span>
+                            <span class="data-value">${phoneLink}</span>
                         </div>
+                        <div class="data-cell">
+                            <span class="data-label">Email</span>
+                            <span class="data-value">${emailLink}</span>
+                        </div>
+                        ${contact.website ? `
+                        <div class="data-cell full-width">
+                            <span class="data-label">Web</span>
+                            <span class="data-value">${websiteLink}</span>
+                        </div>
+                        ` : ''}
+                        ${contact.notes ? `
+                        <div class="data-cell full-width notes-cell">
+                            <span class="data-label">Notes</span>
+                            <span class="data-value notes-text">${escapeHtml(contact.notes)}</span>
+                        </div>
+                        ` : ''}
                     </div>
                 </div>
             `;

@@ -19,31 +19,37 @@
 .v2-tabs-nav {
     display: flex;
     align-items: center;
-    gap: 4px; /* Precise gap for the "track" feel */
+    gap: 4px;
+    /* Precise gap for the "track" feel */
     padding: 4px;
-    
+
     /* Segmented Control Track Appearance */
-    background-color: var(--v2-surface-3); /* Light gray track */
-    border-radius: var(--v2-radius-lg); /* 12px or similar */
-    border: none; /* No border, the container defines the shape */
-    
+    background-color: var(--v2-surface-3);
+    /* Light gray track */
+    border-radius: var(--v2-radius-lg);
+    /* 12px or similar */
+    border: none;
+    /* No border, the container defines the shape */
+
     /* Layout props */
     width: fit-content;
     max-width: 100%;
-    margin: var(--v2-space-md) var(--v2-space-lg); /* Spacing from header/content */
-    
+    margin: var(--v2-space-md) var(--v2-space-lg);
+    /* Spacing from header/content */
+
     /* Sticky behavior - adjusted */
     position: sticky;
     top: calc(var(--v2-header-height) + var(--v2-space-md));
     z-index: 90;
-    
+
     /* Scroll properties if it overflows (mobile) */
     overflow-x: auto;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
     flex-wrap: nowrap;
-    
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.06); /* Subtle depth inset */
+
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+    /* Subtle depth inset */
 }
 
 .v2-tabs-nav::-webkit-scrollbar {
@@ -58,24 +64,26 @@
     align-items: center;
     justify-content: center;
     gap: var(--v2-space-sm);
-    
+
     /* Sizing */
     padding: 6px 14px;
     min-height: 32px;
     flex-shrink: 0;
-    
+
     /* Typography */
-    font-size: 0.9rem; /* Approx 14px-15px */
+    font-size: 0.9rem;
+    /* Approx 14px-15px */
     font-weight: var(--v2-font-weight-medium);
     color: var(--v2-text-secondary);
     line-height: 1.2;
     letter-spacing: -0.01em;
-    
+
     /* Shape */
     border: none;
-    border-radius: var(--v2-radius-md); /* Slightly less than container */
+    border-radius: var(--v2-radius-md);
+    /* Slightly less than container */
     background: transparent;
-    
+
     cursor: pointer;
     user-select: none;
     transition: all 0.2s cubic-bezier(0.2, 0, 0.2, 1);
@@ -86,19 +94,23 @@
 /* Hover state for inactive tabs */
 .v2-tab-btn:hover:not(:disabled):not(.active) {
     color: var(--v2-text-primary);
-    background-color: rgba(0,0,0, 0.03); /* Extremely subtle hover */
+    background-color: rgba(0, 0, 0, 0.03);
+    /* Extremely subtle hover */
 }
 
 /* Active State - The "Thumb" */
 .v2-tab-btn.active {
-    background-color: var(--v2-surface-base); /* White in light mode */
-    color: var(--v2-text-primary); /* High contrast */
+    background-color: var(--v2-surface-base);
+    /* White in light mode */
+    color: var(--v2-text-primary);
+    /* High contrast */
     font-weight: var(--v2-font-weight-semibold);
-    
+
     /* The Lift */
-    box-shadow: 
-        0 1px 3px rgba(0,0,0,0.1), 
-        0 0 0 0.5px rgba(0,0,0,0.04); /* Subtle border-like shadow */
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.1),
+        0 0 0 0.5px rgba(0, 0, 0, 0.04);
+    /* Subtle border-like shadow */
 }
 
 /* Remove old pseudo-elements */
@@ -123,7 +135,8 @@
 
 .v2-tab-btn.active .icon {
     opacity: 1;
-    color: var(--v2-brand-blue); /* Brand accent for icon even if text is plain black/dark */
+    color: var(--v2-brand-blue);
+    /* Brand accent for icon even if text is plain black/dark */
 }
 
 /* Focus styles */
@@ -156,12 +169,14 @@
 .v2-tabs-content {
     width: 100%;
     position: relative;
-    padding: 0 var(--v2-space-lg) var(--v2-space-lg); /* Content padding */
+    padding: 0 var(--v2-space-lg) var(--v2-space-lg);
+    /* Content padding */
 }
 
 .v2-tab-pane {
     display: none;
-    animation: v2-scale-in 0.2s cubic-bezier(0.16, 1, 0.3, 1); /* Subtle scale in */
+    animation: v2-scale-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    /* Subtle scale in */
     transform-origin: top center;
 }
 
@@ -174,6 +189,7 @@
         opacity: 0;
         transform: scale(0.99) translateY(2px);
     }
+
     to {
         opacity: 1;
         transform: scale(1) translateY(0);
@@ -186,19 +202,21 @@
 @media (max-width: 768px) {
     .v2-tabs-nav {
         /* On mobile, span width but keep padding */
-        width: calc(100% - var(--v2-space-lg)); 
+        width: calc(100% - var(--v2-space-lg));
         margin: var(--v2-space-sm) auto;
-        justify-content: flex-start; /* Alignment for scroll */
+        justify-content: flex-start;
+        /* Alignment for scroll */
         padding: 4px;
         gap: 2px;
     }
-    
+
     .v2-tab-btn {
-        flex: 1; /* Distribute evenly if possible, or shrink */
+        flex: 1;
+        /* Distribute evenly if possible, or shrink */
         padding: 8px 10px;
         font-size: 0.85rem;
     }
-    
+
     .v2-tabs-content {
         padding: 0 var(--v2-space-md) var(--v2-space-md);
     }

@@ -50,12 +50,20 @@
     function getV1Topics() {
         // Try to access the localization helper globally
         // It might be 'cineCoreLocalization' or a similar exposure
-        const localization = global.cineCoreLocalization ||
+        let localization = global.cineCoreLocalization ||
+            global.cineCoreLocalizationBridge || // Agent: Added bridge check
             (global.cineModuleBase && global.cineModuleBase.resolveLocalization && global.cineModuleBase.resolveLocalization());
 
         if (!localization || typeof localization.getString !== 'function') {
-            console.warn('[HelpService] Localization module not found. V1 topics unavailable.');
-            return [];
+            // Fallback to global getText if available
+            if (typeof global.getText === 'function') {
+                localization = {
+                    getString: (key) => global.getText(key)
+                };
+            } else {
+                console.warn('[HelpService] Localization module not found. V1 topics unavailable.');
+                return [];
+            }
         }
 
         const topicKeys = [

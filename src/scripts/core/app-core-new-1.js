@@ -3946,7 +3946,9 @@ if (typeof window !== 'undefined') {
     'autoGearConditionList',
     'autoGearConditionAddShortcuts',
     'autoGearConditionRemoveButtons',
-    'autoGearSummaryFocus'
+    'autoGearSummaryFocus',
+    'markAutoGearDefaultsSeeded',
+    'clearAutoGearDefaultsSeeded'
   ];
 
   liveVariables.forEach(name => {
@@ -8277,14 +8279,17 @@ async function setLanguage(lang) {
       }
       link.setAttribute("aria-label", label);
     }
-    const helpKey = `${navKey} Help`;
+    const helpKey = `${navKey}Help`;
     const helpText = texts[lang][helpKey];
     if (helpText) {
       link.setAttribute("title", helpText);
       link.setAttribute("data-help", helpText);
     } else {
       if (navKey === 'projectRequirementsNav') {
-        console.warn(`[Cine Power Planner] Missing help text for ${navKey} in lang ${lang} `);
+        const checkKey = `${navKey}Help`;
+        if (texts[lang] && !texts[lang][checkKey]) {
+          console.warn(`[Cine Power Planner] Missing help text for ${navKey} in lang ${lang} `);
+        }
       }
       link.removeAttribute("title");
       link.removeAttribute("data-help");
@@ -21715,5 +21720,7 @@ export {
   openSideMenu,
   setupSideMenu,
   setupResponsiveControls,
-  updateTripodOptions
+  updateTripodOptions,
+  detectBrand,
+  connectionLabel
 };
