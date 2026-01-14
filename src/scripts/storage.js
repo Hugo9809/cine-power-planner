@@ -13396,7 +13396,9 @@ function saveProject(name, project, options = {}) {
   enforceAutoBackupLimits(projects);
 
   // [Agent Refactor] Dual-Write to StorageRepository & Memory Cache
-  // This ensures the new DB is always current.
+  // Keep the offline data sources aligned by writing both the durable repo (IndexedDB-backed)
+  // and the in-memory cache used for synchronous reads. This prevents drift between tabs/sessions
+  // and ensures autosave, backup, and restore flows always have the latest snapshot available.
   if (storageRepo) {
     storageRepo.saveProject(finalKey, normalized).catch(err => console.warn('[saveProject] Repo write failed', err));
   }
@@ -13407,6 +13409,9 @@ function saveProject(name, project, options = {}) {
   // Instead of calling persistAllProjects(projects), which would trigger a massive monolithic rewrite,
   // we now use sharded persistence for the specific project being saved.
   // [Agent Refactor] Skip legacy LocalStorage write if we are using IndexedDB to avoid quota errors.
+  // When IndexedDB is active, we avoid a redundant monolithic LocalStorage write that risks quota
+  // exhaustion; we still preserve backups through the repository and the sharded persistence path.
+  // Shard persistence is preferred because it limits blast radius and avoids monolithic write failures.
   const isIndexedDB = storageRepo && storageRepo.driver && storageRepo.driver.constructor && storageRepo.driver.constructor.name === 'IndexedDBAdapter';
   let shardSuccess = true;
 
