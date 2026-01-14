@@ -241,3 +241,37 @@
         min-width: 0;
     }
 }
+
+/* =====================
+ * HEADER ACTIONS
+ * ===================== */
+.view-header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--v2-space-sm);
+    margin-left: auto;
+    /* Push to right */
+}
+
+/* Hide labels on smaller screens or if space is tight */
+@media (max-width: 1024px) {
+    .view-header-actions .v2-btn-label {
+        display: none;
+    }
+
+    .view-header-actions .v2-btn {
+        padding: var(--v2-space-sm);
+    }
+}
+
+@media (max-width: 600px) {
+    .view-header-actions {
+        margin-left: 0;
+        width: 100%;
+        justify-content: flex-end;
+        /* Align right on new line */
+        order: 4;
+        /* Ensure it wraps to bottom if needed, or adjust based on flex order */
+        margin-top: var(--v2-space-sm);
+    }
+}

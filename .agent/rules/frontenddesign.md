@@ -25,7 +25,7 @@ Before writing any code, produce a short “design contract” that you will fol
    - material/texture
    - motion behavior
 4) **Signature move**: The one unforgettable detail (layout trick, interaction, motif, typographic flourish, etc.).
-5) **Ban list (2–3)**: Things you explicitly will NOT do in this build (e.g. “no purple-on-white gradients”, “no generic card grid”, “no default component library look”).
+5) **Ban list (2–3)**: Things you explicitly will NOT do in this build (e.g. “no purple-on-white gradients”, “no generic card grid”, “no default component library look”). no glasmorphism
 
 **CRITICAL**: Commit. Do not hedge. The UI must feel intentionally designed.
 

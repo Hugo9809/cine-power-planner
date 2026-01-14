@@ -4,6 +4,7 @@ import cineFeaturesConnectionDiagram from '../modules/features/connection-diagra
 import cineFeatureBackup from '../modules/features/backup.js';
 import { cineLoggingResolver } from '../modules/logging-resolver.js';
 import { cineCoreMountVoltage } from './modules/core/mount-voltage.js';
+import '../modules/results.js';
 import { generatePrintableOverview } from '../overview.js';
 // Import globals available from other scripts (via Window usually, but explicitly needed for ESM)
 // Note: Some of these might be available on window, but we import them to be explicit and avoid lint/runtime errors if window is not ready.
@@ -25,7 +26,7 @@ import { generatePrintableOverview } from '../overview.js';
 // For updateTripodOptions and saveCurrentGearList, I will import.
 
 import { generateGearListHtml } from '../modules/gear-list.js';
-import { ensureZoomRemoteSetup, saveCurrentGearList } from './app-setups.js';
+import { ensureZoomRemoteSetup, saveCurrentGearList, downloadSharedProject } from './app-setups.js';
 import {
   encodeSharedSetup,
   decodeSharedSetup,
@@ -970,6 +971,8 @@ function reloadActiveProjectFromStorage(options = {}) {
       // [Bug Fix] The project was deleted or renamed in another tab.
       // Refresh the setup list and reset to "New Project" to prevent
       // stale state from being autosaved back (causing duplication/resurrection).
+      const previousValue = setupSelect ? setupSelect.value : '';
+
       if (typeof populateSetupSelect === 'function') {
         try {
           populateSetupSelect();
@@ -981,11 +984,14 @@ function reloadActiveProjectFromStorage(options = {}) {
       // Reset UI to "New Project" state
       if (setupSelect && typeof setupSelect.value !== 'undefined') {
         setupSelect.value = '';
-        // Dispatch change event to trigger legacy handlers
-        try {
-          setupSelect.dispatchEvent(new Event('change', { bubbles: true }));
-        } catch (eventError) {
-          void eventError;
+        // Dispatch change event to trigger legacy handlers, but ONLY if we actually
+        // transitioned from a specific project to "New Project" (to avoid infinite loops)
+        if (previousValue !== '') {
+          try {
+            setupSelect.dispatchEvent(new Event('change', { bubbles: true }));
+          } catch (eventError) {
+            void eventError;
+          }
         }
       }
 
@@ -1207,7 +1213,7 @@ function applySetLanguage(languageCode, options = {}) {
   }
 
   try {
-    return setLanguageFn(languageCode);
+    return setLanguageFn(languageCode, options);
   } catch (setLanguageError) {
     if (!options?.silent && typeof console !== 'undefined' && typeof console.error === 'function') {
       console.error('applySetLanguage: setLanguage execution failed', setLanguageError);
@@ -19316,7 +19322,7 @@ function initApp() {
   if (sharedLinkRow) {
     sharedLinkRow.classList.remove('hidden');
   }
-  applySetLanguage(currentLang);
+  applySetLanguage(currentLang, { skipUpdateCalculations: true });
   populateEnvironmentDropdowns();
   populateLensDropdown();
   populateFilterDropdown();
@@ -21717,3 +21723,45 @@ if (typeof window !== 'undefined') {
 
 export default cineCoreSession;
 console.log('app-session.js: Execution complete (ESM)');
+
+/* cineAppSession Shim for Persistence & Runtime Integrity */
+const cineAppSession = {
+  // Persistence Bindings
+  saveCurrentSession,
+  autoSaveCurrentSetup,
+  saveCurrentGearList,
+  restoreSessionState,
+
+  // Backups
+  collectFullBackupData,
+  createSettingsBackup,
+  captureStorageSnapshot,
+  sanitizeBackupPayload,
+
+  // Sharing & Restore
+  encodeSharedSetup,
+  decodeSharedSetup,
+  applySharedSetup,
+  applySharedSetupFromUrl,
+  downloadSharedProject,
+  saveProject,
+  handleRestoreRehearsalProceed,
+  handleRestoreRehearsalAbort,
+
+  // Aliases for direct binding resolution if needed by name overrides
+  proceed: handleRestoreRehearsalProceed,
+  abort: handleRestoreRehearsalAbort,
+  downloadProject: downloadSharedProject
+};
+
+if (typeof window !== 'undefined') {
+  window.cineAppSession = cineAppSession;
+
+  // Ensure specific globals expected by legacy code or direct checks are present
+  // (Redundant safety for the integrity check)
+  if (!window.handleRestoreRehearsalProceed) window.handleRestoreRehearsalProceed = handleRestoreRehearsalProceed;
+  if (!window.handleRestoreRehearsalAbort) window.handleRestoreRehearsalAbort = handleRestoreRehearsalAbort;
+  if (!window.downloadSharedProject) window.downloadSharedProject = downloadSharedProject;
+}
+
+export { cineAppSession };

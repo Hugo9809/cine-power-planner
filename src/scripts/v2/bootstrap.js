@@ -129,14 +129,6 @@ function enableV2() {
             global.cineProjectDetail.init();
         }
 
-        // Initialize View Manager (this will dispatch v2:viewchange)
-        if (global.cineViewManager && typeof global.cineViewManager.enableV2 === 'function') {
-            global.cineViewManager.enableV2();
-        }
-
-        // Bind Exit V2 button
-        bindExitButton();
-
         // Initialize and render the project dashboard
         if (global.cineProjectDashboard) {
             if (typeof global.cineProjectDashboard.init === 'function') {
@@ -149,6 +141,15 @@ function enableV2() {
         if (global.cineV2Sidebar && typeof global.cineV2Sidebar.init === 'function') {
             global.cineV2Sidebar.init();
         }
+
+        // Initialize View Manager (this will dispatch v2:viewchange)
+        // IMPORTANT: Must happen LAST after all views are initialized so they can catch the event
+        if (global.cineViewManager && typeof global.cineViewManager.enableV2 === 'function') {
+            global.cineViewManager.enableV2();
+        }
+
+        // Bind Exit V2 button
+        bindExitButton();
 
         // [Fix] Hide V2 Loader after successfully initializing
         hideV2Loader();
@@ -503,12 +504,13 @@ if (typeof globalThis !== 'undefined') {
 }
 
 // Auto-initialize
-if (typeof document !== 'undefined') {
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        // Delay slightly to let other scripts load first
-        setTimeout(init, 100);
-    }
-}
+// Auto-initialize
+// if (typeof document !== 'undefined') {
+//     if (document.readyState === 'loading') {
+//         document.addEventListener('DOMContentLoaded', init);
+//     } else {
+//         // Delay slightly to let other scripts load first
+//         setTimeout(init, 100);
+//     }
+// }
 

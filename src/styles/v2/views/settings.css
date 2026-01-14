@@ -257,35 +257,49 @@
    ========================================= */
 .v2-settings-tabs-nav {
     margin-bottom: 32px;
-    border-bottom: 1px solid var(--v2-border-default);
+    /* Use the global trackless style */
     display: flex;
-    gap: var(--v2-space-lg);
-    padding: 0 8px;
+    gap: 8px;
+    /* Match global */
+    padding: 0;
+
+    min-height: auto;
+    height: auto;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    /* Ensure they don't wrap weirdly, scroll instead */
+    border-bottom: none;
+    /* Removed the line */
 }
 
+/* Inherit or Re-implement Pill Style */
 .v2-settings-tabs-nav .v2-tab-btn {
-    padding: 12px 4px;
-    font-size: 1rem;
+    /* Reset overrides to match global pill */
+    padding: 8px 16px;
+    font-size: 0.95rem;
     font-weight: var(--v2-font-weight-medium);
     background: transparent;
-    border: none;
-    border-bottom: 2px solid transparent;
-    /* Indicators */
+    /* Default transparent */
+    border: 1px solid transparent;
+    /* Reserve space */
+    border-radius: 20px;
+    /* Pill */
     cursor: pointer;
     color: var(--v2-text-secondary);
-    transition: all 0.2s ease;
-    border-radius: 0;
-    /* Flat bottom border style */
+    transition: all 0.2s ease-out;
 }
 
 .v2-settings-tabs-nav .v2-tab-btn:hover {
     color: var(--v2-text-primary);
+    background-color: rgba(0, 0, 0, 0.04);
 }
 
 .v2-settings-tabs-nav .v2-tab-btn.active {
-    color: var(--v2-brand-blue);
-    border-bottom-color: var(--v2-brand-blue);
+    background-color: var(--v2-surface-elevated);
+    color: var(--v2-text-primary);
     font-weight: var(--v2-font-weight-semibold);
+    border-color: var(--v2-border-muted);
+    box-shadow: var(--v2-shadow-sm);
 }
 
 /* =========================================
@@ -356,9 +370,11 @@ body.dark-mode .v2-settings-card:hover {
    11. Pink Mode Overrides
    ========================================= */
 body.pink-mode .v2-tab-btn.active {
-    color: #DB2777;
-    /* Pink-600 */
-    border-bottom-color: #DB2777;
+    background-color: #DB2777;
+    /* Pill back */
+    color: #fff;
+    border-color: transparent;
+    border-bottom: 1px solid transparent;
 }
 
 body.pink-mode input:checked+.v2-toggle-slider {

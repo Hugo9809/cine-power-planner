@@ -30,7 +30,7 @@
     gap: var(--v2-space-md);
     padding: 0 var(--v2-space-lg) var(--v2-space-lg) var(--v2-space-lg);
     /* Remove top padding to flush with edge */
-    border-bottom: none;
+    border-bottom: 1px solid var(--v2-border-subtle);
     background-color: transparent;
     position: sticky;
     top: 0;
@@ -61,28 +61,75 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-shrink: 0;
     }
 
     /* Adjust header padding for mobile */
     .view-header {
         padding-left: var(--v2-space-md);
         padding-right: var(--v2-space-md);
-        flex-wrap: wrap;
-        /* Allow wrapping if needed */
+        flex-wrap: nowrap;
+        /* Keep on single line */
         height: auto;
-        min-height: 60px;
+        min-height: 56px;
         padding-top: var(--v2-space-sm);
         padding-bottom: var(--v2-space-sm);
+        gap: var(--v2-space-sm);
     }
 
     .view-header h1 {
-        font-size: 1.25rem;
-        /* Smaller text on mobile */
+        font-size: 1.125rem;
+        /* Slightly smaller on mobile */
+        flex: 1;
+        min-width: 0;
+        /* Allow shrinking */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .view-header-actions {
         margin-left: auto;
-        /* Push to right */
+        flex-shrink: 0;
+    }
+
+    /* Compact button on mobile */
+    .view-header-actions .v2-btn-primary {
+        padding: 8px 12px;
+        min-width: auto;
+        font-size: var(--v2-font-size-sm);
+    }
+}
+
+/* Extra small screens: show icon-only button */
+@media (max-width: 480px) {
+    .view-header {
+        padding-left: var(--v2-space-sm);
+        padding-right: var(--v2-space-sm);
+        min-height: 48px;
+        gap: var(--v2-space-xs);
+    }
+
+    .view-header h1 {
+        font-size: 1rem;
+    }
+
+    /* Very compact button with just + on very small screens */
+    .view-header-actions .v2-btn-primary {
+        padding: 8px 10px;
+        font-size: var(--v2-font-size-sm);
+    }
+
+    /* Hide "New Project" text, show only "+" */
+    #v2HeaderCreateBtn {
+        font-size: 0;
+        /* Hide text */
+    }
+
+    #v2HeaderCreateBtn::before {
+        content: '+';
+        font-size: var(--v2-font-size-lg);
+        font-weight: var(--v2-font-weight-bold);
     }
 }
 

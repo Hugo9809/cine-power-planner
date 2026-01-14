@@ -1,24 +1,30 @@
 /*
  * Cine Power Planner V2 - Device Library View
  * ===========================================
- * Styles for the device library view with tabbed interface,
- * improved form layout, and modern V2 design system.
+ * Design Theme: Responsive Utility (Clean & Robust)
+ * Layout: Split View (Desktop) -> Stacked View (Mobile)
  */
 
 /* =====================
- * VIEW CONTAINER
+ * VARIABLES
+ * ===================== */
+/* Local variables removed in favor of global v2-* tokens */
+
+/* =====================
+ * MAIN CONTAINER
  * ===================== */
 #v2-device-library-content {
-    max-width: 1000px;
-    margin: 0 auto;
     width: 100%;
-    padding: var(--v2-space-xl);
-    animation: v2-fade-in 0.3s ease-out;
+    max-width: var(--v2-content-max-width);
+    margin: 0 auto;
+    padding: var(--v2-space-md);
+    box-sizing: border-box;
+    min-height: 100vh;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
     #v2-device-library-content {
-        padding: var(--v2-space-md);
+        padding: var(--v2-space-sm);
     }
 }
 
@@ -28,445 +34,245 @@
 #v2-device-library-content .view-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    gap: var(--v2-space-lg);
-    margin-bottom: var(--v2-space-xl);
+    align-items: center;
+    /* Centered like sidebar controls */
     flex-wrap: wrap;
+    gap: var(--v2-space-md);
+    margin-bottom: var(--v2-space-lg);
+    padding-bottom: var(--v2-space-md);
+    border-bottom: 2px solid var(--v2-border-default);
 }
 
 #v2-device-library-content .view-header h1 {
-    font-size: var(--v2-font-size-2xl);
-    font-weight: var(--v2-font-weight-bold);
-    color: var(--v2-text-primary);
+    /* Match Sidebar Title Aesthetic */
+    font-size: clamp(20px, 6vw, 26px);
+    font-weight: var(--v2-font-weight-semibold);
+    color: var(--v2-header-color);
+    /* Use Brand Blue/Header color */
     margin: 0;
+    line-height: 1.0;
 }
 
 #v2-device-library-content .header-subtitle {
-    font-size: var(--v2-font-size-base);
+    font-size: var(--v2-font-size-sm);
     color: var(--v2-text-secondary);
-    margin-top: var(--v2-space-xs);
+    margin-top: 4px;
 }
 
 #v2-device-library-content .view-header-actions {
     display: flex;
     gap: var(--v2-space-sm);
-    flex-wrap: wrap;
 }
 
 /* =====================
- * TAB NAVIGATION
+ * RESPONSIVE GRID LAYOUT
  * ===================== */
-.device-library-tabs {
-    display: flex;
-    gap: var(--v2-space-sm);
-    margin-bottom: var(--v2-space-lg);
-    border-bottom: 1px solid var(--v2-border-muted);
-    padding-bottom: var(--v2-space-sm);
-}
-
-.device-library-tab {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--v2-space-sm);
-    padding: var(--v2-space-sm) var(--v2-space-lg);
-    background: transparent;
-    border: none;
-    border-radius: var(--v2-radius-md);
-    font-size: var(--v2-font-size-base);
-    font-weight: var(--v2-font-weight-medium);
-    color: var(--v2-text-secondary);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative;
-}
-
-.device-library-tab:hover {
-    color: var(--v2-text-primary);
-    background: var(--v2-surface-muted);
-}
-
-.device-library-tab.active {
-    color: var(--v2-brand-blue);
-    background: color-mix(in srgb, var(--v2-brand-blue) 10%, transparent);
-}
-
-.device-library-tab.active::after {
-    content: '';
-    position: absolute;
-    bottom: calc(-1 * var(--v2-space-sm) - 1px);
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--v2-brand-blue);
-    border-radius: var(--v2-radius-sm);
-}
-
-.device-library-tab .icon {
-    font-family: 'Material Symbols Rounded', 'uicons', sans-serif;
-    font-size: 1.2em;
-}
-
 /* =====================
- * TAB CONTENT
+ * RESPONSIVE GRID LAYOUT - DISABLED FOR V1 REVERSION
  * ===================== */
-.device-library-tab-content {
-    display: none;
-    animation: v2-fade-in 0.2s ease-out;
-}
-
-.device-library-tab-content.active {
-    display: block;
-}
-
-/* =====================
- * CARD STYLES
- * ===================== */
-.v2-device-library-card {
-    border: 1px solid var(--v2-border-default);
-    background-color: var(--v2-surface-base);
-    box-shadow: var(--v2-shadow-sm);
-    border-radius: var(--v2-radius-xl);
-    overflow: hidden;
-}
-
-.v2-device-library-card .v2-card-header {
-    padding: var(--v2-space-lg) var(--v2-space-xl);
-    border-bottom: 1px solid var(--v2-border-muted);
-    background: var(--v2-surface-elevated);
-}
-
-.v2-device-library-card .v2-card-title {
-    display: flex;
-    align-items: center;
-    gap: var(--v2-space-sm);
-    font-size: var(--v2-font-size-lg);
-    font-weight: var(--v2-font-weight-semibold);
-    color: var(--v2-text-primary);
-    margin: 0;
-}
-
-.v2-device-library-card .section-icon {
-    font-family: 'Material Symbols Rounded', 'uicons', sans-serif;
-    color: var(--v2-brand-blue);
-}
-
-.v2-device-library-card .v2-card-subtitle {
-    font-size: var(--v2-font-size-sm);
-    color: var(--v2-text-muted);
-    margin-top: var(--v2-space-xs);
-}
-
-.v2-device-library-card .v2-card-body {
-    display: flex;
-    flex-direction: column;
-    gap: var(--v2-space-lg);
-    padding: var(--v2-space-xl);
-}
-
-@media (max-width: 600px) {
-
-    .v2-device-library-card .v2-card-header,
-    .v2-device-library-card .v2-card-body {
-        padding: var(--v2-space-md);
-    }
-}
-
-/* =====================
- * FORM LAYOUT
- * ===================== */
-.v2-device-library-card .button-group {
-    display: flex;
-    flex-direction: column;
-    gap: var(--v2-space-lg);
-}
-
-.v2-device-library-card .v2-form-row,
-.v2-device-library-card .form-row {
+/*
+.device-library-layout {
     display: grid;
-    grid-template-columns: minmax(120px, 180px) 1fr;
-    gap: var(--v2-space-md);
-    align-items: center;
+    grid-template-columns: 320px 1fr;
+    gap: var(--v2-space-lg);
+    align-items: start;
 }
 
-@media (max-width: 600px) {
-
-    .v2-device-library-card .v2-form-row,
-    .v2-device-library-card .form-row {
+@media (max-width: 900px) {
+    .device-library-layout {
         grid-template-columns: 1fr;
-        gap: var(--v2-space-xs);
+        gap: var(--v2-space-lg);
+    }
+
+    .v2-device-list {
+        max-height: none !important;
     }
 }
+*/
 
 /* =====================
- * FORM INPUTS
+ * PANEL STYLING (Common)
  * ===================== */
-.v2-device-library-card .v2-input,
-.v2-device-library-card .v2-select,
-.v2-device-library-card input[type="text"],
-.v2-device-library-card input[type="number"],
-.v2-device-library-card input[type="search"],
-.v2-device-library-card select {
-    width: 100%;
-    min-height: 42px;
-    box-sizing: border-box;
-    padding: 10px 14px;
-    font-size: var(--v2-font-size-base);
+.device-list-panel,
+.device-form-panel {
+    background: var(--v2-surface-0);
     border: 1px solid var(--v2-border-default);
     border-radius: var(--v2-radius-md);
-    background-color: var(--v2-surface-0);
-    color: var(--v2-text-primary);
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.v2-device-library-card input:focus,
-.v2-device-library-card select:focus {
-    border-color: var(--v2-brand-blue);
-    outline: none;
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--v2-brand-blue) 15%, transparent);
-}
-
-.v2-device-library-card .v2-label,
-.v2-device-library-card label {
-    font-size: var(--v2-font-size-sm);
-    font-weight: var(--v2-font-weight-medium);
-    color: var(--v2-text-primary);
+    overflow: hidden;
+    /* Use shadow from Settings for consistency? Sidebar has no shadow, but panels usually do */
+    /* device-library used none, let's keep it clean or minimal */
 }
 
 /* =====================
- * FORM SECTIONS
+ * LEFT PANEL: LIST
  * ===================== */
-.device-form-section {
-    background: var(--v2-surface-elevated);
-    border: 1px solid var(--v2-border-muted);
-    border-radius: var(--v2-radius-lg);
-    padding: var(--v2-space-lg);
-    margin-top: var(--v2-space-md);
-}
-
-.device-form-section .section-header {
+.device-list-panel {
     display: flex;
-    align-items: center;
-    gap: var(--v2-space-sm);
-    margin-bottom: var(--v2-space-lg);
-    padding-bottom: var(--v2-space-sm);
-    border-bottom: 1px solid var(--v2-border-muted);
+    flex-direction: column;
 }
 
-.device-form-section .section-header .icon {
-    font-family: 'Material Symbols Rounded', 'uicons', sans-serif;
-    font-size: 1.25rem;
-    color: var(--v2-brand-blue);
-}
-
-.device-form-section .section-title {
-    font-size: var(--v2-font-size-base);
-    font-weight: var(--v2-font-weight-semibold);
-    color: var(--v2-text-primary);
-}
-
-/* Subsections (Camera specifics etc) */
-.camera-subsection,
-.monitor-subsection,
-.lens-subsection,
-.viewfinder-subsection,
-.video-subsection {
-    background-color: var(--v2-surface-base);
-    border: 1px solid var(--v2-border-muted);
-    border-radius: var(--v2-radius-md);
-    padding: var(--v2-space-lg);
-    margin-bottom: var(--v2-space-md);
-}
-
-/* Subsection headings with icons */
-.v2-device-library-card h4 {
-    display: flex;
-    align-items: center;
-    gap: var(--v2-space-sm);
-    font-size: var(--v2-font-size-base);
-    font-weight: var(--v2-font-weight-semibold);
-    color: var(--v2-text-primary);
-    margin: 0 0 var(--v2-space-md) 0;
-    padding-bottom: var(--v2-space-sm);
-    border-bottom: 1px solid var(--v2-border-subtle);
-}
-
-.v2-device-library-card h4 .icon {
-    font-family: 'Material Symbols Rounded', 'uicons', sans-serif;
-    font-size: 1.1rem;
-    color: var(--v2-text-muted);
-}
-
-/* =====================
- * BUTTONS
- * ===================== */
-.v2-device-library-card .v2-btn {
-    min-width: 100px;
-    justify-content: center;
-}
-
-/* Button row at bottom of form */
-.v2-device-library-card .button-group>.v2-btn,
-.v2-device-library-card .button-group>button {
-    align-self: flex-start;
-}
-
-/* Group action buttons together */
-.v2-device-library-card .button-group>button:not(.hidden)+button:not(.hidden) {
-    margin-left: var(--v2-space-sm);
-}
-
-/* =====================
- * CHECKBOX STYLING
- * ===================== */
-.v2-device-library-card input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--v2-brand-blue);
-    cursor: pointer;
-}
-
-/* =====================
- * FLEX CONTAINERS
- * ===================== */
-.v2-device-library-card .flex-1 {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--v2-space-md);
-    overflow: visible;
-}
-
-/* =====================
- * HIDDEN ELEMENTS
- * ===================== */
-.v2-device-library-card .hidden {
-    display: none !important;
-}
-
-/* =====================
- * BROWSE SECTION
- * ===================== */
-.browse-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-}
-
-/* Search input in browse mode */
+/* Search Bar */
 .device-library-search {
-    margin-bottom: var(--v2-space-lg);
-}
-
-.device-library-search label {
-    display: block;
-    font-size: var(--v2-font-size-sm);
-    font-weight: var(--v2-font-weight-medium);
-    color: var(--v2-text-secondary);
-    margin-bottom: var(--v2-space-xs);
+    padding: var(--v2-space-md);
+    background: var(--v2-surface-elevated);
+    border-bottom: 1px solid var(--v2-border-default);
 }
 
 .device-library-search input {
+    /* Match Sidebar Search Input */
     width: 100%;
-    min-height: 44px;
-    padding: var(--v2-space-sm) var(--v2-space-md);
-    font-size: var(--v2-font-size-base);
+    /* Padded like sidebar search for consistency, though no icon strictly enforced here unless added via JS */
+    padding: 10px 14px;
     border: 1px solid var(--v2-border-default);
     border-radius: var(--v2-radius-md);
-    background: var(--v2-surface-0);
+    background-color: var(--v2-surface-input);
     color: var(--v2-text-primary);
+    font-size: var(--v2-font-size-base);
+    font-weight: var(--v2-font-weight-medium);
+    transition: border-color var(--v2-transition-fast);
+    height: auto;
+    /* Remove fixed height constraint if standard padding works */
 }
 
 .device-library-search input:focus {
-    border-color: var(--v2-brand-blue);
     outline: none;
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--v2-brand-blue) 15%, transparent);
+    border-color: var(--v2-brand-blue);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--v2-brand-blue) 10%, transparent);
 }
 
-.device-library-search-status {
-    font-size: var(--v2-font-size-sm);
-    color: var(--v2-text-muted);
-    margin-top: var(--v2-space-xs);
-}
-
-/* Device list container */
+/* Device List */
 .v2-device-list {
-    max-height: 500px;
+    max-height: 600px;
+    /* Only limit height of list, not the whole page */
     overflow-y: auto;
-    border: 1px solid var(--v2-border-muted);
-    border-radius: var(--v2-radius-md);
-    background: var(--v2-surface-0);
-}
-
-/* Improve device list item styling */
-.device-list-container details {
-    border-bottom: 1px solid var(--v2-border-subtle);
-}
-
-.device-list-container details:last-child {
-    border-bottom: none;
+    /* Custom Scrollbar for desktop */
+    scrollbar-width: thin;
 }
 
 .device-list-container summary {
-    padding: var(--v2-space-md) var(--v2-space-lg);
+    padding: var(--v2-space-md);
+    border-bottom: 1px solid var(--v2-border-default);
     cursor: pointer;
-    font-weight: var(--v2-font-weight-medium);
+    font-weight: var(--v2-font-weight-semibold);
+    /* Match heavy links */
+    display: flex;
+    justify-content: space-between;
+    transition: background-color var(--v2-transition-fast);
     color: var(--v2-text-primary);
-    background: var(--v2-surface-elevated);
-    transition: background 0.2s;
 }
 
 .device-list-container summary:hover {
     background: var(--v2-surface-muted);
 }
 
+/* Active State */
 .device-list-container details[open] summary {
-    border-bottom: 1px solid var(--v2-border-muted);
+    background-color: color-mix(in srgb, var(--v2-brand-blue) 8%, transparent);
+    border-left: 4px solid var(--v2-brand-blue);
+    color: var(--v2-brand-blue-dark);
+    /* Ensure contrast */
 }
 
 /* =====================
- * FIELDSETS & LEGENDS
+ * RIGHT PANEL: FORM
  * ===================== */
-.v2-device-library-card fieldset {
-    border: 1px solid var(--v2-border-muted);
-    border-radius: var(--v2-radius-md);
+.device-form-panel .panel-content {
     padding: var(--v2-space-lg);
-    margin-bottom: var(--v2-space-lg);
-    background-color: var(--v2-surface-base);
 }
 
-.v2-device-library-card legend {
-    font-weight: var(--v2-font-weight-semibold);
-    color: var(--v2-text-primary);
-    padding: 0 var(--v2-space-sm);
-    font-size: var(--v2-font-size-md);
+@media (max-width: 600px) {
+    .device-form-panel .panel-content {
+        padding: var(--v2-space-md);
+    }
 }
 
-/* =====================
- * TEXTAREA
- * ===================== */
-.v2-device-library-card textarea {
-    width: 100%;
-    min-height: 80px;
-    padding: var(--v2-space-sm) var(--v2-space-md);
-    font-size: var(--v2-font-size-sm);
-    font-family: var(--v2-font-family-mono, monospace);
+.device-form-section {
+    margin-bottom: var(--v2-space-xl);
+    padding: var(--v2-space-lg);
     border: 1px solid var(--v2-border-default);
     border-radius: var(--v2-radius-md);
-    background: var(--v2-surface-0);
-    color: var(--v2-text-primary);
-    resize: vertical;
+    background: var(--v2-surface-base);
 }
 
-/* =====================
- * ANIMATIONS
- * ===================== */
-@keyframes v2-fade-in {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
+.device-form-section .section-header {
+    display: flex;
+    align-items: center;
+    gap: var(--v2-space-sm);
+    margin-bottom: var(--v2-space-md);
+    padding-bottom: var(--v2-space-sm);
+    border-bottom: 2px solid var(--v2-border-muted);
+}
+
+.device-form-section .section-title {
+    font-size: var(--v2-font-size-base);
+    font-weight: var(--v2-font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--v2-text-primary);
+}
+
+.device-form-section .icon {
+    font-size: 20px;
+    color: var(--v2-brand-blue);
+}
+
+/* Form Controls - Reuse forms.css classes wherever possible, 
+   but override inputs if specific structure demands it */
+.v2-form-row {
+    margin-bottom: var(--v2-space-md);
+}
+
+.v2-label {
+    display: block;
+    margin-bottom: var(--v2-space-sm);
+    font-size: var(--v2-font-size-xs);
+    font-weight: var(--v2-font-weight-semibold);
+    color: var(--v2-text-secondary);
+    text-transform: uppercase;
+}
+
+/* Rely on global forms.css for .v2-input, .v2-select. 
+   If elements use generic input/select tags, style them to match */
+
+.device-form-panel input[type="text"],
+.device-form-panel input[type="number"] {
+    display: block;
+    width: 100%;
+    padding: 10px 14px;
+    font-size: var(--v2-font-size-base);
+    color: var(--v2-text-primary);
+    background-color: var(--v2-surface-0);
+    border: 1px solid var(--v2-border-default);
+    border-radius: var(--v2-radius-md);
+    box-sizing: border-box;
+}
+
+.device-form-panel input:focus {
+    outline: none;
+    border-color: var(--v2-brand-blue);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--v2-brand-blue) 15%, transparent);
+}
+
+/* Action Buttons */
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--v2-space-md);
+    margin-top: var(--v2-space-xl);
+    padding-top: var(--v2-space-md);
+    border-top: 1px solid var(--v2-border-default);
+}
+
+/* Removed local .v2-btn definitions to use buttons.css */
+
+/* Responsive Button Group */
+@media (max-width: 600px) {
+    .button-group {
+        flex-direction: column-reverse;
     }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    .v2-btn {
+        width: 100%;
+        justify-content: center;
     }
 }

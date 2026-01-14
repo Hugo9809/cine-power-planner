@@ -145,6 +145,35 @@ function _t(path, params = {}) {
  * Refresh the project data cache
  */
 function refreshProjectDataCache() {
+  // [Fix] Try to load from centralized cineStorage cache first (supports IndexedDB/Migration)
+  if (global.cineStorage && typeof global.cineStorage.getProjectMemoryCache === 'function') {
+    try {
+      const cache = global.cineStorage.getProjectMemoryCache();
+      if (cache) {
+        _cachedProjectData = {};
+        Object.keys(cache).forEach(key => {
+          let name = key;
+          // Handle sharded keys like user_uuid_cameraPowerPlanner_prj_TestProject
+          if (key.includes('cameraPowerPlanner_prj_')) {
+            const parts = key.split('cameraPowerPlanner_prj_');
+            if (parts.length > 1 && parts[1]) {
+              name = parts[1];
+            }
+          }
+          // Handle monolith if expanded (unlikely in memory cache but possible?)
+          // Memory cache keys are storage keys. 
+
+          // Map to simple name for this view
+          _cachedProjectData[name] = cache[key];
+        });
+        console.log('[ProjectDetail] Cache refreshed from cineStorage. Keys:', Object.keys(_cachedProjectData).length);
+        return;
+      }
+    } catch (e) {
+      console.warn('[ProjectDetail] Failed to read from cineStorage cache:', e);
+    }
+  }
+
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {

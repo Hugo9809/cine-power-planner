@@ -34,6 +34,7 @@ const PROJECT_ICONS = [
 // =====================
 // STATE
 // =====================
+let isInitialized = false;
 // let colorIndex = 0;
 let currentFilter = {
     query: '',
@@ -774,7 +775,7 @@ function closeContextMenu() {
 function bindEmptyStateEvents(container) {
     const createBtn = container.querySelector('#v2EmptyStateCreateBtn');
     if (createBtn) {
-        createBtn.addEventListener('click', showCreateProjectDialog);
+        createBtn.addEventListener('click', () => showCreateProjectDialog());
     }
 }
 
@@ -1313,7 +1314,7 @@ function showCreateProjectDialog(existingProject = null) {
         setTimeout(() => backdrop.remove(), 200);
     }
 
-    function handleCreate() {
+    async function handleCreate() {
         const projectName = input.value.trim();
 
         if (!projectName) {
@@ -1344,7 +1345,9 @@ function showCreateProjectDialog(existingProject = null) {
             }
         }
 
-        closeModal();
+        // Show loading state
+        createBtn.disabled = true;
+        createBtn.textContent = isEditing ? 'Saving...' : 'Creating...';
 
         // Collect period data into V1 structures
         const formatPeriod = (period) => {
@@ -1401,7 +1404,7 @@ function showCreateProjectDialog(existingProject = null) {
 
                             renderProjectGrid();
 
-                            // If the user has the legacy shim, we might need to notify it
+                            // If the user has the legacy shim, we might need to refresh it
                             if (global.cineLegacyShim && typeof global.cineLegacyShim.refreshProjects === 'function') {
                                 global.cineLegacyShim.refreshProjects();
                             }
@@ -1415,9 +1418,12 @@ function showCreateProjectDialog(existingProject = null) {
                 updateProjectMetadata(projectName, metadata);
                 renderProjectGrid(); // Refresh grid
             }
+            closeModal();
         } else {
             // CREATE New
-            createProject(projectName, metadata);
+            // Wait for creation to complete (it handles navigation)
+            await createProject(projectName, metadata);
+            closeModal();
         }
     }
 
@@ -1447,40 +1453,55 @@ function showCreateProjectDialog(existingProject = null) {
 /**
  * Create a new project
  */
-function createProject(projectName, metadata = {}) {
+async function createProject(projectName, metadata = {}) {
     if (global.cineLegacyShim) {
-        global.cineLegacyShim.createProject(projectName);
+        // Return a promise that resolves when the project is saved
+        return new Promise((resolve, reject) => {
+            global.cineLegacyShim.createProject(projectName);
 
-        // Wait for the project to be saved before updating metadata
-        // The legacy save is async (triggered via button click), so we poll
-        const waitForProjectAndUpdateMetadata = (attempts = 0) => {
-            const maxAttempts = 20; // ~2 seconds max
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) {
-                try {
-                    const data = JSON.parse(stored);
-                    if (data && data[projectName]) {
-                        updateProjectMetadata(projectName, metadata);
-                        return;
-                    }
-                } catch (_e) { void _e; }
-            }
-            if (attempts < maxAttempts) {
-                setTimeout(() => waitForProjectAndUpdateMetadata(attempts + 1), 100);
-            } else {
-                console.warn('[V2] Timed out waiting for project to be saved:', projectName);
-            }
-        };
-        waitForProjectAndUpdateMetadata();
+            // Wait for the project to be saved before updating metadata
+            // The legacy save is async (triggered via button click), so we poll
+            const waitForProjectAndUpdateMetadata = (attempts = 0) => {
+                const maxAttempts = 50; // ~5 seconds max (increased from 2s)
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    try {
+                        const data = JSON.parse(stored);
+                        if (data && data[projectName]) {
+                            updateProjectMetadata(projectName, metadata);
+                            // Navigate after successful save
+                            if (global.cineViewManager) {
+                                global.cineViewManager.showView('projectDetail', {
+                                    projectId: projectName,
+                                    tab: 'camera'
+                                });
+                            }
+                            resolve(true);
+                            return;
+                        }
+                    } catch (_e) { void _e; }
+                }
+                if (attempts < maxAttempts) {
+                    setTimeout(() => waitForProjectAndUpdateMetadata(attempts + 1), 100);
+                } else {
+                    console.warn('[V2] Timed out waiting for project to be saved:', projectName);
+                    // Try to navigate anyway? Or show error?
+                    // Let's resolve false
+                    resolve(false);
+                }
+            };
+            waitForProjectAndUpdateMetadata();
+        });
     }
 
-    // Navigate to the new project
+    // Fallback if no legacy shim (shouldn't happen in this app)
     if (global.cineViewManager) {
         global.cineViewManager.showView('projectDetail', {
             projectId: projectName,
             tab: 'camera'
         });
     }
+    return Promise.resolve(true);
 }
 
 /**
@@ -1549,6 +1570,12 @@ function createDashboardView() {
  * Initialize the project dashboard
  */
 function init() {
+    if (isInitialized) {
+        console.warn('[ProjectDashboard] Already initialized, skipping.');
+        return;
+    }
+    isInitialized = true;
+
     console.log('[ProjectDashboard] init() called');
 
     // Create dashboard view if it doesn't exist
@@ -1617,14 +1644,25 @@ if (typeof window !== 'undefined') {
 }
 
 // Auto-initialize when DOM is ready
+// BUT only if not already initialized by V2 Bootstrap
 if (typeof document !== 'undefined') {
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             // Delay init to let other V2 modules load first
-            setTimeout(init, 200);
+            setTimeout(() => {
+                if (!isInitialized) {
+                    console.log('[ProjectDashboard] Auto-initializing (Fallback)');
+                    init();
+                }
+            }, 200);
         });
     } else {
-        setTimeout(init, 200);
+        setTimeout(() => {
+            if (!isInitialized) {
+                console.log('[ProjectDashboard] Auto-initializing (Fallback)');
+                init();
+            }
+        }, 200);
     }
 }
 

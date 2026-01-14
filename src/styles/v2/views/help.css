@@ -36,11 +36,26 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
-/* Ensure input takes available space */
+/* Ensure input takes available space and matches global style */
 .v2-help-search-container input {
     flex: 1;
-    padding-right: 30px;
+    padding: 10px 14px;
+    padding-right: 34px;
     /* Space for clear button */
+    font-size: var(--v2-font-size-base);
+    color: var(--v2-text-primary);
+    background-color: var(--v2-surface-input);
+    border: 1px solid var(--v2-border-default);
+    border-radius: var(--v2-radius-md);
+    transition: all 0.2s ease;
+    height: 40px;
+    /* Specific height for help search */
+}
+
+.v2-help-search-container input:focus {
+    outline: none;
+    border-color: var(--v2-brand-blue);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--v2-brand-blue) 15%, transparent);
 }
 
 .v2-help-search-clear {

@@ -16318,11 +16318,32 @@ function collectPreferenceSnapshot() {
   const mountVoltageKey = getMountVoltageStorageKeyName();
   const mountVoltages = readLocalStorageValue(mountVoltageKey);
   if (mountVoltages) {
-    try {
-      preferences.mountVoltages = JSON.parse(mountVoltages);
-    } catch (voltageParseError) {
-      console.warn('Failed to parse stored mount voltages for backup', voltageParseError);
-      preferences.mountVoltages = mountVoltages;
+    if (mountVoltages === '[object Object]' || String(mountVoltages).includes('[object Object]')) {
+      if (typeof DEFAULT_MOUNT_VOLTAGES !== 'undefined') {
+        preferences.mountVoltages = DEFAULT_MOUNT_VOLTAGES;
+      } else {
+        preferences.mountVoltages = {
+          'V-Mount': { high: 14.4, low: 12 },
+          'Gold-Mount': { high: 14.4, low: 12 },
+          'B-Mount': { high: 33.6, low: 21.6 }
+        };
+      }
+    } else {
+      try {
+        preferences.mountVoltages = JSON.parse(mountVoltages);
+      } catch (voltageParseError) {
+        console.warn('Failed to parse stored mount voltages for backup', voltageParseError);
+        // Fallback to defaults if parsing fails
+        if (typeof DEFAULT_MOUNT_VOLTAGES !== 'undefined') {
+          preferences.mountVoltages = DEFAULT_MOUNT_VOLTAGES;
+        } else {
+          preferences.mountVoltages = {
+            'V-Mount': { high: 14.4, low: 12 },
+            'Gold-Mount': { high: 14.4, low: 12 },
+            'B-Mount': { high: 33.6, low: 21.6 }
+          };
+        }
+      }
     }
   }
 
@@ -17976,6 +17997,14 @@ function importAllData(allData, options = {}) {
   }
 }
 
+
+/**
+ * Expose internal project cache for synchronous reads (LegacyShim support)
+ */
+function getProjectMemoryCache() {
+  return projectMemoryCache;
+}
+
 var STORAGE_API = {
   getSafeLocalStorage,
   loadDeviceData,
@@ -18047,6 +18076,7 @@ var STORAGE_API = {
   setActiveProjectCompressionHold,
   clearActiveProjectCompressionHold,
   invalidateProjectReadCache,
+  getProjectMemoryCache,
   storageRepo,
 };
 

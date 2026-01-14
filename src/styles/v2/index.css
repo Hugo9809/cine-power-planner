@@ -17,6 +17,16 @@
 /* =====================
  * LAYOUTS
  * ===================== */
+@import url('./components/buttons.css');
+@import url('./components/forms.css');
+@import url('./components/cards.css');
+@import url('./components/tabs.css');
+@import url('./components/tiles.css');
+@import url('./components/modals.css');
+
+/* =====================
+ * LAYOUTS & VIEWS
+ * ===================== */
 @import url('./layouts/shell.css');
 @import url('./layouts/sidebar.css');
 @import url('./layouts/views.css');
@@ -28,16 +38,6 @@
 @import url('./views/rules-view.css');
 @import url('./views/device-library.css');
 @import url('./views/help.css');
-
-/* =====================
- * COMPONENTS
- * ===================== */
-@import url('./components/buttons.css');
-@import url('./components/forms.css');
-@import url('./components/cards.css');
-@import url('./components/tabs.css');
-@import url('./components/tiles.css');
-@import url('./components/modals.css');
 
 /* =====================
  * THEMES

@@ -55,12 +55,27 @@
             (global.cineModuleBase && global.cineModuleBase.resolveLocalization && global.cineModuleBase.resolveLocalization());
 
         if (!localization || typeof localization.getString !== 'function') {
-            // Fallback to global getText if available
+            // Fallback 1: global.getText
             if (typeof global.getText === 'function') {
                 localization = {
                     getString: (key) => global.getText(key)
                 };
-            } else {
+            }
+            // Fallback 2: global.texts (Direct access)
+            else if (global.texts) {
+                // Helper to resolve dot notation
+                const resolveKey = (obj, path) => {
+                    return path.split('.').reduce((prev, curr) => prev && prev[curr], obj);
+                };
+
+                const lang = global.currentLang || 'en';
+                const texts = global.texts[lang] || global.texts.en;
+
+                localization = {
+                    getString: (key) => resolveKey(texts, key) || ''
+                };
+            }
+            else {
                 console.warn('[HelpService] Localization module not found. V1 topics unavailable.');
                 return [];
             }

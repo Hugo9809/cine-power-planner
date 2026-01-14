@@ -212,12 +212,14 @@ function dispatchNativeEvent(element, eventType, options = {}) {
  * Trigger a legacy button click
  */
 function triggerLegacyClick(elementId) {
+    console.log(`[LegacyShim] triggerLegacyClick called for: ${elementId}`);
     const element = document.getElementById(elementId);
     if (!element) {
         console.warn(`[LegacyShim] Cannot trigger click, element not found: ${elementId}`);
         return false;
     }
 
+    console.log(`[LegacyShim] Dispatching click event on: ${elementId}`);
     dispatchNativeEvent(element, 'click');
     return true;
 }
@@ -238,10 +240,21 @@ function loadProject(projectName) {
     }
 
     // Find the option with this value
-    const option = Array.from(setupSelect.options).find(opt => opt.value === projectName);
+    let option = Array.from(setupSelect.options).find(opt => opt.value === projectName);
+
+    // [V2 Fix] If option doesn't exist (race condition), create it
     if (!option) {
-        console.warn(`[LegacyShim] Project not found: ${projectName}`);
-        return false;
+        const availableProjects = getProjectNames();
+        if (availableProjects.includes(projectName)) {
+            console.log(`[LegacyShim] Creating missing option for project: ${projectName}`);
+            option = document.createElement('option');
+            option.value = projectName;
+            option.textContent = projectName; // Basic fallback, app-setups will rename if needed
+            setupSelect.appendChild(option);
+        } else {
+            console.warn(`[LegacyShim] Project not found in storage: ${projectName}`);
+            return false;
+        }
     }
 
     setupSelect.value = projectName;
@@ -269,6 +282,7 @@ function deleteProject() {
  * @param {string} projectName - The name for the new project
  */
 function createProject(projectName) {
+    console.log(`[LegacyShim] createProject called with name: "${projectName}"`);
     const setupSelect = document.getElementById('setupSelect');
     const setupNameInput = document.getElementById('setupName');
 
@@ -277,14 +291,17 @@ function createProject(projectName) {
         return false;
     }
 
+    console.log('[LegacyShim] Setting setupSelect.value to empty (New Project)');
     // Select "New Project" option (empty value)
     setupSelect.value = '';
     dispatchNativeEvent(setupSelect, 'change');
 
+    console.log(`[LegacyShim] Setting setupNameInput.value to: "${projectName}"`);
     // Set the project name
     setupNameInput.value = projectName;
     dispatchNativeEvent(setupNameInput, 'input');
 
+    console.log('[LegacyShim] Calling saveProject()');
     // Save the project
     return saveProject();
 }
@@ -294,6 +311,40 @@ function createProject(projectName) {
  * Uses a fallback chain to ensure data availability even during initialization
  */
 function getProjectNames() {
+    // Priority 0: Use global cineStorage cache (New Architecture)
+    if (global.cineStorage && typeof global.cineStorage.getProjectMemoryCache === 'function') {
+        try {
+            const cache = global.cineStorage.getProjectMemoryCache();
+            if (cache) {
+                const names = [];
+                Object.keys(cache).forEach(key => {
+                    // Check for sharded projects (user_..._cameraPowerPlanner_prj_NAME)
+                    if (key.includes('cameraPowerPlanner_prj_')) {
+                        const parts = key.split('cameraPowerPlanner_prj_');
+                        if (parts.length > 1 && parts[1]) {
+                            names.push(parts[1]);
+                        }
+                    }
+                    // Check for monolith (cameraPowerPlanner_setups)
+                    // Note: The cache might contain the monolith object itself as a value for that key
+                    // But LegacyShim expects Names.
+                    // If the cache key is 'cameraPowerPlanner_setups' (or scoped), the value is the object of setups.
+                    if (key.includes('cameraPowerPlanner_setups') && !key.includes('backup')) {
+                        const setups = cache[key];
+                        if (setups && typeof setups === 'object') {
+                            Object.keys(setups).forEach(k => {
+                                if (k && !k.startsWith('auto-backup-')) names.push(k);
+                            });
+                        }
+                    }
+                });
+                if (names.length > 0) return [...new Set(names)];
+            }
+        } catch (e) {
+            console.warn('[LegacyShim] cineStorage cache check failed:', e);
+        }
+    }
+
     // Priority 1: Use getSetups() if available (most authoritative source)
     if (typeof window.getSetups === 'function') {
         try {

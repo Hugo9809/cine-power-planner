@@ -35,12 +35,12 @@
   <link rel="apple-touch-icon" href="/assets/app-icon-C1js1k8i.png" />
   <link rel="manifest" href="/assets/manifest-DW5nU4oi.webmanifest">
 
-  <script type="module" crossorigin src="/assets/main-C8GHSTtM.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/vendor-Dzz8Pluk.js">
-  <link rel="modulepreload" crossorigin href="/assets/core-modules-CvxJ6PMl.js">
-  <link rel="modulepreload" crossorigin href="/assets/data-B26rSgVw.js">
-  <link rel="modulepreload" crossorigin href="/assets/v2-ui-BwEyNXHr.js">
-  <link rel="stylesheet" crossorigin href="/assets/main-BSN_IgTq.css">
+  <script type="module" crossorigin src="/assets/main-DtfiKPkC.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/vendor-DzOFLsIx.js">
+  <link rel="modulepreload" crossorigin href="/assets/core-modules-C8doLRdR.js">
+  <link rel="modulepreload" crossorigin href="/assets/v2-ui-C6XBHnXN.js">
+  <link rel="modulepreload" crossorigin href="/assets/data-So-wGb1N.js">
+  <link rel="stylesheet" crossorigin href="/assets/main-BqnCKykC.css">
 </head>
 
 <body>
@@ -6547,6 +6547,20 @@
       </footer>
     </form>
   </dialog>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
+  </script>
+  <!-- Main Vite Entry Point -->
 </body>
 
 </html>

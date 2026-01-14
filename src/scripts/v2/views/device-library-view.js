@@ -25,7 +25,6 @@
     // =====================
     let isInitialized = false;
     let isReparented = false;
-    let activeTab = 'add'; // 'add' or 'browse'
 
     // =====================
     // HELPER: Translations
@@ -58,39 +57,20 @@
         header.innerHTML = `
             <div class="header-content">
                 <h1>${_t('deviceLibraryTitle') || 'Device Library'}</h1>
-                <p class="header-subtitle">${_t('deviceLibrarySubtitle') || 'Add, edit, and manage devices in your local database'}</p>
+                <p class="header-subtitle">${_t('deviceLibrarySubtitle') || 'Database Management'} / ${_t('v2ui.revision') || 'REV.01'}</p>
             </div>
             <div class="view-header-actions">
-                <button class="v2-btn v2-btn-secondary" id="v2-export-db-btn">
+                <button class="v2-btn" id="v2-export-db-btn">
                     <span class="icon">download</span>
                     <span>Export</span>
                 </button>
-                <button class="v2-btn v2-btn-secondary" id="v2-import-db-btn">
+                <button class="v2-btn" id="v2-import-db-btn">
                     <span class="icon">upload</span>
                     <span>Import</span>
                 </button>
             </div>
         `;
         return header;
-    }
-
-    /**
-     * Create tabbed navigation
-     */
-    function createTabNav() {
-        const tabNav = document.createElement('div');
-        tabNav.className = 'device-library-tabs';
-        tabNav.innerHTML = `
-            <button class="device-library-tab active" data-tab="add">
-                <span class="icon">add_circle</span>
-                <span>${_t('tabAddDevice') || 'Add Device'}</span>
-            </button>
-            <button class="device-library-tab" data-tab="browse">
-                <span class="icon">list</span>
-                <span>${_t('tabBrowseLibrary') || 'Browse Library'}</span>
-            </button>
-        `;
-        return tabNav;
     }
 
     /**
@@ -114,148 +94,63 @@
             return;
         }
 
-        // Clear existing content
-        v2Container.innerHTML = '';
+        // --- HIERARCHY PRESERVATION FIX ---
+        // Instead of taking children OUT of #device-manager, we move #device-manager ITSELF
+        // into our view. This preserves event delegation on #device-manager.
 
-        // Add View Header
+        // 1. Create a placeholder to know where to put it back later
+        const placeholder = document.createElement('div');
+        placeholder.id = 'device-manager-placeholder';
+        placeholder.style.display = 'none';
+        legacyContainer.parentNode.insertBefore(placeholder, legacyContainer);
+
+        // 2. Clear V2 container and add header
+        v2Container.innerHTML = '';
         v2Container.appendChild(createViewHeader());
 
-        // Add Tab Navigation
-        v2Container.appendChild(createTabNav());
+        // 3. Move #device-manager into V2 container
+        v2Container.appendChild(legacyContainer);
 
-        // Create view content area
-        const viewContent = document.createElement('div');
-        viewContent.className = 'view-content';
+        // BUG FIX: Remove 'hidden' class from legacy container so it becomes visible
+        // The legacy #device-manager starts hidden; we must show it in V2 context.
+        legacyContainer.classList.remove('hidden');
 
-        // ========================================
-        // TAB 1: ADD DEVICE SECTION
-        // ========================================
-        const addDeviceSection = document.createElement('div');
-        addDeviceSection.id = 'device-library-add-tab';
-        addDeviceSection.className = 'device-library-tab-content active';
+        // legacyContainer.classList.add('device-library-layout'); // REMOVED: Restore V1 (no grid)
 
-        const addDeviceCard = document.createElement('div');
-        addDeviceCard.className = 'v2-card v2-device-library-card';
+        // 4. Organize children - SKIP PANEL CREATION FOR V1 LAYOUT RESTORATION
+        // We just want to apply V2 styles to the existing structure, not change the layout.
 
-        const cardHeader = document.createElement('div');
-        cardHeader.className = 'v2-card-header';
-        cardHeader.innerHTML = `
-            <div>
-                <h3 class="v2-card-title">
-                    <span class="icon section-icon">add_box</span>
-                    ${_t('addNewDeviceTitle') || 'Add New Device'}
-                </h3>
-                <p class="v2-card-subtitle">${_t('addDeviceSubtitle') || 'Create a custom device entry for your database'}</p>
-            </div>
-        `;
-
-        const cardBody = document.createElement('div');
-        cardBody.className = 'v2-card-body';
-
-        // Move the button-group (add device form) into card body
-        const buttonGroup = legacyContainer.querySelector('.button-group');
-        if (buttonGroup) {
-            // Remove old headings
-            const oldH3 = buttonGroup.querySelector('#addDeviceHeading');
-            if (oldH3) oldH3.remove();
-
-            // Enhance fieldset sections
-            enhanceFormSections(buttonGroup);
-
-            cardBody.appendChild(buttonGroup);
-        }
-
-        addDeviceCard.appendChild(cardHeader);
-        addDeviceCard.appendChild(cardBody);
-        addDeviceSection.appendChild(addDeviceCard);
-
-        // ========================================
-        // TAB 2: BROWSE LIBRARY SECTION
-        // ========================================
-        const browseSection = document.createElement('div');
-        browseSection.id = 'device-library-browse-tab';
-        browseSection.className = 'device-library-tab-content';
-
-        const browseCard = document.createElement('div');
-        browseCard.className = 'v2-card v2-device-library-card';
-
-        const browseHeader = document.createElement('div');
-        browseHeader.className = 'v2-card-header browse-header';
-        browseHeader.innerHTML = `
-            <div>
-                <h3 class="v2-card-title">
-                    <span class="icon section-icon">inventory_2</span>
-                    ${_t('existingDevicesTitle') || 'Existing Devices'}
-                </h3>
-                <p class="v2-card-subtitle">${_t('existingDevicesSubtitle') || 'Browse and manage devices in your library'}</p>
-            </div>
-        `;
-
-        const browseBody = document.createElement('div');
-        browseBody.className = 'v2-card-body';
-
-        // Move the search and device list into browse section
-        const searchContainer = legacyContainer.querySelector('.device-library-search');
-        const deviceListContainer = legacyContainer.querySelector('#deviceListContainer');
-        const existingHeading = legacyContainer.querySelector('#existingDevicesHeading');
-
-        if (existingHeading) existingHeading.remove();
-
-        if (searchContainer) {
-            // Apply V2 styles to search
-            const searchInput = searchContainer.querySelector('input');
-            if (searchInput) {
-                searchInput.classList.add('v2-input');
+        const children = Array.from(legacyContainer.children);
+        children.forEach(child => {
+            if (child.classList.contains('device-library-search')) {
+                const searchInput = child.querySelector('input');
+                if (searchInput) {
+                    searchInput.classList.add('v2-input');
+                    searchInput.placeholder = _t('searchPlaceholder') || 'Search database...';
+                    // searchInput.style.marginBottom = '20px'; // Add some spacing if needed
+                }
             }
-            browseBody.appendChild(searchContainer);
-        }
-
-        if (deviceListContainer) {
-            deviceListContainer.classList.add('v2-device-list');
-            browseBody.appendChild(deviceListContainer);
-        }
-
-        browseCard.appendChild(browseHeader);
-        browseCard.appendChild(browseBody);
-        browseSection.appendChild(browseCard);
-
-        // Move remaining legacy children (export output, etc)
-        while (legacyContainer.firstChild) {
-            if (legacyContainer.firstChild.id === 'deviceManagerHeading') {
-                legacyContainer.removeChild(legacyContainer.firstChild);
-                continue;
+            else if (child.classList.contains('button-group')) {
+                // Keep strictly V1 UI, no extra icons or panel styling.
+                // Just let it flow.
             }
-            // Skip if already moved
-            if (legacyContainer.firstChild.classList &&
-                (legacyContainer.firstChild.classList.contains('button-group') ||
-                    legacyContainer.firstChild.classList.contains('device-library-search'))) {
-                legacyContainer.removeChild(legacyContainer.firstChild);
-                continue;
+            // headings etc: let's keep them or hide them? 
+            // If we use CreateViewHeader, we might have double headings.
+            else if (child.id === 'deviceManagerHeading') {
+                child.style.display = 'none'; // Hide legacy main heading
             }
-            if (legacyContainer.firstChild.id === 'deviceListContainer') {
-                legacyContainer.removeChild(legacyContainer.firstChild);
-                continue;
-            }
-            // Move other elements to add section
-            addDeviceSection.appendChild(legacyContainer.firstChild);
-        }
+        });
 
-        viewContent.appendChild(addDeviceSection);
-        viewContent.appendChild(browseSection);
-        v2Container.appendChild(viewContent);
+        // 5. Append organized panels - SKIPPED
 
-        // Apply V2 Classes to Legacy Elements
-        applyV2Styles(addDeviceCard);
-        applyV2Styles(browseCard);
-
-        // Attach tab navigation listeners
-        attachTabListeners();
+        // Apply V2 Classes
+        applyV2Styles(legacyContainer);
 
         // Attach export/import button handlers
         attachActionListeners();
 
         isReparented = true;
-        console.log('[DeviceLibraryView] Reparenting complete.');
+        console.log('[DeviceLibraryView] Reparenting complete (Hierarchy Preserved).');
     }
 
     /**
@@ -348,32 +243,6 @@
     }
 
     /**
-     * Attach tab navigation event listeners
-     */
-    function attachTabListeners() {
-        const tabs = document.querySelectorAll('.device-library-tab');
-        const contents = document.querySelectorAll('.device-library-tab-content');
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const targetTab = tab.dataset.tab;
-                activeTab = targetTab;
-
-                // Update tab states
-                tabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-
-                // Update content visibility
-                contents.forEach(c => c.classList.remove('active'));
-                const targetContent = document.getElementById(`device-library-${targetTab}-tab`);
-                if (targetContent) {
-                    targetContent.classList.add('active');
-                }
-            });
-        });
-    }
-
-    /**
      * Attach export/import button handlers
      */
     function attachActionListeners() {
@@ -402,21 +271,44 @@
         if (!isReparented) return;
 
         const v2Container = document.getElementById(CONTENT_CONTAINER_ID);
-        const legacyContainer = document.getElementById(LEGACY_CONTAINER_ID);
+        const legacyContainer = document.getElementById(LEGACY_CONTAINER_ID); // This is now inside v2Container
+        const placeholder = document.getElementById('device-manager-placeholder');
 
-        if (v2Container && legacyContainer) {
-            const cardBody = v2Container.querySelector('.v2-card-body');
+        if (legacyContainer) {
+            // 1. Move content out of panels back to legacyContainer root
+            const listContent = legacyContainer.querySelector('.device-list-panel .panel-content');
+            const formContent = legacyContainer.querySelector('.device-form-panel .panel-content');
 
-            if (cardBody) {
-                while (cardBody.firstChild) {
-                    legacyContainer.appendChild(cardBody.firstChild);
-                }
-            } else {
-                while (v2Container.firstChild) {
-                    legacyContainer.appendChild(v2Container.firstChild);
+            if (listContent) {
+                while (listContent.firstChild) {
+                    legacyContainer.appendChild(listContent.firstChild);
                 }
             }
 
+            if (formContent) {
+                while (formContent.firstChild) {
+                    legacyContainer.appendChild(formContent.firstChild);
+                }
+            }
+
+            // Remove panels
+            const panels = legacyContainer.querySelectorAll('.v2-panel');
+            panels.forEach(p => p.remove());
+
+            // Remove layout class
+            legacyContainer.classList.remove('device-library-layout');
+
+            // 2. Put #device-manager back to placeholder
+            if (placeholder && placeholder.parentNode) {
+                placeholder.parentNode.insertBefore(legacyContainer, placeholder);
+                placeholder.remove();
+            } else {
+                // Fallback: append to body (should ideally not happen if flow is correct)
+                document.body.appendChild(legacyContainer);
+            }
+        }
+
+        if (v2Container) {
             v2Container.innerHTML = '';
         }
 

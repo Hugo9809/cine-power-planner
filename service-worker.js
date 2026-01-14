@@ -15,7 +15,7 @@ const CONNECTIVITY_PROBE_QUERY_PARAM = '__cineReloadProbe__';
 const CONNECTIVITY_PROBE_RESULT_HEADER = 'x-cine-connectivity-probe-result';
 const CONNECTIVITY_PROBE_RESULT_NETWORK = 'network';
 const CONNECTIVITY_PROBE_RESULT_FALLBACK = 'fallback';
-const NETWORK_TIMEOUT_MS = 3000;
+const NETWORK_TIMEOUT_MS = 10000;
 const IS_NODE_ENVIRONMENT =
   typeof process !== 'undefined' &&
   process &&

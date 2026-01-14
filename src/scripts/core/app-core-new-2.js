@@ -6259,7 +6259,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (typeof Blob !== 'function' || !URL || typeof URL.createObjectURL !== 'function') {
           throw new Error('Blob or URL APIs unavailable');
         }
-        const blob = new Blob([json], { type: 'application/json' });
+        const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const anchor = document.createElement('a');
         anchor.href = url;
@@ -6371,7 +6371,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         };
 
         const json = JSON.stringify(payload, null, 2);
-        const blob = new Blob([json], { type: 'application/json' });
+        const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const anchor = document.createElement('a');
         anchor.href = url;
@@ -13241,7 +13241,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       applyAccentColor(prevAccentColor);
     };
 
+    let populateSearchTimer = null;
     function populateFeatureSearch() {
+      if (populateSearchTimer) clearTimeout(populateSearchTimer);
+      populateSearchTimer = setTimeout(populateFeatureSearchImmediate, 100);
+    }
+    function populateFeatureSearchImmediate() {
       if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'test') {
         console.log('DEBUG: populateFeatureSearch skipped in test environment');
         return;
@@ -19422,6 +19427,38 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     };
 
 
+
+    // [Added by Agent] Missing implementation for gear list selectors
+    function getGearListSelectors() {
+      const selectors = {};
+      const gearList = document.getElementById('gear-list');
+      if (!gearList) return selectors;
+
+      const selects = gearList.querySelectorAll('select');
+      selects.forEach(select => {
+        if (select.id) {
+          selectors[select.id] = select.value;
+        }
+      });
+      return selectors;
+    }
+
+    function applyGearListSelectors(selectors) {
+      if (!selectors || typeof selectors !== 'object') return;
+
+      Object.keys(selectors).forEach(id => {
+        const select = document.getElementById(id);
+        if (select) {
+          const val = selectors[id];
+          if (typeof setSelectValue === 'function') {
+            setSelectValue(select, val);
+          } else {
+            select.value = val;
+          }
+        }
+      });
+    }
+
     const ADDITIONAL_GLOBAL_EXPORT_ENTRIES = [
       ['setBatteryPlates', () => setBatteryPlatesLocal],
       ['getBatteryPlates', () => getBatteryPlates],
@@ -19594,6 +19631,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ['normaliseMarkVariants', () => normaliseMarkVariants],
       ['storeLoadedSetupState', () => storeLoadedSetupState],
     ];
+
 
     const resolvedAdditionalExports = ADDITIONAL_GLOBAL_EXPORT_ENTRIES.reduce(
       (acc, [exportName, getter]) => {

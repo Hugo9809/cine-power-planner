@@ -7600,7 +7600,7 @@ if (typeof document !== "undefined" && document) {
 }
 
 // Helper to apply translations to all UI text
-async function setLanguage(lang) {
+async function setLanguage(lang, options = {}) {
   const requested = typeof lang === "string" ? lang : "";
   const resolved = resolveLanguagePreference(requested);
   let normalizedLang = resolved.language;
@@ -9074,7 +9074,9 @@ async function setLanguage(lang) {
     window.refreshDeviceLists();
   }
   applyFilters();
-  updateCalculations();
+  if (!options?.skipUpdateCalculations) {
+    updateCalculations();
+  }
 
   const existingDevicesHeading =
     typeof document !== 'undefined'
@@ -21711,6 +21713,21 @@ if (typeof document !== 'undefined') {
 
 
 if (typeof window !== 'undefined') window.AppCore = AppCore;
+
+if (typeof window !== 'undefined') {
+  window.syncAutoGearRulesFromStorage = syncAutoGearRulesFromStorage;
+  window.clearProjectAutoGearRules = clearProjectAutoGearRules;
+  window.resetSharedImportStateForFactoryReset = resetSharedImportStateForFactoryReset;
+  window.getCssVariableValue = getCssVariableValue;
+  window.autoGearRuleMatchesScenario = autoGearRuleMatchesScenario;
+  window.autoGearRuleMatchesSearch = autoGearRuleMatchesSearch;
+  window.getAutoGearRules = getAutoGearRules;
+  window.refreshAutoGearScenarioFilterOptions = refreshAutoGearScenarioFilterOptions;
+  window.normalizeAutoGearCameraWeightCondition = normalizeAutoGearCameraWeightCondition;
+  window.formatAutoGearCameraWeight = formatAutoGearCameraWeight;
+  window.findAutoGearOwnGearById = findAutoGearOwnGearById;
+}
+
 console.log('DEBUG: app-core-new-1.js FINISHED');
 
 export {

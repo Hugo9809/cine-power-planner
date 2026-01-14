@@ -2097,6 +2097,7 @@ addSafeEventListener('skipLink', "click", () => {
 
 // Setup management
 function handleSaveSetupClickInternal(optionsOrEvent) {
+  console.log('[AppEvents] handleSaveSetupClickInternal called');
   const isSilent = optionsOrEvent && optionsOrEvent.silent === true;
   const langTexts = texts[currentLang] || {};
   const fallbackTexts = texts.en || {};
@@ -2109,6 +2110,7 @@ function handleSaveSetupClickInternal(optionsOrEvent) {
     }
   }
   const typedName = setupNameInput.value.trim();
+  console.log(`[AppEvents] Project name from setupNameInput: "${typedName}"`);
   if (!typedName) {
     if (!isSilent) {
       if (typeof window.cineShowAlertDialog === 'function') {
@@ -2178,7 +2180,9 @@ function handleSaveSetupClickInternal(optionsOrEvent) {
   }
 
   setups[finalName] = currentSetup;
+  console.log(`[AppEvents] Calling storeSetups with project: "${finalName}"`);
   storeSetups(setups);
+  console.log('[AppEvents] storeSetups completed');
 
   if (renamingExisting && storedProjectSnapshot && typeof saveProject === 'function') {
     didAttemptProjectPersist = true;
@@ -2675,7 +2679,7 @@ function finalizeSetupSelection(nextSetupName) {
 const setupSelectTarget = getSetupSelectElement();
 
 addSafeEventListener('setupSelect', "change", (event) => {
-  console.log('DEBUG: setupSelect change listener ENTERED');
+
   const setupName = event.target.value;
 
 
@@ -2726,9 +2730,8 @@ addSafeEventListener('setupSelect', "change", (event) => {
           ),
         },
       };
-      console.log('DEBUG: calling scheduleProjectAutoSave (immediate)');
+
       scheduleProjectAutoSave({ immediate: true, overrides });
-      console.log('DEBUG: scheduleProjectAutoSave returned');
       autoSaveFlushed = true;
 
     } catch (error) {
@@ -3766,7 +3769,7 @@ function autoBackup(options = {}) {
     populateSetupSelect();
     setupSelectElement.value = prevValue;
     if (setupNameInput) setupNameInput.value = prevName;
-    if (!suppressSuccess) {
+    if (!suppressSuccess && typeof showNotification === 'function') {
       showNotification('success', successMessage);
     }
     if (triggerAutoSaveNotification) {
@@ -3803,7 +3806,7 @@ function autoBackup(options = {}) {
     return backupName;
   } catch (e) {
     console.warn('Auto backup failed', e);
-    if (!suppressError) {
+    if (!suppressError && typeof showNotification === 'function') {
       showNotification('error', errorMessage);
     }
     const errorDetail = {
@@ -4227,7 +4230,7 @@ function scheduleAutoGearBackupTimer() {
   }
   autoGearBackupSchedulerTimer = setTimeout(() => {
     try {
-      if (autoGearRulesDirtySinceBackup) {
+      if (globalThis.autoGearRulesDirtySinceBackup) {
         createAutoGearBackup();
       }
     } catch (gearBackupError) {
@@ -6039,7 +6042,7 @@ addSafeEventListener('exportDataBtn', "click", () => {
     downloadBackupPayload(dataStr, generateExportFilename());
   } else {
     // Fallback if backup module not loaded (unlikely)
-    const blob = new Blob([dataStr], { type: "application/json" });
+    const blob = new Blob([dataStr], { type: "application/json;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;

@@ -156,6 +156,9 @@ export const data = {
     "tabAddDevice": "Add Device",
     "deviceLibrarySubtitle": "Add, edit, and manage devices in your local database",
     "deviceLibraryTitle": "Device Library",
+    "v2ui": {
+      "revision": "REV.02"
+    },
     "pinkModeLabel": "Toggle pink mode",
     "menuToggleLabel": "Menu",
     "menuToggleHelp": "Open the sidebar to jump between planner sections or reveal controls on smaller screens. Click again to close it.",

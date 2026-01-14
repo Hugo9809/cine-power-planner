@@ -61,7 +61,7 @@
     font-size: 28px;
     font-weight: 700;
     letter-spacing: -0.02em;
-    color: var(--sw-text-primary);
+    color: var(--sw-text-primary, #1a1a1a);
     margin: 0;
     line-height: 1.2;
 }
@@ -106,13 +106,13 @@
 }
 
 .swiss-btn-primary {
-    background-color: var(--sw-text-primary);
+    background: var(--sw-text-primary, #1a1a1a) !important;
     /* Stark Black */
-    color: #ffffff;
+    color: #ffffff !important;
 }
 
 .swiss-btn-primary:hover {
-    background-color: #000000;
+    background: #000000 !important;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
@@ -144,7 +144,7 @@
 
 .swiss-card:focus {
     outline: none;
-    border-color: var(--sw-accent);
+    border-color: var(--sw-accent, #0044cc);
     box-shadow: 0 0 0 3px rgba(0, 68, 204, 0.15);
 }
 

@@ -14693,16 +14693,16 @@ let isSavingGearList = false;
 
 function saveCurrentGearListImplementation() {
 
-  console.log('DEBUG: saveCurrentGearList ENTERED');
-  if (isSavingGearList) { console.log('DEBUG: saveCurrentGearList EXIT: recursion detected'); return; }
-  if (factoryResetInProgress) { console.log('DEBUG: saveCurrentGearList EXIT: factoryResetInProgress'); return; }
-  if (isProjectPersistenceSuspended()) { console.log('DEBUG: saveCurrentGearList EXIT: isProjectPersistenceSuspended'); return; }
-  if (typeof restoringSession !== 'undefined' && restoringSession) { console.log('DEBUG: saveCurrentGearList EXIT: restoringSession'); return; }
+
+  if (isSavingGearList) { return; }
+  if (factoryResetInProgress) { return; }
+  if (isProjectPersistenceSuspended()) { return; }
+  if (typeof restoringSession !== 'undefined' && restoringSession) { return; }
 
   isSavingGearList = true;
   try {
 
-    console.log('DEBUG: saveCurrentGearList: collecting form data...');
+
     const html = gearListGetCurrentHtmlImpl({ forPersistence: true });
     const normalizedHtml = typeof html === 'string' ? html.trim() : '';
     const gearListGenerated = Boolean(normalizedHtml);
@@ -14789,7 +14789,7 @@ function saveCurrentGearListImplementation() {
       ? (selectedStorageKey || projectStorageKey)
       : projectStorageKey;
 
-    console.log('DEBUG: saveCurrentGearList: effectiveStorageKey:', effectiveStorageKey);
+
 
     const shouldDelayCollisionResolution = Boolean(
       typedNameHasTrailingWhitespace
@@ -15011,7 +15011,7 @@ function saveCurrentGearListImplementation() {
         storeSetups(setups);
       }
     }
-    console.log('DEBUG: saveCurrentGearList EXIT: Success');
+
     return changed;
   } finally {
     isSavingGearList = false;
@@ -16180,4 +16180,4 @@ window.bindGearListEyeLeatherListener = bindGearListEyeLeatherListener;
 window.bindGearListProGaffTapeListener = bindGearListProGaffTapeListener;
 window.bindGearListDirectorMonitorListener = bindGearListDirectorMonitorListener;
 
-export { ensureZoomRemoteSetup, saveCurrentGearList, generateConnectorSummary };
+export { ensureZoomRemoteSetup, saveCurrentGearList, generateConnectorSummary, downloadSharedProject };

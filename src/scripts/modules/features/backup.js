@@ -2565,7 +2565,7 @@ function downloadBackupPayload(payload, fileName, options = {}) {
   let blob = null;
   if (typeof Blob !== 'undefined') {
     try {
-      blob = new Blob([payload], { type: 'application/json' });
+      blob = new Blob([payload], { type: 'application/json;charset=utf-8' });
     } catch (blobError) {
       console.warn('Failed to create backup blob', blobError);
       blob = null;
