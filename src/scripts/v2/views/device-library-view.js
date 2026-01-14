@@ -245,22 +245,32 @@
     /**
      * Attach export/import button handlers
      */
+    function handleExportClick() {
+        const legacyExportBtn = document.getElementById('exportDataBtn');
+        if (legacyExportBtn) {
+            legacyExportBtn.click();
+        }
+    }
+
+    function handleImportClick() {
+        const legacyImportBtn = document.getElementById('importDataBtn');
+        if (legacyImportBtn) {
+            legacyImportBtn.click();
+        }
+    }
+
     function attachActionListeners() {
         const exportBtn = document.getElementById('v2-export-db-btn');
         const importBtn = document.getElementById('v2-import-db-btn');
-        const legacyExportBtn = document.getElementById('exportDataBtn');
-        const legacyImportBtn = document.getElementById('importDataBtn');
 
-        if (exportBtn && legacyExportBtn) {
-            exportBtn.addEventListener('click', () => {
-                legacyExportBtn.click();
-            });
+        if (exportBtn) {
+            exportBtn.removeEventListener('click', handleExportClick);
+            exportBtn.addEventListener('click', handleExportClick);
         }
 
-        if (importBtn && legacyImportBtn) {
-            importBtn.addEventListener('click', () => {
-                legacyImportBtn.click();
-            });
+        if (importBtn) {
+            importBtn.removeEventListener('click', handleImportClick);
+            importBtn.addEventListener('click', handleImportClick);
         }
     }
 
