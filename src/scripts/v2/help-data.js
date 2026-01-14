@@ -62,6 +62,30 @@
             `
         },
         {
+            id: 'v2-sidebar-search',
+            title: 'Sidebar Search',
+            keywords: 'search sidebar features devices actions help keyboard offline',
+            icon: '🔎',
+            content: `
+                <p>The sidebar search now runs fully offline and blends features, devices, actions, and help topics into one fast list.</p>
+
+                <h4>What It Covers</h4>
+                <ul>
+                    <li><strong>Features:</strong> Jump straight to inputs, sections, and dialogs.</li>
+                    <li><strong>Devices:</strong> Search the local device catalog and open the matching entry.</li>
+                    <li><strong>Actions:</strong> Trigger quick commands like Save, Export, or Settings.</li>
+                    <li><strong>Help:</strong> Open the most relevant help topic without leaving the planner.</li>
+                </ul>
+
+                <h4>Keyboard Navigation</h4>
+                <ul>
+                    <li><strong>Arrow keys:</strong> Move through suggestions.</li>
+                    <li><strong>Enter:</strong> Activate the highlighted result.</li>
+                    <li><strong>Esc:</strong> Clear the query and close the list.</li>
+                </ul>
+            `
+        },
+        {
             id: 'v2-device-library',
             title: 'Device Library',
             keywords: 'devices library equipment custom gear add edit database',

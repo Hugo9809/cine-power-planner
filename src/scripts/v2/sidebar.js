@@ -5,6 +5,8 @@
  * and theme toggles (bridging to legacy app).
  */
 
+import { setupV2Search } from './search-module.js';
+
 // Polyfill global for legacy code
 const global = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : {};
 
@@ -82,7 +84,10 @@ function initSidebar() {
 
     // C. Search
     injectSearchInput(sidebar);
-    setupLegacySearchProxy(); // STRICT V1 Proxy
+    const didSetupV2Search = setupV2Search({ inputId: SEARCH_INPUT_ID });
+    if (!didSetupV2Search) {
+        setupLegacySearchProxy(); // STRICT V1 Proxy
+    }
 
     // 3. Initialize Logic
     initThemes();
@@ -244,7 +249,7 @@ function injectSearchInput(container) {
                 <svg class="v2-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                <input type="text" id="${SEARCH_INPUT_ID}" class="v2-search-input" placeholder="${_t('v2.sidebar.search.placeholder')}" aria-label="Search features">
+                <input type="text" id="${SEARCH_INPUT_ID}" class="v2-search-input" placeholder="${_t('v2.sidebar.search.placeholder')}" aria-label="${_t('v2.sidebar.search.label')}">
             </div>
         `;
 
@@ -547,6 +552,7 @@ function updateSidebarTranslations(lang) {
     const searchInput = document.getElementById(SEARCH_INPUT_ID);
     if (searchInput) {
         searchInput.placeholder = _t('v2.sidebar.search.placeholder', {}, lang);
+        searchInput.setAttribute('aria-label', _t('v2.sidebar.search.label', {}, lang));
     }
 }
 
@@ -673,4 +679,3 @@ if (typeof global !== 'undefined') {
 if (typeof window !== 'undefined') {
     window.cineV2Sidebar = V2Sidebar;
 }
-
