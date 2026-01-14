@@ -5,6 +5,21 @@ autosave, share, import, backup and restore workflows. Use it alongside the
 [Operations Checklist](../ops/operations-checklist.md) when training crews or auditing
 workstations.
 
+## Quick safety checklist (run before any handoff)
+
+1. **Manual save now.** Trigger a manual save so the latest work is committed
+   before any export, share or restore step.
+2. **Confirm autosave evidence.** Open **Settings → Data & Storage → Latest activity**
+   and verify the autosave ledger includes the most recent manual save,
+   autosave, and guardian result entries.
+3. **Export redundantly.** Produce both a planner backup and the relevant
+   project bundle. Store each on two offline media locations.
+4. **Rehearse restore in the sandbox.** Import into **Restore rehearsal** on a
+   secondary profile or machine, review the compatibility summary, then
+   promote only after the sandbox matches the source.
+5. **Archive evidence.** Capture screenshots and logs listed in the lifecycle
+   guide so every handoff is reproducible and auditable.
+
 ## Save & autosave
 
 - **Manual save trigger:** Press **Save**, **Enter** on focused inputs once
@@ -27,6 +42,20 @@ workstations.
   manually entered latency values even when crews toggle **Wireless TX** off.
   Clearing the latency field is the explicit action that removes the stored
   number, preventing accidental data loss during wireless configuration audits.
+  If you need to discard a value, clear the field explicitly and run a manual
+  save to persist the change.
+
+### Manual save verification drill
+
+Use this drill at the beginning of every session, especially when the
+workstation will operate offline:
+
+1. Make a small change to the current project, then run a manual save.
+2. Open the project selector and confirm the new timestamp appears.
+3. Open **Settings → Data & Storage → Latest activity** and confirm the
+   **Manual save** entry matches the timestamp you just created.
+4. Keep the selector open while you go offline; the entry should remain visible
+   and the project should stay selectable without a network connection.
 
 ### Backup guardian row
 
@@ -96,6 +125,17 @@ workstations.
   entry to the backup record so auditors can confirm the mirrored keys existed
   before the export.
 
+### Backup vault export workflow (offline safe)
+
+1. Open **Settings → Backup & Restore** and locate the **Backup vault** banner
+   or link.
+2. Export queued backups one by one, verifying each file name matches the
+   timestamp listed in the vault entry.
+3. Immediately copy each file to a second offline location before clearing the
+   vault entry.
+4. If the banner warns about fallback storage, export and copy the queued files
+   before continuing any planning work.
+
 ## File Formats & Integrity Checks
 
 ### Planner backup and project bundle naming conventions
@@ -159,6 +199,9 @@ workstations.
 
 ## Share & import
 
+- **Before you share:** Complete a manual save, export both the project bundle
+  and a planner backup, and verify the autosave ledger shows the save and guard
+  events that match your export timestamp.
 - **Project export:** From the selector or **Command Palette**, choose **Export Project**. The bundle
   includes project data, crew contacts (with phone, email, website, notes and
   avatars), referenced custom devices, runtime estimates and (if selected)
@@ -176,7 +219,8 @@ workstations.
 - **Share workflow:** Copy the bundle to the receiving workstation via physical
   media. No network transfer is required.
 - **Import path:** Use **Settings → Backup & Restore → Restore rehearsal** to
-  load bundles into the sandbox before promoting.
+  load bundles into the sandbox before promoting. Keep the original files
+  untouched so you can roll back if the rehearsal reveals mismatches.
 - **Diff review:** The restore sandbox displays differences; capture screenshots
   and attach them to the verification log.
 - **Device database imports:** Every import attempt now emits telemetry through
@@ -222,6 +266,14 @@ workstations.
 | Restore mismatch | Compare schema using `modules/helpers/schema/`; update docs and contact engineering before retrying. |
 | Service worker stale | Run cache reset via the toolbar’s 🔄 **Force reload** button (also linked from the help dialog), reload offline and repeat restore. |
 | Critical storage guard uncertainty | Confirm the latest guard run succeeded: review the structured `storage` logger (mirrored to the console as `Critical storage guard mirrored backup copies`) and **Settings → Data & Storage → Backup guardian** for a green "Mirrored" status with the same timestamp. Capture the `getLastCriticalStorageGuardResult()` output and autosave ledger entry for the verification packet. If errors appear, halt promotions, re-run the guard from the guardian row, collect error stack traces, and escalate to engineering with the captured evidence. |
+
+## Evidence bundle checklist (minimum packet)
+
+- Planner backup and project bundle files (two offline locations each)
+- Autosave ledger screenshot that matches the export timestamp
+- Backup guardian status capture with the guard result string
+- Restore rehearsal compatibility summary screenshot
+- Verification log entries noting operator, device, and media location
 
 ## Documentation alignment
 
