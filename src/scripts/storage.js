@@ -13233,7 +13233,9 @@ function maybeCreateProjectOverwriteBackup(projects, key) {
  * @param {object} [options] - Save options (e.g. skipOverwriteBackup, skipCompression).
  */
 function saveProject(name, project, options = {}) {
-  if (!isPlainObject(project)) return;
+  if (!isPlainObject(project)) {
+    return Promise.resolve({ success: false, error: 'INVALID_PROJECT' });
+  }
 
   const normalized = normalizeProject(project);
   if (!normalized) {
@@ -13242,7 +13244,7 @@ function saveProject(name, project, options = {}) {
         `Skipped saving project "${name || ''}" because the payload could not be normalised.`,
       );
     }
-    return;
+    return Promise.resolve({ success: false, error: 'NORMALIZATION_FAILED' });
   }
   const skipOverwriteBackup = Boolean(options && options.skipOverwriteBackup);
   const skipCompression = Boolean(options && options.skipCompression);
@@ -13383,8 +13385,12 @@ function saveProject(name, project, options = {}) {
 
   // [Agent Refactor] Dual-Write to StorageRepository & Memory Cache
   // This ensures the new DB is always current.
+  let repoSavePromise = Promise.resolve({ success: true, skipped: true });
   if (storageRepo) {
-    storageRepo.saveProject(finalKey, normalized).catch(err => console.warn('[saveProject] Repo write failed', err));
+    repoSavePromise = storageRepo.saveProject(finalKey, normalized).catch((err) => {
+      console.warn('[saveProject] Repo write failed', err);
+      return { success: false, error: err };
+    });
   }
   if (isProjectCacheHydrated) {
     projectMemoryCache[finalKey] = normalized;
@@ -13421,6 +13427,11 @@ function saveProject(name, project, options = {}) {
     // Fallback for extreme cases (storage issues), though persistAllProjects would likely fail too.
     persistAllProjects(projects, { skipCompression });
   }
+
+  return repoSavePromise.then((result) => ({
+    ...(result && typeof result === 'object' ? result : { success: Boolean(result) }),
+    localSaveSuccess: shardSuccess,
+  }));
 }
 
 function deleteProject(name) {
@@ -13559,13 +13570,13 @@ function deleteProject(name) {
   if (lifecycleChannel) { try { lifecycleChannel.postMessage('project-shards-changed'); } catch (e) { void e; } }
 }
 
-function renameProject(oldName, newName) {
+async function renameProject(oldName, newName) {
   if (!oldName || !newName) return null;
   // Use read logic to get current state (memory or storage)
-  const { projects } = readAllProjectsFromStorage({ forMutation: true });
+  const { projects, lookup } = readAllProjectsFromStorage({ forMutation: true });
 
   // Resolve keys
-  const resolvedKey = resolveProjectKey(projects, null, oldName, { preferExact: true });
+  const resolvedKey = resolveProjectKey(projects, lookup, oldName, { preferExact: true });
   if (!resolvedKey || !projects[resolvedKey]) {
     return null;
   }
@@ -13576,22 +13587,66 @@ function renameProject(oldName, newName) {
   }
 
   const projectData = projects[resolvedKey];
-  projectData.name = targetName; // Update internal name
+  const backupOutcome = maybeCreateProjectDeletionBackup(projects, resolvedKey);
+  let canDeleteOldKey = backupOutcome.status === 'created';
 
-  // Update Memory Cache
-  if (isProjectCacheHydrated) {
-    delete projectMemoryCache[resolvedKey];
-    projectMemoryCache[targetName] = projectData;
+  if (backupOutcome.status === 'created') {
+    const backupEntry = projects[backupOutcome.backupName];
+    const backupSaveResult = await Promise.resolve(
+      saveProject(backupOutcome.backupName, backupEntry, { skipOverwriteBackup: true }),
+    );
+    if (!backupSaveResult || backupSaveResult.success === false) {
+      console.warn(
+        `Automatic backup before renaming project "${resolvedKey}" failed to persist. Retaining old project entry.`,
+      );
+      alertStorageError();
+      canDeleteOldKey = false;
+    }
   } else {
-    // Legacy fallback: modify local map passed from readAllProjects
-    delete projects[resolvedKey];
-    projects[targetName] = projectData;
+    if (backupOutcome.status === 'failed') {
+      console.warn(
+        `Automatic backup before renaming project "${resolvedKey}" failed. Retaining old project entry.`,
+      );
+      alertStorageError();
+    }
+    canDeleteOldKey = false;
   }
 
-  // Update Storage (Async)
-  storageRepo.removeItem(resolvedKey).catch(e => console.warn('Failed to delete old project key', e));
-  // We use the new saveProject which handles repo save + cache update redundancy
-  saveProject(targetName, projectData);
+  const renamedProject = cloneProjectEntryForBackup(projectData) || cloneProjectData(projectData);
+  if (renamedProject && typeof renamedProject === 'object') {
+    renamedProject.name = targetName; // Update internal name safely
+  }
+
+  const saveResult = await Promise.resolve(saveProject(targetName, renamedProject));
+  if (!saveResult || saveResult.success === false) {
+    console.warn(`Failed to persist renamed project "${targetName}". Keeping "${resolvedKey}" intact.`);
+    alertStorageError();
+    return resolvedKey;
+  }
+
+  if (canDeleteOldKey) {
+    const shardKey = PROJECT_SHARD_PREFIX + normalizeProjectStorageKey(resolvedKey);
+    const safeStorage = getSafeLocalStorage();
+    const isIndexedDB = storageRepo
+      && storageRepo.driver
+      && storageRepo.driver.constructor
+      && storageRepo.driver.constructor.name === 'IndexedDBAdapter';
+
+    if (safeStorage && !isIndexedDB) {
+      deleteFromStorage(safeStorage, shardKey, "Error deleting renamed project shard:");
+    }
+    if (isProjectCacheHydrated) {
+      delete projectMemoryCache[resolvedKey];
+    }
+    if (storageRepo) {
+      storageRepo.removeItem(resolvedKey).catch(e => console.warn('Failed to delete old project key', e));
+    }
+    removeProjectActivity(resolvedKey);
+  } else {
+    console.warn(
+      `Retained "${resolvedKey}" after renaming to "${targetName}" because a safe backup could not be confirmed.`,
+    );
+  }
 
   // Dispatch events
   invalidateProjectReadCache();
