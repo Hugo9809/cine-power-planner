@@ -13629,6 +13629,7 @@ function handleRestoreSettingsInputChange() {
       restoreConfirmed = confirm(`${queuedBackupMessage}\n\n${queuedConfirmMessage}`);
     } else if (typeof alert === 'function') {
       alert(`${queuedBackupMessage}\n\n${queuedConfirmMessage}`);
+      restoreConfirmed = true;
     }
     if (!restoreConfirmed) {
       restoreSettingsInput.value = '';
