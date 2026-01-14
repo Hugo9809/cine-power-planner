@@ -229,8 +229,8 @@ export const data = {
       "importError": "Impossibile importare il file selezionato.",
       "rolePlaceholder": "Seleziona ruolo"
     },
-    "featureSearchPlaceholder": "Cerca funzionalità o dispositivi...",
-    "featureSearchLabel": "Cerca funzionalità, dispositivi e aiuto",
+    "featureSearchPlaceholder": "Cerca funzionalità, dispositivi, azioni o aiuto...",
+    "featureSearchLabel": "Cerca funzionalità, dispositivi, azioni e aiuto",
     "featureSearchHelp": "Digita per andare alle funzionalità, ai dispositivi, alle azioni rapide come Salva o Backup o aprire gli argomenti di aiuto correlati. I suggerimenti danno priorità alle corrispondenze dirette di funzionalità e dispositivi prima degli argomenti di aiuto, così raggiungi subito i controlli. Ogni voce indica se aprirà una Funzione, un'Azione, un Dispositivo o un argomento di Supporto, così sai cosa succede prima di premere Invio. Le corrispondenze esatte e gli elementi usati di recente salgono automaticamente in cima, così i controlli che usi più spesso restano davanti. Ogni suggerimento mostra anche una breve descrizione così sai subito cosa succederà prima di selezionarlo. La ricerca analizza anche gli stessi testi di aiuto mostrati nelle descrizioni, quindi termini come \"JSON\" o \"salvataggio automatico\" portano comunque al pulsante giusto anche se l'etichetta è diversa. Gli errori di battitura minimi vengono ignorati, quindi \"bakcup\" trova comunque Backup o Salva. Le abbreviazioni di connettori e supporti come \"USB-C\", \"Micro-HDMI\", \"SDXC\", \"CFexpress\", \"V-Mount\" o \"D-Tap\" vengono collegate automaticamente al nome completo, così puoi digitare la versione che ricordi. Anche il vocabolario di esposizione e colore è collegato: ISO, EI, ASA, indice di esposizione, ND o neutral density e WB, bilanciamento del bianco o temperatura colore portano sempre allo stesso controllo indipendentemente da come li scrivi. Premi Invio per navigare, / o Ctrl+K (Cmd+K su Mac) per mettere a fuoco la ricerca ovunque, usa Esc o × per cancellare la ricerca e, quando svuoti il campo, i risultati usati più di recente salgono in cima così ripeti le azioni frequenti più velocemente. Anteponi \"feature\", \"action\", \"device\" o \"help\" (o le equivalenti localizzate) alla ricerca (ad esempio \"help: battery\") per filtrare i risultati su quel tipo. Inizia con \"recent\" o \"history\" (o le equivalenti localizzate) (ad esempio \"recent iso\") per limitarti agli elementi usati di recente prima di scorrere tutto il catalogo. Le frasi esatte salgono ora in cima, quindi digitando l'intera etichetta di un controllo come \"battery health\" trovi quella funzione prima delle corrispondenze più generiche. La ricerca ignora automaticamente le parole riempitive più comuni, così domande conversazionali come \"come faccio il backup\" continuano a mettere in evidenza le parole davvero importanti.",
     "featureSearchFilterAliases": {
       "feature": [
@@ -2264,7 +2264,8 @@ export const data = {
           "settings": "Impostazioni"
         },
         "search": {
-          "placeholder": "Cerca funzioni..."
+          "placeholder": "Cerca funzionalità, dispositivi, azioni...",
+          "label": "Cerca funzionalità, dispositivi, azioni e aiuto"
         }
       },
       "detail": {
