@@ -68,7 +68,7 @@
                     return path.split('.').reduce((prev, curr) => prev && prev[curr], obj);
                 };
 
-                const lang = global.currentLang || 'en';
+                const lang = global.currentLanguage || global.currentLang || 'en';
                 const texts = global.texts[lang] || global.texts.en;
 
                 localization = {
@@ -81,7 +81,7 @@
             }
         }
 
-        const topicKeys = [
+        const topicOrder = [
             'projectManagement',
             'saveShareBackup',
             'deviceConfiguration',
@@ -96,6 +96,19 @@
             'shortcuts',
             'pinkMode'
         ];
+
+        const lang = global.currentLanguage || global.currentLang || global.document?.documentElement?.lang || 'en';
+        const localizedTexts = global.texts && (global.texts[lang] || global.texts.en);
+        const localizedHelpTopics = localizedTexts && localizedTexts.helpTopics;
+        const availableKeys = localizedHelpTopics && typeof localizedHelpTopics === 'object'
+            ? Object.keys(localizedHelpTopics)
+            : [];
+        const orderedKeys = availableKeys.length
+            ? [
+                ...topicOrder.filter(key => availableKeys.includes(key)),
+                ...availableKeys.filter(key => !topicOrder.includes(key))
+            ]
+            : topicOrder;
 
         const iconMap = {
             projectManagement: '📂',
@@ -113,9 +126,10 @@
             pinkMode: '🌸'
         };
 
-        return topicKeys.map(key => {
-            const title = localization.getString(`helpTopics.${key}.title`);
-            const content = localization.getString(`helpTopics.${key}.content`);
+        return orderedKeys.map(key => {
+            const localizedTopic = localizedHelpTopics && localizedHelpTopics[key];
+            const title = (localizedTopic && localizedTopic.title) || localization.getString(`helpTopics.${key}.title`);
+            const content = (localizedTopic && localizedTopic.content) || localization.getString(`helpTopics.${key}.content`);
 
             if (!title) return null;
 
@@ -124,7 +138,7 @@
                 category: 'reference',
                 title: title,
                 // Keywords could be enriched here if we had a mapping, for now title + content is search source
-                keywords: 'legacy reference v1',
+                keywords: `legacy reference v1 ${key}`,
                 icon: iconMap[key] || '📄', // Default icon if key missing
                 content: parseMarkdown(content)
             };
