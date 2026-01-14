@@ -40,6 +40,7 @@ let currentFilter = {
     query: '',
     type: 'active' // 'active' | 'archived'
 };
+let dataProvider = null;
 
 // Cache for project data to avoid O(N) localStorage parsing
 let _cachedProjectData = null;
@@ -47,6 +48,157 @@ let _cachedProjectData = null;
 // =====================
 // HELPERS
 // =====================
+/**
+ * Helper to update the project revision key for cross-tab sync
+ */
+function updateProjectRevision() {
+    try {
+        const REV_KEY = 'cameraPowerPlanner_project_rev';
+        const currentRev = parseInt(localStorage.getItem(REV_KEY) || '0', 10);
+        localStorage.setItem(REV_KEY, (currentRev + 1).toString());
+    } catch (e) {
+        console.error('[V2] Failed to update project revision:', e);
+    }
+}
+
+/**
+ * Create the default data provider that wraps storage APIs.
+ */
+function createDefaultDataProvider() {
+    const loadProjectMetadata = () => {
+        if (typeof window.loadProjectMetadata === 'function') {
+            try {
+                return window.loadProjectMetadata() || {};
+            } catch (e) {
+                console.warn('[V2] Failed to load project metadata via storage API:', e);
+            }
+        }
+
+        try {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            return stored ? JSON.parse(stored) : {};
+        } catch (e) {
+            console.error('[V2] Failed to parse project metadata:', e);
+            return {};
+        }
+    };
+
+    const loadProject = (projectName) => {
+        if (typeof window.loadProject === 'function') {
+            try {
+                return window.loadProject(projectName);
+            } catch (e) {
+                console.warn('[V2] Failed to load project via storage API:', e);
+            }
+        }
+
+        try {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (!stored) return null;
+            const data = JSON.parse(stored);
+            return data[projectName] || null;
+        } catch (e) {
+            console.error('[V2] Failed to parse project data:', e);
+            return null;
+        }
+    };
+
+    const saveProject = (projectName, projectData) => {
+        if (typeof window.saveProject === 'function') {
+            try {
+                window.saveProject(projectName, projectData);
+                return true;
+            } catch (e) {
+                console.error('[V2] Failed to save project via storage API:', e);
+            }
+        }
+
+        try {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            const data = stored ? JSON.parse(stored) : {};
+            data[projectName] = projectData;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            updateProjectRevision();
+            return true;
+        } catch (e) {
+            console.error('[V2] Failed to save project data:', e);
+        }
+
+        return false;
+    };
+
+    const deleteProject = (projectName) => {
+        if (typeof window.deleteProject === 'function') {
+            try {
+                window.deleteProject(projectName);
+                return true;
+            } catch (e) {
+                console.error('[V2] Failed to delete project via storage API:', e);
+            }
+        }
+
+        try {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (!stored) return false;
+            const data = JSON.parse(stored);
+            if (!data[projectName]) return false;
+            delete data[projectName];
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            updateProjectRevision();
+            return true;
+        } catch (e) {
+            console.error('[V2] Failed to delete project data:', e);
+        }
+
+        return false;
+    };
+
+    const createProject = (projectName) => {
+        if (global.cineLegacyShim && typeof global.cineLegacyShim.createProject === 'function') {
+            global.cineLegacyShim.createProject(projectName);
+            return true;
+        }
+        return false;
+    };
+
+    const loadProjectIntoSession = (projectName) => {
+        if (global.cineLegacyShim && typeof global.cineLegacyShim.loadProject === 'function') {
+            global.cineLegacyShim.loadProject(projectName);
+            return true;
+        }
+        return false;
+    };
+
+    return {
+        loadProjectMetadata,
+        loadProject,
+        saveProject,
+        deleteProject,
+        createProject,
+        loadProjectIntoSession
+    };
+}
+
+/**
+ * Create a UI-only data provider that avoids touching storage.
+ */
+function createUiOnlyDataProvider() {
+    return {
+        loadProjectMetadata: () => ({}),
+        loadProject: () => null,
+        saveProject: () => false,
+        deleteProject: () => false,
+        createProject: () => false,
+        loadProjectIntoSession: () => false
+    };
+}
+
+function getDataProvider() {
+    if (!dataProvider) {
+        dataProvider = createDefaultDataProvider();
+    }
+    return dataProvider;
+}
 
 /**
  * Get the next color in the palette
@@ -139,26 +291,11 @@ function _t(path, params = {}) {
  * Uses the optimized loadProjectMetadata API from storage.js if available.
  */
 function refreshProjectDataCache() {
-    // [New V2] Use optimized metadata loader from storage.js
-    if (typeof window.loadProjectMetadata === 'function') {
-        try {
-            _cachedProjectData = window.loadProjectMetadata();
-            return;
-        } catch (e) {
-            console.warn('[V2] Failed to load project metadata via storage API:', e);
-        }
-    }
-
-    // [Fallback] Legacy direct read
     try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-            _cachedProjectData = JSON.parse(stored);
-        } else {
-            _cachedProjectData = {};
-        }
+        const provider = getDataProvider();
+        _cachedProjectData = provider.loadProjectMetadata() || {};
     } catch (e) {
-        console.error('[V2] Failed to parse project data:', e);
+        console.error('[V2] Failed to refresh project data cache:', e);
         _cachedProjectData = {};
     }
 }
@@ -168,6 +305,10 @@ function refreshProjectDataCache() {
  * Uses a fallback chain to ensure data availability even during initialization
  */
 function getProjectNames() {
+    if (_cachedProjectData === null && dataProvider) {
+        refreshProjectDataCache();
+    }
+
     // Priority 1: Read from cached project data (Fastest & Most Accurate)
     if (_cachedProjectData) {
         return Object.keys(_cachedProjectData).filter(name => name && !name.startsWith('auto-backup-'));
@@ -259,56 +400,25 @@ function getProjectMetadata(projectName) {
  * Update project metadata (color, icon, dates)
  */
 function updateProjectMetadata(projectName, metadata = {}) {
-    // [New V2] Use storage API to safely update project shards
-    if (typeof window.loadProject === 'function' && typeof window.saveProject === 'function') {
-        try {
-            const project = window.loadProject(projectName);
-            if (project) {
-                if (metadata.color) project.color = metadata.color;
-                if (metadata.icon) project.icon = metadata.icon;
-                if (metadata.prepDays) project.prepDays = metadata.prepDays;
-                if (metadata.shootingDays) project.shootingDays = metadata.shootingDays;
-                if (metadata.returnDays) project.returnDays = metadata.returnDays;
-                if (typeof metadata.archived !== 'undefined') project.archived = metadata.archived;
-                if (metadata.status) project.status = metadata.status;
+    const provider = getDataProvider();
+    try {
+        const project = provider.loadProject(projectName);
+        if (project) {
+            if (metadata.color) project.color = metadata.color;
+            if (metadata.icon) project.icon = metadata.icon;
+            if (metadata.prepDays) project.prepDays = metadata.prepDays;
+            if (metadata.shootingDays) project.shootingDays = metadata.shootingDays;
+            if (metadata.returnDays) project.returnDays = metadata.returnDays;
+            if (typeof metadata.archived !== 'undefined') project.archived = metadata.archived;
+            if (metadata.status) project.status = metadata.status;
 
-                window.saveProject(projectName, project);
-
-                // Update cache manually to reflect changes immediately in UI
+            const saved = provider.saveProject(projectName, project);
+            if (saved) {
                 if (_cachedProjectData && _cachedProjectData[projectName]) {
                     Object.assign(_cachedProjectData[projectName], metadata);
                 }
-                return true;
             }
-        } catch (e) {
-            console.error('[V2] Failed to update project via storage API:', e);
-            return false;
-        }
-    }
-
-    // [Legacy Fallback] - ONLY use if storage API is missing
-    try {
-        // Ensure cache is fresh before read-modify-write
-        refreshProjectDataCache();
-        const data = _cachedProjectData || {};
-
-        if (data && data[projectName]) {
-            // Merge new metadata
-            if (metadata.color) data[projectName].color = metadata.color;
-            if (metadata.icon) data[projectName].icon = metadata.icon;
-            if (metadata.prepDays) data[projectName].prepDays = metadata.prepDays;
-            if (metadata.shootingDays) data[projectName].shootingDays = metadata.shootingDays;
-            if (metadata.returnDays) data[projectName].returnDays = metadata.returnDays;
-            if (typeof metadata.archived !== 'undefined') data[projectName].archived = metadata.archived;
-            if (metadata.status) data[projectName].status = metadata.status;
-
-            // Persist
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-
-            // Update cache reference
-            _cachedProjectData = data;
-
-            return true;
+            return saved;
         }
     } catch (e) {
         console.error('[V2] Failed to update project metadata:', e);
@@ -796,9 +906,10 @@ async function openProject(projectName, options = {}) {
         }
     }
 
-    // Load the project via legacy shim
-    if (global.cineLegacyShim) {
-        global.cineLegacyShim.loadProject(projectName);
+    // Load the project via data provider
+    const provider = getDataProvider();
+    if (provider && typeof provider.loadProjectIntoSession === 'function') {
+        provider.loadProjectIntoSession(projectName);
     }
 
     // Navigate to project detail view
@@ -866,18 +977,8 @@ function deleteProject(projectName) {
     }
 
     try {
-        // 1. Delete from storage
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-            const data = JSON.parse(stored);
-            if (data[projectName]) {
-                delete data[projectName];
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-
-                // UPDATE REVISION for cross-tab sync
-                updateProjectRevision();
-            }
-        }
+        const provider = getDataProvider();
+        provider.deleteProject(projectName);
 
         // 2. Notify legacy shim if available (to clean up its internal state if any)
         if (global.cineLegacyShim && typeof global.cineLegacyShim.deleteProject === 'function') {
@@ -906,21 +1007,45 @@ function archiveProject(projectName) {
 }
 
 /**
+ * Rename Project
+ */
+function renameProject(existingProject, newProjectName, metadata = {}) {
+    const provider = getDataProvider();
+    try {
+        const originalData = provider.loadProject(existingProject);
+        if (!originalData) return false;
+
+        const updatedData = {
+            ...originalData,
+            ...metadata,
+            lastModified: new Date().toISOString()
+        };
+
+        const saved = provider.saveProject(newProjectName, updatedData);
+        if (!saved) return false;
+
+        provider.deleteProject(existingProject);
+        return true;
+    } catch (e) {
+        console.error('[V2] Failed to rename project:', e);
+        return false;
+    }
+}
+
+/**
  * Duplicate Project
  */
 function duplicateProject(projectName) {
     try {
-        // 1. Get original data
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (!stored) return;
-        const data = JSON.parse(stored);
-        const originalData = data[projectName];
+        const provider = getDataProvider();
+        const originalData = provider.loadProject(projectName);
         if (!originalData) return;
 
         // 2. Generate new unique name
         let newName = `${projectName} (Copy)`;
         let counter = 2;
-        while (data[newName]) {
+        const existingNames = getProjectNames();
+        while (existingNames.includes(newName)) {
             newName = `${projectName} (Copy ${counter})`;
             counter++;
         }
@@ -931,11 +1056,7 @@ function duplicateProject(projectName) {
         newData.lastModified = new Date().toISOString();
 
         // 4. Save
-        data[newName] = newData;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-
-        // UPDATE REVISION for cross-tab sync
-        updateProjectRevision();
+        provider.saveProject(newName, newData);
 
         // Refresh Grid
         renderProjectGrid();
@@ -970,14 +1091,10 @@ function showCreateProjectDialog(existingProject = null) {
 
     // If editing, load existing data
     if (isEditing) {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-            const data = JSON.parse(stored);
-            if (data[existingProject]) {
-                existingMetadata = data[existingProject];
-                if (existingMetadata.color) selectedColor = existingMetadata.color;
-                if (existingMetadata.icon) selectedIcon = existingMetadata.icon;
-            }
+        existingMetadata = getProjectMetadata(existingProject);
+        if (existingMetadata) {
+            if (existingMetadata.color) selectedColor = existingMetadata.color;
+            if (existingMetadata.icon) selectedIcon = existingMetadata.icon;
         }
     }
 
@@ -1376,42 +1493,14 @@ function showCreateProjectDialog(existingProject = null) {
         if (isEditing) {
             // Rename Checks
             if (projectName !== existingProject) {
-                // RENAME LOGIC: Duplicate then Delete
-                try {
-                    const stored = localStorage.getItem(STORAGE_KEY);
-                    if (stored) {
-                        const data = JSON.parse(stored);
-                        const oldData = data[existingProject];
-                        if (oldData) {
-                            // Create New Entry
-                            data[projectName] = { ...oldData, ...metadata };
-                            data[projectName].lastModified = new Date().toISOString();
-                            // Delete Old Entry
-                            delete data[existingProject];
-                            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                const renamed = renameProject(existingProject, projectName, metadata);
+                if (renamed) {
+                    renderProjectGrid();
 
-                            // UPDATE REVISION for cross-tab sync
-                            updateProjectRevision();
-
-                            // If we are renaming the currently active project, we need to update the global session
-                            const setupSelect = document.getElementById('setupSelect');
-                            if (setupSelect && setupSelect.value === existingProject) {
-                                // We can't easily update the active session fully without a reload or deep app-session calls
-                                // But for the dashboard view, we just need to refresh the grid.
-                                // Ideally, we should switch the active project to the new name if it was open.
-                                // For now, let's just refresh the grid which is the primary goal.
-                            }
-
-                            renderProjectGrid();
-
-                            // If the user has the legacy shim, we might need to refresh it
-                            if (global.cineLegacyShim && typeof global.cineLegacyShim.refreshProjects === 'function') {
-                                global.cineLegacyShim.refreshProjects();
-                            }
-                        }
+                    // If the user has the legacy shim, we might need to refresh it
+                    if (global.cineLegacyShim && typeof global.cineLegacyShim.refreshProjects === 'function') {
+                        global.cineLegacyShim.refreshProjects();
                     }
-                } catch (e) {
-                    console.error('Rename failed', e);
                 }
             } else {
                 // UPDATE Existing (Same Name)
@@ -1454,32 +1543,26 @@ function showCreateProjectDialog(existingProject = null) {
  * Create a new project
  */
 async function createProject(projectName, metadata = {}) {
-    if (global.cineLegacyShim) {
+    const provider = getDataProvider();
+    if (provider && provider.createProject && provider.createProject(projectName)) {
         // Return a promise that resolves when the project is saved
-        return new Promise((resolve, reject) => {
-            global.cineLegacyShim.createProject(projectName);
-
+        return new Promise((resolve) => {
             // Wait for the project to be saved before updating metadata
             // The legacy save is async (triggered via button click), so we poll
             const waitForProjectAndUpdateMetadata = (attempts = 0) => {
                 const maxAttempts = 50; // ~5 seconds max (increased from 2s)
-                const stored = localStorage.getItem(STORAGE_KEY);
-                if (stored) {
-                    try {
-                        const data = JSON.parse(stored);
-                        if (data && data[projectName]) {
-                            updateProjectMetadata(projectName, metadata);
-                            // Navigate after successful save
-                            if (global.cineViewManager) {
-                                global.cineViewManager.showView('projectDetail', {
-                                    projectId: projectName,
-                                    tab: 'camera'
-                                });
-                            }
-                            resolve(true);
-                            return;
-                        }
-                    } catch (_e) { void _e; }
+                const project = provider.loadProject(projectName);
+                if (project) {
+                    updateProjectMetadata(projectName, metadata);
+                    // Navigate after successful save
+                    if (global.cineViewManager) {
+                        global.cineViewManager.showView('projectDetail', {
+                            projectId: projectName,
+                            tab: 'camera'
+                        });
+                    }
+                    resolve(true);
+                    return;
                 }
                 if (attempts < maxAttempts) {
                     setTimeout(() => waitForProjectAndUpdateMetadata(attempts + 1), 100);
@@ -1494,27 +1577,8 @@ async function createProject(projectName, metadata = {}) {
         });
     }
 
-    // Fallback if no legacy shim (shouldn't happen in this app)
-    if (global.cineViewManager) {
-        global.cineViewManager.showView('projectDetail', {
-            projectId: projectName,
-            tab: 'camera'
-        });
-    }
-    return Promise.resolve(true);
-}
-
-/**
- * Helper to update the project revision key for cross-tab sync
- */
-function updateProjectRevision() {
-    try {
-        const REV_KEY = 'cameraPowerPlanner_project_rev';
-        const currentRev = parseInt(localStorage.getItem(REV_KEY) || '0', 10);
-        localStorage.setItem(REV_KEY, (currentRev + 1).toString());
-    } catch (e) {
-        console.error('[V2] Failed to update project revision:', e);
-    }
+    console.warn('[V2] Project creation is not available for the current data provider.');
+    return Promise.resolve(false);
 }
 
 // =====================
@@ -1569,7 +1633,13 @@ function createDashboardView() {
 /**
  * Initialize the project dashboard
  */
-function init() {
+function init(options = {}) {
+    if (options && options.dataProvider) {
+        dataProvider = options.dataProvider;
+    } else if (!dataProvider) {
+        dataProvider = createDefaultDataProvider();
+    }
+
     if (isInitialized) {
         console.warn('[ProjectDashboard] Already initialized, skipping.');
         return;
@@ -1631,7 +1701,9 @@ const ProjectDashboard = {
     getProjectNames,
     createDashboardView,
     formatDate,
-    formatDateRange
+    formatDateRange,
+    createDefaultDataProvider,
+    createUiOnlyDataProvider
 };
 
 // Expose to global scope
@@ -1667,4 +1739,3 @@ if (typeof document !== 'undefined') {
 }
 
 export { ProjectDashboard };
-
