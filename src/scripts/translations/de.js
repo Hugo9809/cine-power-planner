@@ -2207,6 +2207,13 @@ export const data = {
     "diagramMoveHint": "Knoten per Drag & Drop verschieben. Leeren Bereich ziehen, um das Diagramm zu verschieben.",
     "v2": {
       "dashboard": {
+        "header": {
+          "title": "Projekte"
+        },
+        "actions": {
+          "importProject": "Projekt importieren",
+          "newProject": "+ Neues Projekt"
+        },
         "projects": "Projekte",
         "newProject": "Neues Projekt",
         "emptyState": {

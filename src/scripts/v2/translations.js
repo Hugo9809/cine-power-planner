@@ -24,7 +24,10 @@ const V2_REQUIRED_KEYS = [
     'deviceLibraryTitle',
     'buttonAddContact',
     'buttonAddRule',
-    'buttonAddGearItem'
+    'buttonAddGearItem',
+    'v2.dashboard.header.title',
+    'v2.dashboard.actions.newProject',
+    'v2.dashboard.actions.importProject'
 ];
 
 /**
@@ -37,7 +40,9 @@ function verifyV2Translations() {
         return false;
     }
 
-    const missing = V2_REQUIRED_KEYS.filter(key => !(key in global.texts.en));
+    const resolvePath = (obj, path) => path.split('.')
+        .reduce((acc, key) => (acc && typeof acc === 'object' && key in acc ? acc[key] : undefined), obj);
+    const missing = V2_REQUIRED_KEYS.filter(key => resolvePath(global.texts.en, key) === undefined);
 
     if (missing.length > 0) {
         console.warn('[V2 Translations] Missing keys:', missing);

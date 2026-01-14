@@ -2178,6 +2178,13 @@ export const data = {
     "diagramMoveHint": "Mueve los nodos arrastrándolos. Arrastra un espacio vacío para desplazar el diagrama.",
     "v2": {
       "dashboard": {
+        "header": {
+          "title": "Proyectos"
+        },
+        "actions": {
+          "importProject": "Importar proyecto",
+          "newProject": "+ Nuevo proyecto"
+        },
         "projects": "Proyectos",
         "newProject": "Nuevo Proyecto",
         "emptyState": {

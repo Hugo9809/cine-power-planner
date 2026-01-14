@@ -1535,7 +1535,7 @@ function createDashboardView() {
     view.className = 'app-view v2-app';
     view.innerHTML = `
       <header class="view-header">
-        <h1>Projects</h1>
+        <h1>${_t('v2.dashboard.header.title')}</h1>
         <div class="view-header-actions">
           <button type="button" class="v2-btn v2-btn-secondary" id="v2HeaderImportBtn" style="margin-right: 8px;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;">
@@ -1543,10 +1543,10 @@ function createDashboardView() {
               <polyline points="7 10 12 15 17 10" />
               <line x1="12" y1="15" x2="12" y2="3" />
             </svg>
-            Import Project
+            ${_t('v2.dashboard.actions.importProject')}
           </button>
           <button type="button" class="v2-btn v2-btn-primary" id="v2HeaderCreateBtn">
-            + New Project
+            ${_t('v2.dashboard.actions.newProject')}
           </button>
         </div>
       </header>
@@ -1667,4 +1667,3 @@ if (typeof document !== 'undefined') {
 }
 
 export { ProjectDashboard };
-
