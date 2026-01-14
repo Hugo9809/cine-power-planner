@@ -14642,10 +14642,29 @@ function resolveProjectStorageNameCollision(baseName) {
     console.log('DEBUG: resolveProjectStorageNameCollision iteration:', totalIterations, 'Candidate:', normalizedCandidateWithSuffix);
     if (totalIterations > 100) {
       console.error('DEBUG: resolveProjectStorageNameCollision INFINITE LOOP DETECTED for:', baseNamePart);
+      const createFallbackToken = () => {
+        if (globalThis.crypto && typeof globalThis.crypto.randomUUID === 'function') {
+          return globalThis.crypto.randomUUID();
+        }
+        return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      };
+      do {
+        const fallbackToken = createFallbackToken();
+        candidate = `${baseNamePart} (${fallbackToken})`;
+        normalizedCandidateWithSuffix = candidate.trim().toLowerCase();
+        totalIterations++;
+      } while (normalizedExisting.has(normalizedCandidateWithSuffix));
       break;
     }
     nextSuffix += 1;
     candidate = `${baseNamePart} (${nextSuffix})`;
+    normalizedCandidateWithSuffix = candidate.trim().toLowerCase();
+  }
+  while (normalizedExisting.has(normalizedCandidateWithSuffix)) {
+    const fallbackToken = globalThis.crypto && typeof globalThis.crypto.randomUUID === 'function'
+      ? globalThis.crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    candidate = `${baseNamePart} (${fallbackToken})`;
     normalizedCandidateWithSuffix = candidate.trim().toLowerCase();
   }
   console.log('DEBUG: resolveProjectStorageNameCollision returning:', candidate);
