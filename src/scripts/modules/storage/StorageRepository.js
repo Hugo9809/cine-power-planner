@@ -145,7 +145,8 @@ export class StorageRepository {
         // Save to storage
         await this.setItem(projectKey, wrapped);
 
-        // Auto-backup to OPFS DataVault (fire & forget)
+        // Best-effort OPFS DataVault snapshot: optional for local saves, never blocks the
+        // primary save path, and exists to strengthen offline recovery resilience.
         import('./DataVault.js').then(({ dataVault }) => {
             if (dataVault) {
                 dataVault.saveSnapshot(projectKey, wrapped).catch(err =>
@@ -286,4 +287,3 @@ export class StorageRepository {
 
 // Export a singleton instance
 export const storageRepo = new StorageRepository();
-
