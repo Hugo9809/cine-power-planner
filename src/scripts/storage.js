@@ -43,141 +43,52 @@ async function hydrateProjectCache() {
   console.log('[storage.js] Hydrating project cache from storage...');
 
   try {
-    const keys = await storageRepo.getKeys();
-    // Filter for project keys (assuming prefix or heuristic)
-    // Legacy storage used a monolithic PROJECT_STORAGE_KEY or individual keys?
-    // V2 likely uses individual keys or we assumed so.
-    // Wait, `saveProject` implementation in legacy: `safeSetLocalStorage(PROJECT_STORAGE_KEY + name)` ?
-    // No, legacy was often monolithic `cameraPowerPlanner_setups`.
-    // But `saveProject` we just refactored calls `storageRepo.saveProject(name, project)`.
-
-    // If we migrated from `cameraPowerPlanner_setups` (monolith) to individual keys in IDB (scoped),
-    // we need to know how they are stored.
-    // If we follow `saveProject` -> `storageRepo.setItem(name, project)`, then keys are just names.
-    // But generic keys also exist (settings, etc.).
-
-    // We need a Project Index or Filter.
-    // For now, let's load EVERYTHING and filter by shape? Or assume a prefix logic.
-    // Since we didn't implement a prefix in `saveProject`, it's just `setItem(name, val)`.
-    // This is risky for name collisions with settings.
-    // WE SHOULD HAVE USED A PREFIX.
-
-    // RETROACTIVE FIX: We should probably prefix projects with 'project_' in `saveProject`.
-    // But for now, let's assume we can filter by looking at the content or if we have a known list.
-
-    // Actually, `LocalStorageAdapter` just mimics `localStorage` interface.
-    // `storageRepo` wraps it.
-
-    // Let's iterate all keys.
+    const projectKeys =
+      storageRepo && typeof storageRepo.getProjectKeys === 'function'
+        ? await storageRepo.getProjectKeys()
+        : [];
     // [Agent Implementation] Actual Hydration Logic with Deterministic Ordering (Monolith First -> Shards Overwrite)
     const monolithKey = 'cameraPowerPlanner_project';
-    let loadMonolith = false;
-    const shardKeys = [];
+    let monolithValue = null;
+    const shardKeys = projectKeys.slice();
 
-    for (const key of keys) {
-      if (key.startsWith('cine_') || key.startsWith('user_')) continue;
-
-      // [Agent] Hydrate Project Index Cache
-      if (key === PROJECT_INDEX_KEY) { // 'cameraPowerPlanner_project_index'
-        storageRepo.getItem(key).then(val => {
-          if (val) projectIndexCache = val;
-        });
-        continue;
+    if (storageRepo && typeof storageRepo.getItem === 'function') {
+      const rawIndex = await storageRepo.getItem(PROJECT_INDEX_KEY);
+      const normalizedIndex = normalizeProjectIndexForCache(rawIndex);
+      if (normalizedIndex) {
+        projectIndexCache = normalizedIndex;
       }
 
-      // [Agent Refactor] Memory Cache for Auto Gear (Synchronous Read Support)
+      storageRepo.getItem(AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY).then(val => { if (val) autoGearMonitorDefaultsCache = val; });
+      storageRepo.getItem(AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY).then(val => { if (val) autoGearActivePresetIdCache = val; });
+      storageRepo.getItem(AUTO_GEAR_AUTO_PRESET_STORAGE_KEY).then(val => { if (val) autoGearAutoPresetIdCache = val; });
+      storageRepo.getItem(AUTO_GEAR_BACKUPS_STORAGE_KEY).then(val => {
+        if (Array.isArray(val)) {
+          autoGearBackupsCache = val;
+        }
+      });
+      storageRepo.getItem(AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY).then(val => { if (val) autoGearBackupRetentionCache = val; });
+      storageRepo.getItem(AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY).then(val => { if (val) autoGearBackupVisibilityCache = val; });
+      storageRepo.getItem(CUSTOM_FONT_STORAGE_KEY_DEFAULT).then(val => { if (val) customFontsCache = val; });
+      storageRepo.getItem(CUSTOM_LOGO_STORAGE_KEY).then(val => { if (val) customLogoCache = val; });
+      storageRepo.getItem(CAMERA_COLOR_STORAGE_KEY).then(val => { if (val) cameraColorsCache = val; });
+      storageRepo.getItem(PRINT_PREFERENCES_STORAGE_KEY).then(val => { if (val) printPreferencesCache = val; });
+      storageRepo.getItem(CONTACTS_STORAGE_KEY).then(val => { if (val) contactsCache = val; });
+      storageRepo.getItem(OWN_GEAR_STORAGE_KEY).then(val => { if (val) ownGearCache = val; });
+      storageRepo.getItem(USER_PROFILE_STORAGE_KEY).then(val => { if (val) userProfileCache = val; });
+      storageRepo.getItem(FAVORITES_STORAGE_KEY).then(val => { if (val) favoritesCache = val; });
+      storageRepo.getItem(TEMPERATURE_UNIT_STORAGE_KEY_NAME).then(val => { if (val) temperatureUnitCache = val; });
+      storageRepo.getItem(FOCUS_SCALE_STORAGE_KEY_NAME).then(val => { if (val) focusScaleCache = val; });
+      storageRepo.getItem(getMountVoltageStorageKeyName()).then(val => { if (val) mountVoltagesCache = val; });
+      storageRepo.getItem(FULL_BACKUP_HISTORY_STORAGE_KEY).then(val => { if (val) fullBackupHistoryCache = val; });
 
-      if (key === AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY) {
-        storageRepo.getItem(key).then(val => { if (val) autoGearMonitorDefaultsCache = val; });
-        continue;
-      }
-      if (key === AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY) {
-        storageRepo.getItem(key).then(val => { if (val) autoGearActivePresetIdCache = val; });
-        continue;
-      }
-      if (key === AUTO_GEAR_AUTO_PRESET_STORAGE_KEY) {
-        storageRepo.getItem(key).then(val => { if (val) autoGearAutoPresetIdCache = val; });
-        continue;
-      }
-      if (key === AUTO_GEAR_BACKUPS_STORAGE_KEY) {
-        storageRepo.getItem(key).then(val => {
-          if (Array.isArray(val)) {
-            autoGearBackupsCache = val;
-          }
-        });
-        continue;
-      }
-      if (key === AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY) {
-        storageRepo.getItem(key).then(val => { if (val) autoGearBackupRetentionCache = val; });
-        continue;
-      }
-      if (key === AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY) {
-        storageRepo.getItem(key).then(val => { if (val) autoGearBackupVisibilityCache = val; });
-        continue;
-      }
-      if (key === CUSTOM_FONT_STORAGE_KEY_DEFAULT) {
-        storageRepo.getItem(key).then(val => { if (val) customFontsCache = val; });
-        continue;
-      }
-      if (key === CUSTOM_LOGO_STORAGE_KEY) {
-        storageRepo.getItem(key).then(val => { if (val) customLogoCache = val; });
-        continue;
-      }
-      if (key === CAMERA_COLOR_STORAGE_KEY) {
-        storageRepo.getItem(key).then(val => { if (val) cameraColorsCache = val; });
-        continue;
-      }
-      if (key === PRINT_PREFERENCES_STORAGE_KEY) {
-        storageRepo.getItem(key).then(val => { if (val) printPreferencesCache = val; });
-        continue;
-      }
-      if (key === CONTACTS_STORAGE_KEY) {
-        storageRepo.getItem(key).then(val => { if (val) contactsCache = val; });
-        continue;
-      }
-      if (key === OWN_GEAR_STORAGE_KEY) {
-        storageRepo.getItem(key).then(val => { if (val) ownGearCache = val; });
-        continue;
-      }
-      if (key === USER_PROFILE_STORAGE_KEY) {
-        storageRepo.getItem(key).then(val => { if (val) userProfileCache = val; });
-        continue;
-      }
-      if (key === FAVORITES_STORAGE_KEY) {
-        storageRepo.getItem(key).then(val => { if (val) favoritesCache = val; });
-        continue;
-      }
-      if (key === TEMPERATURE_UNIT_STORAGE_KEY_NAME) {
-        storageRepo.getItem(key).then(val => { if (val) temperatureUnitCache = val; });
-        continue;
-      }
-      if (key === FOCUS_SCALE_STORAGE_KEY_NAME) {
-        storageRepo.getItem(key).then(val => { if (val) focusScaleCache = val; });
-        continue;
-      }
-      if (key === getMountVoltageStorageKeyName()) {
-        storageRepo.getItem(key).then(val => { if (val) mountVoltagesCache = val; });
-        continue;
-      }
-      if (key === FULL_BACKUP_HISTORY_STORAGE_KEY) {
-        storageRepo.getItem(key).then(val => { if (val) fullBackupHistoryCache = val; });
-        continue;
-      }
-
-      if (key === monolithKey) {
-        loadMonolith = true;
-      } else {
-        shardKeys.push(key);
-      }
+      monolithValue = await storageRepo.getItem(monolithKey);
     }
 
     // 1. Load Monolith (if exists)
-    if (loadMonolith) {
+    if (monolithValue && typeof monolithValue === 'object') {
       try {
-        const val = await storageRepo.getItem(monolithKey);
-        if (val && typeof val === 'object') {
-          Object.assign(projectMemoryCache, val);
-        }
+        Object.assign(projectMemoryCache, monolithValue);
       } catch (monoErr) {
         console.warn('[hydrate] Failed to load monolith', monoErr);
       }
@@ -186,7 +97,7 @@ async function hydrateProjectCache() {
     // 2. Load Shards (Parallel) - Overwrites monolith entries if collision
     const shardPromises = shardKeys.map(async (key) => {
       try {
-        const val = await storageRepo.getItem(key);
+        const val = await storageRepo.loadProjectRaw(key);
         if (val) {
           projectMemoryCache[key] = val;
         }
@@ -373,19 +284,38 @@ if (GLOBAL_SCOPE) {
      */
     (async () => {
       try {
+        let shouldHydrateProjectCache = false;
         if (migrationService && typeof migrationService.runMigrationIfNeeded === 'function') {
           const migrated = await migrationService.runMigrationIfNeeded();
           if (migrated) {
             console.log('[storage.js] Migration successful. Switching to IndexedDB.');
             await storageRepo.switchDriver(new IndexedDBAdapter());
-            await hydrateProjectCache();
+            shouldHydrateProjectCache = true;
           }
         } else if (migrationService && typeof migrationService.init === 'function') {
           // Fallback for V2 init method
           const migrated = await migrationService.init();
           if (migrated) {
             await storageRepo.switchDriver(new IndexedDBAdapter());
-            await hydrateProjectCache();
+            shouldHydrateProjectCache = true;
+          }
+        }
+
+        const prefixMigrationOutcome = await migrateProjectKeyPrefixOnStartup();
+
+        if (shouldHydrateProjectCache) {
+          await hydrateProjectCache();
+          if (
+            (!prefixMigrationOutcome.hasIndex || !projectIndexCache)
+            && isProjectCacheHydrated
+            && projectMemoryCache
+            && Object.keys(projectMemoryCache).length > 0
+          ) {
+            try {
+              updateProjectIndex(projectMemoryCache, getSafeLocalStorage());
+            } catch (indexRefreshError) {
+              console.warn('Failed to refresh project index after migration', indexRefreshError);
+            }
           }
         }
       } catch (migrationError) {
@@ -12862,6 +12792,102 @@ function persistAllProjects(projects, options = {}) {
 // [Agent Refactor] Memory Cache for Project Index (Synchronous Read Support)
 let projectIndexCache = null;
 
+function normalizeProjectIndexForCache(index) {
+  if (!index || typeof index !== 'object') {
+    return null;
+  }
+
+  const normalized = {};
+  const keys = Object.keys(index);
+  keys.forEach((key) => {
+    if (typeof key !== 'string') {
+      return;
+    }
+    const rawKey =
+      storageRepo && typeof storageRepo.getProjectKeyFromStorageKey === 'function'
+        ? storageRepo.getProjectKeyFromStorageKey(key)
+        : key;
+    if (rawKey === null || rawKey === undefined) {
+      return;
+    }
+    const entry = index[key];
+
+    if (!Object.prototype.hasOwnProperty.call(normalized, rawKey)) {
+      normalized[rawKey] = entry;
+      return;
+    }
+
+    const existing = normalized[rawKey];
+    const entryModified =
+      entry && typeof entry === 'object' && typeof entry.lastModified === 'number'
+        ? entry.lastModified
+        : null;
+    const existingModified =
+      existing && typeof existing === 'object' && typeof existing.lastModified === 'number'
+        ? existing.lastModified
+        : null;
+
+    if (
+      typeof entryModified === 'number'
+      && typeof existingModified === 'number'
+      && entryModified > existingModified
+    ) {
+      normalized[rawKey] = entry;
+    }
+  });
+
+  return Object.keys(normalized).length ? normalized : null;
+}
+
+function buildProjectIndexForRepo(index) {
+  if (!index || typeof index !== 'object') {
+    return null;
+  }
+  if (!storageRepo || typeof storageRepo.getProjectStorageKey !== 'function') {
+    return index;
+  }
+
+  const prefixed = {};
+  Object.keys(index).forEach((key) => {
+    if (typeof key !== 'string') {
+      return;
+    }
+    const storageKey = storageRepo.getProjectStorageKey(key);
+    prefixed[storageKey] = index[key];
+  });
+  return prefixed;
+}
+
+async function migrateProjectKeyPrefixOnStartup() {
+  if (!storageRepo || typeof storageRepo.migrateUnprefixedProjectRecords !== 'function') {
+    return { migratedKeys: [], hasIndex: false };
+  }
+
+  try {
+    const storedIndex = await storageRepo.getItem(PROJECT_INDEX_KEY);
+    const indexKeys = storedIndex && typeof storedIndex === 'object'
+      ? Object.keys(storedIndex)
+      : [];
+    const normalizedIndex = normalizeProjectIndexForCache(storedIndex);
+    const migrationResult = await storageRepo.migrateUnprefixedProjectRecords({
+      projectIndexKeys: indexKeys,
+    });
+
+    if (normalizedIndex) {
+      projectIndexCache = normalizedIndex;
+      const prefixedIndex = buildProjectIndexForRepo(normalizedIndex);
+      if (prefixedIndex) {
+        await storageRepo.setItem(PROJECT_INDEX_KEY, prefixedIndex);
+      }
+    }
+
+    return { migratedKeys: migrationResult.migratedKeys || [], hasIndex: Boolean(normalizedIndex) };
+  } catch (migrationError) {
+    console.warn('[storage.js] Project prefix migration failed', migrationError);
+    return { migratedKeys: [], hasIndex: false };
+  }
+}
+
 /**
  * Reads, validates, and returns the project index from storage.
  * Returns null if missing or invalid.
@@ -12890,7 +12916,9 @@ function readProjectIndex() {
     if (!raw) return null;
 
     const index = JSON.parse(raw);
-    if (index && typeof index === 'object') return index;
+    if (index && typeof index === 'object') {
+      return normalizeProjectIndexForCache(index) || index;
+    }
   } catch (e) {
     console.warn('Failed to read project index', e);
   }
@@ -12930,7 +12958,8 @@ function updateProjectIndex(projects, safeStorage) {
   const isIndexedDB = storageRepo && storageRepo.driver && storageRepo.driver.constructor && storageRepo.driver.constructor.name === 'IndexedDBAdapter';
   if (storageRepo) {
     // Async write to new storage
-    storageRepo.setItem(PROJECT_INDEX_KEY, index).catch(e => console.warn('Failed to persist index to repo', e));
+    const prefixedIndex = buildProjectIndexForRepo(index);
+    storageRepo.setItem(PROJECT_INDEX_KEY, prefixedIndex).catch(e => console.warn('Failed to persist index to repo', e));
   }
 
   // Legacy writes only if NOT on IndexedDB
@@ -13567,7 +13596,11 @@ function deleteProject(name) {
 
   // Update StorageRepository (Async)
   // We fire and forget the delete, but UI updates immediately via cache/events
-  storageRepo.removeItem(key).catch(e => console.warn('Failed to delete from repo', e));
+  if (storageRepo && typeof storageRepo.removeProject === 'function') {
+    storageRepo.removeProject(key).catch(e => console.warn('Failed to delete from repo', e));
+  } else if (storageRepo) {
+    storageRepo.removeItem(key).catch(e => console.warn('Failed to delete from repo', e));
+  }
 
   delete projects[key];
   removeProjectActivity(key);
@@ -13612,7 +13645,11 @@ function renameProject(oldName, newName) {
   }
 
   // Update Storage (Async)
-  storageRepo.removeItem(resolvedKey).catch(e => console.warn('Failed to delete old project key', e));
+  if (storageRepo && typeof storageRepo.removeProject === 'function') {
+    storageRepo.removeProject(resolvedKey).catch(e => console.warn('Failed to delete old project key', e));
+  } else if (storageRepo) {
+    storageRepo.removeItem(resolvedKey).catch(e => console.warn('Failed to delete old project key', e));
+  }
   // We use the new saveProject which handles repo save + cache update redundancy
   saveProject(targetName, projectData);
 
