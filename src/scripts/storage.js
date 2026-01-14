@@ -13660,6 +13660,8 @@ function createProjectImporter() {
       ? generateImportedProjectName(baseName, usedNames, normalizedNames)
       : generateUniqueName(baseName, usedNames, normalizedNames);
     saveProject(uniqueName, normalizedProject, { skipCompression: false });
+    usedNames.add(uniqueName);
+    normalizedNames.add(uniqueName.trim().toLowerCase());
   };
 }
 
