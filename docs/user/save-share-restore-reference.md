@@ -17,7 +17,10 @@ workstations.
 4. **Rehearse restore in the sandbox.** Import into **Restore rehearsal** on a
    secondary profile or machine, review the compatibility summary, then
    promote only after the sandbox matches the source.
-5. **Archive evidence.** Capture screenshots and logs listed in the lifecycle
+5. **Freeze source exports.** Treat the exported files as read-only evidence.
+   Never overwrite, rename, or delete them until the rehearsal confirms parity
+   and the verification log is complete.
+6. **Archive evidence.** Capture screenshots and logs listed in the lifecycle
    guide so every handoff is reproducible and auditable.
 
 ## Save & autosave
@@ -44,6 +47,11 @@ workstations.
   number, preventing accidental data loss during wireless configuration audits.
   If you need to discard a value, clear the field explicitly and run a manual
   save to persist the change.
+- **No destructive overwrite on save:** Saving never overwrites the last manual
+  save silently. The project selector retains both manual saves and autosave
+  entries so you can always roll back to a known-good timestamp. If you do not
+  see the expected entry, stop, capture logs, and export a backup before
+  continuing.
 
 ### Manual save verification drill
 
@@ -135,6 +143,8 @@ workstation will operate offline:
    vault entry.
 4. If the banner warns about fallback storage, export and copy the queued files
    before continuing any planning work.
+5. Keep the exported vault files untouched until the restore rehearsal confirms
+   the data matches the source. Only then archive or purge the vault entry.
 
 ## File Formats & Integrity Checks
 
@@ -223,6 +233,11 @@ workstation will operate offline:
   untouched so you can roll back if the rehearsal reveals mismatches.
 - **Diff review:** The restore sandbox displays differences; capture screenshots
   and attach them to the verification log.
+- **Share-ready checklist:** Before handing off media, confirm (1) a manual save
+  entry exists for the export timestamp, (2) the autosave ledger shows the guard
+  run that mirrored critical keys, (3) both the planner backup and project
+  bundle are present on two offline locations, and (4) checksums are recorded in
+  the verification log. Missing any item means the handoff is not ready.
 - **Device database imports:** Every import attempt now emits telemetry through
   the `events` logger before any console output or user alert fires. Validation
   failures log a `warn` entry, auto-backup fallbacks log a `warn` entry tagged
@@ -256,6 +271,8 @@ workstation will operate offline:
   store it with the verification packet before promoting data.
 - **Verification:** After promotion, confirm autosave ledger logs the restore and
   manual save to cement the state.
+  If the entry is missing, stop and export a fresh planner backup before
+  continuing work.
 
 ## Failure recovery
 
