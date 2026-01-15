@@ -2309,6 +2309,9 @@ export const data = {
           "zoomOut": "Herauszoomen",
           "resetView": "Ansicht zurücksetzen",
           "download": "Diagramm herunterladen"
+        },
+        "errors": {
+          "statusUpdateFailed": "Der Projektstatus konnte nicht aktualisiert werden, weil der Speicher nicht verfügbar ist. Bitte überprüfe deine Browser-Speichereinstellungen und versuche es erneut."
         }
       }
     },

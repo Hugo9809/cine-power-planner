@@ -2278,6 +2278,9 @@ export const data = {
           "zoomOut": "Zoom arrière",
           "resetView": "Réinitialiser la vue",
           "download": "Télécharger le diagramme"
+        },
+        "errors": {
+          "statusUpdateFailed": "Impossible de mettre à jour le statut du projet, car le stockage n'est pas disponible. Vérifiez les paramètres de stockage de votre navigateur et réessayez."
         }
       }
     },

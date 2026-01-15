@@ -2459,6 +2459,9 @@ export const data = {
           "zoomOut": "Zoom Out",
           "resetView": "Reset View",
           "download": "Download Diagram"
+        },
+        "errors": {
+          "statusUpdateFailed": "Unable to update the project status because storage is unavailable. Please check your browser storage settings and try again."
         }
       }
     }
