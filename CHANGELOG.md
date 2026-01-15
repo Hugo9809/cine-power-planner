@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Prevented V2 search device results from collapsing across categories with identical names.
+- Localized delete gear list confirmation dialog labels with safe language fallbacks.
 
 ## [1.0.52] - 2026-01-13
 

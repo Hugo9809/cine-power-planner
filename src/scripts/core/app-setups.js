@@ -15056,7 +15056,20 @@ function saveCurrentGearListImplementation() {
   }
 }
 
+function resolveSetupsLanguageTexts() {
+  if (typeof getLanguageTexts === 'function') {
+    return getLanguageTexts(currentLang);
+  }
+  if (typeof texts === 'object' && texts) {
+    return texts[currentLang] || texts.en || {};
+  }
+  return {};
+}
+
 function deleteCurrentGearList() {
+  const dialogTexts = resolveSetupsLanguageTexts();
+  const readDialogText = (key) =>
+    dialogTexts && typeof dialogTexts[key] === 'string' ? dialogTexts[key] : '';
   const performDeletion = () => {
     const backupName = ensureAutoBackupBeforeDeletion('delete gear list');
     if (!backupName) return false;
@@ -15175,16 +15188,16 @@ function deleteCurrentGearList() {
 
   if (typeof window.cineShowConfirmDialog === 'function') {
     window.cineShowConfirmDialog({
-      title: (typeof texts !== 'undefined' && texts[currentLang] && texts[currentLang].deleteGearListTitle) || 'Delete Gear List',
-      message: texts[currentLang].confirmDeleteGearList,
-      confirmLabel: 'Delete',
+      title: readDialogText('deleteGearListTitle'),
+      message: readDialogText('confirmDeleteGearList'),
+      confirmLabel: readDialogText('deleteGearListConfirmLabel'),
       danger: true,
       onConfirm: () => {
         setTimeout(() => {
           window.cineShowConfirmDialog({
-            title: (typeof texts !== 'undefined' && texts[currentLang] && texts[currentLang].areYouSure) || 'Are you sure?',
-            message: texts[currentLang].confirmDeleteGearListAgain,
-            confirmLabel: 'Confirm Delete',
+            title: readDialogText('deleteGearListConfirmTitle'),
+            message: readDialogText('confirmDeleteGearListAgain'),
+            confirmLabel: readDialogText('deleteGearListConfirmLabelAgain'),
             danger: true,
             onConfirm: () => performDeletion()
           });
@@ -15192,8 +15205,8 @@ function deleteCurrentGearList() {
       }
     });
   } else {
-    if (!confirm(texts[currentLang].confirmDeleteGearList)) return false;
-    if (!confirm(texts[currentLang].confirmDeleteGearListAgain)) return false;
+    if (!confirm(readDialogText('confirmDeleteGearList'))) return false;
+    if (!confirm(readDialogText('confirmDeleteGearListAgain'))) return false;
     return performDeletion();
   }
 }
