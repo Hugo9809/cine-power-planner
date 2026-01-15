@@ -31,6 +31,18 @@ export const FALLBACK_HUMANIZE_OVERRIDES = {
   connectivity: 'Connectivity',
 };
 
+/**
+ * Safely stringify values with stable key ordering for deterministic offline-safe caches.
+ *
+ * @param {*} value - Any value to serialize.
+ * @returns {string} A stable JSON-like string (arrays preserve order, objects sort keys).
+ *
+ * @remarks
+ * - Fallback exists to keep autosave/backup snapshots deterministic when JSON.stringify
+ *   is unavailable or key order differences could cause drift in legacy bundles.
+ * - Edge cases: `undefined` is serialized as the literal `"undefined"`; `null` is `"null"`;
+ *   objects are traversed recursively with sorted keys.
+ */
 export function fallbackStableStringify(value) {
   if (value === null) return 'null';
   if (typeof value === 'undefined') return 'undefined';
@@ -61,6 +73,17 @@ export function fallbackStableStringify(value) {
   return JSON.stringify(value);
 }
 
+/**
+ * Produce a human-readable label for a data key using offline-safe defaults.
+ *
+ * @param {string|number|symbol|null|undefined} key - Raw key from saved data.
+ * @returns {string} Humanized label (override > normalized > basic string).
+ *
+ * @remarks
+ * - Fallback exists to preserve UI readability in offline/legacy bundles before i18n
+ *   or shared helpers are ready, preventing empty labels in recovery views.
+ * - Edge cases: non-string keys are coerced; underscores become spaces; camelCase is split.
+ */
 export function fallbackHumanizeKey(key) {
   if (key && Object.prototype.hasOwnProperty.call(FALLBACK_HUMANIZE_OVERRIDES, key)) {
     return FALLBACK_HUMANIZE_OVERRIDES[key];
@@ -73,6 +96,19 @@ export function fallbackHumanizeKey(key) {
     .replace(/^./, (c) => c.toUpperCase());
 }
 
+/**
+ * Build a de-duplicated list of runtime scope candidates.
+ *
+ * @param {object|function|null} primary - Primary runtime scope candidate.
+ * @param {object|function|null} shared - Shared runtime scope candidate.
+ * @param {object|function|null} globalScope - Global fallback scope candidate.
+ * @returns {Array<object|function>} Ordered, unique scope candidates.
+ *
+ * @remarks
+ * - Fallback exists to ensure we can still resolve bindings in offline/legacy bundles
+ *   when the shared runtime scope bridge is unavailable.
+ * - Edge cases: non-object/function inputs are ignored; duplicates are removed by identity.
+ */
 export function createArrayFromCandidates(primary, shared, globalScope) {
   const candidates = [];
 
@@ -118,6 +154,16 @@ export function createArrayFromCandidates(primary, shared, globalScope) {
   return resolved;
 }
 
+/**
+ * Resolve the default language text bundle for recovery-safe labels.
+ *
+ * @param {object|null} scope - Scope containing `texts.en` when available.
+ * @returns {object} The English text dictionary or an empty object.
+ *
+ * @remarks
+ * - Fallback exists to prevent missing-label crashes during offline/legacy startup.
+ * - Edge cases: missing/invalid structures return a new empty object to avoid mutations.
+ */
 export function createDefaultLanguageTexts(scope) {
   if (
     scope &&
@@ -133,6 +179,17 @@ export function createDefaultLanguageTexts(scope) {
   return {};
 }
 
+/**
+ * Normalize auto-gear comparison operators to canonical tokens.
+ *
+ * @param {string} value - User-provided operator string.
+ * @returns {'greater'|'less'|'equal'} Normalized operator token.
+ *
+ * @remarks
+ * - Fallback exists to keep legacy/offline imports stable when shared helpers are absent.
+ * - Edge cases: non-strings or empty input default to `"greater"`; trimmed/lowercased
+ *   values accept symbols and synonyms (e.g., ">", "lt", "matches").
+ */
 export function fallbackNormalizeAutoGearWeightOperator(value) {
   if (typeof value !== 'string') return 'greater';
   const normalized = value.trim().toLowerCase();
@@ -169,6 +226,17 @@ export function fallbackNormalizeAutoGearWeightOperator(value) {
   return 'greater';
 }
 
+/**
+ * Normalize auto-gear weight values into a safe integer or null.
+ *
+ * @param {number|string} value - Raw weight value (user input or imported data).
+ * @returns {number|null} Rounded, non-negative integer weight or null.
+ *
+ * @remarks
+ * - Fallback exists to sanitize offline/legacy imports without crashing recovery.
+ * - Edge cases: strings are trimmed, stripped to digits/.,- then parsed; commas become dots;
+ *   non-finite, empty, or negative results resolve to null.
+ */
 export function fallbackNormalizeAutoGearWeightValue(value) {
   if (typeof value === 'number' && Number.isFinite(value)) {
     const rounded = Math.round(value);
@@ -187,6 +255,17 @@ export function fallbackNormalizeAutoGearWeightValue(value) {
   return null;
 }
 
+/**
+ * Format an auto-gear weight number for display.
+ *
+ * @param {number} value - Numeric weight value.
+ * @returns {string} Locale-formatted string or empty string for invalid numbers.
+ *
+ * @remarks
+ * - Fallback exists to keep displays stable when Intl APIs are missing or crash in
+ *   legacy/offline contexts.
+ * - Edge cases: non-finite values return an empty string; Intl failures fall back to String().
+ */
 export function fallbackFormatAutoGearWeight(value) {
   if (!Number.isFinite(value)) return '';
   try {
@@ -238,6 +317,19 @@ function createFallbackFormatAutoGearCameraWeight(formatWeight, getOperatorLabel
   };
 }
 
+/**
+ * Resolve runtime scope candidates using the shared collector when available.
+ *
+ * @param {object|function|null} primaryScope - Primary runtime scope.
+ * @param {object|function|null} sharedScope - Shared runtime scope.
+ * @param {object|function|null} globalScope - Global runtime scope.
+ * @returns {Array<object|function>} Candidate scopes ordered by precedence.
+ *
+ * @remarks
+ * - Fallback exists for legacy bundles that lack collectRuntimeScopeCandidates, ensuring
+ *   offline recovery can still locate bindings.
+ * - Edge cases: invalid inputs are filtered out and global objects are appended safely.
+ */
 export function fallbackCreateRuntimeScopeCandidates(primaryScope, sharedScope, globalScope) {
   if (typeof collectRuntimeScopeCandidates === 'function') {
     return collectRuntimeScopeCandidates([primaryScope, sharedScope, globalScope]);
@@ -246,6 +338,19 @@ export function fallbackCreateRuntimeScopeCandidates(primaryScope, sharedScope, 
   return createArrayFromCandidates(primaryScope, sharedScope, globalScope);
 }
 
+/**
+ * Read a value from the first scope that safely exposes it.
+ *
+ * @param {string} name - Binding name to resolve.
+ * @param {Array<object|function>} candidates - Ordered candidate scopes.
+ * @returns {*} The resolved value or undefined if not found.
+ *
+ * @remarks
+ * - Fallback exists to avoid hard failures when scope bridges are unavailable in
+ *   offline/legacy contexts.
+ * - Edge cases: non-string names or empty candidates return undefined; getters that throw
+ *   are ignored to protect recovery flows.
+ */
 export function fallbackReadCoreScopeValue(name, candidates) {
   if (typeof name !== 'string' || !name) {
     return undefined;
@@ -275,6 +380,19 @@ export function fallbackReadCoreScopeValue(name, candidates) {
   return undefined;
 }
 
+/**
+ * Write a value to the first writable scope candidate.
+ *
+ * @param {string} name - Binding name to assign.
+ * @param {*} value - Value to set on the scope.
+ * @param {Array<object|function>} candidates - Ordered candidate scopes.
+ * @returns {boolean} True when a write succeeds, otherwise false.
+ *
+ * @remarks
+ * - Fallback exists to keep offline recovery and legacy bundles able to persist helpers.
+ * - Edge cases: attempts assignment first, then defineProperty for restricted objects; any
+ *   thrown errors are swallowed to prevent data-loss interruptions.
+ */
 export function fallbackWriteCoreScopeValue(name, value, candidates) {
   if (typeof name !== 'string' || !name) {
     return false;
@@ -310,6 +428,18 @@ export function fallbackWriteCoreScopeValue(name, value, candidates) {
   return false;
 }
 
+/**
+ * Declare a runtime binding only if it does not already exist.
+ *
+ * @param {string} name - Binding name to declare.
+ * @param {Function|*} factory - Factory function or fallback value.
+ * @param {Array<object|function>} candidates - Candidate scopes to receive the binding.
+ * @returns {*} The existing or newly declared binding value.
+ *
+ * @remarks
+ * - Fallback exists to prevent overwriting data during recovery and legacy bootstraps.
+ * - Edge cases: factory functions are invoked once; non-function factories are used directly.
+ */
 export function fallbackDeclareCoreFallbackBinding(name, factory, candidates) {
   const existing = fallbackReadCoreScopeValue(name, candidates);
   if (typeof existing !== 'undefined') {
@@ -320,6 +450,20 @@ export function fallbackDeclareCoreFallbackBinding(name, factory, candidates) {
   return fallbackValue;
 }
 
+/**
+ * Resolve auto-gear helpers with defensive fallbacks for offline/legacy bundles.
+ *
+ * @param {object} [options] - Optional overrides for shared/global scopes.
+ * @param {object} [options.coreShared] - Shared core helpers, if available.
+ * @param {object} [options.globalScope] - Global scope override, if available.
+ * @returns {object} Helper functions for normalization and formatting.
+ *
+ * @remarks
+ * - Fallback exists so autosave/import/backup can normalize values without crashing when
+ *   shared helpers are missing or throw in older bundles.
+ * - Edge cases: normalization helpers guard against invalid inputs; formatting falls back
+ *   to local defaults; language text lookup defaults to English or empty objects.
+ */
 export function resolveAutoGearWeightHelpers(options) {
   const opts = options || {};
   const shared = opts.coreShared && typeof opts.coreShared === 'object' ? opts.coreShared : null;
@@ -447,6 +591,22 @@ export function resolveAutoGearWeightHelpers(options) {
   };
 }
 
+/**
+ * Resolve runtime scope tools with a bridge when available, or fall back safely.
+ *
+ * @param {object} [options] - Optional overrides for runtime/shared/global scopes.
+ * @param {object} [options.runtimeScope] - Primary runtime scope override.
+ * @param {object} [options.sharedScope] - Shared runtime scope override.
+ * @param {object} [options.globalScope] - Global scope override.
+ * @param {Function} [options.resolveSupportModule] - Custom resolver for support modules.
+ * @returns {object} Runtime scope bridge, candidates, and read/write/declare helpers.
+ *
+ * @remarks
+ * - Fallback exists to preserve offline resilience and legacy bundle compatibility when
+ *   the runtime scope bridge is unavailable.
+ * - Edge cases: bridge errors are swallowed; reads/writes are guarded to avoid data loss
+ *   during recovery flows.
+ */
 export function resolveRuntimeScopeTools(options) {
   const opts = options || {};
   const runtimeScope =
