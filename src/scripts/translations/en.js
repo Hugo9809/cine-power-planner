@@ -2339,6 +2339,8 @@ export const data = {
     "helpSearchClear": "Clear search",
     "helpSearchHelp": "Type keywords or alternate spellings to instantly filter help topics. Quick links update as you type and highlight the matching article when you press Enter. Press '/' or Ctrl+F (Cmd+F on Mac) to focus the search box when the help dialog is open (instead of the browser find), then press Tab to step through filtered quick links without leaving your project.",
     "helpSearchClearHelp": "Clear the search box and show all help topics again.",
+    "helpSearchStatusAll": "Showing {count} help topics.",
+    "helpSearchStatusWithQuery": "Showing {count} results for “{query}”.",
     "helpQuickLinksHeading": "Jump to a topic",
     "helpQuickLinksAriaLabel": "Help topics quick navigation",
     "helpQuickLinksHelp": "Jump directly to any section of the help dialog. Buttons only show topics that match the current search.",

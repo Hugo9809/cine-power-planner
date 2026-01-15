@@ -2187,6 +2187,8 @@ export const data = {
     "helpSearchClear": "Effacer la recherche",
     "helpSearchHelp": "Saisissez des mots-clés ou des variantes orthographiques pour filtrer instantanément les sujets d'aide. Les liens rapides se mettent à jour pendant la saisie et mettent en évidence l'article correspondant lorsque vous appuyez sur Entrée. Lorsque la fenêtre d'aide est ouverte, appuyez sur '/' ou Ctrl+F (Cmd+F sur Mac) pour placer immédiatement le focus dans le champ de recherche (plutôt que la recherche du navigateur), puis utilisez Tab pour parcourir les liens filtrés sans fermer votre projet.",
     "helpSearchClearHelp": "Effacez le champ de recherche et affichez de nouveau tous les sujets.",
+    "helpSearchStatusAll": "Affichage de {count} sujets d'aide.",
+    "helpSearchStatusWithQuery": "Affichage de {count} résultats pour « {query} ».",
     "helpQuickLinksHeading": "Accéder à un sujet",
     "helpQuickLinksAriaLabel": "Navigation rapide des sujets d'aide",
     "helpQuickLinksHelp": "Accédez directement à une section de la fenêtre d'aide. Les boutons n'affichent que les sujets correspondant à la recherche active.",
