@@ -3688,7 +3688,7 @@ function applyOwnedGearMarkersToHtml(html, markers, options = {}) {
   return doc.body.innerHTML;
 }
 
-function downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear) {
+async function downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear) {
   if (!shareFileName) return;
   const shareContext = getShareUiContext(this);
   const shareLinkMessage = shareContext.linkMessage;
@@ -3776,7 +3776,7 @@ function downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear)
         });
       }
     }
-    storageKeys.forEach((key) => {
+    const fetchCandidate = async (key) => {
       if (
         typeof cineFeatureBackup !== 'undefined'
         && typeof cineFeatureBackup.isAutoBackupName === 'function'
@@ -3785,14 +3785,33 @@ function downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear)
         return;
       }
       try {
-        const storedProject = loadProject(key);
+        let storedProject = null;
+        // [Agent Fix] Priority: Use Modern IDB Service
+        const scope = typeof globalThis !== 'undefined' ? globalThis : window;
+        if (scope.cineProjectService && typeof scope.cineProjectService.getProject === 'function') {
+          storedProject = await scope.cineProjectService.getProject(key);
+        }
+
+        // Fallback: Legacy Sync Load (only if service failed or missing)
+        if (!storedProject && typeof loadProject === 'function') {
+          const result = loadProject(key);
+          // Guard against async loadProject shim being called synchronously
+          if (result && typeof result.then !== 'function') {
+            storedProject = result;
+          }
+        }
+
         if (storedProject && storedProject.projectInfo) {
           projectInfoCandidates.push(storedProject.projectInfo);
         }
       } catch (error) {
         console.warn('Unable to read project info for export from storage key', key, error);
       }
-    });
+    };
+
+    const promises = [];
+    storageKeys.forEach(key => promises.push(fetchCandidate(key)));
+    await Promise.all(promises);
   }
 
   let mergedProjectInfo = null;
@@ -4682,7 +4701,7 @@ async function handleShareSetupClick() {
     if (shareContext.includeOwnedGearCheckbox) {
       shareContext.includeOwnedGearCheckbox.checked = includeOwnedGear && hasOwnedGearForExport;
     }
-    downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear);
+    await downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear);
     return;
   }
 
@@ -4743,7 +4762,7 @@ if (shareSetupButton) {
   shareSetupButton.addEventListener('click', handleShareSetupClick);
 }
 
-function handleShareFormSubmit(event) {
+async function handleShareFormSubmit(event) {
   event.preventDefault();
   const shareContext = getShareUiContext(this);
   const shareFilenameInput = shareContext.filenameInput;
@@ -4773,7 +4792,7 @@ function handleShareFormSubmit(event) {
     && shareIncludeOwnedGearCheckbox.checked
   );
   closeDialog(shareDialog);
-  downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear);
+  await downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear);
 }
 
 function handleShareCancelClick() {

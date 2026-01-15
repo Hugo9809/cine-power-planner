@@ -11,6 +11,19 @@ This document outlines the testing strategy, available test scripts, and best pr
 
 The testing suite uses a multi-tier approach to verify critical user flows, data integrity, and business logic while managing memory constraints effectively.
 
+## Testing Architecture (The "Why")
+
+We use a split-strategy because a "One Size Fits All" test runner is too slow or too heavy for this hybrid app.
+
+1.  **Speed (Unit)**: Logic tests (`test:unit`) must run in < 2 seconds. We mock the DOM and Storage entirely.
+2.  **Realism (DOM)**: UI tests (`test:dom`) need `jsdom` to simulate clicks and inputs. This is slower and memory-heavy.
+3.  **Integrity (Data)**: The Device Database (`src/data/`) is effectively "code". We test its schema (`test:data`) to prevent typos in voltage/wattage.
+
+### Best Practices for Offline-Safe Tests
+*   **Mock `navigator`**: Always mock `navigator.onLine` and `navigator.serviceWorker` in tests.
+*   **No External Calls**: Tests should fail immediately if they try to `fetch()` from the real internet.
+*   **Storage Isolation**: Each test file should get a fresh "Mock Storage" instance to prevent state bleeding.
+
 ## Test Commands Reference
 
 | Command | Description | Heap Limit | Use Case |

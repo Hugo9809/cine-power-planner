@@ -217,8 +217,33 @@
 
     if (typeof window.applyFilterSelectionsToGearList !== 'function') window.applyFilterSelectionsToGearList = function () { };
     if (typeof window.renderFilterDetails !== 'function') window.renderFilterDetails = function () { };
-    if (typeof window.openDialog !== 'function') window.openDialog = function () { };
-    if (typeof window.isDialogOpen !== 'function') window.isDialogOpen = function () { return false; };
+    if (typeof window.openDialog !== 'function') {
+        window.openDialog = function (dialog) {
+            if (dialog) {
+                if (typeof dialog.showModal === 'function' && !dialog.open) {
+                    try { dialog.showModal(); } catch (e) { dialog.setAttribute('open', ''); }
+                } else {
+                    dialog.setAttribute('open', '');
+                }
+            }
+        };
+    }
+    if (typeof window.closeDialog !== 'function') {
+        window.closeDialog = function (dialog) {
+            if (dialog) {
+                if (typeof dialog.close === 'function') {
+                    dialog.close();
+                }
+                dialog.removeAttribute('open');
+            }
+        };
+    }
+    if (typeof window.isDialogOpen !== 'function') {
+        window.isDialogOpen = function (dialog) {
+            if (!dialog) return false;
+            return dialog.open === true || dialog.hasAttribute('open');
+        };
+    }
     if (typeof window.scheduleSettingsTabsOverflowUpdate !== 'function') window.scheduleSettingsTabsOverflowUpdate = function () { };
     if (typeof window.applySessionMountVoltagePreferences !== 'function') window.applySessionMountVoltagePreferences = function () { };
 

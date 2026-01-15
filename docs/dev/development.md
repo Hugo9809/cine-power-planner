@@ -8,12 +8,16 @@ Device catalogs live under `src/data/devices/`. Each file groups related equipme
 changes are easy to audit in version control and inside the app. When editing
 the dataset, run helper scripts before committing:
 
-```bash
 npm run normalize
 npm run unify-ports
 npm run check-consistency
 npm run generate-schema
 ```
+
+See [Tooling Reference](tooling-reference.md) for detailed documentation on these scripts.
+See [Data Catalog Maintenance Guide](data-catalog-maintenance.md) for the complete workflow on adding and validating devices.
+
+`npm run normalize` cleans connector names and expands shorthand entries.
 
 `npm run normalize` cleans connector names and expands shorthand entries.
 `npm run unify-ports` standardizes connector labels. `npm run
@@ -220,48 +224,10 @@ behavior on every workstation.
 
 ## Documentation, Help & Translation Maintenance
 
-Keeping the help center, printable manuals and localized READMEs current is part of every
-feature change. Follow the [Documentation, Help & Translation Maintenance Guide](docs/dev/documentation-maintenance.md)
-and the quick [Documentation Update Checklist](docs/dev/documentation-update-checklist.md)
-whenever you ship a new workflow so offline crews inherit accurate drills, translation
-coverage and recovery instructions. Each update should:
+Keeping the help center, printable manuals, and localized READMEs current is critical.
 
-- Refresh help dialog topics and hover-help text so shortcuts, save routines and offline
-  indicators match the live build.
-- Mirror the same adjustments in every localized README and static legal page, preserving
-  guidance on saving, sharing, importing, backing up and restoring.
-- Keep the [Save, Share, Import, Backup & Restore Reference](docs/user/save-share-restore-reference.md)
-  aligned with UI labels, keyboard shortcuts and verification drills so crews rehearse the
-  exact workflows enforced in code when they validate documentation changes.
-- Log progress in the in-app **Documentation update tracker** (Settings → General) so release
-  notes show which translations, help topics and printable guides were refreshed before shipping
-  offline bundles.
-- Use the checklist to log which UI surfaces changed, which modules they depend on and which
-  translations need attention so verification logs always prove that the documentation and
-  offline behavior match.
-- Re-run the offline help center and localized README spot-checks described in the Quick Start
-  after every documentation update so the bundled guidance is proven to load without
-  connectivity and still teaches the current save, share, import, backup and restore routines.
-- Keep the **Key Workflow Reference** table and **Repository Layout & Offline Assets** notes synchronized across each
-  localized README so every crew references the same offline-first procedures and directory expectations.
-- Update translation keys and selectors so language options stay synchronized with the UI
-  and remain fully functional without connectivity.
-- Rehearse the save → share → import loop after documentation edits to guarantee the printed
-  instructions, help content and offline behavior still align.
-- Cross-check the [Documentation Coverage Matrix](docs/dev/documentation-coverage-matrix.md) so every
-  workflow change includes updated README copy, help topics, printable runbooks, translations and
-  rehearsal evidence before sign-off.
-- Capture the artifacts listed in the [Documentation Verification Packet](docs/ops/documentation-verification-packet.md)
-  so every release stores synchronized manuals, rehearsal exports and verification logs in redundant
-  offline locations. Attach the packet location to your verification notes so future crews know where
-  to retrieve the canonical documentation bundle when rehearsing saves, shares, imports, backups and
-  restores.
-- Run the [Documentation Drift Runbook](docs/dev/documentation-drift-runbook.md) whenever you update
-  copy or translations to confirm cached help topics, localized READMEs and printable guides match the
-  live safeguards before the offline bundle ships.
-- Schedule recurring [documentation audits](docs/dev/documentation-audit-checklist.md) so the README family,
-  help center, translations and printable manuals are regularly spot-checked against the runtime
-  safeguards, Quick safeguards exports and verification evidence captured in the planner.
+> [!IMPORTANT]
+> **See [Documentation Maintenance Guide](documentation-maintenance.md)** for the complete workflow, triggers, and verification steps.
 
 ## Documentation & training cadence
 

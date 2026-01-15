@@ -272,6 +272,11 @@ if (typeof window !== 'undefined') {
   }
 }
 
+// Polyfill IndexedDB
+if (typeof global.indexedDB === 'undefined') {
+  require('fake-indexeddb/auto');
+}
+
 // [Bug Fix] Stub decodeStoredValue to avoid requiring ESM storage.js from CommonJS
 const decodeStoredValue = (val) => val;
 // const { decodeStoredValue } = require('../../src/scripts/storage.js');

@@ -17176,6 +17176,9 @@ function removeOriginalDeviceEntry(originalCategory, originalSubcategory, origin
   }
 }
 var monitorVideoOutputsContainer = document.getElementById("monitorVideoOutputsContainer");
+
+exposeCoreRuntimeConstant('getCategoryContainer', getCategoryContainer);
+exposeCoreRuntimeConstant('removeOriginalDeviceEntry', removeOriginalDeviceEntry);
 var monitorWirelessTxInput = document.getElementById("monitorWirelessTx");
 var monitorLatencyInput = document.getElementById("monitorLatency");
 var monitorAudioOutputInput = document.getElementById("monitorAudioOutput");

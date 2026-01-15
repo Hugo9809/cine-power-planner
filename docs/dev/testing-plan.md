@@ -47,7 +47,7 @@ updates. Prioritise persistence, offline behaviour and documentation accuracy.
 ### Pre-Release Checklist
 
 - [ ] Complete the [Operations Checklist](operations-checklist.md)
-- [ ] Run the [Offline Cache Verification Drill](offline-cache-verification-drill.md)
+- [ ] Run the [Offline Cache Verification Drill](../ops/offline-cache-verification-drill.md)
 - [ ] Execute backup/restore rehearsals on at least two machines
 - [ ] Validate translations by switching locales
 - [ ] Test keyboard navigation for major workflows

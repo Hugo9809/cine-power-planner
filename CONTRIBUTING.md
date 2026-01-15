@@ -14,7 +14,7 @@ npm run dev    # Start dev server at localhost:3000
 ```
 
 > [!TIP]
-> New to the codebase? Start with [Codebase Overview](docs/dev/codebase-overview.md) for architecture context.
+> New to the codebase? Read [CODEBASE_MAP.md](CODEBASE_MAP.md) **FIRST** for the definitive architecture guide.
 
 ## How Can I Contribute?
 
@@ -43,6 +43,7 @@ Not all contributions are code! You can help by:
 **Key documentation files:**
 | File | Purpose |
 | --- | --- |
+| `CODEBASE_MAP.md` | **Read This First** - Architecture & Rules |
 | `README.md` | Project overview and quick start |
 | `docs/dev/codebase-overview.md` | Architecture and directory structure |
 | `docs/dev/development.md` | Development workflow and npm scripts |
@@ -188,11 +189,14 @@ This project adheres to a Code of Conduct. By participating, you are expected to
 
 ## Additional Resources
 
-- [Development & Maintenance Guide](docs/dev/development.md) — npm scripts, troubleshooting
+- [Development & Maintenance Guide](docs/dev/development.md) — npm scripts, tooling
 - [Vite Migration Guide](docs/dev/vite-migration.md) — ESM patterns
 - [V2 Views Architecture](docs/dev/architecture/v2-views.md) — Modern UI system
+- [V2 Component Cookbook](docs/dev/v2-component-cookbook.md) — UI recipes
+- [Debugging Guide](docs/dev/debugging-guide.md) — Hybrid troubleshooting
 - [Module Registry](docs/dev/architecture/module-registry.md) — Dependency injection
 
 ## Thank You 🙏
+
 
 Your contributions make Cine Power Planner better for everyone. Thank you for helping out! If you have any questions, feel free to reach out by opening an issue or discussion.

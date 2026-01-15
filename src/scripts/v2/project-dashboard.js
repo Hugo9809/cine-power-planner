@@ -111,7 +111,7 @@ function createDefaultDataProvider() {
             }
             return project;
         },
-        async saveProject(projectName, projectData, options = {}) {
+        async saveProject(projectName, projectData) {
             // This implicitly migrates legacy projects to V2 storage format on save
             return await projectService.saveProject(projectName, projectData);
         },

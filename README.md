@@ -66,12 +66,12 @@ workflow so each routine is documented once.
   [Data Protection Lifecycle Guide](docs/user/data-protection-lifecycle.md),
   and the
   [Cloud Sync Safety (Future Update)](docs/user/cloud-sync-safety.md).
+- **Developers (AI Agents):** Read [CODEBASE_MAP.md](CODEBASE_MAP.md) **FIRST**.
 - **Operations:** rehearse with the
   [Operations Checklist](docs/ops/operations-checklist.md) and
   [Offline Readiness Runbook](docs/ops/offline-readiness.md).
-- **Developers:** follow the
-  [Development & Maintenance Guide](docs/dev/development.md) and the
-  [Documentation Maintenance Guide](docs/dev/documentation-maintenance.md).
+- **Maintenance:** follow the
+  [Development & Maintenance Guide](docs/dev/development.md).
 
 ## New: V2 User Interface
 

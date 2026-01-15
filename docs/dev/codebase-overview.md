@@ -70,9 +70,14 @@ Contains the View layer for the V2 UI (the modern interface).
 - **`project-detail.js`**: Handles the project detail view with tabs (Camera Package, Power Summary, Requirements, Gear List), status dropdown, and legacy element re-parenting.
 - **`sidebar.js`**: Manages the sidebar navigation, search proxy to legacy search, theme toggles (dark/pink mode), mobile toggle, and language selector.
 - **`view-manager.js`**: Handles view routing, hash-based navigation, and switching between different views.
+  - **Concept**: Single Page Application (SPA) Router.
+  - **Routes**: `#/`, `#/projects`, `#/device-manager`, etc.
+  - **Lifecycle**: `mount()` -> `unmount()`.
 - **`help-data.js`**: Static V2-specific help content definitions.
 - **`help-service.js`**: Merges V2 help data with legacy localized help topics.
 - **`legacy-shim.js`**: Bridges V2 components with legacy V1 functionality.
+  - **Role**: The Adapter Pattern. Reparents legacy DOM nodes into V2 containers.
+  - **Strategy**: "Strangler Fig" pattern (slowly replacing legacy pieces).
 - **`translations.js`**: V2-specific translation key management.
 
 ### `src/scripts/v2/views`
@@ -233,3 +238,9 @@ flowchart TD
         RT_B[bootstrap.js] --> CORE[app-core modules]
     end
 ```
+
+### Tooling & CI/CD
+> **Docs**: [Tooling Reference](tooling-reference.md) | [CI/CD](ci-cd-pipeline.md)
+- **`checkConsistency.js`**: Validates Data Integrity.
+- **`generateServiceWorkerAssets.cjs`**: Builds Offline Manifest.
+- **Release Drafter**: Automates Changelogs.

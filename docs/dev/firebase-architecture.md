@@ -1,5 +1,9 @@
 # Firebase Studio Architecture
 
+> [!WARNING]
+> **This is a Phase 3 Specification.**
+> This feature is currently **BLOCKED**. Do not implement or modify this architecture until Phase 1 & 2 are complete. See [CODEBASE_MAP.md](../../CODEBASE_MAP.md#0-strategic-roadmap--status) for the roadmap.
+
 This document describes the architecture for the "Firebase Studio" integration, which adds optional cloud synchronization to Cine Power Planner.
 
 ## Philosophy: Hybrid First

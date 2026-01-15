@@ -76,18 +76,28 @@ See [Development & Maintenance Guide](dev/development.md#vite-build-system) for 
 - [Runtime Refactor Plan](dev/runtime-refactor-plan.md)
 - [Runtime Refactor Status](dev/runtime-refactor-status.md)
 - [Missing Devices Research](dev/missing_devices_research.md)
-- Architecture references:
+- Architecture & Guides:
   - [Codebase Overview](dev/codebase-overview.md)
-  - [V2 Views Architecture](dev/architecture/v2-views.md)
+  - [Design System & Tokens](dev/architecture/design-system.md)
   - [Module Registry](dev/architecture/module-registry.md)
-  - [App Core Modules](dev/architecture/app-core-modules.md)
-  - [API Quick Reference](dev/api-quick-reference.md)
-  - [Firebase Studio Architecture](dev/firebase-architecture.md)
+  - [Data Catalog Maintenance](dev/data-catalog-maintenance.md)
+  - [Release Management](dev/release-management.md)
+  - [Debugging Guide](dev/debugging-guide.md)
+  - [Schema Evolution](dev/schema-evolution-guide.md)
+  - [V2 Component Cookbook](dev/v2-component-cookbook.md)
   - [Vite Migration Guide](dev/vite-migration.md)
-- Reviews & snapshots:
-  - [Review Findings](dev/reviews/review-findings.md)
-  - [Review Tasks (2025-02-07)](dev/reviews/review-tasks-2025-02-07.md)
-  - [Translation Review (2025-03-10)](dev/reviews/translation-review-2025-03-10.md)
+  - [Offline Strategy](dev/architecture/offline-strategy.md)
+- Reference:
+  - [API Quick Reference](dev/api-quick-reference.md)
+  - [Runtime Event Reference](dev/runtime-events.md)
+  - [Tooling Reference](dev/tooling-reference.md)
+  - [Performance Standards](dev/performance-standards.md)
+  - [Security Policy](../SECURITY.md)
+- Archives & Reports:
+  - [Runtime Refactor Status](dev/reports/runtime-refactor-status-2025.md)
+  - [Feature Gap Analysis](dev/feature-gap-analysis.md)
+
+
 
 ## By workflow
 
