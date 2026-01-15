@@ -5821,7 +5821,81 @@ function storeSetups(setups) {
 
 exposeCoreRuntimeConstant('storeSetups', storeSetups);
 
+/**
+ * Normalize trailing whitespace on subcategory keys to prevent
+ * legacy spaced keys from fragmenting device data.
+ *
+ * @param {Record<string, any>} categoryMap
+ * @returns {boolean} True when normalization applied.
+ */
+function normalizeTrailingCategoryKeys(categoryMap) {
+  if (!categoryMap || typeof categoryMap !== 'object') return false;
+  let didNormalize = false;
+  for (const key of Object.keys(categoryMap)) {
+    if (typeof key !== 'string') continue;
+    const trimmed = key.trim();
+    if (!trimmed || trimmed === key) continue;
+    const incoming = categoryMap[key];
+    if (Object.prototype.hasOwnProperty.call(categoryMap, trimmed)) {
+      const existing = categoryMap[trimmed];
+      if (
+        existing
+        && incoming
+        && typeof existing === 'object'
+        && typeof incoming === 'object'
+        && !Array.isArray(existing)
+        && !Array.isArray(incoming)
+      ) {
+        for (const [entryKey, entryValue] of Object.entries(incoming)) {
+          if (!Object.prototype.hasOwnProperty.call(existing, entryKey)) {
+            existing[entryKey] = entryValue;
+            continue;
+          }
+          const existingEntry = existing[entryKey];
+          if (
+            existingEntry
+            && entryValue
+            && typeof existingEntry === 'object'
+            && typeof entryValue === 'object'
+            && !Array.isArray(existingEntry)
+            && !Array.isArray(entryValue)
+          ) {
+            for (const [subKey, subValue] of Object.entries(entryValue)) {
+              if (!Object.prototype.hasOwnProperty.call(existingEntry, subKey)) {
+                existingEntry[subKey] = subValue;
+              }
+            }
+          }
+        }
+      }
+    } else {
+      categoryMap[trimmed] = incoming;
+    }
+    delete categoryMap[key];
+    didNormalize = true;
+  }
+  return didNormalize;
+}
+
+/**
+ * Merge legacy category keys with trailing whitespace into trimmed keys.
+ *
+ * @param {Record<string, any>} deviceData
+ * @returns {Record<string, any>}
+ */
+function normalizeDevicesCategoryWhitespace(deviceData) {
+  if (!deviceData || typeof deviceData !== 'object') return deviceData;
+  if (deviceData.accessories && typeof deviceData.accessories === 'object') {
+    normalizeTrailingCategoryKeys(deviceData.accessories);
+  }
+  if (deviceData.fiz && typeof deviceData.fiz === 'object') {
+    normalizeTrailingCategoryKeys(deviceData.fiz);
+  }
+  return deviceData;
+}
+
 function storeDevices(deviceData) {
+  normalizeDevicesCategoryWhitespace(deviceData);
   saveDeviceData(deviceData);
 }
 
@@ -6013,6 +6087,7 @@ if (storedDevices) {
       merged[key] = value;
     }
   }
+  normalizeDevicesCategoryWhitespace(merged);
   // Sync global and local reference
   window.devices = devices = merged;
   const updateDevicesReferenceFn = resolveUpdateDevicesReferenceFunction();
@@ -17037,7 +17112,7 @@ function populateCategoryOptions() {
         if (sub === 'cables') {
           categoriesToAdd.add('accessories.cables');
         } else if (obj && obj.attributes) {
-          categoriesToAdd.add(`accessories.${sub} `);
+          categoriesToAdd.add(`accessories.${sub}`);
         }
       }
     }
@@ -17059,7 +17134,7 @@ function populateCategoryOptions() {
 
     if (deviceSchema.fiz) {
       for (const [sub, obj] of Object.entries(deviceSchema.fiz)) {
-        if (obj && obj.attributes) addOpt(`fiz.${sub} `);
+        if (obj && obj.attributes) addOpt(`fiz.${sub}`);
       }
     }
 
@@ -17085,11 +17160,11 @@ function populateCategoryOptions() {
     for (const [key, obj] of Object.entries(devices)) {
       if (key === 'accessories') {
         for (const sub of Object.keys(obj || {})) {
-          addIfMissing(`accessories.${sub} `);
+          addIfMissing(`accessories.${sub}`);
         }
       } else if (key === 'fiz') {
         for (const sub of Object.keys(obj || {})) {
-          addIfMissing(`fiz.${sub} `);
+          addIfMissing(`fiz.${sub}`);
         }
       } else if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
         addIfMissing(key);
@@ -17124,7 +17199,8 @@ function getCategoryContainer(categoryKey, subcategory, { create = false } = {})
   }
 
   if (categoryKey.includes('.')) {
-    const [mainCat, subCat] = categoryKey.split('.');
+    const [mainCat, rawSubCat] = categoryKey.split('.');
+    const subCat = rawSubCat ? rawSubCat.trim() : rawSubCat;
     if (!devices[mainCat]) {
       if (!create) return null;
       devices[mainCat] = {};
