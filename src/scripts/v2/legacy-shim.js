@@ -398,7 +398,9 @@ function getProjectNames() {
         const stored = localStorage.getItem('cameraPowerPlanner_setups');
         if (stored) {
             const data = JSON.parse(stored);
-            return Object.keys(data).filter(name => name && !name.startsWith('auto-backup-'));
+            if (data && typeof data === 'object') {
+                return Object.keys(data).filter(name => name && !name.startsWith('auto-backup-'));
+            }
         }
     } catch (e) {
         console.warn('[LegacyShim] localStorage fallback failed:', e);

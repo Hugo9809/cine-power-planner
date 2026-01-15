@@ -13508,7 +13508,7 @@ function saveProject(name, project, options = {}) {
   const isIndexedDB = storageRepo && storageRepo.driver && storageRepo.driver.constructor && storageRepo.driver.constructor.name === 'IndexedDBAdapter';
   let shardSuccess = true;
 
-  if (!isIndexedDB) {
+  if (!isIndexedDB || !isProjectCacheHydrated) {
     shardSuccess = persistProjectShard(finalKey, normalized, { skipCompression });
   }
 
@@ -14472,9 +14472,9 @@ function normalizeFullBackupHistoryEntry(entry) {
   return null;
 }
 
-function loadFullBackupHistory() {
+function loadFullBackupHistory(forceRefresh = false) {
   // [Migration] Use cache if available (hydrated from storageRepo)
-  if (fullBackupHistoryCache !== null) {
+  if (!forceRefresh && fullBackupHistoryCache !== null) {
     const cached = fullBackupHistoryCache;
     if (Array.isArray(cached)) {
       return cached.map(normalizeFullBackupHistoryEntry).filter(Boolean);
@@ -15370,16 +15370,13 @@ function saveAutoGearPresets(presets, options = {}) {
     storageRepo.setItem(AUTO_GEAR_PRESETS_STORAGE_KEY, normalizedPresets).catch(e => console.warn('Failed to save auto gear presets to repo', e));
   }
 
-  const isIndexedDB = storageRepo && storageRepo.driver && storageRepo.driver.constructor && storageRepo.driver.constructor.name === 'IndexedDBAdapter';
-  if (!isIndexedDB) {
-    saveJSONToStorage(
-      safeStorage,
-      AUTO_GEAR_PRESETS_STORAGE_KEY,
-      normalizedPresets,
-      "Error saving automatic gear presets to localStorage:",
-      disableCompression ? { disableCompression: true } : undefined,
-    );
-  }
+  saveJSONToStorage(
+    safeStorage,
+    AUTO_GEAR_PRESETS_STORAGE_KEY,
+    normalizedPresets,
+    "Error saving automatic gear presets to localStorage:",
+    disableCompression ? { disableCompression: true } : undefined,
+  );
   return normalizedPresets;
 }
 
@@ -15639,8 +15636,7 @@ function saveAutoGearBackupVisibility(flag) {
     storageRepo.setItem(AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, !!flag).catch(e => console.warn('Failed to save visibility', e));
   }
 
-  const isIndexedDB = storageRepo && storageRepo.driver && storageRepo.driver.constructor && storageRepo.driver.constructor.name === 'IndexedDBAdapter';
-  if (isIndexedDB) return;
+
 
   const safeStorage = getSafeLocalStorage();
   saveFlagToStorage(
@@ -15817,8 +15813,7 @@ function saveAutoGearBackupRetention(retention) {
     storageRepo.setItem(AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY, normalized).catch(e => console.warn('Failed to save backup retention', e));
   }
 
-  const isIndexedDB = storageRepo && storageRepo.driver && storageRepo.driver.constructor && storageRepo.driver.constructor.name === 'IndexedDBAdapter';
-  if (isIndexedDB) return;
+
 
   ensurePreWriteMigrationBackup(safeStorage, AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY);
   saveJSONToStorage(
@@ -16930,7 +16925,9 @@ function safeSetLocalStorage(key, value) {
     if (key === FAVORITES_STORAGE_KEY) { favoritesCache = null; }
     if (key === TEMPERATURE_UNIT_STORAGE_KEY_NAME) { temperatureUnitCache = null; }
     if (key === FOCUS_SCALE_STORAGE_KEY_NAME) { focusScaleCache = null; }
+    if (key === FOCUS_SCALE_STORAGE_KEY_NAME) { focusScaleCache = null; }
     if (key === getMountVoltageStorageKeyName()) { mountVoltagesCache = null; }
+    if (key === FULL_BACKUP_HISTORY_STORAGE_KEY) { fullBackupHistoryCache = null; }
   };
 
   const writeLegacyStorage = (storedValue) => {
@@ -16975,7 +16972,9 @@ function safeSetLocalStorage(key, value) {
       if (key === FAVORITES_STORAGE_KEY) { favoritesCache = storedValue; }
       if (key === TEMPERATURE_UNIT_STORAGE_KEY_NAME) { temperatureUnitCache = storedValue; }
       if (key === FOCUS_SCALE_STORAGE_KEY_NAME) { focusScaleCache = storedValue; }
+      if (key === FOCUS_SCALE_STORAGE_KEY_NAME) { focusScaleCache = storedValue; }
       if (key === getMountVoltageStorageKeyName()) { mountVoltagesCache = storedValue; }
+      if (key === FULL_BACKUP_HISTORY_STORAGE_KEY) { fullBackupHistoryCache = JSON.parse(storedValue); }
 
       if (storageRepo) {
         storageRepo.setItem(key, storedValue).catch(e => {
@@ -16992,7 +16991,24 @@ function safeSetLocalStorage(key, value) {
         });
       }
 
-      if (isIndexedDB) {
+      const keysWithMemoryCache = new Set([
+        CUSTOM_FONT_STORAGE_KEY_DEFAULT,
+        CUSTOM_LOGO_STORAGE_KEY,
+        CAMERA_COLOR_STORAGE_KEY,
+        PRINT_PREFERENCES_STORAGE_KEY,
+        CONTACTS_STORAGE_KEY,
+        OWN_GEAR_STORAGE_KEY,
+        USER_PROFILE_STORAGE_KEY,
+        FAVORITES_STORAGE_KEY,
+        TEMPERATURE_UNIT_STORAGE_KEY_NAME,
+        FOCUS_SCALE_STORAGE_KEY_NAME,
+        TEMPERATURE_UNIT_STORAGE_KEY_NAME,
+        FOCUS_SCALE_STORAGE_KEY_NAME,
+        getMountVoltageStorageKeyName(),
+        FULL_BACKUP_HISTORY_STORAGE_KEY,
+      ]);
+
+      if (isIndexedDB && keysWithMemoryCache.has(key)) {
         return;
       }
 

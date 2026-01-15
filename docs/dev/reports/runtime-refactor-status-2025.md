@@ -263,3 +263,16 @@
 - Extracted the auto gear normalisation, formatting, and runtime scope fallback utilities from the part 2 entry point into `app-core-runtime-helpers.js`, exposing shared helper APIs while preserving the defensive fallbacks that protect autosave, backup, and offline behaviour.【F:src/scripts/app-core-runtime-helpers.js†L311-L599】【F:legacy/scripts/app-core-runtime-helpers.js†L220-L392】
 - Updated `app-core-new-2.js` to consume the shared helper namespace for auto gear weight logic and runtime scope bindings, eliminating duplicated fallback code without altering behaviour.【F:src/scripts/app-core-new-2.js†L220-L360】【F:legacy/scripts/app-core-new-2.js†L179-L244】
 - Added the transpiled legacy helper mirror and wired both bundles, loaders, integrity tests, and the service worker manifest to preload the new runtime helper so offline caches and Node bundling stay aligned.【F:legacy/scripts/app-core-runtime-helpers.js†L1-L220】【F:src/scripts/loader.js†L3824-L3903】【F:legacy/scripts/loader.js†L2994-L3003】【F:src/scripts/script.js†L30-L64】【F:legacy/scripts/script.js†L7-L31】【F:tests/script/scriptIntegrity.test.js†L105-L125】【F:service-worker-assets.js†L21-L70】【F:service-worker-assets.js†L205-L238】
+
+## Step 21 - Text entry utility migration
+
+| File | Previous lines | Current lines | Delta |
+| --- | --- | --- | --- |
+| `src/scripts/core/app-core-text.js` | 168 | 66 | -102 |
+| `src/scripts/modules/text.js` | – | 95 | +95 |
+
+*Notes:*
+
+- Extracted text normalization and resolution logic into a pure ESM module `src/scripts/modules/text.js`.
+- Refactored `app-core-text.js` to act as a backwards-compatibility shim that imports the new module and exposes the legacy global namespace `cineCoreTextEntries`.
+- Verified the migration with a new unit test suite `tests/unit/textUtils.test.js`.

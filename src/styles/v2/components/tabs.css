@@ -25,7 +25,7 @@
     /* No padding, no track */
 
     /* Remove Track Appearance */
-    background-color: var(--v2-surface-base);
+    background-color: transparent;
     border-radius: 0;
     border: none;
 
@@ -35,10 +35,10 @@
     margin: 0;
     padding: var(--v2-space-md) var(--v2-space-lg);
 
-    /* Sticky behavior */
-    position: sticky;
-    top: calc(var(--v2-header-height) + var(--v2-space-md));
-    z-index: 90;
+    /* Sticky behavior REMOVED per user request */
+    position: relative;
+    top: auto;
+    z-index: 1;
 
     /* Scroll properties (mobile) */
     overflow-x: auto;
@@ -72,16 +72,16 @@
     /* Typography */
     font-size: 0.95rem;
     font-weight: var(--v2-font-weight-medium);
-    color: var(--v2-text-secondary);
+    color: var(--v2-text-primary); /* Was secondary, now primary */
     line-height: 1.2;
     letter-spacing: 0.01em;
 
-    /* Shape */
-    border: 1px solid transparent;
-    /* Reserve space for border */
+    /* Shape - Inactive State (formerly Active-like) */
+    background-color: var(--v2-surface-elevated);
+    border: 1px solid var(--v2-border-muted);
     border-radius: 20px;
     /* Full pill radius */
-    background: transparent;
+    box-shadow: var(--v2-shadow-sm);
 
     cursor: pointer;
     user-select: none;
@@ -93,19 +93,20 @@
 /* Hover state for inactive tabs */
 .v2-tab-btn:hover:not(:disabled):not(.active) {
     color: var(--v2-text-primary);
-    background-color: rgba(0, 0, 0, 0.04);
-    /* Subtle interactive hint */
+    background-color: var(--v2-surface-2);
+    border-color: var(--v2-border-hover);
 }
 
 /* Active State - The "Floating Pill" */
+/* Active State - The "Colored Pill" */
 .v2-tab-btn.active {
-    background-color: var(--v2-surface-elevated);
-    color: var(--v2-text-primary);
+    background-color: var(--v2-brand-blue); /* Blue/Pink depending on mode */
+    color: #ffffff; /* White text */
     font-weight: var(--v2-font-weight-semibold);
 
     /* Border/Shadow Definition */
-    border-color: var(--v2-border-muted);
-    box-shadow: var(--v2-shadow-sm);
+    border-color: var(--v2-brand-blue);
+    box-shadow: var(--v2-shadow-md);
 }
 
 /* Remove old pseudo-elements */
@@ -126,11 +127,12 @@
     height: 16px;
     opacity: 0.7;
     transition: opacity 0.2s, color 0.2s;
+    color: inherit; /* Inherit from button text */
 }
 
 .v2-tab-btn.active .icon {
     opacity: 1;
-    color: var(--v2-brand-blue);
+    color: #ffffff;
 }
 
 /* Focus styles */

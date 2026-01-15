@@ -156,6 +156,7 @@ export default [
             'src/scripts/auto-gear/**/*.js',
             'src/scripts/runtime/**/*.js',
             'tests/dom/storage-migration.test.js',
+            'tests/**/*.js',
         ],
         languageOptions: {
             ecmaVersion: 2022,

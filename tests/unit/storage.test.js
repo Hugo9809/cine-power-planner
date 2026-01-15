@@ -3428,7 +3428,7 @@ describe('full backup history storage', () => {
 
   test('loadFullBackupHistory normalizes raw string entries', () => {
     localStorage.setItem(FULL_BACKUP_HISTORY_KEY, JSON.stringify([' 2024-03-03T08:30:00Z ']));
-    const history = loadFullBackupHistory();
+    const history = loadFullBackupHistory(true);
     expect(history).toEqual([{ createdAt: '2024-03-03T08:30:00Z' }]);
   });
 
@@ -3444,7 +3444,7 @@ describe('full backup history storage', () => {
       ],
     });
 
-    const history = loadFullBackupHistory();
+    const history = loadFullBackupHistory(true);
     expect(history).toEqual([
       { createdAt: '2024-04-01T00:00:00Z' },
       { createdAt: '2024-04-02T03:04:05Z', fileName: 'backup.json' },

@@ -41,3 +41,28 @@ Because Vite leverages dynamic hashing, we cannot hardcode asset URLs in the Ser
 | **App Shell** (`index.html`, `main.js`) | **Cache First** | Instant load, zero network latency. |
 | **Device Images** | **Stale-While-Revalidate** | Show cached immediately, update in background if changed. |
 | **API Calls** (Future) | **Network First** | Data freshness is priority (with IDB fallback). |
+
+## Debugging Service Workers
+
+Working with Service Workers can be tricky due to their aggressive caching.
+
+### 1. Force Update
+If you deploy a new version and don't see changes:
+*   **DevTools**: Application > Service Workers > "Update on reload".
+*   **Code**: Bump the `CACHE_NAME` or `VERSION` in `service-worker.js` (handled automatically by `generateServiceWorkerAssets.cjs` hash in production).
+
+### 2. Inspecting the Cache
+Go to **DevTools > Application > Cache Storage**. You should see:
+*   `cine-power-cache-v...`: Contains the critical assets.
+*   `cine-runtime-images`: Contains lazy-loaded images.
+
+### 3. Resetting
+To simulate a fresh install:
+1.  **Unregister**: DevTools > Application > Service Workers > Unregister.
+2.  **Clear Storage**: DevTools > Application > Storage > Clear Site Data (check "Cache storage").
+3.  **Reload**: The SW will re-install from scratch.
+
+### 4. Bypass for Development
+In `vite.config.js` or development mode, the Service Worker is typically **not** registered to allow for Hot Module Replacement (HMR).
+*   **Production**: `npm run preview` is the best way to test the SW behavior locally.
+

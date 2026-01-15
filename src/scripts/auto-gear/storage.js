@@ -49,9 +49,9 @@ function resolveAutoGearPersistenceService() {
             return scope.cineAutoGearPersistence;
         var registry = scope.cineModules;
         if (registry && typeof registry.get === 'function') {
-            var module = registry.get(AUTO_GEAR_PERSISTENCE_MODULE_NAME);
-            if (module)
-                return module;
+            var module_1 = registry.get(AUTO_GEAR_PERSISTENCE_MODULE_NAME);
+            if (module_1)
+                return module_1;
         }
     }
     return null;

@@ -281,16 +281,17 @@ deleteOwnGearItem(itemId);
 ## Event Patterns
 
 ### Custom Events
+See [Runtime Event Reference](docs/dev/runtime-events.md) for the complete list.
 
 ```javascript
 // Dispatch a custom event
-window.dispatchEvent(new CustomEvent('cine:projectSaved', {
-  detail: { projectId: 'my-project' }
+window.dispatchEvent(new CustomEvent('cine:auto-save-notification', {
+  detail: { type: 'success', timestamp: Date.now() }
 }));
 
 // Listen for events
-window.addEventListener('cine:projectSaved', (event) => {
-  console.log('Project saved:', event.detail.projectId);
+window.addEventListener('cine:projectLoaded', (event) => {
+  console.log('Project loaded:', event.detail.projectId);
 });
 ```
 
@@ -298,11 +299,11 @@ window.addEventListener('cine:projectSaved', (event) => {
 
 | Event | Payload | When |
 | --- | --- | --- |
-| `cine:projectSaved` | `{ projectId }` | After successful save |
-| `cine:projectLoaded` | `{ projectId }` | After loading a project |
-| `cine:themeChanged` | `{ theme }` | After theme toggle |
-| `cine:languageChanged` | `{ language }` | After language change |
-| `cine:offlineStatusChanged` | `{ isOffline }` | Network status change |
+| `cine:projectLoaded` | `{ projectId, data }` | After full project hydration |
+| `cine:auto-save-notification` | `{ type, timestamp }` | Autosave completion |
+| `cine:offline-status` | `{ online }` | Network state change |
+| `v2:viewchange` | `{ view }` | V2 Router navigation (internal) |
+| `v2:themechange` | `{ theme }` | Dark/Pink mode toggle |
 
 ## Defensive Patterns
 
