@@ -63,21 +63,6 @@ workflow so each routine is documented once.
   [Development & Maintenance Guide](docs/dev/development.md) and the
   [Documentation Maintenance Guide](docs/dev/documentation-maintenance.md).
 
-## Key features
-
-- **Equipment power knowledge base.** Reference bundled draw figures or extend
-  the local catalog with your own entries.
-- **Battery runtime planning.** Combine capacities, voltages, and runtime
-  feedback so estimates stay grounded in real-world usage.
-- **Custom rig configurations.** Mix cameras, accessories, and crew
-  requirements, then export bundles or backups without risking data loss.
-- **Offline-first operation.** Every asset ships with the repo, so autosave,
-  backup, restore, share, and help stay fully functional without a network.
-- **Firebase Studio Integration.** Optionally sync your projects to the cloud for real-time collaboration and multi-device access.
-- **Restore compatibility summaries.** Every restore lists missing sections and
-  keeps a pre-restore safety backup so crews can verify changes before
-  promotion.
-
 ## New: V2 User Interface
 
 The application now features a completely redesigned, responsive V2 User Interface.
@@ -103,6 +88,21 @@ The application now features a completely redesigned, responsive V2 User Interfa
 - **Pink Mode**: Fun accent theme with animated "icon rain" effect.
 - **Theme Controls**: Quick-access toggles in the sidebar for dark mode, pink mode, and forced refresh.
 
+## Key features
+
+- **Equipment power knowledge base.** Reference bundled draw figures or extend
+  the local catalog with your own entries.
+- **Battery runtime planning.** Combine capacities, voltages, and runtime
+  feedback so estimates stay grounded in real-world usage.
+- **Custom rig configurations.** Mix cameras, accessories, and crew
+  requirements, then export bundles or backups without risking data loss.
+- **Offline-first operation.** Every asset ships with the repo, so autosave,
+  backup, restore, share, and help stay fully functional without a network.
+- **Firebase Studio Integration.** Optionally sync your projects to the cloud for real-time collaboration and multi-device access.
+- **Restore compatibility summaries.** Every restore lists missing sections and
+  keeps a pre-restore safety backup so crews can verify changes before
+  promotion.
+
 ## Installation
 
 1. Clone or download this repository to a trusted local drive:
@@ -124,6 +124,20 @@ The application now features a completely redesigned, responsive V2 User Interfa
    ```
 4. (Offline usage) Open `index.html` directly in a supported browser for fully
    offline use. All assets load from the repository without a network connection.
+
+## Quick Command Reference
+
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start Vite dev server with HMR |
+| `npm run build` | Production build to `dist/` |
+| `npm test` | Run full test suite (lint + checks + Jest) |
+| `npm run lint` | Run ESLint |
+| `npm run check-consistency` | Validate device data and SW manifest |
+| `npm run help` | Print all available scripts |
+
+See [Development & Maintenance Guide](docs/dev/development.md) for the complete
+npm scripts reference and troubleshooting tips.
 
 ## Translations
 
