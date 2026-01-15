@@ -15057,6 +15057,36 @@ function saveCurrentGearListImplementation() {
 }
 
 function deleteCurrentGearList() {
+  const getDeleteGearListTexts = () => {
+    const resolveTexts = typeof getLanguageTexts === 'function' ? getLanguageTexts : null;
+    const fallbackLanguage =
+      (typeof DEFAULT_LANGUAGE_SAFE === 'string' && DEFAULT_LANGUAGE_SAFE) || 'en';
+    const langTexts = resolveTexts ? resolveTexts(currentLang) : null;
+    const fallbackTexts = resolveTexts ? resolveTexts(fallbackLanguage) : null;
+    const safeLangTexts = langTexts && typeof langTexts === 'object' ? langTexts : {};
+    const safeFallbackTexts =
+      fallbackTexts && typeof fallbackTexts === 'object' ? fallbackTexts : {};
+    const resolveText = (key) => {
+      if (!key) return '';
+      const candidate = safeLangTexts[key];
+      if (typeof candidate === 'string' && candidate) return candidate;
+      const fallbackCandidate = safeFallbackTexts[key];
+      if (typeof fallbackCandidate === 'string' && fallbackCandidate) return fallbackCandidate;
+      return '';
+    };
+
+    return {
+      title: resolveText('deleteGearListTitle'),
+      message: resolveText('confirmDeleteGearList'),
+      confirmLabel: resolveText('deleteGearListConfirmLabel'),
+      confirmAgainTitle: resolveText('deleteGearListConfirmTitle'),
+      confirmAgainMessage: resolveText('confirmDeleteGearListAgain'),
+      confirmAgainLabel: resolveText('deleteGearListConfirmAgainLabel'),
+    };
+  };
+
+  const deleteTexts = getDeleteGearListTexts();
+
   const performDeletion = () => {
     const backupName = ensureAutoBackupBeforeDeletion('delete gear list');
     if (!backupName) return false;
@@ -15175,16 +15205,16 @@ function deleteCurrentGearList() {
 
   if (typeof window.cineShowConfirmDialog === 'function') {
     window.cineShowConfirmDialog({
-      title: (typeof texts !== 'undefined' && texts[currentLang] && texts[currentLang].deleteGearListTitle) || 'Delete Gear List',
-      message: texts[currentLang].confirmDeleteGearList,
-      confirmLabel: 'Delete',
+      title: deleteTexts.title,
+      message: deleteTexts.message,
+      confirmLabel: deleteTexts.confirmLabel,
       danger: true,
       onConfirm: () => {
         setTimeout(() => {
           window.cineShowConfirmDialog({
-            title: (typeof texts !== 'undefined' && texts[currentLang] && texts[currentLang].areYouSure) || 'Are you sure?',
-            message: texts[currentLang].confirmDeleteGearListAgain,
-            confirmLabel: 'Confirm Delete',
+            title: deleteTexts.confirmAgainTitle,
+            message: deleteTexts.confirmAgainMessage,
+            confirmLabel: deleteTexts.confirmAgainLabel,
             danger: true,
             onConfirm: () => performDeletion()
           });
@@ -15192,8 +15222,8 @@ function deleteCurrentGearList() {
       }
     });
   } else {
-    if (!confirm(texts[currentLang].confirmDeleteGearList)) return false;
-    if (!confirm(texts[currentLang].confirmDeleteGearListAgain)) return false;
+    if (!confirm(deleteTexts.message)) return false;
+    if (!confirm(deleteTexts.confirmAgainMessage)) return false;
     return performDeletion();
   }
 }
