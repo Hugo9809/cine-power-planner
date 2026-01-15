@@ -15,8 +15,9 @@ Feld-Laptops oder luftgetrennten Archiven funktioniert.
 ## Datenschutzversprechen
 
 - **Nur lokale Speicherung.** Projekte, Kit-Listen, Laufzeit-Feedback,
-  Exporte und Backups bleiben auf deinem Rechner; die App benötigt keine
-  externen Dienste.
+  Exporte und Backups bleiben auf deinem Rechner in IndexedDB, mit OPFS als
+  Backup-Ziel, wo unterstützt; Legacy-LocalStorage bleibt als Fallback. Die
+  App benötigt keine externen Dienste.
 - **Optionaler Cloud-Sync.** Verbinde dich mit Firebase Studio, um Projekte
   geräteübergreifend zu synchronisieren, ohne lokale Kontrolle abzugeben.
 - **Mehrstufige Sicherheitsnetze.** Speichern, Autosave, Teilen, Importieren,

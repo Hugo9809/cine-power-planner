@@ -4,7 +4,10 @@ This document describes the architecture for the "Firebase Studio" integration, 
 
 ## Philosophy: Hybrid First
 The application remains "Local-First". Firebase is an *additive* layer.
-- **Primary Source of Truth**: The LocalStorage / IndexedDB on the user's device.
+- **Primary Source of Truth**: IndexedDB on the user's device, with OPFS as the
+  backup target where supported.
+- **Legacy fallback**: localStorage mirrors only when IndexedDB or OPFS are
+  unavailable.
 - **Secondary Source**: Firestore (Cloud).
 
 ## Data Model
@@ -61,7 +64,9 @@ service cloud.firestore {
 The application listens to Firestore `onSnapshot` updates when "Online Mode" is active.
 
 1. **Local Change**:
-   - Save to LocalStorage (as usual).
+   - Save to IndexedDB (primary) and mirror to OPFS when available.
+   - Use localStorage only as a legacy fallback when IndexedDB/OPFS are
+     unavailable.
    - If (Online && CloudEnabled): Debounce -> Write to Firestore.
 
 2. **Cloud Change (Remote)**:
@@ -69,11 +74,16 @@ The application listens to Firestore `onSnapshot` updates when "Online Mode" is 
    - Compare `lastModified` timestamps.
    - If `remote.lastModified > local.lastModified`:
      - Prompt user: "New version available from cloud. Overwrite local?" OR Auto-merge (if trivial).
-     - Update LocalStorage.
+     - Update IndexedDB and refresh OPFS backups where supported (fallback to
+       localStorage only when necessary).
      - Refresh UI.
 
 ## Offline Capabilities
-Since the app is already offline-first, "offline" for Firebase just means the sync pauses. The Firebase SDK handles queueing offline writes (if enabled) but we primarily rely on our own LocalStorage logic as the robust offline layer to avoid complexity with Firebase's offline cache size limits.
+Since the app is already offline-first, "offline" for Firebase just means the
+sync pauses. The Firebase SDK handles queueing offline writes (if enabled), but
+we rely on our IndexedDB-first persistence layer, mirrored to OPFS where
+available, with localStorage reserved as a legacy fallback to avoid relying on
+Firebase's offline cache size limits.
 
 ## V2 UI Integration
 

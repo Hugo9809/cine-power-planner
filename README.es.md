@@ -15,8 +15,10 @@ portátiles de campo o archivos aislados.
 ## Promesa de protección de datos
 
 - **Almacenamiento solo local.** Proyectos, listas de equipo, feedback de
-  runtime, exportaciones y copias de seguridad permanecen en tu equipo; la app
-  no depende de servicios externos.
+  runtime, exportaciones y copias de seguridad permanecen en tu equipo en
+  IndexedDB, con OPFS como destino de respaldo donde esté disponible; el
+  localStorage heredado queda como fallback. La app no depende de servicios
+  externos.
 - **Sincronización en la nube opcional.** Conéctate a Firebase Studio para
   sincronizar proyectos entre dispositivos sin perder la propiedad local.
 - **Capas de seguridad.** Guardar, autoguardado, compartir, importar, backup y

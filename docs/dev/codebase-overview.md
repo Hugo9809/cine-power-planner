@@ -56,7 +56,7 @@ Manages the crew contact roster feature.
 
 ### `src/scripts/own-gear`
 Tracks personal equipment inventory.
-- **`store.js`**: Persistence layer for owned gear entries with localStorage integration.
+- **`store.js`**: Persistence layer for owned gear entries with IndexedDB-first storage and legacy localStorage fallback support.
 - **`view.js`**: UI rendering for the owned gear list, inline editing, and quantity tracking.
 
 ### `src/scripts/shims`
@@ -94,7 +94,7 @@ The `loader.js` file is the first script to run. It:
 2. Initializes the `Registry`.
 3. Loads core modules (`logging`, `storage`, `results`).
 4. Bootstraps the UI.
-5. Handles the initial data load from LocalStorage.
+5. Handles the initial data load from IndexedDB (falling back to localStorage when needed).
 
 ### `src/scripts/runtime/bootstrap.js`
 **Role:** Runtime Foundation
@@ -109,6 +109,7 @@ This module provides shared helpers that were previously duplicated across app-c
 This module is critical for data safety. It implements a "Snapshot & Commit" strategy:
 - **Write Safety**: Before saving, it serializes the current state to a temporary slot, verifies integrity, and only then promotes it to the main slot.
 - **Backup Rotation**: Automatically rotates backups (A/B/C) on every save to prevent data loss from corruption.
+- **Storage Targets**: Writes to IndexedDB first, mirrors to OPFS where supported, and keeps legacy localStorage fallback paths available for migration or constrained environments.
 
 ### `src/scripts/modules/results.js`
 **Role:** Calculation Engine

@@ -408,7 +408,7 @@ for the end-to-end offline sequence, then use this table as a quick refresher.
 
 | Workflow | How to trigger | Data captured | Offline behavior | Built-in safeguards |
 | --- | --- | --- | --- | --- |
-| Manual save | Press **Enter**, click **Save** or use `Ctrl+S`/`⌘S` while a project is open. | Active project state including devices, requirements, diagrams, favorites and runtime feedback. | Writes directly to local storage—no connectivity required. | Creates a named entry in the selector so you can branch, rename or export it at any time. |
+| Manual save | Press **Enter**, click **Save** or use `Ctrl+S`/`⌘S` while a project is open. | Active project state including devices, requirements, diagrams, favorites and runtime feedback. | Writes to IndexedDB first, mirrors to OPFS where supported, and only falls back to legacy localStorage if needed—no connectivity required. | Creates a named entry in the selector so you can branch, rename or export it at any time. |
 | Background auto-save & auto-backup | Runs after roughly 50 tracked changes or every 10 minutes while you edit. | Incremental project snapshots promoted to timestamped `auto-backup-…` entries. | Continues in airplane mode and resumes instantly after reload. | Auto backups stay hidden until needed and can be restored or exported without overwriting manual saves. |
 | Planner backup | **Settings → Backup & Restore → Backup**. | Every project, auto-backup, automatic gear rule, custom device, favorite, runtime note and UI preference. | Downloads a human-readable `planner-backup.json` file locally. | Forced pre-restore backups plus hidden migration snapshots prevent data loss during restores. |
 | Project bundle export | **Export Project** while the desired project is active. | One project plus referenced custom devices and (optionally) automatic gear rules—favorites stay local. | Generates a portable JSON bundle that never leaves your machine unless you share it. | Import validation checks file metadata, schema version and timestamps before merging. |
@@ -422,8 +422,8 @@ entire crew repeats the same offline-first routines on every workstation.
 
 - **Modern evergreen browsers.** The planner is validated on the latest
   releases of Chromium, Firefox and Safari on desktop and mobile. Enable
-  service workers, `localStorage` (site storage) access and persistent storage
-  to unlock the full offline workflow.
+  service workers, IndexedDB and persistent storage to unlock the full offline
+  workflow; localStorage is used only as a legacy fallback when necessary.
 - **Offline-friendly devices.** Laptops and tablets must allow persistent
   storage so backups and auto-saves stay available. When running from removable
   media or a field workstation, launch the planner once while online so the
@@ -548,10 +548,11 @@ Use Cine Power Planner end-to-end with the following routine:
 - **Crew contacts stay reusable.** Open the **Contacts** entry in the sidebar to
   maintain a dedicated roster with roles, emails, phone numbers, websites and profile
   photos that you can drop into any project. Contacts live in the same
-  localStorage snapshot as your projects, are included in manual backups and
+  IndexedDB-backed dataset as your projects, are included in manual backups and
   can be imported from offline `.vcf` (vCard) files whenever you need to merge
   address books. Saving a crew row back to the roster keeps future projects
-  aligned without retyping details.【F:index.html†L206-L209】【F:index.html†L7345-L7374】【F:src/scripts/app-core-new-1.js†L13632-L17848】
+  aligned without retyping details. Legacy localStorage mirrors remain available
+  only when needed for migration or fallback scenarios.【F:index.html†L206-L209】【F:index.html†L7345-L7374】【F:src/scripts/app-core-new-1.js†L13632-L17848】
 - **Personal gear inventory stays in sync.** Open **Own Gear** in the sidebar to
   catalog kit names, quantities, notes and sourcing. Entries share the same offline
   snapshot as projects, feed automatic gear rule conditions and travel with manual
@@ -775,8 +776,10 @@ Track projects through production stages with color-coded status indicators:
   activate automatically, and the optional **Force reload** button lets you
   clear cached assets whenever you want a guaranteed clean start.
 - Projects, runtime submissions, favorites, custom devices, theme selections and
-  gear lists live in browser storage. Browsers that support persistent storage
-  receive an automatic retention request to reduce eviction risk.
+  gear lists live primarily in IndexedDB with OPFS used as the backup target
+  where supported. Browsers that support persistent storage receive an
+  automatic retention request to reduce eviction risk, and legacy localStorage
+  mirrors remain available only when necessary.
 - Automatic safety copies layer 10-minute project snapshots, hourly full-app
   downloads and background auto-gear archives. Enable **Settings → Backup &
   Restore → Show auto backups in project list** to surface the timeline, tune
@@ -802,11 +805,13 @@ Track projects through production stages with color-coded status indicators:
   When the **Update ready** toast appears, finish your current edits, capture a
   manual backup for your records, then use **Force reload** if you want to clear
   cached assets and reopen the session on a freshly loaded build.
-- Storage lives inside hardened `localStorage` with a `sessionStorage` fallback
-  when browsers restrict long-term writes. Every save also creates a
-  `__legacyMigrationBackup` snapshot so you can recover even if the browser
-  reports a quota or schema error. Use your browser’s storage inspector to
-  export or audit records before clearing caches or experimenting with data.
+- Storage lives primarily in IndexedDB, with OPFS serving as the backup target
+  where supported. Legacy localStorage mirrors remain available when IndexedDB
+  or OPFS cannot be used, with a `sessionStorage` fallback for constrained
+  environments. Every save also creates a `__legacyMigrationBackup` snapshot so
+  you can recover even if the browser reports a quota or schema error. Use your
+  browser’s storage inspector to export or audit records before clearing caches
+  or experimenting with data.
 - A critical storage guardian now runs on every launch to mirror each essential
   key into its backup slot before you edit anything, ensuring both legacy and
   modern entries always keep a redundant copy ready for restores.

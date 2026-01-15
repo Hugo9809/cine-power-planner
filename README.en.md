@@ -15,8 +15,9 @@ without phoning home.
 ## Data Protection Promise
 
 - **Local-only storage.** Projects, gear lists, runtime feedback, exports, and
-  backups live on your machine; the planner does not depend on external
-  services.
+  backups live on your machine in IndexedDB, with OPFS as the backup target
+  where supported; legacy localStorage remains as a fallback. The planner does
+  not depend on external services.
 - **Optional Cloud Sync.** Connect to Firebase Studio to sync projects across
   devices without sacrificing local ownership.
 - **Layered safety nets.** Save, autosave, share, import, backup, and restore
