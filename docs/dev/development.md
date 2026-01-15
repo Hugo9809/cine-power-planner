@@ -40,7 +40,7 @@ available scripts.
 
 ## Vite Build System
 
-The project uses [Vite](https://vite.dev) as its build tool and development server, providing:
+The project uses Vite as its build tool and development server, providing:
 
 - **Hot Module Replacement (HMR)**: Changes reflect instantly in the browser
 - **ES Module support**: Native ESM imports during development
