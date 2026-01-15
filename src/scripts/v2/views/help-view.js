@@ -12,6 +12,7 @@ const SEARCH_ID = 'v2HelpSearch';
 
 let observer = null;
 let isInitialized = false;
+let performSearch = null;
 
 function getElement(id) {
     return document.getElementById(id);
@@ -246,7 +247,7 @@ function initSearch() {
     // Append to container (assuming container is relative/flex)
     searchInput.parentNode.appendChild(clearBtn);
 
-    function performSearch() {
+    performSearch = () => {
         const term = searchInput.value.toLowerCase().trim();
         const sections = document.querySelectorAll('.v2-help-section');
         const noResults = getElement('v2HelpNoResults');
@@ -273,13 +274,19 @@ function initSearch() {
 
         // Toggle Clear Button
         clearBtn.style.display = term.length > 0 ? 'block' : 'none';
-    }
+    };
 
-    searchInput.addEventListener('input', performSearch);
+    searchInput.addEventListener('input', () => {
+        if (performSearch) {
+            performSearch();
+        }
+    });
 
     clearBtn.addEventListener('click', () => {
         searchInput.value = '';
-        performSearch();
+        if (performSearch) {
+            performSearch();
+        }
         searchInput.focus();
     });
 }
@@ -312,6 +319,9 @@ function init() {
     document.addEventListener('v2:languagechange', () => {
         refresh();
         updateSearchLabels();
+        if (performSearch) {
+            performSearch();
+        }
     });
 
     isInitialized = true;
@@ -326,6 +336,9 @@ function refresh() {
         buildToc(tocInfo);
         // Re-init spy after content render
         setTimeout(() => initScrollSpy(), 100);
+    }
+    if (performSearch) {
+        performSearch();
     }
 }
 
