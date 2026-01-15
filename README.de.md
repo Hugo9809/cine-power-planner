@@ -34,7 +34,9 @@ Feld-Laptops oder luftgetrennten Archiven funktioniert.
    Repository-Struktur, damit alle Offline-Icons, Fonts und Hilfetexte lokal
    geladen werden.
 2. Starte **Hilfe → Quick start checklist**, um Speichern, Teilen, Importieren,
-   Backup und Restore auf diesem Gerät vollständig zu proben.
+   Backup und Restore auf diesem Gerät vollständig zu proben. Bestätige, dass
+   die Hilfethemen mit lokalisierten Texten und Offline-Uicons in Überschriften
+   und Inhaltsverzeichnis erscheinen.
 3. Exportiere direkt danach ein Planner-Backup und ein Projekt-Bundle.
    Bewahre beide auf getrennten Offline-Medien auf, um einen sicheren
    Wiederherstellungspunkt zu haben.

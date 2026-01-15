@@ -33,7 +33,9 @@ partageables — entièrement dans votre navigateur, même hors ligne. Toutes le
 1. Ouvrez `index.html` dans un navigateur compatible. Conservez la structure du
    dépôt pour que les icônes, polices et aides hors ligne se chargent localement.
 2. Lancez **Help → Quick start checklist** pour répéter sauvegarde, partage,
-   import, backup et restauration de bout en bout sur ce poste.
+   import, backup et restauration de bout en bout sur ce poste. Confirmez que
+   les sujets d’aide s’affichent avec un texte localisé et des Uicons hors
+   ligne dans les en-têtes et la table des matières.
 3. Exportez immédiatement un backup du planner et un bundle de projet. Stockez
    les deux sur des supports hors ligne séparés pour établir un point de
    restauration sûr.
