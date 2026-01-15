@@ -15057,6 +15057,26 @@ function saveCurrentGearListImplementation() {
 }
 
 function deleteCurrentGearList() {
+  const resolveDeleteGearListText = (() => {
+    const localeTexts =
+      typeof getLanguageTexts === 'function' ? getLanguageTexts(currentLang) : null;
+    const fallbackTexts =
+      typeof getLanguageTexts === 'function' ? getLanguageTexts('en') : null;
+
+    return (key) => {
+      const localized = localeTexts && typeof localeTexts[key] === 'string'
+        ? localeTexts[key]
+        : null;
+      if (localized) {
+        return localized;
+      }
+      const fallback = fallbackTexts && typeof fallbackTexts[key] === 'string'
+        ? fallbackTexts[key]
+        : null;
+      return fallback || '';
+    };
+  })();
+
   const storageKey = typeof getCurrentProjectStorageKey === 'function'
     ? getCurrentProjectStorageKey()
     : '';
@@ -15064,11 +15084,11 @@ function deleteCurrentGearList() {
   if (!normalizedStorageKey) {
     if (typeof window !== 'undefined' && typeof window.cineShowAlertDialog === 'function') {
       window.cineShowAlertDialog({
-        title: texts[currentLang].alertNoSetupSelectedTitle,
-        message: texts[currentLang].alertNoSetupSelected
+        title: resolveDeleteGearListText('alertNoSetupSelectedTitle'),
+        message: resolveDeleteGearListText('alertNoSetupSelected')
       });
     } else {
-      alert(texts[currentLang].alertNoSetupSelected);
+      alert(resolveDeleteGearListText('alertNoSetupSelected'));
     }
     return false;
   }
@@ -15190,16 +15210,16 @@ function deleteCurrentGearList() {
 
   if (typeof window.cineShowConfirmDialog === 'function') {
     window.cineShowConfirmDialog({
-      title: (typeof texts !== 'undefined' && texts[currentLang] && texts[currentLang].deleteGearListTitle) || 'Delete Gear List',
-      message: texts[currentLang].confirmDeleteGearList,
-      confirmLabel: 'Delete',
+      title: resolveDeleteGearListText('deleteGearListDialogTitle'),
+      message: resolveDeleteGearListText('confirmDeleteGearList'),
+      confirmLabel: resolveDeleteGearListText('deleteGearListConfirmLabel'),
       danger: true,
       onConfirm: () => {
         setTimeout(() => {
           window.cineShowConfirmDialog({
-            title: (typeof texts !== 'undefined' && texts[currentLang] && texts[currentLang].areYouSure) || 'Are you sure?',
-            message: texts[currentLang].confirmDeleteGearListAgain,
-            confirmLabel: 'Confirm Delete',
+            title: resolveDeleteGearListText('deleteGearListConfirmAgainTitle'),
+            message: resolveDeleteGearListText('confirmDeleteGearListAgain'),
+            confirmLabel: resolveDeleteGearListText('deleteGearListConfirmAgainLabel'),
             danger: true,
             onConfirm: () => performDeletion()
           });
@@ -15207,8 +15227,8 @@ function deleteCurrentGearList() {
       }
     });
   } else {
-    if (!confirm(texts[currentLang].confirmDeleteGearList)) return false;
-    if (!confirm(texts[currentLang].confirmDeleteGearListAgain)) return false;
+    if (!confirm(resolveDeleteGearListText('confirmDeleteGearList'))) return false;
+    if (!confirm(resolveDeleteGearListText('confirmDeleteGearListAgain'))) return false;
     return performDeletion();
   }
 }
