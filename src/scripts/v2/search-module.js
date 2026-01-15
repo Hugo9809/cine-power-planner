@@ -407,10 +407,17 @@ function dispatchV2SearchEvent(query) {
     }));
 }
 
-function applySelection(entry, queryValue) {
+function applySelection(entry, queryValue, input) {
     if (!entry) return;
-    const query = entry.legacyQuery || entry.display || entry.label || queryValue || '';
+    const inputValue = entry.display || entry.label || queryValue || '';
+    const query = entry.legacyQuery || inputValue;
     if (!query) return;
+
+    if (input) {
+        input.value = inputValue;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
 
     if (typeof window.runFeatureSearch === 'function') {
         window.runFeatureSearch(query);
@@ -493,7 +500,7 @@ function setupSearchEvents(input, dropdown) {
         if (e.key === 'Enter') {
             const option = options[activeIndex];
             const entry = resolveEntryFromOption(option, indexManager.getIndexState().index);
-            applySelection(entry, input.value.trim());
+            applySelection(entry, input.value.trim(), input);
             closeDropdown(input, dropdown);
             return;
         }
@@ -536,7 +543,7 @@ function setupSearchEvents(input, dropdown) {
         const option = e.target.closest('[data-value]');
         if (!option) return;
         const entry = resolveEntryFromOption(option, indexManager.getIndexState().index);
-        applySelection(entry, input.value.trim());
+        applySelection(entry, input.value.trim(), input);
         closeDropdown(input, dropdown);
     });
 
@@ -560,7 +567,7 @@ function setupSearchEvents(input, dropdown) {
             e.preventDefault();
             if (currentIndex >= 0 && options[currentIndex]) {
                 const entry = resolveEntryFromOption(options[currentIndex], indexManager.getIndexState().index);
-                applySelection(entry, input.value.trim());
+                applySelection(entry, input.value.trim(), input);
                 closeDropdown(input, dropdown);
             }
         } else if (e.key === 'Escape') {
