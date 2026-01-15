@@ -1110,8 +1110,34 @@ export const data = {
     "helpV2QuickStartKeywords": "avvio rapido onboarding tutorial primi passi workflow base iniziare nuovo progetto guida",
     "helpV2QuickStartContent": "<p>Benvenuto in Cine Power Planner! Segui questi passaggi per preparare il tuo primo progetto.</p>\n<ol>\n<li>\n<strong>Avvia il tutorial guidato:</strong>\n<button type=\"button\" class=\"button-link help-onboarding-secondary\" data-onboarding-tour-trigger=\"secondary\">Avvia il tutorial guidato</button>\nper seguire ogni workflow con tracciamento offline.\n</li>\n<li>\n<strong>Dai un nome al progetto:</strong>\nInserisci un nome nel campo <em>Nome progetto</em> e fai clic su <strong>Salva</strong> (o premi <kbd>Invio</kbd>/<kbd>Ctrl</kbd>+<kbd>S</kbd>) per salvare l’attuale rig.\n</li>\n<li>\n<strong>Configura i dispositivi:</strong>\nSegui <em>Configura dispositivi</em>, controlla <em>Power Summary</em> e il <em>Connection Diagram</em>.\n</li>\n<li>\n<strong>Proteggi i dati:</strong>\nScarica un JSON di <strong>Esporta progetto</strong> e un <strong>Backup</strong> completo così da avere due copie offline.\n</li>\n<li>\n<strong>Verifica lo stato offline:</strong>\nConferma che l’indicatore offline (nell’intestazione) sia attivo prima di disconnetterti.\n</li>\n<li>\n<strong>Esercitati con il ripristino:</strong>\nApri <strong>Prova ripristino</strong> nelle impostazioni per verificare il backup in un ambiente sandbox.\n</li>\n</ol>\n<p class=\"help-callout-note\">\nSuggerimento: conserva i backup su unità separate — <strong>Ripristina</strong> crea sempre una nuova copia di sicurezza così non perdi nulla quando annulli una modifica.\n</p>",
     "helpV2DataSafetyTitle": "Essenziali per la sicurezza dei dati",
-    "helpV2DataSafetyKeywords": "backup ripristino proteggi salva esporta sicurezza offline preserva",
-    "helpV2DataSafetyContent": "<p>Proteggi il tuo lavoro con queste abitudini essenziali.</p>\n<ul>\n<li>\n<strong>Salva spesso:</strong> Premi <strong>Salva</strong> dopo modifiche importanti. I salvataggi manuali sono immediati e funzionano offline.\n</li>\n<li>\n<strong>Attiva Auto-Backups:</strong> Abilita \"Mostra auto backup nell’elenco progetti\" nelle impostazioni per visualizzare gli snapshot in background.\n</li>\n<li>\n<strong>Scarica ridondanza:</strong> Esporta il progetto e scarica un Backup completo quando concludi un traguardo.</li>\n<li>\n<strong>Conserva in sicurezza:</strong> Mantieni le esportazioni su almeno due dispositivi.</li>\n<li>\n<strong>Aggiorna in sicurezza:</strong> Prima di approvare un aggiornamento, crea un nuovo backup manuale.</li>\n</ul>\n<p class=\"help-callout-note\">\nI backup manuali includono una copia con timestamp di ogni progetto, preferito, regola e preferenza salvati. I ripristini creano prima uno snapshot di sicurezza.\n</p>",
+    "helpV2DataSafetyKeywords": "backup ripristino proteggi salva autosave esporta condividi importa prova offline integrità",
+    "helpV2DataSafetyContent": "<p>Proteggi ogni progetto con questa checklist offline-first.</p>
+<h4>Salvataggio manuale, autosalvataggio e backup automatici</h4>
+<ul>
+<li><strong>Salvataggio manuale:</strong> Fai clic su <strong>Salva</strong> (o <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>S</kbd>) per catturare subito uno snapshot del progetto.</li>
+<li><strong>Autosalvataggio:</strong> Funziona in background mentre modifichi e mantiene snapshot continui per un recupero rapido.</li>
+<li><strong>Lista backup automatici:</strong> Attiva <strong>Mostra backup automatici nella lista progetti</strong> e regola <strong>Conservazione Backup (copie per progetto)</strong> per controllare quante copie restano visibili.</li>
+</ul>
+<h4>Esporta/Condividi progetto (JSON) e Importa</h4>
+<ul>
+<li><strong>Esporta progetto:</strong> Scarica un bundle JSON pronto da condividere dalla vista dettaglio progetto per la consegna offline.</li>
+<li><strong>Importa progetto:</strong> Usa <strong>Importa progetto</strong> nel dashboard, scegli il JSON e controlla metadati + opzioni delle regole automatiche prima di applicare.</li>
+<li><strong>Gestione conflitti:</strong> Le importazioni non sovrascrivono il progetto attivo finché non confermi Salva. Se il nome esiste già (o manca), il planner salva un nuovo progetto “-imported”.</li>
+</ul>
+<h4>Backup completo, Ripristina e Ripristino di Prova</h4>
+<ul>
+<li><strong>Scarica Backup:</strong> Crea uno snapshot completo manuale da <strong>Impostazioni → Backup e Ripristino</strong>.</li>
+<li><strong>Scarica Backup Completo:</strong> Ottieni un export completo aggiuntivo da <strong>Impostazioni → Dati e Archiviazione</strong> quando vuoi ridondanza.</li>
+<li><strong>Ripristina:</strong> Carica un file di backup; il planner crea prima uno snapshot di sicurezza. Usa <strong>Confronta Versioni</strong> per verificare le differenze.</li>
+<li><strong>Ripristino di Prova:</strong> Avvia una sandbox che confronta i conteggi, si pulisce automaticamente e lascia intatti i dati live finché non scegli di ripristinare.</li>
+</ul>
+<h4>Offline e integrità dei dati</h4>
+<ul>
+<li><strong>Offline-first:</strong> Salvataggi, esportazioni, importazioni e backup funzionano senza connessione.</li>
+<li><strong>Snapshot di sicurezza:</strong> I ripristini e il <strong>Ripristino di fabbrica</strong> creano un backup prima di modifiche distruttive.</li>
+<li><strong>Copia, non eliminare:</strong> Esportazioni e backup duplicano sempre i dati — conserva almeno due copie offline prima di eliminare qualcosa.</li>
+</ul>
+<p class="help-callout-note">Suggerimento: esegui <strong>Ripristino di Prova</strong> dopo i traguardi principali per verificare il backup completamente offline.</p>",
     "helpV2ShortcutsTitle": "Scorciatoie essenziali",
     "helpV2ShortcutsKeywords": "scorciatoie tastiera hotkeys navigazione veloce",
     "helpV2ShortcutsContent": "<ul>\n<li><kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd>: Apri la guida</li>\n<li><kbd>Ctrl</kbd>+<kbd>/</kbd> (<kbd>⌘</kbd>+<kbd>/</kbd>): Attiva/disattiva guida</li>\n<li><kbd>/</kbd> o <kbd>Ctrl</kbd>+<kbd>F</kbd> (<kbd>⌘</kbd>+<kbd>F</kbd>): Ricerca guida</li>\n<li><kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>⌘</kbd>+<kbd>K</kbd>): Ricerca globale funzioni</li>\n<li><kbd>Ctrl</kbd>+<kbd>,</kbd> (<kbd>⌘</kbd>+<kbd>,</kbd>): Apri impostazioni</li>\n<li><kbd>Ctrl</kbd>+<kbd>S</kbd> (<kbd>⌘</kbd>+<kbd>S</kbd>): Salva progetto</li>\n<li><kbd>D</kbd>: Attiva/disattiva Dark Mode</li>\n<li><kbd>P</kbd>: Attiva/disattiva Pink Mode</li>\n</ul>",

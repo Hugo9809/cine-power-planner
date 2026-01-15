@@ -36,7 +36,10 @@ portátiles de campo o archivos aislados.
 2. Ejecuta **Help → Quick start checklist** para ensayar guardar, compartir,
    importar, backup y restaurar de extremo a extremo en esta estación. Confirma
    que los temas de ayuda se muestran con texto localizado y Uicons offline en
-   los encabezados y la tabla de contenidos.
+   los encabezados y la tabla de contenidos. Además revisa **Help → Esenciales
+   de seguridad de datos** para las etiquetas actuales de guardar/compartir/
+   importar/copia de seguridad/restaurar y los pasos de la restauración de
+   prueba.
 3. Exporta enseguida un backup del planner y un bundle de proyecto. Guarda
    ambos en medios offline separados para tener un punto de restauración seguro.
 4. Desconecta la red y recarga. Comprueba que proyectos, ayuda y **Force

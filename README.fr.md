@@ -35,7 +35,10 @@ partageables — entièrement dans votre navigateur, même hors ligne. Toutes le
 2. Lancez **Help → Quick start checklist** pour répéter sauvegarde, partage,
    import, backup et restauration de bout en bout sur ce poste. Confirmez que
    les sujets d’aide s’affichent avec un texte localisé et des Uicons hors
-   ligne dans les en-têtes et la table des matières.
+   ligne dans les en-têtes et la table des matières. Consultez aussi **Help →
+   Essentiels de sécurité des données** pour les libellés actuels de
+   sauvegarde/partage/import/sauvegarde/restauration et les étapes de la
+   restauration de test.
 3. Exportez immédiatement un backup du planner et un bundle de projet. Stockez
    les deux sur des supports hors ligne séparés pour établir un point de
    restauration sûr.
