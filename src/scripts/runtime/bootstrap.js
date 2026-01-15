@@ -13,6 +13,13 @@
 
 /* global CORE_GLOBAL_SCOPE, CORE_RUNTIME_STATE, cineCoreRuntimeModuleLoader */
 
+/**
+ * Collects likely global scopes used by the runtime to recover from offline/legacy
+ * boot paths where globals may be partially initialized or shifted between contexts.
+ *
+ * @returns {Array<object>} Ordered list of global scope candidates to probe for
+ * runtime state and shared queues during safe boot sequencing.
+ */
 export function getGlobalScopeCandidates() {
   const candidates = [];
 
@@ -39,6 +46,13 @@ export function getGlobalScopeCandidates() {
   return candidates;
 }
 
+/**
+ * Selects the first usable global scope for legacy recovery when multiple global
+ * candidates exist across workers, frames, or test environments.
+ *
+ * @returns {object|null} The primary global scope to mutate or query, or null when
+ * no object-like global is available.
+ */
 export function getPrimaryGlobalScope() {
   const candidates = getGlobalScopeCandidates();
   for (let index = 0; index < candidates.length; index += 1) {
@@ -97,6 +111,15 @@ function fallbackRequireCoreRuntimeModule(moduleId, options) {
   return null;
 }
 
+/**
+ * Exposes a runtime constant onto the primary global scope so legacy bundles and
+ * offline recovery flows can share state without import-time coupling.
+ *
+ * @param {string} name - Global property name to define for cross-bundle access.
+ * @param {*} value - Value to assign to the global property.
+ * @returns {void}
+ * @sideeffects Mutates the primary global scope by assigning or defining a property.
+ */
 export function exposeCoreRuntimeConstant(name, value) {
   if (typeof name !== 'string' || !name) {
     return;
@@ -251,6 +274,13 @@ function enqueueCoreBootTask(task) {
   }
 }
 
+/**
+ * Drains the core boot queue to run deferred boot tasks in a safe, deterministic
+ * order, preventing legacy/offline boot sequences from interleaving incorrectly.
+ *
+ * @returns {void}
+ * @sideeffects Executes queued tasks and empties the shared boot queue snapshot.
+ */
 export function processCoreBootQueue() {
   const queue = CORE_BOOT_QUEUE;
   console.log('[Runtime Bootstrap] Processing boot queue. Length:', Array.isArray(queue) ? queue.length : 'invalid');
