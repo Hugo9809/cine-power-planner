@@ -32,6 +32,12 @@ npm run dev     # Start dev server at localhost:3000
 npm run build   # Build for production
 ```
 
+Before you ship or rehearse, verify offline usage by opening `index.html` directly
+from disk and keeping all local-only assets intact (icons, fonts, cached files)
+to protect save/share/import/backup/restore data paths. Follow the [Offline
+Readiness Runbook](ops/offline-readiness.md) and the [Offline Cache Verification
+Drill](ops/offline-cache-verification-drill.md) for the full local rehearsal flow.
+
 See [Development & Maintenance Guide](dev/development.md#vite-build-system) for details.
 
 ## By role
