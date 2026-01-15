@@ -51,6 +51,13 @@
             contentKey: 'helpV2SettingsContent'
         },
         {
+            id: 'v2-save-share-backup',
+            titleKey: 'helpV2SaveShareBackupTitle',
+            keywordsKey: 'helpV2SaveShareBackupKeywords',
+            iconKey: 'settingsBackup',
+            contentKey: 'helpV2SaveShareBackupContent'
+        },
+        {
             id: 'v2-auto-gear',
             titleKey: 'helpV2AutoGearTitle',
             keywordsKey: 'helpV2AutoGearKeywords',
