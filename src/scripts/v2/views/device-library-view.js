@@ -301,8 +301,17 @@
         console.log('[DeviceLibraryView] Initializing...');
 
         document.addEventListener('v2:viewchange', (e) => {
-            if (e.detail && e.detail.view === 'devices') {
+            if (!e.detail) {
+                return;
+            }
+
+            if (e.detail.view === 'devices') {
                 render();
+                return;
+            }
+
+            if (isReparented) {
+                restoreLegacyContent();
             }
         });
 
