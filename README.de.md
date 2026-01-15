@@ -2,7 +2,7 @@
 
 <img src="src/icons/app-icon.png" alt="Cine Power Planner Symbol" width="160">
 
-**Aktuelle Version:** 1.0.52 | **Lizenz:** ISC | **Node:** >=18 (Dev-Tooling)
+**Aktuelle Version:** 1.0.53 | **Lizenz:** ISC | **Node:** >=18 (Dev-Tooling)
 
 Cine Power Planner ist eine eigenständige Web-App, mit der professionelle
 Kamera-Strompläne erstellt, geprüft und geteilt werden, ohne dass Daten das

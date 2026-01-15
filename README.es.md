@@ -2,7 +2,7 @@
 
 <img src="src/icons/app-icon.png" alt="Icono de Cine Power Planner" width="160">
 
-**Versión actual:** 1.0.52 | **Licencia:** ISC | **Node:** >=18 (herramientas de desarrollo)
+**Versión actual:** 1.0.53 | **Licencia:** ISC | **Node:** >=18 (herramientas de desarrollo)
 
 Cine Power Planner es una aplicación web independiente para crear, auditar y
 compartir planes de energía de cámaras profesionales sin que los datos salgan
