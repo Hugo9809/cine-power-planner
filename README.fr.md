@@ -15,8 +15,9 @@ partageables — entièrement dans votre navigateur, même hors ligne. Toutes le
 ## Promesse de protection des données
 
 - **Stockage local uniquement.** Projets, listes d’équipement, feedback de
-  runtime, exports et backups restent sur votre machine ; l’app ne dépend d’aucun
-  service externe.
+  runtime, exports et backups restent sur votre machine dans IndexedDB, avec
+  OPFS comme cible de sauvegarde lorsque c’est pris en charge ; le localStorage
+  hérité reste un recours. L’app ne dépend d’aucun service externe.
 - **Sync cloud optionnelle.** Connectez-vous à Firebase Studio pour synchroniser
   les projets entre appareils sans perdre la propriété locale.
 - **Filets de sécurité en couches.** Sauvegarde, autosave, partage, import,

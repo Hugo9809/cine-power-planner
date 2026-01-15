@@ -21,12 +21,12 @@ This document captures a phased plan to break the oversized `app-core-foundation
 | Orchestration | `capability-profiles` | Device/camera gear models, compatibility matrices, localisation for messages. | Data catalogues, localisation module, persistence for caching. | Offline caches should be versioned and rolled back on mismatch. |
 | Orchestration | `collaboration` | Share links, import/export, restore flows, verification overlays. | Persistence module, environment module, localisation, networking adapter. | Share/import must validate backups before replacing local data. |
 | Shared | `localisation` | Language packs, fallback chain, dynamic runtime strings. | Storage (for offline pack cache), environment detection. | Ensure offline language selection persists between sessions. |
-| Shared | `storage` | IndexedDB/localStorage abstraction, encryption, schema evolution, backup rotation. | Environment detection (for capability), telemetry. | Must run schema migrations atomically and keep redundant backups. |
+| Shared | `storage` | IndexedDB-first storage, OPFS backup target, legacy localStorage fallback, encryption, schema evolution, backup rotation. | Environment detection (for capability), telemetry. | Must run schema migrations atomically and keep redundant backups. |
 | Shared | `runtime/bootstrap` | Module-loader fallbacks, global constant exposure, boot queue orchestration, grid-snap state sync. | Global scope resolvers, localisation helpers, persistence surfaces. | Must keep Part 1/Part 2 bundles aligned even when storage APIs fail offline, so autosave/share/backups stay deterministic. |
 
 ## 3. Shared infrastructure guarantees
 
-* **Storage layer** – expose a unified interface for synchronous (localStorage) and asynchronous (IndexedDB/File System Access) persistence, with transaction guards, checksum validation, and dual-write backups before destructive operations.
+* **Storage layer** – expose a unified interface for IndexedDB-first persistence with OPFS as the backup target where supported and localStorage as a legacy fallback, including transaction guards, checksum validation, and dual-write backups before destructive operations.
 * **Localisation service** – centralise message lookup with locale negotiation, offline pack caching, and dynamic help content linking. All modules must use the same resolver to ensure consistent fallbacks when offline.
 * **Error and telemetry handling** – standard error envelope containing severity, localisation key, remediation hint, and optional offline queue payload. Telemetry events should buffer locally until connectivity resumes.
 * **Data safety safeguards** – before any destructive change (import, restore, reset) capture a timestamped backup; autosave must debounce writes yet guarantee latest state is flushed before unload; share/export flows validate payload integrity and prompt the user in their selected language.

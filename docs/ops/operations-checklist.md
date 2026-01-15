@@ -16,7 +16,9 @@ restore workflows protect every bit of user data.
 ## Rehearsal steps
 
 1. **Modern bundle self-healing**
-   - [ ] While online, open DevTools storage inspector for `localStorage`.
+   - [ ] While online, open DevTools storage inspector for IndexedDB and confirm
+         the Cine Power Planner database is present; note the legacy
+         localStorage area only if fallback entries appear.
    - [ ] Disable the network temporarily, reload once to confirm the loader falls back to the inline legacy bundle without writing `cameraPowerPlanner_forceLegacyBundle`.
    - [ ] Restore connectivity and reload; verify the app returns to the modern bundle automatically and the legacy flag remains absent.
    - [ ] In the DevTools console confirm `window.APP_VERSION`, `window.CPP_APP_VERSION` and `window.cinePowerPlanner.version` match the release identifier recorded for this rehearsal.

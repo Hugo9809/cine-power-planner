@@ -42,7 +42,8 @@ fails when they drift. If it reports differences, regenerate the manifest with
    - Confirm the auto-backup ledger logs the run and the cache remains intact.
 5. **Backup/restore rehearsal**
    - Export a planner backup.
-   - Clear application data (localStorage + caches).
+   - Clear application data (IndexedDB, any OPFS backups where supported,
+     legacy localStorage, plus caches).
    - Restore the backup via the sandbox, then promote it.
    - Ensure the service worker reinstalls seamlessly and logs the restore.
 6. **Cache reset test**

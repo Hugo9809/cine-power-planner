@@ -64,7 +64,8 @@ persistence and rehearsal tooling.
 - **Redundant persistence:** Every save, autosave and backup call flows through
   `modules/persistence.js`, which clones payloads, writes timestamped mirrors
   and records entries in the verification ledger. Feature modules never call
-  `localStorage` directly.
+  storage APIs directly; persistence targets IndexedDB first, mirrors to OPFS
+  where supported, and uses localStorage only as a legacy fallback.
 - **Schema inventory:** `modules/results.js` and `modules/helpers/schema/*.js`
   resolve the `docs/dev/schema-inventory.md` definitions at runtime so imports from
   older builds are coerced into safe shapes or rejected with actionable logs.
@@ -150,4 +151,3 @@ flowchart TD
    provable even without network access.
 4. When adding new modules, use `enqueueCoreBootTask()` for deferred initialization
    to ensure proper loading order.
-

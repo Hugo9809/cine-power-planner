@@ -15,8 +15,9 @@ archivi isolati.
 ## Promessa di protezione dei dati
 
 - **Archiviazione solo locale.** Progetti, liste gear, feedback di runtime,
-  export e backup restano sulla tua macchina; l’app non dipende da servizi
-  esterni.
+  export e backup restano sulla tua macchina in IndexedDB, con OPFS come
+  destinazione di backup dove supportato; il localStorage legacy resta come
+  fallback. L’app non dipende da servizi esterni.
 - **Sync cloud opzionale.** Collegati a Firebase Studio per sincronizzare i
   progetti tra dispositivi senza perdere la proprietà locale.
 - **Reti di sicurezza a strati.** Salvataggio, auto-salvataggio, condivisione,
