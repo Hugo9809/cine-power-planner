@@ -35,6 +35,7 @@ graph TD
     *   **Synchronous Reads**: Serves cached Auto-Gear data to legacy/global callers.
     *   **Async Writes**: Delegates persistence to `cinePersistence` bindings, falling back to `StorageRepository`.
     *   **Hydration**: Warms the cache from `StorageRepository` on startup for offline-first safety.
+    *   **Backup/Restore**: Backup export/import read and persist Auto-Gear data through the cache to avoid implicit localStorage reads.
 
 ### 2. The Driver: `src/scripts/modules/storage/StorageRepository.js`
 *   **Responsibility**: Abstraction.

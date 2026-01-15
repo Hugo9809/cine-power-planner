@@ -219,6 +219,46 @@ const decompressStorageEnvelope = (value) => {
   return value;
 };
 
+const createAutoGearPersistenceStub = (initial = {}) => {
+  const defaults = {
+    autoGearRules: [],
+    autoGearBackups: [],
+    autoGearPresets: [],
+    autoGearMonitorDefaults: {},
+    autoGearActivePresetId: '',
+    autoGearAutoPresetId: '',
+    autoGearBackupRetention: null,
+    autoGearShowBackups: false,
+  };
+  let cache = { ...defaults, ...initial };
+  const setCacheValue = (key, value) => {
+    cache = { ...cache, [key]: value };
+  };
+  return {
+    getCacheSnapshot: jest.fn(() => ({ ...cache })),
+    readAutoGearRules: jest.fn(() => cache.autoGearRules),
+    readAutoGearBackups: jest.fn(() => cache.autoGearBackups),
+    readAutoGearPresets: jest.fn(() => cache.autoGearPresets),
+    readAutoGearMonitorDefaults: jest.fn(() => cache.autoGearMonitorDefaults),
+    readActivePresetId: jest.fn(() => cache.autoGearActivePresetId),
+    readAutoPresetId: jest.fn(() => cache.autoGearAutoPresetId),
+    readBackupRetention: jest.fn(() => cache.autoGearBackupRetention),
+    readBackupVisibility: jest.fn(() => cache.autoGearShowBackups),
+    persistAutoGearRules: jest.fn((value) => setCacheValue('autoGearRules', value)),
+    persistAutoGearBackups: jest.fn((value) => setCacheValue('autoGearBackups', value)),
+    persistAutoGearPresets: jest.fn((value) => setCacheValue('autoGearPresets', value)),
+    persistAutoGearMonitorDefaults: jest.fn((value) => setCacheValue('autoGearMonitorDefaults', value)),
+    persistActivePresetId: jest.fn((value) => setCacheValue('autoGearActivePresetId', value)),
+    persistAutoPresetId: jest.fn((value) => setCacheValue('autoGearAutoPresetId', value)),
+    persistBackupRetention: jest.fn((value) => setCacheValue('autoGearBackupRetention', value)),
+    persistBackupVisibility: jest.fn((value) => setCacheValue('autoGearShowBackups', value)),
+    __resetCache: () => {
+      cache = { ...defaults };
+    },
+    __getCache: () => ({ ...cache }),
+  };
+};
+
 const expectAutoBackupSnapshot = (entry, expectedPayload, options = {}) => {
   expect(entry).toBeDefined();
   let normalizedEntry = entry;
@@ -2662,6 +2702,85 @@ describe('export/import all data', () => {
 
     const exported = exportAllData();
     expect(exported.autoGearRules).toEqual(rules);
+  });
+
+  test('exportAllData prefers auto-gear persistence cache over localStorage', () => {
+    const autoGearStub = createAutoGearPersistenceStub({
+      autoGearRules: [{ id: 'rule-cache', label: 'Cache', add: [], remove: [] }],
+      autoGearBackups: [{ id: 'backup-cache', label: 'Cache', createdAt: 1, rules: [] }],
+      autoGearPresets: [{ id: 'preset-cache', label: 'Cache', rules: [] }],
+      autoGearMonitorDefaults: { waveform: 'RGB' },
+      autoGearActivePresetId: 'preset-cache',
+      autoGearAutoPresetId: 'preset-auto',
+      autoGearBackupRetention: 7,
+      autoGearShowBackups: true,
+    });
+
+    global.cineAutoGearPersistence = autoGearStub;
+
+    localStorage.setItem(AUTO_GEAR_RULES_KEY, JSON.stringify([{ id: 'rule-local', label: 'Local', add: [], remove: [] }]));
+    localStorage.setItem(AUTO_GEAR_BACKUPS_KEY, JSON.stringify([{ id: 'backup-local', label: 'Local', createdAt: 2, rules: [] }]));
+    localStorage.setItem(AUTO_GEAR_PRESETS_KEY, JSON.stringify([{ id: 'preset-local', label: 'Local', rules: [] }]));
+    localStorage.setItem(AUTO_GEAR_MONITOR_DEFAULTS_KEY, JSON.stringify({ waveform: 'Luma' }));
+    localStorage.setItem(AUTO_GEAR_ACTIVE_PRESET_KEY, 'preset-local');
+    localStorage.setItem(AUTO_GEAR_AUTO_PRESET_KEY, 'preset-local');
+    localStorage.setItem(AUTO_GEAR_BACKUP_RETENTION_KEY, '3');
+    localStorage.setItem(AUTO_GEAR_BACKUP_VISIBILITY_KEY, 'false');
+
+    const exported = exportAllData();
+
+    expect(autoGearStub.getCacheSnapshot).toHaveBeenCalled();
+    expect(exported.autoGearRules).toEqual([{ id: 'rule-cache', label: 'Cache', add: [], remove: [] }]);
+    expect(exported.autoGearBackups).toEqual([{ id: 'backup-cache', label: 'Cache', createdAt: 1, rules: [] }]);
+    expect(exported.autoGearPresets).toEqual([{ id: 'preset-cache', label: 'Cache', rules: [] }]);
+    expect(exported.autoGearMonitorDefaults).toEqual({ waveform: 'RGB' });
+    expect(exported.autoGearActivePresetId).toBe('preset-cache');
+    expect(exported.autoGearAutoPresetId).toBe('preset-auto');
+    expect(exported.autoGearBackupRetention).toBe(7);
+    expect(exported.autoGearShowBackups).toBe(true);
+
+    delete global.cineAutoGearPersistence;
+  });
+
+  test('importAllData rehydrates auto-gear persistence for offline exports', () => {
+    const autoGearStub = createAutoGearPersistenceStub();
+    global.cineAutoGearPersistence = autoGearStub;
+
+    const payload = {
+      autoGearRules: [{ id: 'rule-restore', label: 'Restore', add: [], remove: [] }],
+      autoGearBackups: [{ id: 'backup-restore', label: 'Restore', createdAt: 3, rules: [] }],
+      autoGearPresets: [{ id: 'preset-restore', label: 'Restore', rules: [] }],
+      autoGearMonitorDefaults: { waveform: 'RGB', lut: 'False Color' },
+      autoGearActivePresetId: 'preset-restore',
+      autoGearAutoPresetId: 'preset-auto',
+      autoGearBackupRetention: 12,
+      autoGearShowBackups: true,
+    };
+
+    importAllData(payload);
+
+    expect(autoGearStub.persistAutoGearRules).toHaveBeenCalledWith(payload.autoGearRules);
+    expect(autoGearStub.persistAutoGearBackups).toHaveBeenCalledWith(payload.autoGearBackups);
+    expect(autoGearStub.persistAutoGearPresets).toHaveBeenCalledWith(payload.autoGearPresets);
+    expect(autoGearStub.persistAutoGearMonitorDefaults).toHaveBeenCalledWith(payload.autoGearMonitorDefaults);
+    expect(autoGearStub.persistActivePresetId).toHaveBeenCalledWith('preset-restore');
+    expect(autoGearStub.persistAutoPresetId).toHaveBeenCalledWith('preset-auto');
+    expect(autoGearStub.persistBackupRetention).toHaveBeenCalledWith(12);
+    expect(autoGearStub.persistBackupVisibility).toHaveBeenCalledWith(true);
+
+    localStorage.clear();
+
+    const exported = exportAllData();
+    expect(exported.autoGearRules).toEqual(payload.autoGearRules);
+    expect(exported.autoGearBackups).toEqual(payload.autoGearBackups);
+    expect(exported.autoGearPresets).toEqual(payload.autoGearPresets);
+    expect(exported.autoGearMonitorDefaults).toEqual(payload.autoGearMonitorDefaults);
+    expect(exported.autoGearActivePresetId).toBe('preset-restore');
+    expect(exported.autoGearAutoPresetId).toBe('preset-auto');
+    expect(exported.autoGearBackupRetention).toBe(12);
+    expect(exported.autoGearShowBackups).toBe(true);
+
+    delete global.cineAutoGearPersistence;
   });
 
   test('importAllData applies temperature unit preference', () => {

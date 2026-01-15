@@ -16773,6 +16773,52 @@ function refreshBackupVaultRecordCache() {
   return Promise.resolve(backupVaultRecordCache);
 }
 
+
+function resolveAutoGearPersistence() {
+  if (GLOBAL_SCOPE && GLOBAL_SCOPE.cineAutoGearPersistence) {
+    return GLOBAL_SCOPE.cineAutoGearPersistence;
+  }
+  if (GLOBAL_SCOPE && GLOBAL_SCOPE.cineModules && typeof GLOBAL_SCOPE.cineModules.get === 'function') {
+    return GLOBAL_SCOPE.cineModules.get('cineAutoGearPersistence') || null;
+  }
+  return null;
+}
+
+function getAutoGearSnapshotFromCache() {
+  const persistence = resolveAutoGearPersistence();
+  if (!persistence) {
+    return null;
+  }
+  const snapshot = typeof persistence.getCacheSnapshot === 'function'
+    ? persistence.getCacheSnapshot()
+    : null;
+
+  const readValue = (key, fallback, readerName) => {
+    if (snapshot && Object.prototype.hasOwnProperty.call(snapshot, key)) {
+      return snapshot[key];
+    }
+    if (readerName && typeof persistence[readerName] === 'function') {
+      try {
+        return persistence[readerName]();
+      } catch (error) {
+        console.warn(`Failed to read ${key} from Auto-Gear persistence cache`, error);
+      }
+    }
+    return fallback;
+  };
+
+  return {
+    autoGearRules: readValue('autoGearRules', [], 'readAutoGearRules'),
+    autoGearBackups: readValue('autoGearBackups', [], 'readAutoGearBackups'),
+    autoGearPresets: readValue('autoGearPresets', [], 'readAutoGearPresets'),
+    autoGearMonitorDefaults: readValue('autoGearMonitorDefaults', {}, 'readAutoGearMonitorDefaults'),
+    autoGearActivePresetId: readValue('autoGearActivePresetId', '', 'readActivePresetId'),
+    autoGearAutoPresetId: readValue('autoGearAutoPresetId', '', 'readAutoPresetId'),
+    autoGearBackupRetention: readValue('autoGearBackupRetention', null, 'readBackupRetention'),
+    autoGearShowBackups: readValue('autoGearShowBackups', false, 'readBackupVisibility'),
+  };
+}
+
 async function prepareBackupForExport() {
   const records = await refreshBackupVaultRecordCache();
   return records;
@@ -16780,6 +16826,7 @@ async function prepareBackupForExport() {
 
 function exportAllData() {
   refreshBackupVaultRecordCache();
+  const autoGearSnapshot = getAutoGearSnapshotFromCache();
   const payload = {
     devices: loadDeviceData(),
     setups: loadSetups(),
@@ -16790,15 +16837,15 @@ function exportAllData() {
     contacts: loadContacts(),
     ownGear: loadOwnGear(),
     userProfile: null,
-    autoGearRules: loadAutoGearRules(),
-    autoGearBackups: loadAutoGearBackups(),
+    autoGearRules: autoGearSnapshot ? autoGearSnapshot.autoGearRules : loadAutoGearRules(),
+    autoGearBackups: autoGearSnapshot ? autoGearSnapshot.autoGearBackups : loadAutoGearBackups(),
     autoGearSeeded: loadAutoGearSeedFlag(),
-    autoGearPresets: loadAutoGearPresets(),
-    autoGearMonitorDefaults: loadAutoGearMonitorDefaults(),
-    autoGearActivePresetId: loadAutoGearActivePresetId(),
-    autoGearAutoPresetId: loadAutoGearAutoPresetId(),
-    autoGearShowBackups: loadAutoGearBackupVisibility(),
-    autoGearBackupRetention: loadAutoGearBackupRetention(),
+    autoGearPresets: autoGearSnapshot ? autoGearSnapshot.autoGearPresets : loadAutoGearPresets(),
+    autoGearMonitorDefaults: autoGearSnapshot ? autoGearSnapshot.autoGearMonitorDefaults : loadAutoGearMonitorDefaults(),
+    autoGearActivePresetId: autoGearSnapshot ? autoGearSnapshot.autoGearActivePresetId : loadAutoGearActivePresetId(),
+    autoGearAutoPresetId: autoGearSnapshot ? autoGearSnapshot.autoGearAutoPresetId : loadAutoGearAutoPresetId(),
+    autoGearShowBackups: autoGearSnapshot ? autoGearSnapshot.autoGearShowBackups : loadAutoGearBackupVisibility(),
+    autoGearBackupRetention: autoGearSnapshot ? autoGearSnapshot.autoGearBackupRetention : loadAutoGearBackupRetention(),
     fullBackupHistory: loadFullBackupHistory(),
   };
 
@@ -17786,6 +17833,22 @@ function importAllData(allData, options = {}) {
   const mountVoltageKeyName = getMountVoltageStorageKeyName();
   const cameraColorKeyName = CAMERA_COLOR_STORAGE_KEY;
 
+  const autoGearPersistence = resolveAutoGearPersistence();
+  const persistAutoGearValue = (methodName, fallbackFn, value) => {
+    if (autoGearPersistence && typeof autoGearPersistence[methodName] === 'function') {
+      try {
+        autoGearPersistence[methodName](value);
+        return true;
+      } catch (error) {
+        console.warn(`Failed to persist Auto-Gear value with ${methodName}`, error);
+      }
+    }
+    if (typeof fallbackFn === 'function') {
+      fallbackFn(value);
+    }
+    return false;
+  };
+
   if (hasOwn('devices')) {
     saveDeviceData(allData.devices);
   }
@@ -18082,11 +18145,11 @@ function importAllData(allData, options = {}) {
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearRules')) {
     const rules = normalizeImportedAutoGearRules(allData.autoGearRules);
-    saveAutoGearRules(rules);
+    persistAutoGearValue('persistAutoGearRules', saveAutoGearRules, rules);
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearBackups')) {
     const backups = normalizeImportedAutoGearBackups(allData.autoGearBackups);
-    saveAutoGearBackups(backups);
+    persistAutoGearValue('persistAutoGearBackups', saveAutoGearBackups, backups);
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearSeeded')) {
     const flag = normalizeImportedBoolean(allData.autoGearSeeded);
@@ -18098,33 +18161,29 @@ function importAllData(allData, options = {}) {
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearPresets')) {
     const presets = normalizeImportedAutoGearPresets(allData.autoGearPresets);
-    saveAutoGearPresets(presets);
+    persistAutoGearValue('persistAutoGearPresets', saveAutoGearPresets, presets);
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearMonitorDefaults')) {
     const defaults = normalizeImportedAutoGearMonitorDefaults(allData.autoGearMonitorDefaults);
-    saveAutoGearMonitorDefaults(defaults);
+    persistAutoGearValue('persistAutoGearMonitorDefaults', saveAutoGearMonitorDefaults, defaults);
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearActivePresetId')) {
     const presetId = normalizeImportedPresetId(allData.autoGearActivePresetId);
-    saveAutoGearActivePresetId(typeof presetId === 'string' ? presetId : '');
+    persistAutoGearValue('persistActivePresetId', saveAutoGearActivePresetId, typeof presetId === 'string' ? presetId : '');
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearAutoPresetId')) {
-    saveAutoGearAutoPresetId(
-      typeof allData.autoGearAutoPresetId === 'string' ? allData.autoGearAutoPresetId : ''
-    );
+    const presetId = typeof allData.autoGearAutoPresetId === 'string' ? allData.autoGearAutoPresetId : '';
+    persistAutoGearValue('persistAutoPresetId', saveAutoGearAutoPresetId, presetId);
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearShowBackups')) {
     const visibility = normalizeImportedBoolean(allData.autoGearShowBackups);
-    if (visibility === null) {
-      saveAutoGearBackupVisibility(false);
-    } else {
-      saveAutoGearBackupVisibility(visibility);
-    }
+    const normalizedVisibility = visibility === null ? false : visibility;
+    persistAutoGearValue('persistBackupVisibility', saveAutoGearBackupVisibility, normalizedVisibility);
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearBackupRetention')) {
     const retention = normalizeImportedAutoGearBackupRetention(allData.autoGearBackupRetention);
     if (typeof retention === 'number' && Number.isFinite(retention)) {
-      saveAutoGearBackupRetention(retention);
+      persistAutoGearValue('persistBackupRetention', saveAutoGearBackupRetention, retention);
     }
   }
 
