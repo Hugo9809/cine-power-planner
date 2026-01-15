@@ -24,6 +24,9 @@ partageables — entièrement dans votre navigateur, même hors ligne. Toutes le
 - **Filets de sécurité en couches.** Sauvegarde, autosave, partage, import,
   backup et restauration créent toujours des snapshots de sécurité pour pouvoir
   récupérer avant promotion.
+- **Imports compatibles avec l’héritage.** Les imports de bundles de projet
+  reconnaissent les entrées d’enveloppe `{ name, project }` afin d’éviter toute
+  perte de données lors du chargement d’exports anciens.
 - **Conçu pour l’offline.** Tous les icônes, polices, Uicons et scripts d’aide
   sont stockés dans ce repo, donc l’usage hors ligne ne dégrade ni l’ergonomie
   ni la protection des données.

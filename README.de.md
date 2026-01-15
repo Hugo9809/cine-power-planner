@@ -24,6 +24,9 @@ Feld-Laptops oder luftgetrennten Archiven funktioniert.
 - **Mehrstufige Sicherheitsnetze.** Speichern, Autosave, Teilen, Importieren,
   Backup und Restore erzeugen immer Sicherheits-Snapshots, damit eine
   Wiederherstellung möglich ist, bevor Daten übernommen werden.
+- **Legacy-sichere Importe.** Projekt-Bundle-Importe erkennen
+  `{ name, project }`-Wrapper-Einträge, um Datenverlust beim Laden älterer
+  Exporte zu verhindern.
 - **Offline by Design.** Alle Icons, Fonts, Uicons und Helferskripte liegen in
   diesem Repo, sodass Offline-Nutzung nie die Bedienbarkeit oder Datensicherheit
   beeinträchtigt.
