@@ -59,6 +59,7 @@ async function hydrateProjectCache() {
         projectIndexCache = normalizedIndex;
       }
 
+      // Intentionally non-blocking cache warm-ups for synchronous reads; hydration continues in the background.
       storageRepo.getItem(AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY).then(val => { if (val) autoGearMonitorDefaultsCache = val; });
       storageRepo.getItem(AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY).then(val => { if (val) autoGearActivePresetIdCache = val; });
       storageRepo.getItem(AUTO_GEAR_AUTO_PRESET_STORAGE_KEY).then(val => { if (val) autoGearAutoPresetIdCache = val; });
