@@ -148,6 +148,81 @@ const SESSION_AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
 
 const BACKUP_STORAGE_KEY_PREFIXES = ['cameraPowerPlanner_', 'cinePowerPlanner_'];
 
+const AUTO_GEAR_STORAGE_KEY_ALIASES = Object.freeze({
+  autoGearRules: BACKUP_STORAGE_KEY_PREFIXES.map(prefix => `${prefix}autoGearRules`),
+  autoGearBackups: BACKUP_STORAGE_KEY_PREFIXES.map(prefix => `${prefix}autoGearBackups`),
+  autoGearPresets: BACKUP_STORAGE_KEY_PREFIXES.map(prefix => `${prefix}autoGearPresets`),
+  autoGearMonitorDefaults: BACKUP_STORAGE_KEY_PREFIXES.map(prefix => `${prefix}autoGearMonitorDefaults`),
+  autoGearActivePresetId: BACKUP_STORAGE_KEY_PREFIXES.map(prefix => `${prefix}autoGearActivePreset`),
+  autoGearAutoPresetId: BACKUP_STORAGE_KEY_PREFIXES.map(prefix => `${prefix}autoGearAutoPreset`),
+  autoGearBackupRetention: BACKUP_STORAGE_KEY_PREFIXES.map(prefix => `${prefix}autoGearBackupRetention`),
+  autoGearShowBackups: BACKUP_STORAGE_KEY_PREFIXES.map(prefix => `${prefix}autoGearShowBackups`),
+});
+
+function resolveAutoGearPersistence() {
+  if (GLOBAL_SCOPE && GLOBAL_SCOPE.cineAutoGearPersistence) {
+    return GLOBAL_SCOPE.cineAutoGearPersistence;
+  }
+  if (GLOBAL_SCOPE && GLOBAL_SCOPE.cineModules && typeof GLOBAL_SCOPE.cineModules.get === 'function') {
+    return GLOBAL_SCOPE.cineModules.get('cineAutoGearPersistence') || null;
+  }
+  return null;
+}
+
+function getAutoGearBackupSnapshot() {
+  const persistence = resolveAutoGearPersistence();
+  if (!persistence) {
+    return null;
+  }
+
+  const snapshot = typeof persistence.getCacheSnapshot === 'function'
+    ? persistence.getCacheSnapshot()
+    : null;
+
+  const readValue = (key, fallback, readerName) => {
+    if (snapshot && Object.prototype.hasOwnProperty.call(snapshot, key)) {
+      return snapshot[key];
+    }
+    if (readerName && typeof persistence[readerName] === 'function') {
+      try {
+        return persistence[readerName]();
+      } catch (error) {
+        console.warn(`Failed to read ${key} from Auto-Gear persistence cache`, error);
+      }
+    }
+    return fallback;
+  };
+
+  return {
+    autoGearRules: readValue('autoGearRules', [], 'readAutoGearRules'),
+    autoGearBackups: readValue('autoGearBackups', [], 'readAutoGearBackups'),
+    autoGearPresets: readValue('autoGearPresets', [], 'readAutoGearPresets'),
+    autoGearMonitorDefaults: readValue('autoGearMonitorDefaults', {}, 'readAutoGearMonitorDefaults'),
+    autoGearActivePresetId: readValue('autoGearActivePresetId', '', 'readActivePresetId'),
+    autoGearAutoPresetId: readValue('autoGearAutoPresetId', '', 'readAutoPresetId'),
+    autoGearBackupRetention: readValue('autoGearBackupRetention', null, 'readBackupRetention'),
+    autoGearShowBackups: readValue('autoGearShowBackups', false, 'readBackupVisibility'),
+  };
+}
+
+function buildAutoGearSnapshotEntries(snapshot) {
+  if (!snapshot) {
+    return null;
+  }
+  const entries = {};
+  Object.entries(AUTO_GEAR_STORAGE_KEY_ALIASES).forEach(([key, storageKeys]) => {
+    if (!Object.prototype.hasOwnProperty.call(snapshot, key)) {
+      return;
+    }
+    const value = snapshot[key];
+    storageKeys.forEach((storageKey) => {
+      entries[storageKey] = value;
+    });
+  });
+  return entries;
+}
+
+
 const BACKUP_VAULT_DB_NAME = 'cinePowerPlannerBackupVault';
 /*
  * DEEP DIVE: The "Backup Vault" Architecture
@@ -1506,11 +1581,18 @@ function captureStorageSnapshot(storage) {
   const snapshot = Object.create(null);
   if (!storage) return snapshot;
 
+  const autoGearSnapshot = getAutoGearBackupSnapshot();
+  const autoGearEntries = buildAutoGearSnapshotEntries(autoGearSnapshot);
+
   const assignEntry = (key, valueOrGetter) => {
     if (typeof key !== 'string' || !key) {
       return;
     }
     if (Object.prototype.hasOwnProperty.call(snapshot, key)) {
+      return;
+    }
+    if (autoGearEntries && Object.prototype.hasOwnProperty.call(autoGearEntries, key)) {
+      snapshot[key] = autoGearEntries[key];
       return;
     }
     try {
@@ -1617,6 +1699,14 @@ function captureStorageSnapshot(storage) {
   if (typeof storage.getItem === 'function' && FALLBACK_STORAGE_KEYS.size) {
     FALLBACK_STORAGE_KEYS.forEach((key) => {
       assignEntry(key, () => storage.getItem(key));
+    });
+  }
+
+  if (autoGearEntries) {
+    Object.entries(autoGearEntries).forEach(([key, value]) => {
+      if (!Object.prototype.hasOwnProperty.call(snapshot, key)) {
+        snapshot[key] = value;
+      }
     });
   }
 
