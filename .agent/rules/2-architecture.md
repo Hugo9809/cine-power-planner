@@ -16,35 +16,22 @@ Backup/Persistence: OPFS (Origin Private File System).
 
 Styling: CSS Modules or Tailwind CSS (via PostCSS).
 
-2. Data Persistence Strategy (The "Twin-Store" Pattern)
-You must implement a robust offline-first architecture using the following protocols:
+2. Directory Structure (Feature-Based)
+You must strictly adhere to a Feature-Based architecture to ensure scalability.
 
-A. Primary Storage: IndexedDB
+src/features/: Contains domain-specific logic. Each feature (e.g., auth, project-board) gets its own folder with components, hooks, and utils.
 
-Usage: Acts as the "Hot" database for UI interaction and queries.
+src/components/: ONLY for generic, reusable UI atoms (Buttons, Inputs) that are domain-agnostic.
 
-Access: ALWAYS use a Promise-based wrapper (like idb) instead of the raw event-based API to prevent callback hell.
+src/lib/: For third-party library configurations (e.g., idb setup, firebase init).
 
-Versioning: maintain a strict db_version constant. Any schema change requires a version bump and an onupgradeneeded handler.
+src/workers/: Dedicated folder for Web Workers (OPFS sync logic).
 
-B. Backup System: OPFS (Origin Private File System)
+The Barrel File Protocol:
 
-Role: Serves as the "Cold" backup and file input/output layer.
+Every feature folder MUST have an index.js that exports only the public API of that feature.
 
-Worker Mandate: Heavy I/O operations (reading/writing large backups to OPFS) MUST run in a Web Worker. Do NOT block the main thread.
+Constraint: Code outside a feature folder MUST import from src/features/auth (the barrel file), NOT src/features/auth/components/LoginForm.jsx.
 
-Sync Access: Inside the Web Worker, use FileSystemSyncAccessHandle for high-performance, synchronous read/write operations when possible.
-
-Serialization: When backing up, serialize IndexedDB object stores to JSON/Binary before writing to OPFS.
-
-3. Component & Code Structure
-ES Modules: Use native ESM syntax (import/export). No CommonJS (require).
-
-Environment Variables: Access via import.meta.env (e.g., import.meta.env.VITE_API_URL), NOT process.env.
-
-Workers: Import workers using the Vite syntax: new Worker(new URL('./worker.js', import.meta.url), { type: 'module' }).
-
-4. Performance & Safety
-Visual Feedback: Since storage operations are local, UI updates should be optimistic.
-
-Error Handling: Wrap all IndexedDB/OPFS transactions in try/catch blocks. Handle QuotaExceededError gracefully (browser storage limits).
+3. Data Persistence Strategy (The "Twin-Store" Pattern)
+File 2: NEW .agent/rules/70-performance.md (New rule to enforce web performance best practices specific to Vite)
