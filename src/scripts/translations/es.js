@@ -655,6 +655,7 @@ export const data = {
     "alertSetupSavedNoDevices": "Proyecto \"{name}\" guardado en este navegador sin dispositivos por ahora. Podrás añadir el equipo y los requisitos más tarde; mantendremos todo protegido.",
     "alertSetupRenameSaveFailed": "No pudimos terminar de guardar el proyecto renombrado. Tu proyecto original sigue disponible; vuelve a guardar para mantener todo sincronizado.",
     "alertNoSetupSelected": "Selecciona un proyecto para eliminar.",
+    "alertNoSetupSelectedTitle": "No hay ningún proyecto seleccionado",
     "alertSetupDeleted": "Proyecto \"{name}\" eliminado.",
     "confirmDeleteSetup": "¿Eliminar el proyecto \"{name}\"?",
     "confirmDeleteSetupAgain": "Esto eliminará permanentemente el proyecto. ¿Estás seguro?",
