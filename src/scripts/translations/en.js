@@ -2424,7 +2424,8 @@ export const data = {
           "noResults": {
             "title": "No Results",
             "subtitle": "No projects match \"{query}\""
-          }
+          },
+          "clear": "Clear search"
         },
         "projectTile": {
           "prep": "Prep:",
