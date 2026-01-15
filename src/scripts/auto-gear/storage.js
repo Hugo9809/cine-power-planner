@@ -3,22 +3,22 @@
  * exercised directly in unit tests without loading the UI.
  */
 // @ts-nocheck
-/* global loadAutoGearBackups, AUTO_GEAR_BACKUPS_KEY,
-  normalizeAutoGearBackupEntry, loadAutoGearPresets, AUTO_GEAR_PRESETS_KEY, normalizeAutoGearPreset,
+/* global loadAutoGearBackups,
+  normalizeAutoGearBackupEntry, loadAutoGearPresets, normalizeAutoGearPreset,
   saveAutoGearPresets, loadAutoGearMonitorDefaults,
-  AUTO_GEAR_MONITOR_DEFAULTS_KEY, saveAutoGearMonitorDefaults,
+  saveAutoGearMonitorDefaults,
   normalizeAutoGearMonitorDefaults,
-  loadAutoGearActivePresetId, AUTO_GEAR_ACTIVE_PRESET_KEY, saveAutoGearActivePresetId,
-  loadAutoGearAutoPresetId, AUTO_GEAR_AUTO_PRESET_KEY, saveAutoGearAutoPresetId,
-  loadAutoGearBackupVisibility, AUTO_GEAR_BACKUP_VISIBILITY_KEY, saveAutoGearBackupVisibility,
+  loadAutoGearActivePresetId, saveAutoGearActivePresetId,
+  loadAutoGearAutoPresetId, saveAutoGearAutoPresetId,
+  loadAutoGearBackupVisibility, saveAutoGearBackupVisibility,
   loadAutoGearBackupRetention, saveAutoGearBackupRetention,
   saveAutoGearBackups, autoGearBackupRetention, callCoreFunctionIfAvailable,
-  autoGearBackupRetentionInput, autoGearBackups, AUTO_GEAR_RULES_KEY, normalizeAutoGearRule,
+  autoGearBackupRetentionInput, autoGearBackups, normalizeAutoGearRule,
   loadAutoGearRules */
-var AUTO_GEAR_BACKUP_RETENTION_FALLBACK_KEY = 'cameraPowerPlanner_autoGearBackupRetention';
 var AUTO_GEAR_BACKUP_RETENTION_FALLBACK_DEFAULT = 36;
 var AUTO_GEAR_BACKUP_RETENTION_FALLBACK_MIN = 1;
 var AUTO_GEAR_BACKUP_RETENTION_FALLBACK_MAX = 120;
+var AUTO_GEAR_PERSISTENCE_MODULE_NAME = 'cineAutoGearPersistence';
 var AUTO_GEAR_BACKUP_GLOBAL_SCOPE = (typeof globalThis !== 'undefined' && globalThis)
     || (typeof window !== 'undefined' && window)
     || (typeof self !== 'undefined' && self)
@@ -30,6 +30,44 @@ function readScopedNumericAutoGearValue(name) {
     }
     var value = AUTO_GEAR_BACKUP_GLOBAL_SCOPE[name];
     return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+function resolveAutoGearPersistenceService() {
+    var scopes = [];
+    if (typeof globalThis !== 'undefined')
+        scopes.push(globalThis);
+    if (typeof window !== 'undefined')
+        scopes.push(window);
+    if (typeof self !== 'undefined')
+        scopes.push(self);
+    if (typeof global !== 'undefined')
+        scopes.push(global);
+    for (var index = 0; index < scopes.length; index += 1) {
+        var scope = scopes[index];
+        if (!scope || (typeof scope !== 'object' && typeof scope !== 'function'))
+            continue;
+        if (scope.cineAutoGearPersistence)
+            return scope.cineAutoGearPersistence;
+        var registry = scope.cineModules;
+        if (registry && typeof registry.get === 'function') {
+            var module = registry.get(AUTO_GEAR_PERSISTENCE_MODULE_NAME);
+            if (module)
+                return module;
+        }
+    }
+    return null;
+}
+function scheduleAutoGearPersistence(name, payload) {
+    var service = resolveAutoGearPersistenceService();
+    if (!service || typeof service[name] !== 'function') {
+        return null;
+    }
+    var pending = service[name](payload);
+    if (pending && typeof pending.catch === 'function') {
+        pending.catch(function (error) {
+            console.warn("Auto-Gear persistence failed for ".concat(name), error);
+        });
+    }
+    return pending;
 }
 function normalizeRetentionCandidate(value, minValue, maxValue) {
     if (typeof value !== 'number' || !Number.isFinite(value)) {
@@ -82,35 +120,19 @@ function resolveAutoGearBackupRetentionDefaultValue() {
     }
     return minValue;
 }
-function resolveAutoGearBackupRetentionKey() {
-    if (AUTO_GEAR_BACKUP_GLOBAL_SCOPE &&
-        typeof AUTO_GEAR_BACKUP_GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_KEY === 'string') {
-        var scopedKey = AUTO_GEAR_BACKUP_GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_KEY.trim();
-        if (scopedKey) {
-            return scopedKey;
-        }
-    }
-    return AUTO_GEAR_BACKUP_RETENTION_FALLBACK_KEY;
-}
 function readAutoGearBackupsFromStorage(retentionLimit) {
     if (retentionLimit === void 0) { retentionLimit = resolveAutoGearBackupRetentionDefaultValue(); }
     var stored = [];
-    if (typeof loadAutoGearBackups === 'function') {
+    var service = resolveAutoGearPersistenceService();
+    if (service && typeof service.readAutoGearBackups === 'function') {
+        stored = service.readAutoGearBackups();
+    }
+    else if (typeof loadAutoGearBackups === 'function') {
         try {
             stored = loadAutoGearBackups();
         }
         catch (error) {
             console.warn('Failed to load automatic gear backups', error);
-            stored = [];
-        }
-    }
-    else if (typeof localStorage !== 'undefined') {
-        try {
-            var raw = localStorage.getItem(AUTO_GEAR_BACKUPS_KEY);
-            stored = raw ? JSON.parse(raw) : [];
-        }
-        catch (error) {
-            console.warn('Failed to read automatic gear backups from storage', error);
             stored = [];
         }
     }
@@ -132,22 +154,16 @@ function sortAutoGearPresets(list) {
 }
 function readAutoGearPresetsFromStorage() {
     var stored = [];
-    if (typeof loadAutoGearPresets === 'function') {
+    var service = resolveAutoGearPersistenceService();
+    if (service && typeof service.readAutoGearPresets === 'function') {
+        stored = service.readAutoGearPresets();
+    }
+    else if (typeof loadAutoGearPresets === 'function') {
         try {
             stored = loadAutoGearPresets();
         }
         catch (error) {
             console.warn('Failed to load automatic gear presets', error);
-            stored = [];
-        }
-    }
-    else if (typeof localStorage !== 'undefined') {
-        try {
-            var raw = localStorage.getItem(AUTO_GEAR_PRESETS_KEY);
-            stored = raw ? JSON.parse(raw) : [];
-        }
-        catch (error) {
-            console.warn('Failed to read automatic gear presets from storage', error);
             stored = [];
         }
     }
@@ -163,6 +179,9 @@ function persistAutoGearPresets(presets) {
             rules: Array.isArray(preset.rules) ? preset.rules : [],
         }); })
         : [];
+    if (scheduleAutoGearPersistence('persistAutoGearPresets', payload)) {
+        return;
+    }
     if (typeof saveAutoGearPresets === 'function') {
         try {
             saveAutoGearPresets(payload);
@@ -172,18 +191,14 @@ function persistAutoGearPresets(presets) {
             console.warn('Failed to save automatic gear presets', error);
         }
     }
-    if (typeof localStorage === 'undefined')
-        return;
-    try {
-        localStorage.setItem(AUTO_GEAR_PRESETS_KEY, JSON.stringify(payload));
-    }
-    catch (error) {
-        console.warn('Failed to persist automatic gear presets', error);
-    }
 }
 function readAutoGearMonitorDefaultsFromStorage() {
     var stored = {};
-    if (typeof loadAutoGearMonitorDefaults === 'function') {
+    var service = resolveAutoGearPersistenceService();
+    if (service && typeof service.readAutoGearMonitorDefaults === 'function') {
+        stored = service.readAutoGearMonitorDefaults();
+    }
+    else if (typeof loadAutoGearMonitorDefaults === 'function') {
         try {
             stored = loadAutoGearMonitorDefaults();
         }
@@ -192,20 +207,13 @@ function readAutoGearMonitorDefaultsFromStorage() {
             stored = {};
         }
     }
-    else if (typeof localStorage !== 'undefined') {
-        try {
-            var raw = localStorage.getItem(AUTO_GEAR_MONITOR_DEFAULTS_KEY);
-            stored = raw ? JSON.parse(raw) : {};
-        }
-        catch (error) {
-            console.warn('Failed to read automatic gear monitor defaults from storage', error);
-            stored = {};
-        }
-    }
     return normalizeAutoGearMonitorDefaults(stored);
 }
 function persistAutoGearMonitorDefaults(defaults) {
     var payload = normalizeAutoGearMonitorDefaults(defaults);
+    if (scheduleAutoGearPersistence('persistAutoGearMonitorDefaults', payload)) {
+        return payload;
+    }
     if (typeof saveAutoGearMonitorDefaults === 'function') {
         try {
             saveAutoGearMonitorDefaults(payload);
@@ -215,18 +223,13 @@ function persistAutoGearMonitorDefaults(defaults) {
             console.warn('Failed to save automatic gear monitor defaults', error);
         }
     }
-    if (typeof localStorage === 'undefined') {
-        return payload;
-    }
-    try {
-        localStorage.setItem(AUTO_GEAR_MONITOR_DEFAULTS_KEY, JSON.stringify(payload));
-    }
-    catch (error) {
-        console.warn('Failed to persist automatic gear monitor defaults', error);
-    }
     return payload;
 }
 function readActiveAutoGearPresetIdFromStorage() {
+    var service = resolveAutoGearPersistenceService();
+    if (service && typeof service.readActivePresetId === 'function') {
+        return service.readActivePresetId();
+    }
     if (typeof loadAutoGearActivePresetId === 'function') {
         try {
             var loaderPresetId = loadAutoGearActivePresetId();
@@ -237,18 +240,12 @@ function readActiveAutoGearPresetIdFromStorage() {
             return '';
         }
     }
-    if (typeof localStorage === 'undefined')
-        return '';
-    try {
-        var storagePresetId = localStorage.getItem(AUTO_GEAR_ACTIVE_PRESET_KEY);
-        return typeof storagePresetId === 'string' ? storagePresetId : '';
-    }
-    catch (error) {
-        console.warn('Failed to read automatic gear active preset id from storage', error);
-        return '';
-    }
+    return '';
 }
 function persistActiveAutoGearPresetId(presetId) {
+    if (scheduleAutoGearPersistence('persistActivePresetId', presetId)) {
+        return;
+    }
     if (typeof saveAutoGearActivePresetId === 'function') {
         try {
             saveAutoGearActivePresetId(typeof presetId === 'string' ? presetId : '');
@@ -258,21 +255,12 @@ function persistActiveAutoGearPresetId(presetId) {
             console.warn('Failed to save automatic gear active preset id', error);
         }
     }
-    if (typeof localStorage === 'undefined')
-        return;
-    try {
-        if (presetId) {
-            localStorage.setItem(AUTO_GEAR_ACTIVE_PRESET_KEY, presetId);
-        }
-        else {
-            localStorage.removeItem(AUTO_GEAR_ACTIVE_PRESET_KEY);
-        }
-    }
-    catch (error) {
-        console.warn('Failed to persist automatic gear active preset id', error);
-    }
 }
 function readAutoGearAutoPresetIdFromStorage() {
+    var service = resolveAutoGearPersistenceService();
+    if (service && typeof service.readAutoPresetId === 'function') {
+        return service.readAutoPresetId();
+    }
     if (typeof loadAutoGearAutoPresetId === 'function') {
         try {
             var loaderAutoPresetId = loadAutoGearAutoPresetId();
@@ -283,18 +271,12 @@ function readAutoGearAutoPresetIdFromStorage() {
             return '';
         }
     }
-    if (typeof localStorage === 'undefined')
-        return '';
-    try {
-        var storageAutoPresetId = localStorage.getItem(AUTO_GEAR_AUTO_PRESET_KEY);
-        return typeof storageAutoPresetId === 'string' ? storageAutoPresetId : '';
-    }
-    catch (error) {
-        console.warn('Failed to read automatic gear auto preset id from storage', error);
-        return '';
-    }
+    return '';
 }
 function persistAutoGearAutoPresetId(presetId) {
+    if (scheduleAutoGearPersistence('persistAutoPresetId', presetId)) {
+        return;
+    }
     if (typeof saveAutoGearAutoPresetId === 'function') {
         try {
             saveAutoGearAutoPresetId(typeof presetId === 'string' ? presetId : '');
@@ -304,21 +286,12 @@ function persistAutoGearAutoPresetId(presetId) {
             console.warn('Failed to save automatic gear auto preset id', error);
         }
     }
-    if (typeof localStorage === 'undefined')
-        return;
-    try {
-        if (presetId) {
-            localStorage.setItem(AUTO_GEAR_AUTO_PRESET_KEY, presetId);
-        }
-        else {
-            localStorage.removeItem(AUTO_GEAR_AUTO_PRESET_KEY);
-        }
-    }
-    catch (error) {
-        console.warn('Failed to persist automatic gear auto preset id', error);
-    }
 }
 function readAutoGearBackupVisibilityFromStorage() {
+    var service = resolveAutoGearPersistenceService();
+    if (service && typeof service.readBackupVisibility === 'function') {
+        return service.readBackupVisibility();
+    }
     if (typeof loadAutoGearBackupVisibility === 'function') {
         try {
             return !!loadAutoGearBackupVisibility();
@@ -328,18 +301,13 @@ function readAutoGearBackupVisibilityFromStorage() {
             return false;
         }
     }
-    if (typeof localStorage === 'undefined')
-        return false;
-    try {
-        return localStorage.getItem(AUTO_GEAR_BACKUP_VISIBILITY_KEY) === '1';
-    }
-    catch (error) {
-        console.warn('Failed to read automatic gear backup visibility from storage', error);
-        return false;
-    }
+    return false;
 }
 function persistAutoGearBackupVisibility(flag) {
     var enabled = !!flag;
+    if (scheduleAutoGearPersistence('persistBackupVisibility', enabled)) {
+        return;
+    }
     if (typeof saveAutoGearBackupVisibility === 'function') {
         try {
             saveAutoGearBackupVisibility(enabled);
@@ -348,19 +316,6 @@ function persistAutoGearBackupVisibility(flag) {
         catch (error) {
             console.warn('Failed to save automatic gear backup visibility', error);
         }
-    }
-    if (typeof localStorage === 'undefined')
-        return;
-    try {
-        if (enabled) {
-            localStorage.setItem(AUTO_GEAR_BACKUP_VISIBILITY_KEY, '1');
-        }
-        else {
-            localStorage.removeItem(AUTO_GEAR_BACKUP_VISIBILITY_KEY);
-        }
-    }
-    catch (error) {
-        console.warn('Failed to persist automatic gear backup visibility', error);
     }
 }
 function clampAutoGearBackupRetentionLimit(value) {
@@ -383,6 +338,13 @@ function clampAutoGearBackupRetentionLimit(value) {
     return rounded;
 }
 function readAutoGearBackupRetentionFromStorage() {
+    var service = resolveAutoGearPersistenceService();
+    if (service && typeof service.readBackupRetention === 'function') {
+        var cached = service.readBackupRetention();
+        if (cached !== null && typeof cached !== 'undefined') {
+            return clampAutoGearBackupRetentionLimit(cached);
+        }
+    }
     if (typeof loadAutoGearBackupRetention === 'function') {
         try {
             return clampAutoGearBackupRetentionLimit(loadAutoGearBackupRetention());
@@ -391,33 +353,13 @@ function readAutoGearBackupRetentionFromStorage() {
             console.warn('Failed to load automatic gear backup retention', error);
         }
     }
-    if (typeof localStorage === 'undefined') {
-        return resolveAutoGearBackupRetentionDefaultValue();
-    }
-    try {
-        var raw = localStorage.getItem(resolveAutoGearBackupRetentionKey());
-        if (raw === null || raw === undefined) {
-            return resolveAutoGearBackupRetentionDefaultValue();
-        }
-        try {
-            var parsed = JSON.parse(raw);
-            return clampAutoGearBackupRetentionLimit(parsed);
-        }
-        catch (parseError) {
-            var numeric = Number(raw);
-            if (Number.isFinite(numeric)) {
-                return clampAutoGearBackupRetentionLimit(numeric);
-            }
-            throw parseError;
-        }
-    }
-    catch (error) {
-        console.warn('Failed to read automatic gear backup retention from storage', error);
-        return resolveAutoGearBackupRetentionDefaultValue();
-    }
+    return resolveAutoGearBackupRetentionDefaultValue();
 }
 function persistAutoGearBackupRetention(retention) {
     var normalized = clampAutoGearBackupRetentionLimit(retention);
+    if (scheduleAutoGearPersistence('persistBackupRetention', normalized)) {
+        return true;
+    }
     if (typeof saveAutoGearBackupRetention === 'function') {
         try {
             saveAutoGearBackupRetention(normalized);
@@ -427,17 +369,7 @@ function persistAutoGearBackupRetention(retention) {
             console.warn('Failed to save automatic gear backup retention', error);
         }
     }
-    if (typeof localStorage === 'undefined') {
-        return false;
-    }
-    try {
-        localStorage.setItem(resolveAutoGearBackupRetentionKey(), JSON.stringify(normalized));
-        return true;
-    }
-    catch (error) {
-        console.warn('Failed to persist automatic gear backup retention', error);
-        return false;
-    }
+    return false;
 }
 function persistAutoGearBackups(backups) {
     var payload = Array.isArray(backups)
@@ -449,15 +381,14 @@ function persistAutoGearBackups(backups) {
             note: typeof entry.note === 'string' ? entry.note : undefined,
         }); })
         : [];
+    if (scheduleAutoGearPersistence('persistAutoGearBackups', payload)) {
+        return payload;
+    }
     if (typeof saveAutoGearBackups === 'function') {
         var storedPayload = saveAutoGearBackups(payload);
         return Array.isArray(storedPayload) ? storedPayload : payload;
     }
-    if (typeof localStorage === 'undefined') {
-        throw new Error('Storage unavailable');
-    }
-    localStorage.setItem(AUTO_GEAR_BACKUPS_KEY, JSON.stringify(payload));
-    return payload;
+    throw new Error('Storage unavailable');
 }
 function assignAutoGearGlobalValue(name, nextValue) {
     var scopes = [];
@@ -529,19 +460,13 @@ function enforceAutoGearBackupRetentionLimit(limit) {
 }
 function readAutoGearRulesFromStorage() {
     var stored = [];
-    if (typeof loadAutoGearRules !== 'undefined' && typeof loadAutoGearRules === 'function') {
+    var service = resolveAutoGearPersistenceService();
+    if (service && typeof service.readAutoGearRules === 'function') {
+        stored = service.readAutoGearRules();
+    }
+    else if (typeof loadAutoGearRules !== 'undefined' && typeof loadAutoGearRules === 'function') {
         try {
             stored = loadAutoGearRules();
-        }
-        catch (error) {
-            console.warn('Failed to load automatic gear rules', error);
-            stored = [];
-        }
-    }
-    else if (typeof localStorage !== 'undefined') {
-        try {
-            var raw = localStorage.getItem(AUTO_GEAR_RULES_KEY);
-            stored = raw ? JSON.parse(raw) : [];
         }
         catch (error) {
             console.warn('Failed to load automatic gear rules', error);

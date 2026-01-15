@@ -86,8 +86,10 @@ describe('full user journey regression', () => {
     sessionStorage.clear();
   });
 
-  test('preserves planner data across a full workflow', () => {
+  test('preserves planner data across a full workflow', async () => {
     const storageApi = require('../../src/scripts/storage.js');
+    const { storageRepo } = await import('../../src/scripts/modules/storage/StorageRepository.js');
+    await storageRepo.clear();
 
     env = setupScriptEnvironment({
       devices: cloneDevices(),
@@ -341,9 +343,8 @@ describe('full user journey regression', () => {
     const backupCreated = utils.createAutoGearBackup({ force: true, notifySuccess: false, notifyFailure: false });
     expect(backupCreated).toBe(true);
 
-    const autoGearBackupsRaw = localStorage.getItem('cameraPowerPlanner_autoGearBackups');
-    expect(autoGearBackupsRaw).toBeTruthy();
-    const autoGearBackups = JSON.parse(autoGearBackupsRaw);
+    const autoGearBackups = await storageRepo.getItem('cameraPowerPlanner_autoGearBackups');
+    expect(autoGearBackups).toBeTruthy();
     expect(autoGearBackups.length).toBeGreaterThan(0);
     const backupId = autoGearBackups[0].id;
 
@@ -364,8 +365,8 @@ describe('full user journey regression', () => {
 
     localStorage.removeItem('cameraPowerPlanner_project');
     localStorage.removeItem('cameraPowerPlanner_setups');
-    localStorage.removeItem('cameraPowerPlanner_autoGearRules');
-    localStorage.removeItem('cameraPowerPlanner_autoGearBackups');
+    await storageRepo.removeItem('cameraPowerPlanner_autoGearRules');
+    await storageRepo.removeItem('cameraPowerPlanner_autoGearBackups');
     utils.syncAutoGearRulesFromStorage();
 
     global.importAllData(exported);

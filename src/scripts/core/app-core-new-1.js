@@ -45,6 +45,7 @@ let cineDevices = typeof window !== 'undefined' ? window.cineDevices : undefined
 let texts = typeof window !== 'undefined' ? window.texts : undefined;
 // currentLang shim removed to avoid conflict with legacy var declaration
 import { iconGlyph } from '../modules/icons.js';
+import '../modules/persistence/AutoGearService.js';
 import { CORE_GLOBAL_SCOPE } from './app-core-runtime-scopes.js';
 import { CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED, resolvedCollectCoreRuntimeCandidateScopes as importedResolvedCollectCoreRuntimeCandidateScopes } from './app-core-runtime-candidate-scopes.js';
 const resolvedCollectCoreRuntimeCandidateScopes = importedResolvedCollectCoreRuntimeCandidateScopes;
@@ -102,11 +103,56 @@ function resolveAutoGearStorageHelper(name) {
   if (typeof scope[name] === 'function') {
     return scope[name];
   }
+  const persistence = resolveAutoGearPersistenceModule();
+  if (persistence) {
+    const mapped = AUTO_GEAR_STORAGE_METHOD_MAP[name] || name;
+    if (typeof persistence[mapped] === 'function') {
+      return persistence[mapped].bind(persistence);
+    }
+  }
   const exports = scope.AUTO_GEAR_STORAGE_EXPORTS;
   if (exports && typeof exports[name] === 'function') {
     return exports[name];
   }
   return undefined;
+}
+
+const AUTO_GEAR_PERSISTENCE_MODULE_NAME = 'cineAutoGearPersistence';
+const AUTO_GEAR_STORAGE_METHOD_MAP = {
+  readAutoGearRulesFromStorage: 'readAutoGearRules',
+  readAutoGearBackupsFromStorage: 'readAutoGearBackups',
+  readAutoGearPresetsFromStorage: 'readAutoGearPresets',
+  readAutoGearMonitorDefaultsFromStorage: 'readAutoGearMonitorDefaults',
+  readActiveAutoGearPresetIdFromStorage: 'readActivePresetId',
+  readAutoGearAutoPresetIdFromStorage: 'readAutoPresetId',
+  readAutoGearBackupVisibilityFromStorage: 'readBackupVisibility',
+  readAutoGearBackupRetentionFromStorage: 'readBackupRetention',
+  persistAutoGearPresets: 'persistAutoGearPresets',
+  persistAutoGearMonitorDefaults: 'persistAutoGearMonitorDefaults',
+  persistActiveAutoGearPresetId: 'persistActivePresetId',
+  persistAutoGearAutoPresetId: 'persistAutoPresetId',
+  persistAutoGearBackupVisibility: 'persistBackupVisibility',
+  persistAutoGearBackupRetention: 'persistBackupRetention',
+  persistAutoGearBackups: 'persistAutoGearBackups',
+};
+
+function resolveAutoGearPersistenceModule() {
+  const scopes = [];
+  if (typeof globalThis !== 'undefined') scopes.push(globalThis);
+  if (typeof window !== 'undefined') scopes.push(window);
+  if (typeof self !== 'undefined') scopes.push(self);
+  if (typeof global !== 'undefined') scopes.push(global);
+  for (let index = 0; index < scopes.length; index += 1) {
+    const candidate = scopes[index];
+    if (!candidate || (typeof candidate !== 'object' && typeof candidate !== 'function')) continue;
+    if (candidate.cineAutoGearPersistence) return candidate.cineAutoGearPersistence;
+    const registry = candidate.cineModules;
+    if (registry && typeof registry.get === 'function') {
+      const module = registry.get(AUTO_GEAR_PERSISTENCE_MODULE_NAME);
+      if (module) return module;
+    }
+  }
+  return null;
 }
 
 // Fallback implementation matching the signature in auto-gear/ui.js
@@ -3514,6 +3560,13 @@ if (typeof globalThis !== 'undefined') {
   globalThis.AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP = AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP;
 }
 
+const autoGearPersistence = resolveAutoGearPersistenceModule();
+if (autoGearPersistence && typeof autoGearPersistence.hydrateCache === 'function') {
+  autoGearPersistence.hydrateCache().catch((error) => {
+    console.warn('Failed to hydrate Auto-Gear persistence cache', error);
+  });
+}
+
 var autoGearRules = (typeof readAutoGearRulesFromStorage === 'function')
   ? readAutoGearRulesFromStorage()
   : [];
@@ -3628,6 +3681,15 @@ function syncBaseAutoGearRulesState() {
 }
 
 function persistAutoGearRules() {
+  if (autoGearPersistence && typeof autoGearPersistence.persistAutoGearRules === 'function') {
+    const pending = autoGearPersistence.persistAutoGearRules(autoGearRules);
+    if (pending && typeof pending.catch === 'function') {
+      pending.catch((error) => {
+        console.warn('Failed to save automatic gear rules', error);
+      });
+    }
+    return;
+  }
   if (typeof saveAutoGearRules !== 'undefined' && typeof saveAutoGearRules === 'function') {
     try {
       saveAutoGearRules(autoGearRules);
