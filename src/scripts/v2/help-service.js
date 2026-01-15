@@ -10,14 +10,72 @@
     // V2 "Getting Started" Content (Hardcoded for now, could be moved to localization later)
     // V2 Content (Loaded from help-data.js)
     const V2_TOPICS = global.cineV2HelpData || [];
+    const DEFAULT_HELP_ICON = 'overview';
+    // Map help topics to local Uicon glyph keys for consistent iconography.
+    const HELP_ICON_KEYS = {
+        projectManagement: 'load',
+        saveShareBackup: 'settingsBackup',
+        deviceConfiguration: 'camera',
+        powerCalculation: 'batteryBolt',
+        connectionDiagram: 'plug',
+        gearList: 'gearList',
+        contacts: 'contacts',
+        ownGear: 'camera',
+        settings: 'settingsGeneral',
+        offlineUse: 'wifi',
+        troubleshooting: 'feedback',
+        shortcuts: 'resetView',
+        pinkMode: 'sun'
+    };
+
+    function getTranslations() {
+        if (!global.texts) return null;
+        const lang =
+            global.currentLanguage ||
+            global.currentLang ||
+            global.document?.documentElement?.lang ||
+            'en';
+        return global.texts[lang] || global.texts.en || null;
+    }
+
+    function translate(key) {
+        const translations = getTranslations();
+        if (!translations) return key;
+        return translations[key] || key;
+    }
+
+    function resolveHelpIcon(iconKey) {
+        const iconSet = global.ICON_GLYPHS;
+        if (iconSet && iconKey && iconSet[iconKey]) {
+            return iconSet[iconKey];
+        }
+        if (iconSet && iconSet[DEFAULT_HELP_ICON]) {
+            return iconSet[DEFAULT_HELP_ICON];
+        }
+        return null;
+    }
+
+    function normalizeV2Topic(topic) {
+        const title = topic.titleKey ? translate(topic.titleKey) : topic.title;
+        const keywords = topic.keywordsKey ? translate(topic.keywordsKey) : topic.keywords;
+        const content = topic.contentKey ? translate(topic.contentKey) : topic.content;
+        return {
+            ...topic,
+            title,
+            keywords,
+            content,
+            icon: resolveHelpIcon(topic.iconKey || topic.icon || DEFAULT_HELP_ICON)
+        };
+    }
 
     // Helper to categorize topics
     function getCategorizedV2Topics() {
         const essentials = ['v2-quick-start', 'v2-shortcuts', 'v2-data-safety', 'v2-features'];
 
+        const v2Topics = V2_TOPICS.map(normalizeV2Topic);
         return {
-            essentials: V2_TOPICS.filter(t => essentials.includes(t.id)),
-            guides: V2_TOPICS.filter(t => !essentials.includes(t.id))
+            essentials: v2Topics.filter(t => essentials.includes(t.id)),
+            guides: v2Topics.filter(t => !essentials.includes(t.id))
         };
     }
 
@@ -110,22 +168,6 @@
             ]
             : topicOrder;
 
-        const iconMap = {
-            projectManagement: '📂',
-            saveShareBackup: '💾',
-            deviceConfiguration: '⚙️',
-            powerCalculation: '⚡',
-            connectionDiagram: '🔌',
-            gearList: '📋',
-            contacts: '👥',
-            ownGear: '📷',
-            settings: '🛠️',
-            offlineUse: '📡',
-            troubleshooting: '❓',
-            shortcuts: '⌨️',
-            pinkMode: '🌸'
-        };
-
         return orderedKeys.map(key => {
             const localizedTopic = localizedHelpTopics && localizedHelpTopics[key];
             const title = (localizedTopic && localizedTopic.title) || localization.getString(`helpTopics.${key}.title`);
@@ -138,8 +180,8 @@
                 category: 'reference',
                 title: title,
                 // Keywords could be enriched here if we had a mapping, for now title + content is search source
-                keywords: `legacy reference v1 ${key}`,
-                icon: iconMap[key] || '📄', // Default icon if key missing
+                keywords: title,
+                icon: resolveHelpIcon(HELP_ICON_KEYS[key] || DEFAULT_HELP_ICON),
                 content: parseMarkdown(content)
             };
         }).filter(item => item !== null);
@@ -149,7 +191,7 @@
      * Get all help sections, organized or flat
      */
     function getAllSections() {
-        const guideTopics = V2_TOPICS;
+        const guideTopics = V2_TOPICS.map(normalizeV2Topic);
         const refTopics = getV1Topics();
 
         return [
@@ -166,15 +208,15 @@
 
         return {
             essentials: {
-                title: 'Essentials',
+                title: translate('helpGroupEssentials'),
                 items: v2.essentials
             },
             guide: {
-                title: 'Guides',
+                title: translate('helpGroupGuides'),
                 items: v2.guides
             },
             reference: {
-                title: 'Topic Reference',
+                title: translate('helpGroupReference'),
                 items: getV1Topics()
             }
         };

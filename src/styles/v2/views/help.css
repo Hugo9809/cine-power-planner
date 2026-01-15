@@ -79,6 +79,10 @@
     transition: background-color 0.2s, color 0.2s;
 }
 
+.v2-help-search-clear-icon {
+    --icon-size: 1rem;
+}
+
 .v2-help-search-clear:hover {
     color: var(--v2-text-primary);
     background-color: var(--v2-surface-action-hover);
@@ -148,6 +152,7 @@
 
 .v2-toc-icon {
     margin-right: var(--v2-space-sm);
+    --icon-size: 1.1em;
     font-size: 1.1em;
     opacity: 0.8;
 }
@@ -197,6 +202,7 @@
 }
 
 .v2-help-icon {
+    --icon-size: 1em;
     font-size: 1em;
 }
 
@@ -281,6 +287,7 @@
 }
 
 .v2-help-no-results-icon {
+    --icon-size: 3rem;
     font-size: 3rem;
     margin-bottom: var(--v2-space-md);
     opacity: 0.5;

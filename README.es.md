@@ -34,7 +34,9 @@ portátiles de campo o archivos aislados.
 1. Abre `index.html` en un navegador compatible. Mantén la estructura del
    repositorio para que los iconos, fuentes y ayudas offline carguen en local.
 2. Ejecuta **Help → Quick start checklist** para ensayar guardar, compartir,
-   importar, backup y restaurar de extremo a extremo en esta estación.
+   importar, backup y restaurar de extremo a extremo en esta estación. Confirma
+   que los temas de ayuda se muestran con texto localizado y Uicons offline en
+   los encabezados y la tabla de contenidos.
 3. Exporta enseguida un backup del planner y un bundle de proyecto. Guarda
    ambos en medios offline separados para tener un punto de restauración seguro.
 4. Desconecta la red y recarga. Comprueba que proyectos, ayuda y **Force
