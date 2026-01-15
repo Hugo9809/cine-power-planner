@@ -1899,6 +1899,48 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       updateAutoGearBackupRetentionWarning(autoGearBackupRetentionWarningText);
     }
 
+    function resolveAutoGearPersistenceModule() {
+      const scopes = [];
+      if (typeof globalThis !== 'undefined') scopes.push(globalThis);
+      if (typeof window !== 'undefined') scopes.push(window);
+      if (typeof self !== 'undefined') scopes.push(self);
+      if (typeof global !== 'undefined') scopes.push(global);
+      for (let index = 0; index < scopes.length; index += 1) {
+        const scope = scopes[index];
+        if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) continue;
+        if (scope.cineAutoGearPersistence) return scope.cineAutoGearPersistence;
+        const registry = scope.cineModules;
+        if (registry && typeof registry.get === 'function') {
+          const module = registry.get('cineAutoGearPersistence');
+          if (module) return module;
+        }
+      }
+      return null;
+    }
+
+    function persistAutoGearPresetsWithCache(presets) {
+      const persistence = resolveAutoGearPersistenceModule();
+      if (persistence && typeof persistence.persistAutoGearPresets === 'function') {
+        const pending = persistence.persistAutoGearPresets(presets);
+        if (pending && typeof pending.catch === 'function') {
+          pending.catch((error) => {
+            console.warn('Failed to persist automatic gear presets', error);
+          });
+        }
+        return;
+      }
+      if (typeof persistAutoGearPresets === 'function') {
+        persistAutoGearPresets(presets);
+      }
+    }
+
+    function enforceAutoGearBackupRetentionLimitWithCache(limit) {
+      if (typeof enforceAutoGearBackupRetentionLimit === 'function') {
+        return enforceAutoGearBackupRetentionLimit(limit);
+      }
+      return { success: false, trimmed: [], previousLimit: autoGearBackupRetention };
+    }
+
     function getAutoGearPresetById(presetId) {
       if (!presetId) return null;
       return autoGearPresets.find(preset => preset.id === presetId) || null;
@@ -1966,7 +2008,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         autoGearPresets.push(normalizedPreset);
         autoGearPresets = sortAutoGearPresets(autoGearPresets.slice());
-        persistAutoGearPresets(autoGearPresets);
+        persistAutoGearPresetsWithCache(autoGearPresets);
         setAutoGearAutoPresetId(normalizedPreset.id, { persist: true, skipRender: true });
         setActiveAutoGearPresetId(normalizedPreset.id, { persist: true, skipRender: true });
         return true;
@@ -1989,7 +2031,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!updatedPreset) {
         autoGearPresets.splice(managedIndex, 1);
         autoGearPresets = sortAutoGearPresets(autoGearPresets.slice());
-        persistAutoGearPresets(autoGearPresets);
+        persistAutoGearPresetsWithCache(autoGearPresets);
         setAutoGearAutoPresetId('', { persist: true, skipRender: true });
         setActiveAutoGearPresetId('', { persist: true, skipRender: true });
         return true;
@@ -1997,7 +2039,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (managedPreset.fingerprint !== updatedPreset.fingerprint) {
         autoGearPresets[managedIndex] = updatedPreset;
         autoGearPresets = sortAutoGearPresets(autoGearPresets.slice());
-        persistAutoGearPresets(autoGearPresets);
+        persistAutoGearPresetsWithCache(autoGearPresets);
       }
       setActiveAutoGearPresetId(updatedPreset.id, { persist: true, skipRender: true });
       return managedPreset.fingerprint !== updatedPreset.fingerprint;
@@ -2527,7 +2569,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         autoGearPresets.push(normalizedPreset);
       }
       autoGearPresets = sortAutoGearPresets(autoGearPresets.slice());
-      persistAutoGearPresets(autoGearPresets);
+      persistAutoGearPresetsWithCache(autoGearPresets);
       setActiveAutoGearPresetId(normalizedPreset.id, { persist: true, skipRender: true });
       renderAutoGearPresetsControls();
       const savedMessage = texts[currentLang]?.autoGearPresetSaved
@@ -2553,7 +2595,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         autoGearPresets = autoGearPresets.filter(entry => entry.id !== activeAutoGearPresetId);
         autoGearPresets = sortAutoGearPresets(autoGearPresets.slice());
-        persistAutoGearPresets(autoGearPresets);
+        persistAutoGearPresetsWithCache(autoGearPresets);
         setActiveAutoGearPresetId('', { persist: true, skipRender: true });
         renderAutoGearPresetsControls();
         const deletedMessage = texts[currentLang]?.autoGearPresetDeleted
@@ -2669,7 +2711,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             || 'Safety snapshot captured before trimming backups.';
           showNotification('success', safetySavedMessage);
 
-          const trimResult = enforceAutoGearBackupRetentionLimit(normalized);
+          const trimResult = enforceAutoGearBackupRetentionLimitWithCache(normalized);
           if (!trimResult.success) {
             const failureMessage = texts[currentLang]?.autoGearBackupRetentionUpdateFailed
               || texts.en?.autoGearBackupRetentionUpdateFailed
@@ -2719,7 +2761,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
       }
 
-      const increaseResult = enforceAutoGearBackupRetentionLimit(normalized);
+      const increaseResult = enforceAutoGearBackupRetentionLimitWithCache(normalized);
       if (!increaseResult.success) {
         const failureMessage = texts[currentLang]?.autoGearBackupRetentionUpdateFailed
           || texts.en?.autoGearBackupRetentionUpdateFailed
@@ -20024,4 +20066,3 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
 
 }
-
