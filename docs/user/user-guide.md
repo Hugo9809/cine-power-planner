@@ -408,7 +408,7 @@ for the end-to-end offline sequence, then use this table as a quick refresher.
 
 | Workflow | How to trigger | Data captured | Offline behavior | Built-in safeguards |
 | --- | --- | --- | --- | --- |
-| Manual save | Press **Enter**, click **Save** or use `Ctrl+S`/`⌘S` while a project is open. | Active project state including devices, requirements, diagrams, favorites and runtime feedback. | Writes to IndexedDB first, mirrors to OPFS where supported, and only falls back to legacy localStorage if needed—no connectivity required. | Creates a named entry in the selector so you can branch, rename or export it at any time. |
+| Manual save | Press **Enter**, click **Save** or use `Ctrl+S`/`⌘S` while a project is open. | Active project state including devices, requirements, diagrams, favorites and runtime feedback. | Writes to IndexedDB first, mirrors to OPFS where supported, and only falls back to legacy localStorage for compatibility/migration if needed—no connectivity required. | Creates a named entry in the selector so you can branch, rename or export it at any time. |
 | Background auto-save & auto-backup | Runs after roughly 50 tracked changes or every 10 minutes while you edit. | Incremental project snapshots promoted to timestamped `auto-backup-…` entries. | Continues in airplane mode and resumes instantly after reload. | Auto backups stay hidden until needed and can be restored or exported without overwriting manual saves. |
 | Planner backup | **Settings → Backup & Restore → Backup**. | Every project, auto-backup, automatic gear rule, custom device, favorite, runtime note and UI preference. | Downloads a human-readable `planner-backup.json` file locally. | Forced pre-restore backups plus hidden migration snapshots prevent data loss during restores. |
 | Project bundle export | **Export Project** while the desired project is active. | One project plus referenced custom devices and (optionally) automatic gear rules—favorites stay local. | Generates a portable JSON bundle that never leaves your machine unless you share it. | Import validation checks file metadata, schema version and timestamps before merging. |
@@ -423,7 +423,8 @@ entire crew repeats the same offline-first routines on every workstation.
 - **Modern evergreen browsers.** The planner is validated on the latest
   releases of Chromium, Firefox and Safari on desktop and mobile. Enable
   service workers, IndexedDB and persistent storage to unlock the full offline
-  workflow; localStorage is used only as a legacy fallback when necessary.
+  workflow; localStorage is used only as a legacy compatibility fallback for
+  migration when necessary.
 - **Offline-friendly devices.** Laptops and tablets must allow persistent
   storage so backups and auto-saves stay available. When running from removable
   media or a field workstation, launch the planner once while online so the
@@ -552,7 +553,7 @@ Use Cine Power Planner end-to-end with the following routine:
   can be imported from offline `.vcf` (vCard) files whenever you need to merge
   address books. Saving a crew row back to the roster keeps future projects
   aligned without retyping details. Legacy localStorage mirrors remain available
-  only when needed for migration or fallback scenarios.【F:index.html†L206-L209】【F:index.html†L7345-L7374】【F:src/scripts/app-core-new-1.js†L13632-L17848】
+  only for compatibility/migration fallback scenarios.【F:index.html†L206-L209】【F:index.html†L7345-L7374】【F:src/scripts/app-core-new-1.js†L13632-L17848】
 - **Personal gear inventory stays in sync.** Open **Own Gear** in the sidebar to
   catalog kit names, quantities, notes and sourcing. Entries share the same offline
   snapshot as projects, feed automatic gear rule conditions and travel with manual
@@ -779,7 +780,7 @@ Track projects through production stages with color-coded status indicators:
   gear lists live primarily in IndexedDB with OPFS used as the backup target
   where supported. Browsers that support persistent storage receive an
   automatic retention request to reduce eviction risk, and legacy localStorage
-  mirrors remain available only when necessary.
+  mirrors remain available only for compatibility/migration when necessary.
 - Automatic safety copies layer 10-minute project snapshots, hourly full-app
   downloads and background auto-gear archives. Enable **Settings → Backup &
   Restore → Show auto backups in project list** to surface the timeline, tune
@@ -806,12 +807,12 @@ Track projects through production stages with color-coded status indicators:
   manual backup for your records, then use **Force reload** if you want to clear
   cached assets and reopen the session on a freshly loaded build.
 - Storage lives primarily in IndexedDB, with OPFS serving as the backup target
-  where supported. Legacy localStorage mirrors remain available when IndexedDB
-  or OPFS cannot be used, with a `sessionStorage` fallback for constrained
-  environments. Every save also creates a `__legacyMigrationBackup` snapshot so
-  you can recover even if the browser reports a quota or schema error. Use your
-  browser’s storage inspector to export or audit records before clearing caches
-  or experimenting with data.
+  where supported. Legacy localStorage mirrors remain available for
+  compatibility/migration only when IndexedDB or OPFS cannot be used, with a
+  `sessionStorage` fallback for constrained environments. Every save also
+  creates a `__legacyMigrationBackup` snapshot so you can recover even if the
+  browser reports a quota or schema error. Use your browser’s storage inspector
+  to export or audit records before clearing caches or experimenting with data.
 - A critical storage guardian now runs on every launch to mirror each essential
   key into its backup slot before you edit anything, ensuring both legacy and
   modern entries always keep a redundant copy ready for restores.

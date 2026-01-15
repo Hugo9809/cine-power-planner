@@ -6,8 +6,8 @@ This document describes the architecture for the "Firebase Studio" integration, 
 The application remains "Local-First". Firebase is an *additive* layer.
 - **Primary Source of Truth**: IndexedDB on the user's device, with OPFS as the
   backup target where supported.
-- **Legacy fallback**: localStorage mirrors only when IndexedDB or OPFS are
-  unavailable.
+- **Legacy fallback**: localStorage is reserved for compatibility/migration only
+  when IndexedDB or OPFS are unavailable.
 - **Secondary Source**: Firestore (Cloud).
 
 ## Data Model
@@ -65,8 +65,8 @@ The application listens to Firestore `onSnapshot` updates when "Online Mode" is 
 
 1. **Local Change**:
    - Save to IndexedDB (primary) and mirror to OPFS when available.
-   - Use localStorage only as a legacy fallback when IndexedDB/OPFS are
-     unavailable.
+   - Use localStorage only as a legacy compatibility fallback for migration
+     when IndexedDB/OPFS are unavailable.
    - If (Online && CloudEnabled): Debounce -> Write to Firestore.
 
 2. **Cloud Change (Remote)**:
@@ -75,15 +75,15 @@ The application listens to Firestore `onSnapshot` updates when "Online Mode" is 
    - If `remote.lastModified > local.lastModified`:
      - Prompt user: "New version available from cloud. Overwrite local?" OR Auto-merge (if trivial).
      - Update IndexedDB and refresh OPFS backups where supported (fallback to
-       localStorage only when necessary).
+       localStorage only when necessary for migration/compatibility).
      - Refresh UI.
 
 ## Offline Capabilities
 Since the app is already offline-first, "offline" for Firebase just means the
 sync pauses. The Firebase SDK handles queueing offline writes (if enabled), but
 we rely on our IndexedDB-first persistence layer, mirrored to OPFS where
-available, with localStorage reserved as a legacy fallback to avoid relying on
-Firebase's offline cache size limits.
+available, with localStorage reserved as a legacy compatibility fallback for
+migration to avoid relying on Firebase's offline cache size limits.
 
 ## V2 UI Integration
 
