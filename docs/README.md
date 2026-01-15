@@ -1,6 +1,6 @@
 # Documentation Index
 
-![Version](https://img.shields.io/badge/version-1.0.52-blue)
+![Version](https://img.shields.io/badge/version-1.0.53-blue)
 
 > **Quick Links**: [User Guide](user/user-guide.md) · [Development Guide](dev/development.md) · [Changelog](../CHANGELOG.md) · [Contributing](../CONTRIBUTING.md)
 
