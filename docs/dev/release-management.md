@@ -20,14 +20,11 @@ While CI/CD handles testing, the final release is a manual gating process.
 *   [ ] Documentation Audit: Are `README.md` and `CODEBASE_MAP.md` accurate?
 
 ### 2. Bump Version
-Use npm to handle version bumping (this updates `package.json`).
+Update `app-version.json` and sync dependent files.
 
 ```bash
-# For a bug fix
-npm version patch
-
-# For a new feature
-npm version minor
+# Edit app-version.json, then sync the repo
+npm run version:sync
 ```
 
 ### 3. Update Changelog
@@ -51,7 +48,7 @@ If delivering to an air-gapped client:
 2.  Name it `cine-power-planner-v1.0.XX-offline.zip`.
 
 ### 6. Push & Tag
-Push the commit and the tag created by `npm version`.
+Push the commit and the tag created manually.
 
 ```bash
 git push origin main --tags
@@ -72,4 +69,4 @@ The app version is injected in two ways:
 2.  **Legacy / Production**: `vite.config.js` generates `dist/app-version.js` during build.
     *   This script sets `window.APP_VERSION` globally before other scripts run.
 
-> **Verification**: In the console, type `window.APP_VERSION` to confirm the version matches `package.json`.
+> **Verification**: In the console, type `window.APP_VERSION` to confirm the version matches `app-version.json`.

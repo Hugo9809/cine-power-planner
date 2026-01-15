@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import { resolve, join, relative, extname } from 'path';
-import { readdirSync, writeFileSync, copyFileSync, existsSync } from 'fs';
+import { readdirSync, writeFileSync, copyFileSync, existsSync, readFileSync } from 'fs';
 
 /**
  * File extensions to include in the service worker cache.
@@ -78,6 +78,19 @@ function serviceWorkerPlugin() {
         closeBundle() {
             const projectRoot = process.cwd();
             const distDir = join(projectRoot, 'dist');
+            const appVersionPath = join(projectRoot, 'app-version.json');
+            let appVersion = '1.0.0';
+
+            if (existsSync(appVersionPath)) {
+                try {
+                    const parsed = JSON.parse(readFileSync(appVersionPath, 'utf-8'));
+                    if (parsed && typeof parsed.version === 'string' && parsed.version.trim()) {
+                        appVersion = parsed.version.trim();
+                    }
+                } catch (error) {
+                    console.warn('[sw-build] ⚠ Failed to read app-version.json:', error.message);
+                }
+            }
 
             // 1. Copy service-worker.js to dist
             const swSource = join(projectRoot, 'service-worker.js');
@@ -91,12 +104,11 @@ function serviceWorkerPlugin() {
 
             // 2. Generate app-version.js in dist (using package.json version)
             const versionDest = join(distDir, 'app-version.js');
-            const version = process.env.npm_package_version || '1.0.0';
-            const versionContent = `(function(s){s.APP_VERSION='${version}';if(typeof module!=='undefined')module.exports=s.APP_VERSION;})(typeof self!=='undefined'?self:this);`;
+            const versionContent = `(function(s){s.APP_VERSION='${appVersion}';if(typeof module!=='undefined')module.exports=s.APP_VERSION;})(typeof self!=='undefined'?self:this);`;
 
             try {
                 writeFileSync(versionDest, versionContent, 'utf-8');
-                console.log(`[sw-build] ✓ Generated app-version.js (${version}) in dist/`);
+                console.log(`[sw-build] ✓ Generated app-version.js (${appVersion}) in dist/`);
             } catch (err) {
                 console.warn('[sw-build] ⚠ Failed to generate app-version.js:', err.message);
             }
@@ -178,6 +190,19 @@ export default defineConfig({
     // Define global constants
     define: {
         // Preserve existing APP_VERSION behavior
-        'import.meta.env.APP_VERSION': JSON.stringify(process.env.npm_package_version || '1.0.0'),
+        'import.meta.env.APP_VERSION': JSON.stringify(
+            (() => {
+                try {
+                    const raw = readFileSync(resolve(__dirname, 'app-version.json'), 'utf-8');
+                    const parsed = JSON.parse(raw);
+                    if (parsed && typeof parsed.version === 'string' && parsed.version.trim()) {
+                        return parsed.version.trim();
+                    }
+                } catch (error) {
+                    console.warn('[vite] ⚠ Failed to read app-version.json:', error.message);
+                }
+                return process.env.npm_package_version || '1.0.0';
+            })()
+        ),
     },
 });
