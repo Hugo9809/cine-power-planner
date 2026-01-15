@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Awaited async project deletion in the V2 dashboard before refreshing cached data.
 
+## [Unreleased]
+
+### Fixed
+- Prevented V2 search device results from collapsing across categories with identical names.
+
 ## [1.0.52] - 2026-01-13
 
 ### Added
