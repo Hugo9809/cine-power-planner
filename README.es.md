@@ -19,8 +19,9 @@ portátiles de campo o archivos aislados.
   IndexedDB, con OPFS como destino de respaldo donde esté disponible; el
   localStorage heredado queda como fallback. La app no depende de servicios
   externos.
-- **Sincronización en la nube opcional.** Conéctate a Firebase Studio para
-  sincronizar proyectos entre dispositivos sin perder la propiedad local.
+- **Sincronización en la nube opcional (actualización futura).** La
+  sincronización será una capa opt-in que copia los datos locales a Firebase
+  Studio después de completar un ensayo previo de backup y exportación.
 - **Capas de seguridad.** Guardar, autoguardado, compartir, importar, backup y
   restaurar crean siempre snapshots de seguridad para recuperar datos antes de
   promoverlos.
@@ -60,8 +61,10 @@ Agrupa la guía offline por audiencia (usuarios, operaciones, desarrollo) y por
 workflow para que cada rutina se documente una sola vez.
 
 - **Usuarios:** empieza con el
-  [User Guide](docs/user/user-guide.md) y la
-  [Data Protection Lifecycle Guide](docs/user/data-protection-lifecycle.md).
+  [User Guide](docs/user/user-guide.md), la
+  [Data Protection Lifecycle Guide](docs/user/data-protection-lifecycle.md)
+  y la
+  [Seguridad de sincronización en la nube (actualización futura)](docs/user/cloud-sync-safety.md).
 - **Operaciones:** ensaya con la
   [Operations Checklist](docs/ops/operations-checklist.md) y el
   [Offline Readiness Runbook](docs/ops/offline-readiness.md).
@@ -104,7 +107,9 @@ La aplicación ahora cuenta con una interfaz de usuario V2 completamente redise�
   requisitos de crew, y exporta bundles o backups sin riesgo de pérdida.
 - **Funcionamiento offline-first.** Cada asset está en el repo, por lo que
   autoguardado, backup, restauración, compartir y ayuda funcionan sin red.
-- **Integración con Firebase Studio.** Sincroniza opcionalmente tus proyectos en la nube para colaboración en tiempo real y acceso desde múltiples dispositivos.
+- **Preparación para sincronización en la nube (actualización futura).** La
+  sincronización opcional con Firebase Studio está planificada; el almacenamiento
+  local sigue siendo la fuente de verdad.
 - **Resúmenes de compatibilidad al restaurar.** Cada restauración muestra
   secciones faltantes y crea un backup previo para verificar cambios.
 

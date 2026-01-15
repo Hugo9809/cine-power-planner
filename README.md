@@ -18,8 +18,9 @@ without phoning home.
   backups live on your machine in IndexedDB, with OPFS as the backup target
   where supported; legacy localStorage remains as a fallback. The planner does
   not depend on external services.
-- **Optional Cloud Sync.** Connect to Firebase Studio to sync projects across
-  devices without sacrificing local ownership.
+- **Optional Cloud Sync (future update).** Cloud sync will be an opt-in layer
+  that copies local data to Firebase Studio after you complete a pre-flight
+  backup and export rehearsal.
 - **Layered safety nets.** Save, autosave, share, import, backup, and restore
   workflows always create safety snapshots so recovery is possible before any
   data is promoted.
@@ -56,8 +57,10 @@ It groups offline guidance by audience (users, operations, developers) and by
 workflow so each routine is documented once.
 
 - **Users:** start with the
-  [User Guide](docs/user/user-guide.md) and the
-  [Data Protection Lifecycle Guide](docs/user/data-protection-lifecycle.md).
+  [User Guide](docs/user/user-guide.md), the
+  [Data Protection Lifecycle Guide](docs/user/data-protection-lifecycle.md),
+  and the
+  [Cloud Sync Safety (Future Update)](docs/user/cloud-sync-safety.md).
 - **Operations:** rehearse with the
   [Operations Checklist](docs/ops/operations-checklist.md) and
   [Offline Readiness Runbook](docs/ops/offline-readiness.md).
@@ -100,7 +103,8 @@ The application now features a completely redesigned, responsive V2 User Interfa
   requirements, then export bundles or backups without risking data loss.
 - **Offline-first operation.** Every asset ships with the repo, so autosave,
   backup, restore, share, and help stay fully functional without a network.
-- **Firebase Studio Integration.** Optionally sync your projects to the cloud for real-time collaboration and multi-device access.
+- **Cloud sync preparation (future update).** Optional Firebase Studio sync is
+  planned; local-first storage remains the source of truth.
 - **Restore compatibility summaries.** Every restore lists missing sections and
   keeps a pre-restore safety backup so crews can verify changes before
   promotion.

@@ -18,8 +18,9 @@ archivi isolati.
   export e backup restano sulla tua macchina in IndexedDB, con OPFS come
   destinazione di backup dove supportato; il localStorage legacy resta come
   fallback. L’app non dipende da servizi esterni.
-- **Sync cloud opzionale.** Collegati a Firebase Studio per sincronizzare i
-  progetti tra dispositivi senza perdere la proprietà locale.
+- **Sync cloud opzionale (aggiornamento futuro).** La sync sarà un livello
+  opt-in che copia i dati locali su Firebase Studio dopo aver completato un
+  drill di backup ed export preliminare.
 - **Reti di sicurezza a strati.** Salvataggio, auto-salvataggio, condivisione,
   importazione, backup e ripristino creano sempre snapshot di sicurezza per
   recuperare i dati prima della promozione.
@@ -58,8 +59,10 @@ Raggruppa le guide offline per ruolo (utenti, operations, sviluppo) e per
 workflow così ogni routine è documentata una sola volta.
 
 - **Utenti:** inizia con lo
-  [User Guide](docs/user/user-guide.md) e la
-  [Data Protection Lifecycle Guide](docs/user/data-protection-lifecycle.md).
+  [User Guide](docs/user/user-guide.md), la
+  [Data Protection Lifecycle Guide](docs/user/data-protection-lifecycle.md)
+  e la
+  [Sicurezza sync cloud (aggiornamento futuro)](docs/user/cloud-sync-safety.md).
 - **Operations:** prova con la
   [Operations Checklist](docs/ops/operations-checklist.md) e l’
   [Offline Readiness Runbook](docs/ops/offline-readiness.md).
@@ -102,7 +105,9 @@ L'applicazione ora dispone di un'interfaccia utente V2 completamente riprogettat
   di crew ed esporta bundle o backup senza rischio di perdita dati.
 - **Operatività offline-first.** Ogni asset è nel repo, quindi auto-salvataggio,
   backup, ripristino, condivisione e help funzionano senza rete.
-- **Integrazione Firebase Studio.** Sincronizza facoltativamente i tuoi progetti sul cloud per la collaborazione in tempo reale e l'accesso da più dispositivi.
+- **Preparazione alla sync cloud (aggiornamento futuro).** La sync opzionale
+  con Firebase Studio è pianificata; l'archiviazione locale resta la fonte di
+  verità.
 - **Riepiloghi di compatibilità al ripristino.** Ogni ripristino elenca le
   sezioni mancanti e crea un backup di sicurezza prima della promozione.
 
