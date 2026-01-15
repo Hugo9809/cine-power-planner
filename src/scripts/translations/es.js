@@ -2276,7 +2276,8 @@ export const data = {
           "noResults": {
             "title": "Sin resultados",
             "subtitle": "Ningún proyecto coincide con \"{query}\""
-          }
+          },
+          "clear": "Borrar búsqueda"
         },
         "projectTile": {
           "prep": "Prep:",

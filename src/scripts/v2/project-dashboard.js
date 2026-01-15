@@ -540,7 +540,7 @@ function createNoResultsHtml(query) {
         <h2>${_t('v2.dashboard.search.noResults.title')}</h2>
         <p class="text-muted">${_t('v2.dashboard.search.noResults.subtitle', { query: escapeHtml(query) })}</p>
         <button id="v2ClearSearchBtn" class="v2-btn-secondary">
-          Clear Search
+          ${_t('v2.dashboard.search.clear')}
         </button>
       </div>
     `;
