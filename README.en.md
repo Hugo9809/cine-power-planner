@@ -34,7 +34,8 @@ without phoning home.
 2. Run **Help → Quick start checklist** to rehearse save, share, import, backup,
    and restore behaviors end-to-end on this workstation. Confirm the help
    topics render with localized text and offline Uicons in the topic headers
-   and table of contents.
+   and table of contents. Also review **Help → Data Safety Essentials** for the
+   current save/share/import/backup/restore labels and restore rehearsal steps.
 3. Export a planner backup and a project bundle immediately after the drill.
    Store them on separate offline media to establish a safe restore point.
 4. Disconnect from the network and reload. Confirm projects, help, and the

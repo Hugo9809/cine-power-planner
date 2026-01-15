@@ -1079,8 +1079,34 @@ export const data = {
     "helpV2QuickStartKeywords": "démarrage rapide onboarding tutoriel premières étapes workflow bases démarrer nouveau projet guide",
     "helpV2QuickStartContent": "<p>Bienvenue dans Cine Power Planner ! Suivez ces étapes pour préparer votre premier projet.</p>\n<ol>\n<li>\n<strong>Démarrer le tutoriel guidé :</strong>\n<button type=\"button\" class=\"button-link help-onboarding-secondary\" data-onboarding-tour-trigger=\"secondary\">Démarrer le tutoriel guidé</button>\npour parcourir chaque workflow avec suivi hors ligne.\n</li>\n<li>\n<strong>Nommer votre projet :</strong>\nSaisissez un nom dans le champ <em>Nom du projet</em> et cliquez sur <strong>Enregistrer</strong> (ou appuyez sur <kbd>Entrée</kbd>/<kbd>Ctrl</kbd>+<kbd>S</kbd>) pour capturer le rig actuel.\n</li>\n<li>\n<strong>Configurer les appareils :</strong>\nParcourez <em>Configurer les appareils</em>, vérifiez le <em>Power Summary</em> et le <em>Connection Diagram</em>.\n</li>\n<li>\n<strong>Sécuriser vos données :</strong>\nTéléchargez un JSON <strong>Export Project</strong> et une <strong>Sauvegarde</strong> complète pour avoir deux copies hors ligne.\n</li>\n<li>\n<strong>Vérifier l’état hors ligne :</strong>\nConfirmez que l’indicateur hors ligne (dans l’en-tête) est actif avant de vous déconnecter.\n</li>\n<li>\n<strong>Répéter la restauration :</strong>\nOuvrez <strong>Répétition de restauration</strong> dans les réglages pour vérifier votre sauvegarde dans un environnement sandbox.\n</li>\n</ol>\n<p class=\"help-callout-note\">\nAstuce : gardez les sauvegardes sur des disques séparés — <strong>Restaurer</strong> crée toujours une nouvelle copie de sécurité pour ne rien perdre en annulant un changement.\n</p>",
     "helpV2DataSafetyTitle": "Essentiels de sécurité des données",
-    "helpV2DataSafetyKeywords": "sauvegarde restauration protéger enregistrer export sécurité hors ligne préserver",
-    "helpV2DataSafetyContent": "<p>Protégez votre travail avec ces habitudes essentielles.</p>\n<ul>\n<li>\n<strong>Enregistrez souvent :</strong> Appuyez sur <strong>Enregistrer</strong> après des ajustements importants. Les enregistrements manuels sont instantanés et fonctionnent hors ligne.\n</li>\n<li>\n<strong>Activer les auto-backups :</strong> Activez \"Afficher les auto-backups dans la liste des projets\" dans les réglages pour afficher les instantanés en arrière-plan.\n</li>\n<li>\n<strong>Télécharger la redondance :</strong> Exportez votre projet et téléchargez une sauvegarde complète après chaque jalon.\n</li>\n<li>\n<strong>Conserver en sécurité :</strong> Gardez les exports sur au moins deux appareils.</li>\n<li>\n<strong>Mettre à jour en sécurité :</strong> Avant d’approuver une mise à jour, créez une nouvelle sauvegarde manuelle.\n</li>\n</ul>\n<p class=\"help-callout-note\">\nLes sauvegardes manuelles contiennent une copie horodatée de chaque projet, favori, règle et préférence sauvegardés. Les restaurations créent d’abord un instantané de sécurité.\n</p>",
+    "helpV2DataSafetyKeywords": "sauvegarde restauration protéger enregistrer autosauvegarde export partager importer répétition hors ligne intégrité",
+    "helpV2DataSafetyContent": "<p>Protégez chaque projet avec cette checklist hors ligne.</p>
+<h4>Sauvegarde manuelle, autosauvegarde & sauvegardes automatiques</h4>
+<ul>
+<li><strong>Sauvegarde manuelle :</strong> Cliquez sur <strong>Enregistrer</strong> (ou <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>S</kbd>) pour capturer un instantané immédiat du projet.</li>
+<li><strong>Autosauvegarde :</strong> Fonctionne en arrière-plan pendant l’édition et conserve des instantanés continus pour une récupération rapide.</li>
+<li><strong>Liste des sauvegardes automatiques :</strong> Activez <strong>Afficher les sauvegardes auto dans la liste des projets</strong> et ajustez <strong>Rétention des Sauvegardes (copies par projet)</strong> pour contrôler le nombre d’instantanés visibles.</li>
+</ul>
+<h4>Exporter/Partager un projet (JSON) & Importer</h4>
+<ul>
+<li><strong>Exporter le projet :</strong> Téléchargez un bundle JSON prêt à partager depuis la vue détail du projet pour un transfert hors ligne.</li>
+<li><strong>Importer un projet :</strong> Utilisez <strong>Importer un projet</strong> sur le tableau de bord, choisissez le JSON et examinez les métadonnées + options de règles automatiques avant d’appliquer.</li>
+<li><strong>Gestion des conflits :</strong> Les imports n’écrasent pas votre projet actif tant que vous ne confirmez pas Enregistrer. Si un nom existe déjà (ou manque), le planificateur sauvegarde un nouveau projet « -imported ».</li>
+</ul>
+<h4>Sauvegarde complète, Restaurer & Restauration de Test</h4>
+<ul>
+<li><strong>Télécharger la Sauvegarde :</strong> Créez un instantané manuel complet depuis <strong>Paramètres → Sauvegarde et Restauration</strong>.</li>
+<li><strong>Télécharger la Sauvegarde Complète :</strong> Récupérez un export complet supplémentaire depuis <strong>Paramètres → Données et Stockage</strong> pour une redondance.</li>
+<li><strong>Restaurer :</strong> Chargez un fichier de sauvegarde ; le planificateur capture d’abord un instantané de sécurité. Utilisez <strong>Comparer les Versions</strong> pour vérifier les différences.</li>
+<li><strong>Restauration de Test :</strong> Ouvre un sandbox qui compare les comptes, s’efface automatiquement et garde les données actives intactes jusqu’à ce que vous décidiez de restaurer.</li>
+</ul>
+<h4>Hors ligne & intégrité des données</h4>
+<ul>
+<li><strong>Offline-first :</strong> Enregistrements, exports, imports et sauvegardes fonctionnent sans connexion réseau.</li>
+<li><strong>Instantanés de sécurité :</strong> Les restaurations et la <strong>Réinitialisation d’usine</strong> créent une sauvegarde avant tout changement destructif.</li>
+<li><strong>Copier, pas supprimer :</strong> Exports et sauvegardes dupliquent toujours les données — conservez au moins deux copies hors ligne avant de supprimer quoi que ce soit.</li>
+</ul>
+<p class="help-callout-note">Astuce : lancez <strong>Restauration de Test</strong> après les jalons importants pour vérifier la sauvegarde entièrement hors ligne.</p>",
     "helpV2ShortcutsTitle": "Raccourcis essentiels",
     "helpV2ShortcutsKeywords": "raccourcis clavier hotkeys navigation rapide",
     "helpV2ShortcutsContent": "<ul>\n<li><kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd> : Ouvrir l’aide</li>\n<li><kbd>Ctrl</kbd>+<kbd>/</kbd> (<kbd>⌘</kbd>+<kbd>/</kbd>) : Basculer l’aide</li>\n<li><kbd>/</kbd> ou <kbd>Ctrl</kbd>+<kbd>F</kbd> (<kbd>⌘</kbd>+<kbd>F</kbd>) : Recherche d’aide</li>\n<li><kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>⌘</kbd>+<kbd>K</kbd>) : Recherche globale des fonctionnalités</li>\n<li><kbd>Ctrl</kbd>+<kbd>,</kbd> (<kbd>⌘</kbd>+<kbd>,</kbd>) : Ouvrir les réglages</li>\n<li><kbd>Ctrl</kbd>+<kbd>S</kbd> (<kbd>⌘</kbd>+<kbd>S</kbd>) : Enregistrer le projet</li>\n<li><kbd>D</kbd> : Basculer le mode sombre</li>\n<li><kbd>P</kbd> : Basculer le mode rose</li>\n</ul>",

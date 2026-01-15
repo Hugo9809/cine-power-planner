@@ -36,7 +36,10 @@ Feld-Laptops oder luftgetrennten Archiven funktioniert.
 2. Starte **Hilfe → Quick start checklist**, um Speichern, Teilen, Importieren,
    Backup und Restore auf diesem Gerät vollständig zu proben. Bestätige, dass
    die Hilfethemen mit lokalisierten Texten und Offline-Uicons in Überschriften
-   und Inhaltsverzeichnis erscheinen.
+   und Inhaltsverzeichnis erscheinen. Sieh dir außerdem **Hilfe →
+   Datensicherheitsgrundlagen** an, um die aktuellen Bezeichnungen für
+   Speichern/Teilen/Importieren/Backup/Wiederherstellung und die Schritte der
+   Probe-Wiederherstellung zu prüfen.
 3. Exportiere direkt danach ein Planner-Backup und ein Projekt-Bundle.
    Bewahre beide auf getrennten Offline-Medien auf, um einen sicheren
    Wiederherstellungspunkt zu haben.

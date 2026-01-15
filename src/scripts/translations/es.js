@@ -1081,8 +1081,34 @@ export const data = {
     "helpV2QuickStartKeywords": "inicio rápido onboarding tutorial primeros pasos flujo básico empezar nuevo proyecto guía",
     "helpV2QuickStartContent": "<p>¡Bienvenido a Cine Power Planner! Sigue estos pasos para preparar tu primer proyecto.</p>\n<ol>\n<li>\n<strong>Iniciar tutorial guiado:</strong>\n<button type=\"button\" class=\"button-link help-onboarding-secondary\" data-onboarding-tour-trigger=\"secondary\">Iniciar tutorial guiado</button>\npara recorrer cada flujo con seguimiento offline.\n</li>\n<li>\n<strong>Nombrar tu proyecto:</strong>\nEscribe un nombre en el campo <em>Nombre del proyecto</em> y haz clic en <strong>Guardar</strong> (o presiona <kbd>Enter</kbd>/<kbd>Ctrl</kbd>+<kbd>S</kbd>) para guardar el rig actual.\n</li>\n<li>\n<strong>Configurar dispositivos:</strong>\nRecorre <em>Configurar dispositivos</em>, revisa el <em>Power Summary</em> y el <em>Connection Diagram</em>.\n</li>\n<li>\n<strong>Asegurar tus datos:</strong>\nDescarga un JSON de <strong>Exportar proyecto</strong> y un <strong>Backup</strong> completo para tener dos copias offline.\n</li>\n<li>\n<strong>Comprobar estado offline:</strong>\nConfirma que el indicador offline (en el encabezado) esté activo antes de desconectarte.\n</li>\n<li>\n<strong>Ensayar restauración:</strong>\nAbre <strong>Ensayo de restauración</strong> en Ajustes para verificar tu respaldo en un entorno aislado.\n</li>\n</ol>\n<p class=\"help-callout-note\">\nConsejo: Guarda los respaldos en unidades separadas; <strong>Restaurar</strong> siempre crea una copia de seguridad nueva para no perder nada al deshacer cambios.\n</p>",
     "helpV2DataSafetyTitle": "Esenciales de seguridad de datos",
-    "helpV2DataSafetyKeywords": "respaldo restaurar proteger guardar exportar seguridad offline preservar",
-    "helpV2DataSafetyContent": "<p>Protege tu trabajo con estos hábitos esenciales.</p>\n<ul>\n<li>\n<strong>Guarda con frecuencia:</strong> Presiona <strong>Guardar</strong> después de cambios importantes. Los guardados manuales son instantáneos y funcionan offline.\n</li>\n<li>\n<strong>Activa Auto-Backups:</strong> En Ajustes, habilita \"Mostrar auto backups en la lista de proyectos\" para ver snapshots en segundo plano.\n</li>\n<li>\n<strong>Descarga redundancia:</strong> Exporta tu proyecto y descarga un Backup completo al terminar un hito.\n</li>\n<li>\n<strong>Guarda de forma segura:</strong> Conserva exportaciones en al menos dos dispositivos.\n</li>\n<li>\n<strong>Actualiza con seguridad:</strong> Antes de aprobar una actualización, crea un respaldo manual nuevo.\n</li>\n</ul>\n<p class=\"help-callout-note\">\nLos backups manuales incluyen una copia con sello de tiempo de cada proyecto, favorito, regla y preferencia guardados. Las restauraciones crean primero un snapshot de seguridad.\n</p>",
+    "helpV2DataSafetyKeywords": "respaldo restaurar proteger guardar autosave exportar compartir importar ensayo sin conexión integridad",
+    "helpV2DataSafetyContent": "<p>Protege cada proyecto con esta lista de seguridad offline.</p>
+<h4>Guardado manual, autoguardado y copias automáticas</h4>
+<ul>
+<li><strong>Guardar manual:</strong> Haz clic en <strong>Guardar</strong> (o <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>S</kbd>) para capturar una instantánea inmediata del proyecto.</li>
+<li><strong>Autoguardado:</strong> Se ejecuta en segundo plano mientras editas y mantiene instantáneas continuas para una recuperación rápida.</li>
+<li><strong>Lista de copias automáticas:</strong> Activa <strong>Mostrar copias automáticas en lista de proyectos</strong> y ajusta <strong>Retención de Copias (copias por proyecto)</strong> para controlar cuántas instantáneas quedan visibles.</li>
+</ul>
+<h4>Exportar/Compartir proyecto (JSON) e Importar</h4>
+<ul>
+<li><strong>Exportar proyecto:</strong> Descarga un paquete JSON listo para compartir desde la vista de detalle del proyecto para entregas offline.</li>
+<li><strong>Importar Proyecto:</strong> Usa <strong>Importar Proyecto</strong> en el panel, elige el JSON y revisa los metadatos + opciones de reglas automáticas antes de aplicar.</li>
+<li><strong>Manejo de conflictos:</strong> Las importaciones no sobrescriben tu proyecto en vivo hasta que confirmas Guardar. Si el nombre ya existe (o falta), el planificador guarda un nuevo proyecto “-imported”.</li>
+</ul>
+<h4>Copia completa, Restaurar y Restauración de Prueba</h4>
+<ul>
+<li><strong>Descargar Copia de Seguridad:</strong> Crea una instantánea manual de toda la app desde <strong>Ajustes → Copia de Seguridad y Restauración</strong>.</li>
+<li><strong>Descargar Copia Completa:</strong> Obtén un export completo extra desde <strong>Ajustes → Datos y Almacenamiento</strong> cuando necesites redundancia.</li>
+<li><strong>Restaurar:</strong> Carga un archivo de copia; el planificador captura primero una instantánea de seguridad. Usa <strong>Comparar Versiones</strong> para revisar diferencias.</li>
+<li><strong>Restauración de Prueba:</strong> Abre una sandbox que compara recuentos, se limpia automáticamente y mantiene los datos en vivo intactos hasta que decidas restaurar.</li>
+</ul>
+<h4>Offline e integridad de datos</h4>
+<ul>
+<li><strong>Offline-first:</strong> Guardados, exportaciones, importaciones y copias funcionan sin conexión.</li>
+<li><strong>Instantáneas de seguridad:</strong> Las restauraciones y el <strong>Restablecimiento de fábrica</strong> crean una copia antes de cualquier cambio destructivo.</li>
+<li><strong>Copiar, no borrar:</strong> Exportaciones y copias siempre duplican los datos; conserva al menos dos copias offline antes de eliminar algo.</li>
+</ul>
+<p class="help-callout-note">Consejo: Ejecuta <strong>Restauración de Prueba</strong> después de hitos importantes para verificar la copia completamente offline.</p>",
     "helpV2ShortcutsTitle": "Atajos esenciales",
     "helpV2ShortcutsKeywords": "atajos teclado hotkeys navegación rápida",
     "helpV2ShortcutsContent": "<ul>\n<li><kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd>: Abrir ayuda</li>\n<li><kbd>Ctrl</kbd>+<kbd>/</kbd> (<kbd>⌘</kbd>+<kbd>/</kbd>): Alternar ayuda</li>\n<li><kbd>/</kbd> o <kbd>Ctrl</kbd>+<kbd>F</kbd> (<kbd>⌘</kbd>+<kbd>F</kbd>): Búsqueda de ayuda</li>\n<li><kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>⌘</kbd>+<kbd>K</kbd>): Búsqueda global de funciones</li>\n<li><kbd>Ctrl</kbd>+<kbd>,</kbd> (<kbd>⌘</kbd>+<kbd>,</kbd>): Abrir ajustes</li>\n<li><kbd>Ctrl</kbd>+<kbd>S</kbd> (<kbd>⌘</kbd>+<kbd>S</kbd>): Guardar proyecto</li>\n<li><kbd>D</kbd>: Alternar modo oscuro</li>\n<li><kbd>P</kbd>: Alternar modo rosa</li>\n</ul>",

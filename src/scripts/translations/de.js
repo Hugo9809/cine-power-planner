@@ -1110,8 +1110,34 @@ export const data = {
     "helpV2QuickStartKeywords": "schnellstart onboarding tutorial erste schritte workflow basics einstieg neues projekt leitfaden",
     "helpV2QuickStartContent": "<p>Willkommen bei Cine Power Planner! Folge diesen Schritten, um dein erstes Projekt startklar zu machen.</p>\n<ol>\n<li>\n<strong>Geführtes Tutorial starten:</strong>\n<button type=\"button\" class=\"button-link help-onboarding-secondary\" data-onboarding-tour-trigger=\"secondary\">Geführtes Tutorial starten</button>\num jeden Workflow mit offline gespeicherten Fortschritten zu durchlaufen.\n</li>\n<li>\n<strong>Projekt benennen:</strong>\nGib einen Namen im Feld <em>Projektname</em> ein und klicke <strong>Speichern</strong> (oder drücke <kbd>Enter</kbd>/<kbd>Ctrl</kbd>+<kbd>S</kbd>), um das aktuelle Rig zu sichern.\n</li>\n<li>\n<strong>Geräte konfigurieren:</strong>\nGehe durch <em>Geräte konfigurieren</em>, prüfe die <em>Power Summary</em> und das <em>Connection Diagram</em>.\n</li>\n<li>\n<strong>Daten absichern:</strong>\nLade ein <strong>Projekt exportieren</strong>-JSON und ein komplettes <strong>Backup</strong> herunter, damit du zwei Offline-Kopien hast.\n</li>\n<li>\n<strong>Offline-Status prüfen:</strong>\nBestätige, dass die Offline-Anzeige (im Header) leuchtet, bevor du dich trennst.\n</li>\n<li>\n<strong>Wiederherstellung üben:</strong>\nÖffne die <strong>Wiederherstellungsprobe</strong> in den Einstellungen, um dein Backup in einer Sandbox zu prüfen.\n</li>\n</ol>\n<p class=\"help-callout-note\">\nTipp: Bewahre Backups auf getrennten Laufwerken auf — <strong>Wiederherstellen</strong> erzeugt immer eine frische Sicherheitskopie, damit beim Rückgängig machen nichts verloren geht.\n</p>",
     "helpV2DataSafetyTitle": "Datensicherheitsgrundlagen",
-    "helpV2DataSafetyKeywords": "backup wiederherstellung schützen speichern export sicherheit offline bewahren",
-    "helpV2DataSafetyContent": "<p>Schütze deine Arbeit mit diesen wichtigen Gewohnheiten.</p>\n<ul>\n<li>\n<strong>Oft speichern:</strong> Drücke <strong>Speichern</strong> nach wichtigen Änderungen. Manuelles Speichern ist sofort und funktioniert offline.\n</li>\n<li>\n<strong>Auto-Backups aktivieren:</strong> Aktiviere \"Auto-Backups in der Projektliste anzeigen\" in den Einstellungen, um Hintergrund-Snapshots sichtbar zu machen.\n</li>\n<li>\n<strong>Redundanz herunterladen:</strong> Exportiere dein Projekt und lade ein vollständiges Backup herunter, wenn du einen Meilenstein erreichst.\n</li>\n<li>\n<strong>Sicher aufbewahren:</strong> Bewahre Exporte auf mindestens zwei Geräten auf.\n</li>\n<li>\n<strong>Sicher aktualisieren:</strong> Erstelle vor Updates ein frisches manuelles Backup.\n</li>\n</ul>\n<p class=\"help-callout-note\">\nManuelle Backups enthalten eine zeitgestempelte Kopie jedes gespeicherten Projekts, Favoriten, jeder Regel und Einstellung. Wiederherstellungen erstellen zuerst einen Sicherheits-Snapshot.\n</p>",
+    "helpV2DataSafetyKeywords": "backup wiederherstellung schützen speichern autosave export teilen import probe offline integrität",
+    "helpV2DataSafetyContent": "<p>Schütze jedes Projekt mit dieser Offline-Checkliste.</p>
+<h4>Manuelles Speichern, Autosave & Auto-Backups</h4>
+<ul>
+<li><strong>Manuelles Speichern:</strong> Klicke <strong>Speichern</strong> (oder drücke <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>S</kbd>), um sofort einen Projekt-Snapshot zu sichern.</li>
+<li><strong>Autosave:</strong> Läuft im Hintergrund während du arbeitest und hält rollierende Snapshots für schnelle Wiederherstellung.</li>
+<li><strong>Auto-Backups-Liste:</strong> Aktiviere <strong>Automatische Sicherungen in Projektliste anzeigen</strong> und passe <strong>Sicherungsaufbewahrung (Kopien pro Projekt)</strong> an, um die Anzahl der sichtbaren Snapshots zu steuern.</li>
+</ul>
+<h4>Projekt exportieren / teilen (JSON) & Import</h4>
+<ul>
+<li><strong>Projekt exportieren:</strong> Lade ein teilbares JSON-Bundle aus der Projekt-Detailansicht für die Offline-Übergabe herunter.</li>
+<li><strong>Projekt importieren:</strong> Nutze <strong>Projekt importieren</strong> im Dashboard, wähle die JSON und prüfe Metadaten + Optionen für automatische Gear-Regeln, bevor du anwendest.</li>
+<li><strong>Konfliktbehandlung:</strong> Importe überschreiben dein aktives Projekt erst nach dem Bestätigen von Speichern. Wenn ein Name bereits existiert (oder fehlt), speichert der Planner stattdessen ein neues „-imported“-Projekt.</li>
+</ul>
+<h4>Vollständiges Backup, Wiederherstellen & Probe-Wiederherstellung</h4>
+<ul>
+<li><strong>Sicherung herunterladen:</strong> Erstelle einen manuellen vollständigen App-Snapshot unter <strong>Einstellungen → Sicherung &amp; Wiederherstellung</strong>.</li>
+<li><strong>Vollständige Sicherung herunterladen:</strong> Hole eine zusätzliche vollständige Speicher-Exportdatei unter <strong>Einstellungen → Daten &amp; Speicher</strong>, wenn du redundante Medien möchtest.</li>
+<li><strong>Wiederherstellen:</strong> Lade eine Sicherungsdatei; der Planner erstellt vorher einen Sicherheits-Snapshot. Nutze <strong>Versionen vergleichen</strong>, um Unterschiede zu prüfen.</li>
+<li><strong>Probe-Wiederherstellung:</strong> Startet eine Sandbox, vergleicht Zähler, bereinigt sich automatisch und lässt Live-Daten unangetastet, bis du die Wiederherstellung auswählst.</li>
+</ul>
+<h4>Offline & Datenintegrität</h4>
+<ul>
+<li><strong>Offline-first:</strong> Speichern, Exporte, Importe und Backups funktionieren ohne Netzwerkverbindung.</li>
+<li><strong>Sicherheits-Snapshots:</strong> Wiederherstellungen und <strong>Werkseinstellungen</strong> erstellen vor destruktiven Änderungen ein Backup.</li>
+<li><strong>Kopie statt Löschen:</strong> Exporte und Backups duplizieren Daten immer — bewahre mindestens zwei Offline-Kopien auf, bevor du etwas entfernst.</li>
+</ul>
+<p class="help-callout-note">Tipp: Führe die <strong>Probe-Wiederherstellung</strong> nach wichtigen Meilensteinen aus, um das Backup vollständig offline zu prüfen.</p>",
     "helpV2ShortcutsTitle": "Wichtige Tastenkürzel",
     "helpV2ShortcutsKeywords": "tastaturkürzel shortcuts hotkeys schnelle navigation",
     "helpV2ShortcutsContent": "<ul>\n<li><kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd>: Hilfe öffnen</li>\n<li><kbd>Ctrl</kbd>+<kbd>/</kbd> (<kbd>⌘</kbd>+<kbd>/</kbd>): Hilfe umschalten</li>\n<li><kbd>/</kbd> oder <kbd>Ctrl</kbd>+<kbd>F</kbd> (<kbd>⌘</kbd>+<kbd>F</kbd>): Hilfe-Suche</li>\n<li><kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>⌘</kbd>+<kbd>K</kbd>): Globale Funktionssuche</li>\n<li><kbd>Ctrl</kbd>+<kbd>,</kbd> (<kbd>⌘</kbd>+<kbd>,</kbd>): Einstellungen öffnen</li>\n<li><kbd>Ctrl</kbd>+<kbd>S</kbd> (<kbd>⌘</kbd>+<kbd>S</kbd>): Projekt speichern</li>\n<li><kbd>D</kbd>: Dark Mode umschalten</li>\n<li><kbd>P</kbd>: Pink Mode umschalten</li>\n</ul>",
