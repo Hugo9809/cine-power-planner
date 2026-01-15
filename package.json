@@ -19,6 +19,7 @@
     "check:pink-mode-icons": "node tools/generatePinkModeAnimatedIcons.cjs --check",
     "build:legacy": "node tools/buildLegacy.cjs",
     "build:auto-gear": "tsc -p tsconfig.auto-gear.json",
+    "version:sync": "node tools/updateAppVersion.cjs",
     "test": "npm run check:pink-mode-icons && npm run build:auto-gear && npm run lint && npm run check-consistency && npm run test:jest",
     "test:jest": "node --max-old-space-size=3072 ./node_modules/jest/bin/jest.js --runInBand",
     "test:unit": "node tools/runUnitTests.cjs",
