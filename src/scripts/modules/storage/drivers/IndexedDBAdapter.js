@@ -34,6 +34,18 @@ export default class IndexedDBAdapter extends StorageInterface {
             const compressed = await get(key);
             if (compressed === null || compressed === undefined) return null;
 
+            if (typeof compressed !== 'string') {
+                if (compressed && typeof compressed === 'object') {
+                    try {
+                        return JSON.parse(JSON.stringify(compressed));
+                    } catch {
+                        return compressed;
+                    }
+                }
+
+                return compressed;
+            }
+
             // Detect if the data is actually compressed or legacy uncompressed (migration safety)
             // LZ-String compressed strings usually don't look like JSON.
             // We attempt decompression first.
