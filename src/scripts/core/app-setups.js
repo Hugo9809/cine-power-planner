@@ -15057,15 +15057,30 @@ function saveCurrentGearListImplementation() {
 }
 
 function deleteCurrentGearList() {
+  const storageKey = typeof getCurrentProjectStorageKey === 'function'
+    ? getCurrentProjectStorageKey()
+    : '';
+  const normalizedStorageKey = typeof storageKey === 'string' ? storageKey.trim() : '';
+  if (!normalizedStorageKey) {
+    if (typeof window !== 'undefined' && typeof window.cineShowAlertDialog === 'function') {
+      window.cineShowAlertDialog({
+        title: texts[currentLang].alertNoSetupSelectedTitle,
+        message: texts[currentLang].alertNoSetupSelected
+      });
+    } else {
+      alert(texts[currentLang].alertNoSetupSelected);
+    }
+    return false;
+  }
+
   const performDeletion = () => {
     const backupName = ensureAutoBackupBeforeDeletion('delete gear list');
     if (!backupName) return false;
 
-    const storageKey = getCurrentProjectStorageKey();
     if (typeof deleteProject === 'function') {
-      deleteProject(storageKey);
+      deleteProject(normalizedStorageKey);
     } else if (typeof saveProject === 'function') {
-      saveProject(storageKey, {
+      saveProject(normalizedStorageKey, {
         projectInfo: null,
         gearListAndProjectRequirementsGenerated: false
       }, { skipOverwriteBackup: true });
@@ -15073,7 +15088,7 @@ function deleteCurrentGearList() {
 
     const setups = getSetups();
     if (setups && typeof setups === 'object') {
-      const existingSetup = setups[storageKey];
+      const existingSetup = setups[normalizedStorageKey];
       if (existingSetup && typeof existingSetup === 'object') {
         let changed = false;
         if (Object.prototype.hasOwnProperty.call(existingSetup, 'gearList')) {
@@ -15130,9 +15145,9 @@ function deleteCurrentGearList() {
 
     if (typeof autoSaveCurrentSetup === 'function') {
       autoSaveCurrentSetup();
-      if (storageKey) {
+      if (normalizedStorageKey) {
         const setupsAfterSave = getSetups();
-        const savedSetup = setupsAfterSave && setupsAfterSave[storageKey];
+        const savedSetup = setupsAfterSave && setupsAfterSave[normalizedStorageKey];
         if (savedSetup && typeof savedSetup === 'object') {
           let resaved = false;
           if (Object.prototype.hasOwnProperty.call(savedSetup, 'gearList')) {
@@ -15157,7 +15172,7 @@ function deleteCurrentGearList() {
     updateGearListButtonVisibility();
 
     if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function') {
-      const eventDetail = { projectName: storageKey, backupName, source: 'deleteCurrentGearList' };
+      const eventDetail = { projectName: normalizedStorageKey, backupName, source: 'deleteCurrentGearList' };
       try {
         document.dispatchEvent(new CustomEvent('gearlist:deleted', { detail: eventDetail }));
       } catch (error) {

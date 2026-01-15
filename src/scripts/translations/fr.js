@@ -653,6 +653,7 @@ export const data = {
     "alertSetupSavedNoDevices": "Configuration \"{name}\" enregistrée dans ce navigateur sans appareils pour l’instant. Vous pourrez ajouter le matériel et les exigences plus tard ; nous garderons tout en sécurité.",
     "alertSetupRenameSaveFailed": "Nous n’avons pas pu terminer l’enregistrement du projet renommé. Votre projet d’origine reste disponible ; veuillez enregistrer à nouveau pour tout synchroniser.",
     "alertNoSetupSelected": "Sélectionnez une configuration à supprimer.",
+    "alertNoSetupSelectedTitle": "Aucun projet sélectionné",
     "alertSetupDeleted": "Configuration \"{name}\" supprimée.",
     "confirmDeleteSetup": "Supprimer la configuration \"{name}\" ?",
     "confirmDeleteSetupAgain": "Cela supprimera définitivement le projet. Êtes-vous sûr ?",
