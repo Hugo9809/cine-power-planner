@@ -79,6 +79,7 @@ export class StorageRepository {
     async clear() {
         if (!this.initialized) await this.init();
         const keys = await this.driver.getKeys();
+        // Use the user_${userId}_ prefix to avoid deleting other users' data in shared storage.
         const prefix = `user_${userContext.getUserId()}_`;
         const deletionPromises = keys
             .filter(k => k.startsWith(prefix))
@@ -89,6 +90,7 @@ export class StorageRepository {
     async getKeys() {
         if (!this.initialized) await this.init();
         const allKeys = await this.driver.getKeys();
+        // Use the user_${userId}_ prefix to avoid exposing other users' data in shared storage.
         const prefix = `user_${userContext.getUserId()}_`;
         return allKeys
             .filter(k => k.startsWith(prefix))
