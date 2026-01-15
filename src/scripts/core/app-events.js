@@ -5081,7 +5081,8 @@ addSafeEventListener('device-manager', "click", (event) => {
     if (categoryKey === "accessories.cables") {
       deviceData = devices.accessories.cables[subcategory][name];
     } else if (categoryKey.includes('.')) {
-      const [mainCat, subCat] = categoryKey.split('.');
+      const [mainCat, rawSubCat] = categoryKey.split('.');
+      const subCat = rawSubCat ? rawSubCat.trim() : rawSubCat;
       deviceData = devices[mainCat][subCat][name];
     } else {
       deviceData = devices[categoryKey][name];
@@ -5111,7 +5112,8 @@ addSafeEventListener('device-manager', "click", (event) => {
       if (categoryKey === "accessories.cables") {
         delete devices.accessories.cables[subcategory][name];
       } else if (categoryKey.includes('.')) {
-        const [mainCat, subCat] = categoryKey.split('.');
+        const [mainCat, rawSubCat] = categoryKey.split('.');
+        const subCat = rawSubCat ? rawSubCat.trim() : rawSubCat;
         delete devices[mainCat][subCat][name];
       } else {
         delete devices[categoryKey][name];

@@ -19215,7 +19215,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
       // Handle nested FIZ categories
       if (categoryKey.includes('.')) {
-        const [mainCat, subCat] = categoryKey.split('.');
+        const [mainCat, rawSubCat] = categoryKey.split('.');
+        const subCat = rawSubCat ? rawSubCat.trim() : rawSubCat;
         categoryDevices = devices[mainCat] && devices[mainCat][subCat];
       }
       if (!categoryDevices) return;
@@ -20023,5 +20024,4 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
 
 }
-
 
