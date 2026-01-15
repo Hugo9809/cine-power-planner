@@ -8,6 +8,7 @@ Device catalogs live under `src/data/devices/`. Each file groups related equipme
 changes are easy to audit in version control and inside the app. When editing
 the dataset, run helper scripts before committing:
 
+```bash
 npm run normalize
 npm run unify-ports
 npm run check-consistency
@@ -16,8 +17,6 @@ npm run generate-schema
 
 See [Tooling Reference](tooling-reference.md) for detailed documentation on these scripts.
 See [Data Catalog Maintenance Guide](data-catalog-maintenance.md) for the complete workflow on adding and validating devices.
-
-`npm run normalize` cleans connector names and expands shorthand entries.
 
 `npm run normalize` cleans connector names and expands shorthand entries.
 `npm run unify-ports` standardizes connector labels. `npm run
