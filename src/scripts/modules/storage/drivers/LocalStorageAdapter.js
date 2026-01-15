@@ -69,6 +69,13 @@ export default class LocalStorageAdapter extends StorageInterface {
 
     /** @override */
     async getKeys() {
-        return Object.keys(this.storage);
+        const keys = [];
+        for (let i = 0; i < this.storage.length; i += 1) {
+            const key = this.storage.key(i);
+            if (key !== null) {
+                keys.push(key);
+            }
+        }
+        return keys;
     }
 }
