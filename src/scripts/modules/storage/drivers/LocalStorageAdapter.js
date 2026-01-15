@@ -8,14 +8,21 @@ import StorageInterface from '../StorageInterface.js';
 export default class LocalStorageAdapter extends StorageInterface {
     constructor() {
         super();
-        this.storage = window.localStorage;
+        try {
+            this.storage = window.localStorage;
+        } catch (error) {
+            console.warn('[LocalStorageAdapter] Unable to access window.localStorage.', error);
+            this.storage = null;
+        }
     }
 
     /** @override */
     async init() {
         // LocalStorage is synchronous and always ready (if available)
         if (!this.storage) {
-            throw new Error('LocalStorage is not supported in this environment.');
+            throw new Error(
+                'LocalStorage is unavailable. Access to window.localStorage failed or is blocked.'
+            );
         }
         return Promise.resolve();
     }
