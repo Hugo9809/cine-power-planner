@@ -2280,6 +2280,9 @@ export const data = {
           "zoomOut": "Alejar",
           "resetView": "Restablecer vista",
           "download": "Descargar diagrama"
+        },
+        "errors": {
+          "statusUpdateFailed": "No se pudo actualizar el estado del proyecto porque el almacenamiento no está disponible. Revisa la configuración de almacenamiento del navegador y vuelve a intentarlo."
         }
       }
     },

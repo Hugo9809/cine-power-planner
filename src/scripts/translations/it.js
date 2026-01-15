@@ -2303,6 +2303,9 @@ export const data = {
           "zoomOut": "Riduci",
           "resetView": "Reimposta vista",
           "download": "Scarica diagramma"
+        },
+        "errors": {
+          "statusUpdateFailed": "Impossibile aggiornare lo stato del progetto perché l'archiviazione non è disponibile. Controlla le impostazioni di archiviazione del browser e riprova."
         }
       }
     },

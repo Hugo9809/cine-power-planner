@@ -230,7 +230,30 @@ function updateProjectStatus(projectName, status) {
         data[projectName].archived = false;
       }
 
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      const statusUpdateError = _t('v2.detail.errors.statusUpdateFailed');
+      let didPersist = false;
+
+      if (global.cineStorage && typeof global.cineStorage.saveProject === 'function') {
+        global.cineStorage.saveProject(projectName, data[projectName]);
+        didPersist = true;
+      } else if (typeof global.saveProject === 'function') {
+        global.saveProject(projectName, data[projectName]);
+        didPersist = true;
+      } else if (typeof global.resolveSafeLocalStorage === 'function') {
+        const safeStorage = global.resolveSafeLocalStorage();
+        if (safeStorage) {
+          safeStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+          didPersist = true;
+        }
+      } else if (global.cineStorage && typeof global.cineStorage.safeSetLocalStorage === 'function') {
+        global.cineStorage.safeSetLocalStorage(STORAGE_KEY, JSON.stringify(data));
+        didPersist = true;
+      }
+
+      if (!didPersist) {
+        alert(statusUpdateError);
+        return false;
+      }
 
       // Update cache - strictly not needed as we modified the object in place, but safe
       _cachedProjectData = data;
@@ -239,6 +262,7 @@ function updateProjectStatus(projectName, status) {
     }
   } catch (e) {
     console.error('[ProjectDetail] Failed to update status:', e);
+    alert(_t('v2.detail.errors.statusUpdateFailed'));
   }
   return false;
 }
