@@ -307,8 +307,11 @@ async function loadProject(projectName) {
     updateStatusSelectStyle(statusSelect);
 
     // Remove old listeners to prevent duplicates (cloning is a quick hack)
-    const newSelect = statusSelect.cloneNode(true);
-    statusSelect.parentNode.replaceChild(newSelect, statusSelect);
+    const statusSelectParent = statusSelect.parentNode;
+    const newSelect = statusSelectParent ? statusSelect.cloneNode(true) : statusSelect;
+    if (statusSelectParent) {
+      statusSelectParent.replaceChild(newSelect, statusSelect);
+    }
 
     newSelect.addEventListener('change', (e) => {
       const newStatus = e.target.value;
