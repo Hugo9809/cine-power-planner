@@ -41,6 +41,7 @@ See [Development & Maintenance Guide](dev/development.md#vite-build-system) for 
 - [User Guide](user/user-guide.md)
 - [Data Protection Lifecycle Guide](user/data-protection-lifecycle.md)
 - [Save, Share, Import, Backup & Restore Reference](user/save-share-restore-reference.md)
+- [Cloud Sync Safety (Future Update)](user/cloud-sync-safety.md)
 - [Power Summary Warning Reference](user/power-summary-warning-reference.md)
 - [Automatic Gear Rule Options](user/auto-gear-rule-options.md)
 - [Onboarding Tour Reference](user/onboarding-tour-reference.md)
