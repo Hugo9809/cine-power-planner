@@ -42,7 +42,7 @@ export class StorageMigrationService {
             const keysToMigrate = keys.filter(k => k !== MIGRATION_FLAG_KEY && k !== 'cine_user_uuid');
 
             // [Update] Get User Context to scope the new keys in IDB
-            // We perform the scoping manual here because we are writing directly to the IDB driver
+            // We perform the scoping manually here because we are writing directly to the IDB driver
             // via StorageRepository (which now scopes), OR we use the adapter directly?
             // Wait, StorageRepository.setItem NOW uses UserContext.
             // But MigrationService has `new IndexedDBAdapter()`.
@@ -51,12 +51,7 @@ export class StorageMigrationService {
 
             let userContext;
             try {
-                const module = await import('../core/UserContext.js');
-                userContext = module.userContext;
-                if (!userContext) {
-                    throw new Error('UserContext module loaded but userContext export is missing');
-                }
-                userContext.init(); // Ensure user ID exists
+                userContext = await this.loadUserContext();
             } catch (importError) {
                 console.error('[MigrationService] Failed to load UserContext for scoping. Aborting migration to prevent data loss.', importError);
                 // We must abort if we can't scope correctly, otherwise we write unscoped data to IDB which V2 won't see.
@@ -105,6 +100,20 @@ export class StorageMigrationService {
             setSafely(this.localStorage, 'LocalStorage'),
             setSafely(this.indexedDB, 'IndexedDB')
         ]);
+    }
+
+    /**
+     * Loads the UserContext instance for key scoping during migration.
+     * @returns {Promise<import('../core/UserContext.js').UserContext>}
+     */
+    async loadUserContext() {
+        const module = await import('../core/UserContext.js');
+        const userContext = module.userContext;
+        if (!userContext) {
+            throw new Error('UserContext module loaded but userContext export is missing');
+        }
+        userContext.init(); // Ensure user ID exists
+        return userContext;
     }
 
     /**

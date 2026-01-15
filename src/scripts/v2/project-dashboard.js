@@ -847,8 +847,8 @@ function showContextMenu(e, projectName) {
         closeContextMenu();
     });
 
-    menu.querySelector('[data-action="delete"]').addEventListener('click', () => {
-        deleteProject(projectName);
+    menu.querySelector('[data-action="delete"]').addEventListener('click', async () => {
+        await deleteProject(projectName);
         closeContextMenu();
     });
 
@@ -956,24 +956,17 @@ function createEmptyStateHtml() {
     `;
 }
 
-// ... (createNoResultsHtml and render methods stay same, but we need to jump to project operations area)
-
-// [Skipping middle sections, targeting lines 656-696 for project operations]
-
 /**
  * Delete a project
  */
-/**
- * Delete a project
- */
-function deleteProject(projectName) {
+async function deleteProject(projectName) {
     if (!confirm(_t('v2.dashboard.confirmDelete', { project: projectName }) || `Are you sure you want to delete project "${projectName}"?`)) {
         return;
     }
 
     try {
         const provider = getDataProvider();
-        const deleted = provider.deleteProject(projectName);
+        const deleted = await provider.deleteProject(projectName);
         if (deleted) {
             updateProjectRevision();
             refreshProjectDataCache();
