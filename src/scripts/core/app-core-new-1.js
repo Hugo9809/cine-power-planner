@@ -17037,7 +17037,7 @@ function populateCategoryOptions() {
         if (sub === 'cables') {
           categoriesToAdd.add('accessories.cables');
         } else if (obj && obj.attributes) {
-          categoriesToAdd.add(`accessories.${sub} `);
+          categoriesToAdd.add(`accessories.${sub}`);
         }
       }
     }
@@ -17059,7 +17059,7 @@ function populateCategoryOptions() {
 
     if (deviceSchema.fiz) {
       for (const [sub, obj] of Object.entries(deviceSchema.fiz)) {
-        if (obj && obj.attributes) addOpt(`fiz.${sub} `);
+        if (obj && obj.attributes) addOpt(`fiz.${sub}`);
       }
     }
 
@@ -17085,11 +17085,11 @@ function populateCategoryOptions() {
     for (const [key, obj] of Object.entries(devices)) {
       if (key === 'accessories') {
         for (const sub of Object.keys(obj || {})) {
-          addIfMissing(`accessories.${sub} `);
+          addIfMissing(`accessories.${sub}`);
         }
       } else if (key === 'fiz') {
         for (const sub of Object.keys(obj || {})) {
-          addIfMissing(`fiz.${sub} `);
+          addIfMissing(`fiz.${sub}`);
         }
       } else if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
         addIfMissing(key);
@@ -17124,7 +17124,8 @@ function getCategoryContainer(categoryKey, subcategory, { create = false } = {})
   }
 
   if (categoryKey.includes('.')) {
-    const [mainCat, subCat] = categoryKey.split('.');
+    const [mainCat, rawSubCat] = categoryKey.split('.');
+    const subCat = rawSubCat ? rawSubCat.trim() : rawSubCat;
     if (!devices[mainCat]) {
       if (!create) return null;
       devices[mainCat] = {};

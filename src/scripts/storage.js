@@ -9336,6 +9336,50 @@ function normalizeDeviceDataPayload(rawData) {
     return target[key];
   };
 
+  const mergeTrailingSpaceKeys = (collection) => {
+    if (!isPlainObject(collection)) {
+      return;
+    }
+    const entries = Object.entries(collection);
+    entries.forEach(([key, value]) => {
+      if (typeof key !== 'string') {
+        return;
+      }
+      const trimmedKey = key.trim();
+      if (!trimmedKey || trimmedKey === key) {
+        return;
+      }
+      if (!isPlainObject(value)) {
+        if (!Object.prototype.hasOwnProperty.call(collection, trimmedKey)) {
+          collection[trimmedKey] = value;
+          delete collection[key];
+          changed = true;
+        }
+        return;
+      }
+
+      const target = ensureObject(collection, trimmedKey);
+      const usedNames = new Set(Object.keys(target));
+      const normalizedNames = new Set(
+        [...usedNames].map((name) => name.trim().toLowerCase()),
+      );
+
+      Object.entries(value).forEach(([deviceName, deviceData]) => {
+        if (Object.prototype.hasOwnProperty.call(target, deviceName)) {
+          const uniqueName = generateUniqueName(deviceName, usedNames, normalizedNames);
+          target[uniqueName] = deviceData;
+          return;
+        }
+        target[deviceName] = deviceData;
+        usedNames.add(deviceName);
+        normalizedNames.add(deviceName.trim().toLowerCase());
+      });
+
+      delete collection[key];
+      changed = true;
+    });
+  };
+
   DEVICE_COLLECTION_KEYS.forEach((key) => {
     ensureObject(data, key);
   });
@@ -9355,6 +9399,9 @@ function normalizeDeviceDataPayload(rawData) {
   ACCESSORY_COLLECTION_KEYS.forEach((key) => {
     ensureObject(data.accessories, key);
   });
+
+  mergeTrailingSpaceKeys(data.accessories);
+  mergeTrailingSpaceKeys(data.fiz);
 
   if (!Array.isArray(data.filterOptions)) {
     data.filterOptions = Array.isArray(rawData.filterOptions)
