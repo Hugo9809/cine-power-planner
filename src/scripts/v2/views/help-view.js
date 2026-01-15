@@ -17,6 +17,32 @@ function getElement(id) {
     return document.getElementById(id);
 }
 
+function _t(key) {
+    if (typeof window !== 'undefined' && window.texts) {
+        const langSelect = document.getElementById('languageSelect');
+        const lang = (langSelect && langSelect.value) ||
+            (typeof window.currentLanguage === 'string' && window.currentLanguage) ||
+            'en';
+        const dict = window.texts[lang] || window.texts['en'];
+        if (dict) {
+            return dict[key] || key;
+        }
+    }
+    return key;
+}
+
+// Prefer shared icon markup helpers to keep Uicon glyphs consistent across V2.
+function getIconMarkup(iconGlyph, className) {
+    if (!iconGlyph) return '';
+    const iconMarkup = window.iconMarkup || (window.cineIcons && window.cineIcons.iconMarkup);
+    if (typeof iconMarkup === 'function') {
+        return iconMarkup(iconGlyph, className);
+    }
+    const char = iconGlyph.char || iconGlyph;
+    if (!char) return '';
+    return `<span class="icon-glyph ${className || ''}" aria-hidden="true" data-icon-font="uicons">${char}</span>`;
+}
+
 /**
  * Render the Help Content from Service
  */
@@ -29,7 +55,7 @@ function renderContent() {
 
     const service = window.cineHelpService;
     if (!service) {
-        target.innerHTML = '<div class="v2-empty-state"><p>Help service unavailable.</p></div>';
+        target.innerHTML = `<div class="v2-empty-state"><p>${_t('helpServiceUnavailable')}</p></div>`;
         return [];
     }
 
@@ -56,11 +82,15 @@ function renderContent() {
     emptyState.id = 'v2HelpNoResults';
     emptyState.className = 'v2-help-no-results';
     emptyState.style.display = 'none';
+    const noResultsIcon = getIconMarkup(
+        window.ICON_GLYPHS && window.ICON_GLYPHS.distance,
+        'v2-help-no-results-icon'
+    );
     emptyState.innerHTML = `
         <div class="v2-help-no-results-content">
-            <span class="v2-help-no-results-icon">🔍</span>
-            <h3>No results found</h3>
-            <p>Try adjusting your search terms.</p>
+            ${noResultsIcon}
+            <h3>${_t('helpSearchNoResultsTitle')}</h3>
+            <p>${_t('helpSearchNoResultsHint')}</p>
         </div>
     `;
     target.appendChild(emptyState);
@@ -84,7 +114,8 @@ function renderCategory(container, title, items, tocList) {
 
         const header = document.createElement('h2');
         if (item.icon) {
-            header.innerHTML = `<span class="v2-help-icon">${item.icon}</span> ${item.title}`;
+            header.innerHTML = getIconMarkup(item.icon, 'v2-help-icon');
+            header.appendChild(document.createTextNode(item.title || ''));
         } else {
             header.textContent = item.title;
         }
@@ -132,7 +163,8 @@ function buildToc(tocInfo) {
 
             // Add icon if available
             if (item.icon) {
-                link.innerHTML = `<span class="v2-toc-icon">${item.icon}</span> ${item.title}`;
+                link.innerHTML = getIconMarkup(item.icon, 'v2-toc-icon');
+                link.appendChild(document.createTextNode(item.title || ''));
             } else {
                 link.textContent = item.title;
             }
@@ -202,9 +234,14 @@ function initSearch() {
     // Create Clear Button
     const clearBtn = document.createElement('button');
     clearBtn.className = 'v2-help-search-clear';
-    clearBtn.innerHTML = '✕';
     clearBtn.style.display = 'none';
-    clearBtn.ariaLabel = 'Clear search';
+    clearBtn.type = 'button';
+    clearBtn.setAttribute('aria-label', _t('helpSearchClearLabel'));
+    clearBtn.title = _t('helpSearchClearLabel');
+    clearBtn.innerHTML = getIconMarkup(
+        window.ICON_GLYPHS && window.ICON_GLYPHS.resetView,
+        'v2-help-search-clear-icon'
+    );
 
     // Append to container (assuming container is relative/flex)
     searchInput.parentNode.appendChild(clearBtn);
@@ -247,6 +284,14 @@ function initSearch() {
     });
 }
 
+function updateSearchLabels() {
+    const clearBtn = document.querySelector('.v2-help-search-clear');
+    if (!clearBtn) return;
+    const label = _t('helpSearchClearLabel');
+    clearBtn.setAttribute('aria-label', label);
+    clearBtn.title = label;
+}
+
 /**
  * Initialize the view
  */
@@ -264,7 +309,10 @@ function init() {
 
     refresh();
     initSearch();
-    document.addEventListener('v2:languagechange', () => refresh());
+    document.addEventListener('v2:languagechange', () => {
+        refresh();
+        updateSearchLabels();
+    });
 
     isInitialized = true;
 }

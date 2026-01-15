@@ -38,8 +38,9 @@ cache-resident guidance.
 4. **Cross-check localized guidance**
    - Switch languages from the header selector and repeat the search queries.
      Confirm translated help text mirrors the English wording and renders with
-     the locally stored fonts and icons. Note any strings that differ from the
-     corresponding `README.<locale>.md` sections.
+     the locally stored fonts and Uicons in both the topic headers and the
+     table of contents. Note any strings that differ from the corresponding
+     `README.<locale>.md` sections.
    - Capture screenshots of each locale’s help search and a representative topic
      to attach to the verification packet and translation approvals.
 5. **Verify documentation links resolve offline**

@@ -34,6 +34,8 @@ archivi isolati.
    per caricare localmente icone, font e aiuti offline.
 2. Avvia **Help → Quick start checklist** per provare salvataggio,
    condivisione, importazione, backup e ripristino end-to-end su questa macchina.
+   Conferma che i temi di aiuto mostrino testo localizzato e Uicons offline
+   nelle intestazioni e nell’indice.
 3. Esporta subito un backup del planner e un bundle di progetto. Conserva
    entrambi su supporti offline separati per avere un punto di ripristino sicuro.
 4. Disconnetti la rete e ricarica. Verifica che progetti, help e **Force reload**
