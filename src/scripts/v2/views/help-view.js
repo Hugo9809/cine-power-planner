@@ -161,6 +161,8 @@ function buildToc(tocInfo) {
             link.href = `#${item.id}`;
             link.className = 'v2-help-toc-link';
             link.dataset.target = item.id; // Helper for scroll spy
+            link.dataset.title = item.title || '';
+            link.dataset.keywords = item.keywords || '';
 
             // Add icon if available
             if (item.icon) {
@@ -232,6 +234,28 @@ function initSearch() {
     const searchInput = getElement(SEARCH_ID);
     if (!searchInput) return;
 
+    const updateTocHeaderVisibility = (tocList) => {
+        if (!tocList) return;
+        let currentHeader = null;
+        let hasVisibleItems = false;
+
+        Array.from(tocList.children).forEach(item => {
+            if (item.classList.contains('v2-help-toc-header')) {
+                if (currentHeader) {
+                    currentHeader.style.display = hasVisibleItems ? 'block' : 'none';
+                }
+                currentHeader = item;
+                hasVisibleItems = false;
+            } else if (currentHeader && item.style.display !== 'none') {
+                hasVisibleItems = true;
+            }
+        });
+
+        if (currentHeader) {
+            currentHeader.style.display = hasVisibleItems ? 'block' : 'none';
+        }
+    };
+
     // Create Clear Button
     const clearBtn = document.createElement('button');
     clearBtn.className = 'v2-help-search-clear';
@@ -251,6 +275,8 @@ function initSearch() {
         const term = searchInput.value.toLowerCase().trim();
         const sections = document.querySelectorAll('.v2-help-section');
         const noResults = getElement('v2HelpNoResults');
+        const tocContainer = getElement(TOC_ID);
+        const tocList = tocContainer ? tocContainer.querySelector('ul') : null;
         let hasVisible = false;
 
         sections.forEach(section => {
@@ -261,6 +287,16 @@ function initSearch() {
             section.style.display = match ? 'block' : 'none';
             if (match) hasVisible = true;
         });
+
+        document.querySelectorAll('.v2-help-toc-link').forEach(link => {
+            const targetSection = document.getElementById(link.dataset.target);
+            const isVisible = targetSection && targetSection.style.display !== 'none';
+            const listItem = link.parentElement;
+            if (listItem) {
+                listItem.style.display = isVisible ? 'block' : 'none';
+            }
+        });
+        updateTocHeaderVisibility(tocList);
 
         // Toggle Dividers visibility based on search (hide if searching)
         document.querySelectorAll('.v2-help-divider').forEach(div => {
