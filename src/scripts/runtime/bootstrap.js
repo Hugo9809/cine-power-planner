@@ -13,6 +13,12 @@
 
 /* global CORE_GLOBAL_SCOPE, CORE_RUNTIME_STATE, cineCoreRuntimeModuleLoader */
 
+/**
+ * Build an ordered list of candidate global scopes so runtime recovery can
+ * gracefully fall back when the primary global object is unavailable.
+ *
+ * @returns {Array<object>} Ordered list of detected global scope objects.
+ */
 export function getGlobalScopeCandidates() {
   const candidates = [];
 
@@ -39,6 +45,13 @@ export function getGlobalScopeCandidates() {
   return candidates;
 }
 
+/**
+ * Resolve the most reliable global scope candidate for bootstrapping runtime
+ * state in offline/legacy recovery scenarios where globals may be partially
+ * initialised.
+ *
+ * @returns {object|null} The first valid global scope object, or null if none exist.
+ */
 export function getPrimaryGlobalScope() {
   const candidates = getGlobalScopeCandidates();
   for (let index = 0; index < candidates.length; index += 1) {
@@ -97,6 +110,16 @@ function fallbackRequireCoreRuntimeModule(moduleId, options) {
   return null;
 }
 
+/**
+ * Expose a core runtime constant on the primary global scope to keep legacy
+ * bundles and offline recovery flows aligned on shared globals.
+ *
+ * @param {string} name - Global property name to expose.
+ * @param {*} value - Value to assign to the global property.
+ * @returns {void}
+ *
+ * @sideEffects Mutates the primary global scope by assigning or defining a property.
+ */
 export function exposeCoreRuntimeConstant(name, value) {
   if (typeof name !== 'string' || !name) {
     return;
@@ -251,6 +274,14 @@ function enqueueCoreBootTask(task) {
   }
 }
 
+/**
+ * Drain the core boot queue in a safe, snapshot-based sequence so legacy and
+ * offline boot tasks execute deterministically without re-entrancy loops.
+ *
+ * @returns {void}
+ *
+ * @sideEffects Drains the shared boot queue and executes queued tasks.
+ */
 export function processCoreBootQueue() {
   const queue = CORE_BOOT_QUEUE;
   console.log('[Runtime Bootstrap] Processing boot queue. Length:', Array.isArray(queue) ? queue.length : 'invalid');
