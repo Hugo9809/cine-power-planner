@@ -310,6 +310,7 @@
         document.addEventListener('v2:languagechange', () => {
             if (isReparented) {
                 // Re-render to update translations
+                restoreLegacyContent();
                 isReparented = false;
                 render();
             }
