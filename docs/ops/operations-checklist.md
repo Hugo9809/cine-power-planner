@@ -16,7 +16,7 @@ restore workflows protect every bit of user data.
 ## Rehearsal steps
 
 1. **Modern bundle self-healing**
-   - [ ] While online, open DevTools storage inspector for `localStorage`.
+   - [ ] While online, open DevTools storage inspector for `localStorage`, IndexedDB, and any OPFS storage panels available in your browser.
    - [ ] Disable the network temporarily, reload once to confirm the loader falls back to the inline legacy bundle without writing `cameraPowerPlanner_forceLegacyBundle`.
    - [ ] Restore connectivity and reload; verify the app returns to the modern bundle automatically and the legacy flag remains absent.
    - [ ] In the DevTools console confirm `window.APP_VERSION`, `window.CPP_APP_VERSION` and `window.cinePowerPlanner.version` match the release identifier recorded for this rehearsal.
@@ -29,6 +29,7 @@ restore workflows protect every bit of user data.
 4. **Data & Storage health**
    - [ ] Open **Settings → Data & Storage** and review the **Latest activity** timeline for stale saves, autosaves or backups.
    - [ ] Check the **Backup guardian** row; investigate any “waiting for first save” or issue count before continuing.【F:src/scripts/app-core-new-2.js†L8640-L8740】【F:src/scripts/storage.js†L2800-L2995】
+   - [ ] In DevTools, verify StorageRepository data exists in IndexedDB, confirm legacy `localStorage` mirrors are present, and check for OPFS DataVault snapshots where supported.
    - [ ] If a banner appears stating **"1 backup saved in the local vault."** or **"{count} backups saved in the local vault."** beside the **Open local backup vault** action, open the vault and download every queued archive before moving on.
    - [ ] Rehearse **Settings → Backup & Restore → Open local backup vault** (or use the banner action) to export any deferred backups and confirm the banner clears before marking this step complete.
 5. **Planner backup**

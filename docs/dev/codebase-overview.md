@@ -94,7 +94,7 @@ The `loader.js` file is the first script to run. It:
 2. Initializes the `Registry`.
 3. Loads core modules (`logging`, `storage`, `results`).
 4. Bootstraps the UI.
-5. Handles the initial data load from LocalStorage.
+5. Handles the initial data load from `localStorage`, booting StorageRepository before migrating to IndexedDB once schema validation completes.
 
 ### `src/scripts/runtime/bootstrap.js`
 **Role:** Runtime Foundation
@@ -106,9 +106,11 @@ This module provides shared helpers that were previously duplicated across app-c
 
 ### `src/scripts/storage.js`
 **Role:** Persistence Layer
-This module is critical for data safety. It implements a "Snapshot & Commit" strategy:
+This module is critical for data safety. It implements StorageRepository and a "Snapshot & Commit" strategy:
+- **Boot & Migration**: Starts with `localStorage` during boot, then migrates primary persistence to IndexedDB after schema validation, retaining legacy mirrors for safety.
 - **Write Safety**: Before saving, it serializes the current state to a temporary slot, verifies integrity, and only then promotes it to the main slot.
 - **Backup Rotation**: Automatically rotates backups (A/B/C) on every save to prevent data loss from corruption.
+- **OPFS Snapshots**: When supported, DataVault snapshots are stored in OPFS to strengthen offline restore coverage.
 
 ### `src/scripts/modules/results.js`
 **Role:** Calculation Engine

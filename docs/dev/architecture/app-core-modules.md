@@ -18,7 +18,7 @@ persistence and rehearsal tooling.
 | Kernel | `architecture-kernel.js`, `architecture-core.js`, `architecture-helpers.js` | Bootstraps the dependency container, normalises environment detection and exposes the guarded module registry. |
 | Runtime services | `runtime.js`, `runtime-guard.js`, `runtime-environment-helpers.js` | Coordinates save/autosave/backup/restore flows, validates schema expectations and prevents destructive mutations before they reach storage. |
 | Environment bridge | `environment.js`, `environment-context.js`, `environment-bridge.js` | Resolves browser, service-worker and legacy contexts so the same logic works offline from a file:// load, a localhost server or an installed PWA. |
-| Data safety | `persistence.js`, `storage.js`, `results.js` | Handles structured cloning, redundancy mirroring and deterministic result calculations for runtime estimates. |
+| Data safety | `persistence.js`, `storage.js`, `results.js` | Handles structured cloning, StorageRepository persistence (localStorage boot → IndexedDB primary), redundancy mirroring, and deterministic runtime calculations. |
 | User interface | `ui.js`, `system.js`, `settings-and-appearance.js`, `gear-list.js` | Presents the planner shell, binds localised copy and ensures icons/fonts only reference bundled assets. |
 | Feature bundles | `features/*`, `help.js`, `localization.js`, `offline.js`, `logging.js` | Encapsulate specialised behaviour such as automatic gear rules, offline cache rehearsals, help centre topics and structured logging. |
 | V2 Views | `v2/bootstrap.js`, `v2/view-manager.js`, `v2/sidebar.js`, `v2/views/*` | Modern ES Module UI layer with hash-based routing and dashboard interface. |
@@ -63,7 +63,9 @@ persistence and rehearsal tooling.
   This ensures critical data safety code runs in the correct order.
 - **Redundant persistence:** Every save, autosave and backup call flows through
   `modules/persistence.js`, which clones payloads, writes timestamped mirrors
-  and records entries in the verification ledger. Feature modules never call
+  and records entries in the verification ledger. StorageRepository boots from
+  `localStorage`, migrates to IndexedDB for primary persistence, and uses OPFS
+  DataVault snapshots where supported—feature modules never call
   `localStorage` directly.
 - **Schema inventory:** `modules/results.js` and `modules/helpers/schema/*.js`
   resolve the `docs/dev/schema-inventory.md` definitions at runtime so imports from
@@ -150,4 +152,3 @@ flowchart TD
    provable even without network access.
 4. When adding new modules, use `enqueueCoreBootTask()` for deferred initialization
    to ensure proper loading order.
-

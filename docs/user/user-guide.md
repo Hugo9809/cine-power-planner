@@ -408,7 +408,7 @@ for the end-to-end offline sequence, then use this table as a quick refresher.
 
 | Workflow | How to trigger | Data captured | Offline behavior | Built-in safeguards |
 | --- | --- | --- | --- | --- |
-| Manual save | Press **Enter**, click **Save** or use `Ctrl+S`/`⌘S` while a project is open. | Active project state including devices, requirements, diagrams, favorites and runtime feedback. | Writes directly to local storage—no connectivity required. | Creates a named entry in the selector so you can branch, rename or export it at any time. |
+| Manual save | Press **Enter**, click **Save** or use `Ctrl+S`/`⌘S` while a project is open. | Active project state including devices, requirements, diagrams, favorites and runtime feedback. | Writes through the StorageRepository—bootstraps in `localStorage`, then migrates to IndexedDB after schema validation; no connectivity required. | Creates a named entry in the selector so you can branch, rename or export it at any time. |
 | Background auto-save & auto-backup | Runs after roughly 50 tracked changes or every 10 minutes while you edit. | Incremental project snapshots promoted to timestamped `auto-backup-…` entries. | Continues in airplane mode and resumes instantly after reload. | Auto backups stay hidden until needed and can be restored or exported without overwriting manual saves. |
 | Planner backup | **Settings → Backup & Restore → Backup**. | Every project, auto-backup, automatic gear rule, custom device, favorite, runtime note and UI preference. | Downloads a human-readable `planner-backup.json` file locally. | Forced pre-restore backups plus hidden migration snapshots prevent data loss during restores. |
 | Project bundle export | **Export Project** while the desired project is active. | One project plus referenced custom devices and (optionally) automatic gear rules—favorites stay local. | Generates a portable JSON bundle that never leaves your machine unless you share it. | Import validation checks file metadata, schema version and timestamps before merging. |
@@ -422,8 +422,8 @@ entire crew repeats the same offline-first routines on every workstation.
 
 - **Modern evergreen browsers.** The planner is validated on the latest
   releases of Chromium, Firefox and Safari on desktop and mobile. Enable
-  service workers, `localStorage` (site storage) access and persistent storage
-  to unlock the full offline workflow.
+  service workers, IndexedDB, `localStorage` (site storage) access, and OPFS
+  where available, plus persistent storage to unlock the full offline workflow.
 - **Offline-friendly devices.** Laptops and tablets must allow persistent
   storage so backups and auto-saves stay available. When running from removable
   media or a field workstation, launch the planner once while online so the
@@ -802,11 +802,14 @@ Track projects through production stages with color-coded status indicators:
   When the **Update ready** toast appears, finish your current edits, capture a
   manual backup for your records, then use **Force reload** if you want to clear
   cached assets and reopen the session on a freshly loaded build.
-- Storage lives inside hardened `localStorage` with a `sessionStorage` fallback
-  when browsers restrict long-term writes. Every save also creates a
+- Storage primarily lives in IndexedDB via the StorageRepository, using
+  `localStorage` during boot and as a fallback alongside `sessionStorage` when
+  browsers restrict long-term writes. Every save also creates a
   `__legacyMigrationBackup` snapshot so you can recover even if the browser
-  reports a quota or schema error. Use your browser’s storage inspector to
-  export or audit records before clearing caches or experimenting with data.
+  reports a quota or schema error, and OPFS-backed DataVault snapshots are
+  captured where the browser supports them. Use your browser’s storage
+  inspector to export or audit records before clearing caches or experimenting
+  with data.
 - A critical storage guardian now runs on every launch to mirror each essential
   key into its backup slot before you edit anything, ensuring both legacy and
   modern entries always keep a redundant copy ready for restores.
