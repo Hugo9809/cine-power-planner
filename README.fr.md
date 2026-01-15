@@ -2,7 +2,7 @@
 
 <img src="src/icons/app-icon.png" alt="Icône Cine Power Planner" width="160">
 
-**Version actuelle :** 1.0.52 | **Licence :** ISC | **Node :** >=18 (outils de développement)
+**Version actuelle :** 1.0.53 | **Licence :** ISC | **Node :** >=18 (outils de développement)
 
 Cine Power Planner est une application web autonome pour créer, auditer et
 partager des plans d’alimentation caméra professionnels sans que les données ne
