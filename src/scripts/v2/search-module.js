@@ -108,7 +108,7 @@ function buildDeviceEntries(catalog) {
         if (!label) return;
         const keywords = [label, categoryLabel, categoryKey].filter(Boolean).join(' ');
         results.push({
-            key: `device:${safeNormalize(label)}`,
+            key: `device:${safeNormalize(label)}:${safeNormalize(categoryKey)}`,
             type: 'device',
             label,
             display: label,
@@ -132,7 +132,7 @@ function buildDeviceEntries(catalog) {
             Object.entries(data).forEach(([subKey, subData]) => {
                 const subLabel = DEFAULT_CATEGORY_LABELS[subKey] || subKey;
                 const fullLabel = `${label} · ${subLabel}`;
-                processCategory(subKey, subData, fullLabel);
+                processCategory(`accessories:${subKey}`, subData, fullLabel);
             });
             return;
         }
@@ -150,7 +150,6 @@ function buildSearchIndex() {
         const normalizedLabel = safeNormalize(entry.label);
         if (!normalizedLabel) return;
         const labelKey = `label:${normalizedLabel}`;
-        if (index.has(labelKey)) return;
         const normalizedKeywords = safeNormalize(entry.keywords || '');
         const tokens = new Set([...tokenize(entry.label), ...tokenize(entry.keywords || '')]);
         const withMeta = {
@@ -166,7 +165,9 @@ function buildSearchIndex() {
         if (entry.legacyKey) {
             index.set(`legacyKey:${entry.legacyKey}`, withMeta);
         }
-        index.set(labelKey, withMeta);
+        if (!index.has(labelKey)) {
+            index.set(labelKey, withMeta);
+        }
     };
 
     resolveLegacyEntries().forEach(addEntry);
