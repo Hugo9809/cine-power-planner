@@ -67,20 +67,6 @@ workflow para que cada rutina se documente una sola vez.
   [Development & Maintenance Guide](docs/dev/development.md) y la
   [Documentation Maintenance Guide](docs/dev/documentation-maintenance.md).
 
-## Funciones clave
-
-- **Base de datos de consumo.** Consulta valores integrados o amplía el catálogo
-  local con tus propios equipos.
-- **Planificación de baterías.** Combina capacidades, voltajes y feedback de
-  runtime para estimaciones realistas.
-- **Configuraciones de rig personalizadas.** Mezcla cámaras, accesorios y
-  requisitos de crew, y exporta bundles o backups sin riesgo de pérdida.
-- **Funcionamiento offline-first.** Cada asset está en el repo, por lo que
-  autoguardado, backup, restauración, compartir y ayuda funcionan sin red.
-- **Integración con Firebase Studio.** Sincroniza opcionalmente tus proyectos en la nube para colaboración en tiempo real y acceso desde múltiples dispositivos.
-- **Resúmenes de compatibilidad al restaurar.** Cada restauración muestra
-  secciones faltantes y crea un backup previo para verificar cambios.
-
 ## Nuevo: Interfaz de Usuario V2
 
 La aplicación ahora cuenta con una interfaz de usuario V2 completamente rediseñada y responsiva.
@@ -106,6 +92,20 @@ La aplicación ahora cuenta con una interfaz de usuario V2 completamente redise�
 - **Modo Rosa**: Tema de acento divertido con efecto animado de "lluvia de iconos".
 - **Controles de Tema**: Botones de acceso rápido en la barra lateral para modo oscuro, modo rosa y recarga forzada.
 
+## Funciones clave
+
+- **Base de datos de consumo.** Consulta valores integrados o amplía el catálogo
+  local con tus propios equipos.
+- **Planificación de baterías.** Combina capacidades, voltajes y feedback de
+  runtime para estimaciones realistas.
+- **Configuraciones de rig personalizadas.** Mezcla cámaras, accesorios y
+  requisitos de crew, y exporta bundles o backups sin riesgo de pérdida.
+- **Funcionamiento offline-first.** Cada asset está en el repo, por lo que
+  autoguardado, backup, restauración, compartir y ayuda funcionan sin red.
+- **Integración con Firebase Studio.** Sincroniza opcionalmente tus proyectos en la nube para colaboración en tiempo real y acceso desde múltiples dispositivos.
+- **Resúmenes de compatibilidad al restaurar.** Cada restauración muestra
+  secciones faltantes y crea un backup previo para verificar cambios.
+
 ## Instalación
 
 1. Clona o descarga este repositorio en un disco confiable:
@@ -127,6 +127,20 @@ La aplicación ahora cuenta con una interfaz de usuario V2 completamente redise�
    ```
 4. (Uso offline) Abre `index.html` directamente en un navegador compatible
    para uso completamente offline. Los assets cargan sin conexión a red.
+
+## Referencia rápida de comandos
+
+| Comando | Descripción |
+| --- | --- |
+| `npm run dev` | Inicia el servidor de desarrollo Vite con HMR |
+| `npm run build` | Build de producción en `dist/` |
+| `npm test` | Ejecuta la suite completa de pruebas (lint + checks + Jest) |
+| `npm run lint` | Ejecuta ESLint |
+| `npm run check-consistency` | Valida datos de dispositivos y el manifiesto SW |
+| `npm run help` | Muestra todos los scripts disponibles |
+
+Consulta [Development & Maintenance Guide](docs/dev/development.md) para la
+referencia completa de scripts npm y consejos de solución de problemas.
 
 ## Traducciones
 

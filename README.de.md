@@ -70,20 +70,6 @@ Routine nur einmal dokumentiert ist.
   [Development & Maintenance Guide](docs/dev/development.md) und dem
   [Documentation Maintenance Guide](docs/dev/documentation-maintenance.md).
 
-## Kernfunktionen
-
-- **Wissensbasis für Leistungsdaten.** Greife auf gebündelte Verbrauchswerte zu
-  oder erweitere den lokalen Katalog mit eigenen Einträgen.
-- **Batterielaufzeiten planen.** Kombiniere Kapazitäten, Spannungen und
-  Laufzeit-Feedback, damit Schätzungen praxisnah bleiben.
-- **Individuelle Rig-Konfigurationen.** Mische Kameras, Zubehör und Crew-
-  Anforderungen und exportiere Bundles oder Backups ohne Datenverlust.
-- **Offline-first Betrieb.** Jedes Asset ist im Repo enthalten, sodass Autosave,
-  Backup, Restore, Sharing und Hilfe vollständig offline funktionieren.
-- **Firebase Studio Integration.** Synchronisiere deine Projekte optional in die Cloud für Echtzeit-Zusammenarbeit und Zugriff von mehreren Geräten.
-- **Restore-Kompatibilitätsübersichten.** Jeder Restore listet fehlende
-  Abschnitte und erstellt ein Sicherheits-Backup, bevor Daten übernommen werden.
-
 ## Neu: V2-Benutzeroberfläche
 
 Die Anwendung verfügt jetzt über eine vollständig neugestaltete, responsive V2-Benutzeroberfläche.
@@ -109,6 +95,20 @@ Die Anwendung verfügt jetzt über eine vollständig neugestaltete, responsive V
 - **Pink Mode**: Lustiges Akzentthema mit animiertem „Icon-Regen"-Effekt.
 - **Theme-Steuerung**: Schnellzugriffs-Schalter in der Sidebar für Dark Mode, Pink Mode und Force Reload.
 
+## Kernfunktionen
+
+- **Wissensbasis für Leistungsdaten.** Greife auf gebündelte Verbrauchswerte zu
+  oder erweitere den lokalen Katalog mit eigenen Einträgen.
+- **Batterielaufzeiten planen.** Kombiniere Kapazitäten, Spannungen und
+  Laufzeit-Feedback, damit Schätzungen praxisnah bleiben.
+- **Individuelle Rig-Konfigurationen.** Mische Kameras, Zubehör und Crew-
+  Anforderungen und exportiere Bundles oder Backups ohne Datenverlust.
+- **Offline-first Betrieb.** Jedes Asset ist im Repo enthalten, sodass Autosave,
+  Backup, Restore, Sharing und Hilfe vollständig offline funktionieren.
+- **Firebase Studio Integration.** Synchronisiere deine Projekte optional in die Cloud für Echtzeit-Zusammenarbeit und Zugriff von mehreren Geräten.
+- **Restore-Kompatibilitätsübersichten.** Jeder Restore listet fehlende
+  Abschnitte und erstellt ein Sicherheits-Backup, bevor Daten übernommen werden.
+
 ## Installation
 
 1. Klone oder lade dieses Repository auf ein vertrauenswürdiges Laufwerk:
@@ -130,6 +130,20 @@ Die Anwendung verfügt jetzt über eine vollständig neugestaltete, responsive V
    ```
 4. (Offline-Nutzung) Öffne `index.html` direkt in einem unterstützten Browser
    für vollständig offline Nutzung. Alle Assets laden ohne Netzwerkverbindung.
+
+## Schnellreferenz Befehle
+
+| Befehl | Beschreibung |
+| --- | --- |
+| `npm run dev` | Vite-Dev-Server mit HMR starten |
+| `npm run build` | Produktions-Build nach `dist/` |
+| `npm test` | Vollständige Testsuite ausführen (Lint + Checks + Jest) |
+| `npm run lint` | ESLint ausführen |
+| `npm run check-consistency` | Gerätedaten und SW-Manifest prüfen |
+| `npm run help` | Alle verfügbaren Skripte anzeigen |
+
+Siehe [Development & Maintenance Guide](docs/dev/development.md) für die
+vollständige Übersicht der npm-Skripte und Tipps zur Fehlerbehebung.
 
 ## Übersetzungen
 
