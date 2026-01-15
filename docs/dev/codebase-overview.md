@@ -22,7 +22,7 @@ Contains the large "application layer" files that orchestrate the UI and busines
 ### `src/scripts`
 Contains the top-level application entry points and core utilities.
 - **`loader.js`**: Legacy entry point. Bootstraps the environment, loads modules, and initializes the UI.
-- **`storage.js`**: Manages all local storage interactions, including the "safe save" mechanism and backup rotation.
+- **`storage.js`**: Manages all local persistence, including the "safe save" mechanism, IndexedDB-first writes, OPFS backups, and legacy localStorage migration fallbacks.
 - **`globals-bootstrap.js`**: The "Resilient Scope" pattern—ensures global state is defined before other modules run.
 
 ### `src/scripts/runtime`
@@ -94,7 +94,7 @@ The `loader.js` file is the first script to run. It:
 2. Initializes the `Registry`.
 3. Loads core modules (`logging`, `storage`, `results`).
 4. Bootstraps the UI.
-5. Handles the initial data load from IndexedDB (falling back to localStorage when needed).
+5. Handles the initial data load from IndexedDB (falling back to localStorage only for legacy migration/compatibility when needed).
 
 ### `src/scripts/runtime/bootstrap.js`
 **Role:** Runtime Foundation
@@ -109,7 +109,7 @@ This module provides shared helpers that were previously duplicated across app-c
 This module is critical for data safety. It implements a "Snapshot & Commit" strategy:
 - **Write Safety**: Before saving, it serializes the current state to a temporary slot, verifies integrity, and only then promotes it to the main slot.
 - **Backup Rotation**: Automatically rotates backups (A/B/C) on every save to prevent data loss from corruption.
-- **Storage Targets**: Writes to IndexedDB first, mirrors to OPFS where supported, and keeps legacy localStorage fallback paths available for migration or constrained environments.
+- **Storage Targets**: Writes to IndexedDB first, mirrors to OPFS where supported for backups, and keeps legacy localStorage fallback paths available only for migration or constrained environments.
 
 ### `src/scripts/modules/results.js`
 **Role:** Calculation Engine
