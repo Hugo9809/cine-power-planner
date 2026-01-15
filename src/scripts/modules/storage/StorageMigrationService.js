@@ -38,6 +38,7 @@ export class StorageMigrationService {
             }
 
             // Filter out internal flags that don't need migration
+            // Note: cine_user_uuid is regenerated/scoped by UserContext; migrating it risks cross-user contamination.
             const keysToMigrate = keys.filter(k => k !== MIGRATION_FLAG_KEY && k !== 'cine_user_uuid');
 
             // [Update] Get User Context to scope the new keys in IDB
