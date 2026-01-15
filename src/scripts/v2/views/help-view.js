@@ -9,6 +9,7 @@
 const TOC_ID = 'v2HelpToc';
 const CONTENT_ID = 'v2HelpContent';
 const SEARCH_ID = 'v2HelpSearch';
+const SEARCH_STATUS_ID = 'v2HelpSearchStatus';
 
 let observer = null;
 let isInitialized = false;
@@ -30,6 +31,14 @@ function _t(key) {
         }
     }
     return key;
+}
+
+function formatSearchStatus(template, count, query) {
+    let message = template.replace('{count}', String(count));
+    if (query && message.indexOf('{query}') !== -1) {
+        message = message.replace('{query}', query);
+    }
+    return message;
 }
 
 // Prefer shared icon markup helpers to keep Uicon glyphs consistent across V2.
@@ -244,14 +253,24 @@ function initSearch() {
         'v2-help-search-clear-icon'
     );
 
+    const liveRegion = document.createElement('div');
+    liveRegion.id = SEARCH_STATUS_ID;
+    liveRegion.className = 'visually-hidden';
+    liveRegion.setAttribute('aria-live', 'polite');
+    liveRegion.setAttribute('aria-atomic', 'true');
+    liveRegion.setAttribute('role', 'status');
+
     // Append to container (assuming container is relative/flex)
     searchInput.parentNode.appendChild(clearBtn);
+    searchInput.parentNode.appendChild(liveRegion);
 
     performSearch = () => {
-        const term = searchInput.value.toLowerCase().trim();
+        const query = searchInput.value.trim();
+        const term = query.toLowerCase();
         const sections = document.querySelectorAll('.v2-help-section');
         const noResults = getElement('v2HelpNoResults');
         let hasVisible = false;
+        let visibleCount = 0;
 
         sections.forEach(section => {
             const text = section.innerText.toLowerCase();
@@ -259,7 +278,10 @@ function initSearch() {
             const match = text.includes(term) || keywords.includes(term);
 
             section.style.display = match ? 'block' : 'none';
-            if (match) hasVisible = true;
+            if (match) {
+                hasVisible = true;
+                visibleCount += 1;
+            }
         });
 
         // Toggle Dividers visibility based on search (hide if searching)
@@ -274,6 +296,13 @@ function initSearch() {
 
         // Toggle Clear Button
         clearBtn.style.display = term.length > 0 ? 'block' : 'none';
+
+        if (liveRegion) {
+            const statusTemplate = term
+                ? _t('helpSearchStatusWithQuery')
+                : _t('helpSearchStatusAll');
+            liveRegion.textContent = formatSearchStatus(statusTemplate, visibleCount, query);
+        }
     };
 
     searchInput.addEventListener('input', () => {

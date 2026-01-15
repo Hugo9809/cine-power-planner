@@ -2217,6 +2217,8 @@ export const data = {
     "helpSearchClear": "Suche löschen",
     "helpSearchHelp": "Gib Stichwörter oder alternative Schreibweisen ein, um die Hilfethemen sofort zu filtern. Die Schnelllinks aktualisieren sich während der Eingabe und heben den passenden Artikel hervor, sobald du Eingabe drückst. Wenn der Hilfedialog geöffnet ist, drücke '/' oder Strg+F (Cmd+F auf dem Mac), um das Suchfeld sofort zu fokussieren (statt der Browser-Suche), und nutze Tab, um durch die gefilterten Links zu wechseln, ohne das Projekt zu schließen.",
     "helpSearchClearHelp": "Setzt das Suchfeld zurück und zeigt wieder alle Themen an.",
+    "helpSearchStatusAll": "Es werden {count} Hilfethemen angezeigt.",
+    "helpSearchStatusWithQuery": "Es werden {count} Ergebnisse für „{query}“ angezeigt.",
     "helpQuickLinksHeading": "Zum Thema springen",
     "helpQuickLinksAriaLabel": "Schnellnavigation der Hilfethemen",
     "helpQuickLinksHelp": "Springe direkt zu einem Abschnitt im Hilfedialog. Die Schaltflächen zeigen nur Themen, die zur aktuellen Suche passen.",

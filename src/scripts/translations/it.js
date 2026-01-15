@@ -2211,6 +2211,8 @@ export const data = {
     "helpSearchClear": "Cancella ricerca",
     "helpSearchHelp": "Digita parole chiave o grafie alternative per filtrare all'istante gli argomenti della guida. I collegamenti rapidi si aggiornano durante la digitazione ed evidenziano l'articolo corrispondente quando premi Invio. Quando la finestra della guida è aperta, premi '/' o Ctrl+F (⌘+F su Mac) per spostare subito il focus sulla casella di ricerca (non sulla ricerca del browser), quindi usa Tab per scorrere i collegamenti filtrati senza chiudere il progetto.",
     "helpSearchClearHelp": "Svuota il campo di ricerca e mostra di nuovo tutti gli argomenti.",
+    "helpSearchStatusAll": "Mostrando {count} argomenti della guida.",
+    "helpSearchStatusWithQuery": "Mostrando {count} risultati per “{query}”.",
     "helpQuickLinksHeading": "Vai a un argomento",
     "helpQuickLinksAriaLabel": "Navigazione rapida degli argomenti di aiuto",
     "helpQuickLinksHelp": "Vai direttamente a una sezione della guida. I pulsanti mostrano solo gli argomenti che corrispondono alla ricerca attiva.",

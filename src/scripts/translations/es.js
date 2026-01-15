@@ -2188,6 +2188,8 @@ export const data = {
     "helpSearchClear": "Borrar búsqueda",
     "helpSearchHelp": "Escribe palabras clave o variantes ortográficas para filtrar al instante los temas de ayuda. Los accesos directos se actualizan a medida que escribes y resaltan el artículo correspondiente cuando pulsas Intro. Cuando el cuadro de ayuda está abierto, pulsa '/' o Ctrl+F (Cmd+F en Mac) para llevar de inmediato el foco al campo de búsqueda (no a la búsqueda del navegador) y usa Tab para recorrer los accesos filtrados sin cerrar el proyecto.",
     "helpSearchClearHelp": "Vacía el campo de búsqueda y vuelve a mostrar todos los temas.",
+    "helpSearchStatusAll": "Mostrando {count} temas de ayuda.",
+    "helpSearchStatusWithQuery": "Mostrando {count} resultados para “{query}”.",
     "helpQuickLinksHeading": "Ir a un tema",
     "helpQuickLinksAriaLabel": "Navegación rápida por los temas de ayuda",
     "helpQuickLinksHelp": "Ve directamente a cualquier sección de la guía. Los botones solo muestran los temas que coinciden con la búsqueda activa.",
