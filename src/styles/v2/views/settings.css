@@ -270,6 +270,7 @@
     /* Ensure they don't wrap weirdly, scroll instead */
     border-bottom: none;
     /* Removed the line */
+    flex-shrink: 0;
 }
 
 /* Inherit or Re-implement Pill Style */

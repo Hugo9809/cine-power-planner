@@ -1,20 +1,8 @@
-# Task: Bug Hunting & Stabilization (and V2 Globalization)
+# Ensuring Full Offline Functionality
 
-- [x] Bug Hunt: Device Library Fix <!-- id: 10 -->
-    - [x] Fixed: `#device-manager` hidden class not removed during reparenting
-    - [x] Fixed: Added missing `v2ui.revision` translation key
-- [ ] Bug Hunt: Project Persistence <!-- id: 11 -->
-    - [ ] Investigate why V2-created projects don't appear after refresh
-- [x] Refactor Project Dashboard (`project-dashboard.css`) <!-- id: 2 -->
-    - [x] Audit for design consistency.
-    - [x] specific fix: Ensure "New Project" button matches sidebar tools.
-    - [x] specific fix: Standardize grid/card layouts.
-- [ ] Refactor Settings View (`settings.css`) <!-- id: 3 -->
-    - [ ] Audit for design consistency.
-    - [ ] Apply standard form styling.
-- [/] Refactor Contacts/Owned Gear (`owned-gear.css` / others) <!-- id: 4 -->
-    - [ ] Audit for design consistency.
-    - [ ] Apply global design tokens.
-- [ ] Verify Design Consistency <!-- id: 5 -->
-    - [ ] Check dark mode contrast.
-    - [ ] Check responsive behavior (Mobile/Top Bar).
+- [x] Analyze existing service worker and PWA configuration <!-- id: 1 -->
+- [x] Verify `navigator.serviceWorker.register` in `index.html` <!-- id: 2 -->
+- [x] Verify `vite.config.js` and `service-worker-assets.js` generation <!-- id: 3 -->
+- [x] Run build and verify assets in `dist` <!-- id: 4 -->
+- [x] Automate browser verification (check SW controller and Cache API) <!-- id: 5 -->
+- [x] Document findings in walkthrough <!-- id: 6 -->

@@ -18,7 +18,7 @@ var AUTO_GEAR_NORMALIZER_SCOPE = (typeof globalThis !== 'undefined' && globalThi
     || (typeof self !== 'undefined' && self)
     || (typeof global !== 'undefined' && global)
     || {};
-var stableStringify = (function resolveStableStringify() {
+var stableStringify = (function () {
     var candidateScopes = [
         AUTO_GEAR_NORMALIZER_SCOPE,
         AUTO_GEAR_NORMALIZER_SCOPE && AUTO_GEAR_NORMALIZER_SCOPE.global,
@@ -38,18 +38,18 @@ var stableStringify = (function resolveStableStringify() {
             return scope.cineCoreShared.stableStringify;
         }
     }
-    function fallbackStableStringify(value) {
+    var fallbackStableStringify = function (value) {
         if (value === null)
             return 'null';
         if (value === undefined)
             return 'undefined';
         if (Array.isArray(value)) {
             var serialized = '[';
-            for (var index_1 = 0; index_1 < value.length; index_1 += 1) {
-                if (index_1 > 0) {
+            for (var index = 0; index < value.length; index += 1) {
+                if (index > 0) {
                     serialized += ',';
                 }
-                serialized += fallbackStableStringify(value[index_1]);
+                serialized += fallbackStableStringify(value[index]);
             }
             serialized += ']';
             return serialized;
@@ -68,9 +68,9 @@ var stableStringify = (function resolveStableStringify() {
             return serialized;
         }
         return JSON.stringify(value);
-    }
-    for (var index_2 = 0; index_2 < candidateScopes.length; index_2 += 1) {
-        var scope = candidateScopes[index_2];
+    };
+    for (var index = 0; index < candidateScopes.length; index += 1) {
+        var scope = candidateScopes[index];
         if (!scope || (typeof scope !== 'object' && typeof scope !== 'function'))
             continue;
         if (typeof scope.stableStringify !== 'function') {

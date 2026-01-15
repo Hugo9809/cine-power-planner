@@ -89,9 +89,40 @@ export class StorageMigrationService {
     }
 
     async markAsMigrated() {
-        // We set the flag in BOTH storages for safety
-        await this.localStorage.setItem(MIGRATION_FLAG_KEY, 'true');
-        await this.indexedDB.setItem(MIGRATION_FLAG_KEY, 'true');
+        // We set the flag in BOTH storages for safety.
+        // We use a robust approach: try both, log errors, but don't fail the operation
+        // if at least one succeeds (or even if both fail, we might want to continue, but let's try best effort).
+        const setSafely = async (adapter, name) => {
+            try {
+                await adapter.setItem(MIGRATION_FLAG_KEY, 'true');
+            } catch (e) {
+                console.warn(`[MigrationService] Failed to set migration flag in ${name}:`, e);
+            }
+        };
+
+        await Promise.all([
+            setSafely(this.localStorage, 'LocalStorage'),
+            setSafely(this.indexedDB, 'IndexedDB')
+        ]);
+    }
+
+    /**
+     * Checks if the migration flag is set in either storage.
+     * @returns {Promise<boolean>}
+     */
+    async isMigrated() {
+        try {
+            // Check LocalStorage first (faster)
+            const lsFlag = await this.localStorage.getItem(MIGRATION_FLAG_KEY);
+            if (lsFlag === 'true') return true;
+
+            // Fallback: Check IndexedDB (in case LS was wiped but IDB persists)
+            const idbFlag = await this.indexedDB.getItem(MIGRATION_FLAG_KEY);
+            return idbFlag === 'true';
+        } catch (e) {
+            console.warn('[MigrationService] Failed to check migration status:', e);
+            return false;
+        }
     }
 }
 

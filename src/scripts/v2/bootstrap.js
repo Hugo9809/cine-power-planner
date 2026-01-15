@@ -272,33 +272,9 @@ function toggleV2() {
 // LAZY LOADING
 // =====================
 
-/**
- * Load a script dynamically
- */
-function loadScript(src) {
-    return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = src;
-        script.async = true;
-        script.onload = resolve;
-        script.onerror = reject;
-        document.head.appendChild(script);
-    });
-}
 
-/**
- * Load a stylesheet dynamically
- */
-function loadStylesheet(href) {
-    return new Promise((resolve, reject) => {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = href;
-        link.onload = resolve;
-        link.onerror = reject;
-        document.head.appendChild(link);
-    });
-}
+
+
 
 /**
  * Load V2 assets (CSS and JS)
@@ -323,7 +299,7 @@ async function loadV2Assets() {
         // We use specific relative paths for Vite to detect them
         await import('./view-manager.js');
         await import('./translations.js');
-        const { LegacyShim } = await import('./legacy-shim.js');
+        await import('./legacy-shim.js');
 
         await import('../modules/features/auto-gear-rules.js');
         await import('./project-dashboard.js');

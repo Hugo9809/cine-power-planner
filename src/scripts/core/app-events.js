@@ -127,6 +127,62 @@ defineUiGetter('printPreviewExportBtn');
 defineUiGetter('printPreviewPrintBtn');
 defineUiGetter('projectForm');
 
+// Added by Agent for V2 Device Library Compatibility
+defineUiGetter('wattFieldDiv', 'wattField');
+defineUiGetter('dtapRow'); // Assuming ID is dtapRow
+defineUiGetter('cameraFieldsDiv', 'cameraFields');
+defineUiGetter('monitorFieldsDiv', 'monitorFields');
+defineUiGetter('viewfinderFieldsDiv', 'viewfinderFields');
+defineUiGetter('batteryFieldsDiv', 'batteryFields');
+defineUiGetter('lensFieldsDiv', 'lensFields');
+defineUiGetter('videoFieldsDiv', 'videoFields');
+defineUiGetter('motorFieldsDiv', 'motorFields');
+defineUiGetter('controllerFieldsDiv', 'controllerFields');
+defineUiGetter('distanceFieldsDiv', 'distanceFields');
+
+defineUiGetter('cameraWattInput', 'cameraWatt');
+defineUiGetter('cameraVoltageInput', 'cameraVoltage');
+defineUiGetter('cameraPortTypeInput', 'cameraPortType');
+
+defineUiGetter('monitorScreenSizeInput', 'monitorScreenSize');
+defineUiGetter('monitorBrightnessInput', 'monitorBrightness');
+defineUiGetter('monitorWattInput', 'monitorWatt');
+defineUiGetter('monitorVoltageInput', 'monitorVoltage');
+defineUiGetter('monitorPortTypeInput', 'monitorPortType');
+defineUiGetter('monitorWirelessTxInput', 'monitorWirelessTx');
+defineUiGetter('monitorLatencyInput', 'monitorLatency');
+defineUiGetter('monitorAudioOutputInput', 'monitorAudioOutput');
+
+defineUiGetter('viewfinderScreenSizeInput', 'viewfinderScreenSize');
+defineUiGetter('viewfinderBrightnessInput', 'viewfinderBrightness');
+defineUiGetter('viewfinderWattInput', 'viewfinderWatt');
+defineUiGetter('viewfinderVoltageInput', 'viewfinderVoltage');
+defineUiGetter('viewfinderPortTypeInput', 'viewfinderPortType');
+defineUiGetter('viewfinderWirelessTxInput', 'viewfinderWirelessTx');
+defineUiGetter('viewfinderLatencyInput', 'viewfinderLatency');
+
+defineUiGetter('videoFrequencyInput');
+defineUiGetter('videoLatencyInput');
+
+defineUiGetter('motorConnectorInput');
+defineUiGetter('motorInternalInput');
+defineUiGetter('motorTorqueInput');
+defineUiGetter('motorGearInput');
+defineUiGetter('motorNotesInput');
+
+defineUiGetter('controllerConnectorInput');
+defineUiGetter('controllerPowerInput');
+defineUiGetter('controllerBatteryInput');
+defineUiGetter('controllerConnectivityInput');
+defineUiGetter('controllerNotesInput');
+
+defineUiGetter('distanceConnectionInput');
+defineUiGetter('distanceMethodInput');
+defineUiGetter('distanceRangeInput');
+defineUiGetter('distanceAccuracyInput');
+defineUiGetter('distanceOutputInput');
+defineUiGetter('distanceNotesInput');
+
 function initDomReferences() {
   // Deprecated: DOM references are now lazy-loaded via UI_CACHE.
   // Keeping this function signature for compatibility if called externally.
@@ -2097,7 +2153,6 @@ addSafeEventListener('skipLink', "click", () => {
 
 // Setup management
 function handleSaveSetupClickInternal(optionsOrEvent) {
-  console.log('[AppEvents] handleSaveSetupClickInternal called');
   const isSilent = optionsOrEvent && optionsOrEvent.silent === true;
   const langTexts = texts[currentLang] || {};
   const fallbackTexts = texts.en || {};
@@ -2110,7 +2165,6 @@ function handleSaveSetupClickInternal(optionsOrEvent) {
     }
   }
   const typedName = setupNameInput.value.trim();
-  console.log(`[AppEvents] Project name from setupNameInput: "${typedName}"`);
   if (!typedName) {
     if (!isSilent) {
       if (typeof window.cineShowAlertDialog === 'function') {
@@ -2180,9 +2234,7 @@ function handleSaveSetupClickInternal(optionsOrEvent) {
   }
 
   setups[finalName] = currentSetup;
-  console.log(`[AppEvents] Calling storeSetups with project: "${finalName}"`);
   storeSetups(setups);
-  console.log('[AppEvents] storeSetups completed');
 
   if (renamingExisting && storedProjectSnapshot && typeof saveProject === 'function') {
     didAttemptProjectPersist = true;

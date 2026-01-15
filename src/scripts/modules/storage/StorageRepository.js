@@ -1,4 +1,4 @@
-import LocalStorageAdapter from './drivers/LocalStorageAdapter.js';
+import IndexedDBAdapter from './drivers/IndexedDBAdapter.js';
 import { userContext } from '../core/UserContext.js';
 import {
     wrapWithMetadata,
@@ -26,7 +26,7 @@ const PROJECT_KEY_PREFIX = 'cine_project:';
  */
 export class StorageRepository {
     constructor() {
-        this.driver = new LocalStorageAdapter();
+        this.driver = new IndexedDBAdapter();
         this.initialized = false;
     }
 

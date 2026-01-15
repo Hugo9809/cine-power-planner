@@ -287,15 +287,24 @@ if (GLOBAL_SCOPE) {
         let shouldHydrateProjectCache = false;
         if (migrationService && typeof migrationService.runMigrationIfNeeded === 'function') {
           const migrated = await migrationService.runMigrationIfNeeded();
-          if (migrated) {
-            console.log('[storage.js] Migration successful. Switching to IndexedDB.');
+          const isNative = await migrationService.isMigrated();
+          if (migrated || isNative) {
+            if (migrated) console.log('[storage.js] Migration successful. Switching to IndexedDB.');
+            else console.log('[storage.js] Native IndexedDB mode active.');
+
             await storageRepo.switchDriver(new IndexedDBAdapter());
             shouldHydrateProjectCache = true;
           }
         } else if (migrationService && typeof migrationService.init === 'function') {
           // Fallback for V2 init method
           const migrated = await migrationService.init();
-          if (migrated) {
+          // We can try to guess if we should be native here too, but legacy service might lack isMigrated
+          let isNative = false;
+          if (typeof migrationService.isMigrated === 'function') {
+            isNative = await migrationService.isMigrated();
+          }
+
+          if (migrated || isNative) {
             await storageRepo.switchDriver(new IndexedDBAdapter());
             shouldHydrateProjectCache = true;
           }
@@ -9513,6 +9522,13 @@ function saveSetups(setups) {
   });
   ensureProjectEntriesUncompressed(serializedSetups);
   const safeStorage = getSafeLocalStorage();
+
+  // [Fix] Maintain V2 Project Index for Dashboard Performance
+  // This ensures that when we save via legacy Shim, the optimized index used by V2 is also updated.
+  if (typeof updateProjectIndex === 'function') {
+    updateProjectIndex(normalizedSetups, safeStorage);
+  }
+
   ensurePreWriteMigrationBackup(safeStorage, SETUP_STORAGE_KEY);
   saveJSONToStorage(
     safeStorage,
@@ -16420,8 +16436,8 @@ function collectPreferenceSnapshot() {
   const mountVoltages = readLocalStorageValue(mountVoltageKey);
   if (mountVoltages) {
     if (mountVoltages === '[object Object]' || String(mountVoltages).includes('[object Object]')) {
-      if (typeof DEFAULT_MOUNT_VOLTAGES !== 'undefined') {
-        preferences.mountVoltages = DEFAULT_MOUNT_VOLTAGES;
+      if (typeof GLOBAL_SCOPE.DEFAULT_MOUNT_VOLTAGES !== 'undefined') {
+        preferences.mountVoltages = GLOBAL_SCOPE.DEFAULT_MOUNT_VOLTAGES;
       } else {
         preferences.mountVoltages = {
           'V-Mount': { high: 14.4, low: 12 },
@@ -16435,8 +16451,8 @@ function collectPreferenceSnapshot() {
       } catch (voltageParseError) {
         console.warn('Failed to parse stored mount voltages for backup', voltageParseError);
         // Fallback to defaults if parsing fails
-        if (typeof DEFAULT_MOUNT_VOLTAGES !== 'undefined') {
-          preferences.mountVoltages = DEFAULT_MOUNT_VOLTAGES;
+        if (typeof GLOBAL_SCOPE.DEFAULT_MOUNT_VOLTAGES !== 'undefined') {
+          preferences.mountVoltages = GLOBAL_SCOPE.DEFAULT_MOUNT_VOLTAGES;
         } else {
           preferences.mountVoltages = {
             'V-Mount': { high: 14.4, low: 12 },

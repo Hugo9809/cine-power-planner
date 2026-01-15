@@ -582,7 +582,7 @@ if (typeof globalThis !== 'undefined') {
         : (globalThis.AUTO_GEAR_STORAGE_EXPORTS = {});
     Object.assign(target, AUTO_GEAR_STORAGE_EXPORTS);
 }
-(function exposeAutoGearStorageGlobals() {
+(function () {
     var candidateScopes = [
         typeof globalThis !== 'undefined' ? globalThis : null,
         typeof window !== 'undefined' ? window : null,

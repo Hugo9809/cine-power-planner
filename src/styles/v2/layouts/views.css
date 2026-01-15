@@ -142,6 +142,7 @@
     display: flex;
     align-items: center;
     gap: var(--v2-space-sm);
+    flex-shrink: 0;
 }
 
 /* Force header button to have visible colors in all themes */

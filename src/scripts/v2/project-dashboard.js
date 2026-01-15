@@ -49,264 +49,153 @@ let dataProvider = null;
 // DATA PROVIDERS
 // =====================
 
+
+
+import { projectService } from '../modules/persistence/ProjectService.js';
+
 function createDefaultDataProvider() {
     return {
-        loadProjectMetadata() {
-            if (typeof window.loadProjectMetadata === 'function') {
-                try {
-                    return window.loadProjectMetadata() || {};
-                } catch (e) {
-                    console.warn('[V2] Failed to load project metadata via storage API:', e);
-                }
-            }
-
-            try {
-                const stored = localStorage.getItem(STORAGE_KEY);
-                if (stored) {
-                    return JSON.parse(stored);
-                }
-            } catch (e) {
-                console.error('[V2] Failed to parse project data:', e);
-            }
+        loadProjectMetadata: () => {
+            console.warn('[V2] Synchronous metadata load requested - this is a legacy pattern. Using empty default.');
             return {};
         },
-        getProjectNames() {
-            const metadata = this.loadProjectMetadata();
-            const names = Object.keys(metadata).filter(name => name && !name.startsWith('auto-backup-'));
-            if (names.length > 0) return names;
+        async getProjectNames() {
+            const v2Names = await projectService.getProjectNames();
+            let legacyNames = [];
 
+            // Legacy Fallback
             if (global.cineLegacyShim && typeof global.cineLegacyShim.getProjectNames === 'function') {
-                const legacyNames = global.cineLegacyShim.getProjectNames();
-                if (legacyNames.length > 0) return legacyNames;
-            }
-
-            const setupSelect = document.getElementById('setupSelect');
-            if (setupSelect && setupSelect.options.length > 1) {
-                const selectNames = Array.from(setupSelect.options)
-                    .map(opt => opt.value)
-                    .filter(val => val !== '');
-                if (selectNames.length > 0) return [...new Set(selectNames)];
-            }
-
-            return [];
-        },
-        getProjectMetadata(projectName) {
-            const metadata = this.loadProjectMetadata();
-            return metadata[projectName] || null;
-        },
-        loadProject(projectName) {
-            if (typeof window.loadProject === 'function') {
+                legacyNames = global.cineLegacyShim.getProjectNames();
+            } else {
                 try {
-                    return window.loadProject(projectName);
+                    const stored = localStorage.getItem(STORAGE_KEY);
+                    if (stored) legacyNames = Object.keys(JSON.parse(stored));
                 } catch (e) {
-                    console.warn('[V2] Failed to load project via storage API:', e);
+                    console.warn('[Dashboard] Failed to read legacy storage:', e);
                 }
             }
 
+            // Merge, Deduplicate, and Filter
+            return [...new Set([...v2Names, ...legacyNames])].filter(n => n && !n.startsWith('auto-backup-'));
+        },
+        async getProjectMetadata(projectName) {
+            let meta = await projectService.getProjectMetadata(projectName);
+
+            // If empty in V2, try Legacy
+            if (!meta || Object.keys(meta).length === 0) {
+                try {
+                    const stored = localStorage.getItem(STORAGE_KEY);
+                    if (stored) {
+                        const data = JSON.parse(stored);
+                        if (data[projectName]) return data[projectName];
+                    }
+                } catch (e) {
+                    console.warn('[Dashboard] Failed to read legacy project metadata:', e);
+                }
+            }
+            return meta;
+        },
+        async loadProject(projectName) {
+            let project = await projectService.getProject(projectName);
+            if (!project) {
+                // Fallback to legacy
+                try {
+                    const stored = localStorage.getItem(STORAGE_KEY);
+                    if (stored) {
+                        const data = JSON.parse(stored);
+                        if (data[projectName]) return data[projectName];
+                    }
+                } catch (e) {
+                    console.warn('[Dashboard] Failed to fallback load legacy project:', e);
+                }
+            }
+            return project;
+        },
+        async saveProject(projectName, projectData, options = {}) {
+            // This implicitly migrates legacy projects to V2 storage format on save
+            return await projectService.saveProject(projectName, projectData);
+        },
+        async updateProjectMetadata(projectName, metadata = {}) {
+            // Try to load from Service first
+            let project = await projectService.getProject(projectName);
+
+            // If not in service, try loading from legacy (implicit migration)
+            if (!project) {
+                try {
+                    const stored = localStorage.getItem(STORAGE_KEY);
+                    if (stored) {
+                        const data = JSON.parse(stored);
+                        project = data[projectName];
+                    }
+                } catch (e) {
+                    console.warn('[Dashboard] Failed to read legacy project for update:', e);
+                }
+            }
+
+            if (project) {
+                if (metadata.color) project.color = metadata.color;
+                if (metadata.icon) project.icon = metadata.icon;
+                if (metadata.prepDays) project.prepDays = metadata.prepDays;
+                if (metadata.shootingDays) project.shootingDays = metadata.shootingDays;
+                if (metadata.returnDays) project.returnDays = metadata.returnDays;
+                if (typeof metadata.archived !== 'undefined') project.archived = metadata.archived;
+                if (metadata.status) project.status = metadata.status;
+
+                // Save back to V2 (Implicit Migration)
+                const success = await projectService.saveProject(projectName, project);
+                return { success, lastModified: project.lastModified };
+            }
+            return { success: false };
+        },
+        async deleteProject(projectName) {
+            // Delete from V2
+            await projectService.deleteProject(projectName);
+            // Also try delete from Legacy
             try {
                 const stored = localStorage.getItem(STORAGE_KEY);
                 if (stored) {
                     const data = JSON.parse(stored);
-                    return data[projectName] || null;
-                }
-            } catch (e) {
-                console.error('[V2] Failed to parse project data:', e);
-            }
-
-            return null;
-        },
-        saveProject(projectName, projectData, options = {}) {
-            if (typeof window.saveProject === 'function') {
-                window.saveProject(projectName, projectData, options);
-                return true;
-            }
-
-            try {
-                const stored = localStorage.getItem(STORAGE_KEY);
-                const data = stored ? JSON.parse(stored) : {};
-                data[projectName] = projectData;
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-                return true;
-            } catch (e) {
-                console.error('[V2] Failed to save project data:', e);
-                return false;
-            }
-        },
-        updateProjectMetadata(projectName, metadata = {}) {
-            if (typeof window.loadProject === 'function' && typeof window.saveProject === 'function') {
-                try {
-                    const project = window.loadProject(projectName);
-                    if (project) {
-                        if (metadata.color) project.color = metadata.color;
-                        if (metadata.icon) project.icon = metadata.icon;
-                        if (metadata.prepDays) project.prepDays = metadata.prepDays;
-                        if (metadata.shootingDays) project.shootingDays = metadata.shootingDays;
-                        if (metadata.returnDays) project.returnDays = metadata.returnDays;
-                        if (typeof metadata.archived !== 'undefined') project.archived = metadata.archived;
-                        if (metadata.status) project.status = metadata.status;
-
-                        window.saveProject(projectName, project);
-                        return { success: true, lastModified: project.lastModified || null };
+                    if (data[projectName]) {
+                        delete data[projectName];
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
                     }
-
-                    if (metadata && Object.keys(metadata).length > 0) {
-                        const fallbackProject = {
-                            gearList: '',
-                            projectInfo: null,
-                            gearListAndProjectRequirementsGenerated: false,
-                            ...metadata
-                        };
-
-                        if (!fallbackProject.lastModified) {
-                            fallbackProject.lastModified = new Date().toISOString();
-                        }
-
-                        window.saveProject(projectName, fallbackProject, { skipOverwriteBackup: true });
-                        return { success: true, lastModified: fallbackProject.lastModified };
-                    }
-                } catch (e) {
-                    console.error('[V2] Failed to update project via storage API:', e);
-                    return { success: false };
-                }
-            }
-
-            try {
-                const stored = localStorage.getItem(STORAGE_KEY);
-                const data = stored ? JSON.parse(stored) : {};
-                if (data && data[projectName]) {
-                    if (metadata.color) data[projectName].color = metadata.color;
-                    if (metadata.icon) data[projectName].icon = metadata.icon;
-                    if (metadata.prepDays) data[projectName].prepDays = metadata.prepDays;
-                    if (metadata.shootingDays) data[projectName].shootingDays = metadata.shootingDays;
-                    if (metadata.returnDays) data[projectName].returnDays = metadata.returnDays;
-                    if (typeof metadata.archived !== 'undefined') data[projectName].archived = metadata.archived;
-                    if (metadata.status) data[projectName].status = metadata.status;
-
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-                    return { success: true, lastModified: data[projectName].lastModified || null };
                 }
             } catch (e) {
-                console.error('[V2] Failed to update project metadata:', e);
+                console.warn('[Dashboard] Failed to delete legacy project:', e);
             }
-            return { success: false };
+            return true;
         },
-        deleteProject(projectName) {
-            try {
-                const stored = localStorage.getItem(STORAGE_KEY);
-                if (!stored) return false;
-                const data = JSON.parse(stored);
-                if (!data[projectName]) return false;
-                delete data[projectName];
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-                return true;
-            } catch (e) {
-                console.error('[V2] Failed to delete project:', e);
-                return false;
-            }
+        async duplicateProject(projectName) {
+            // If project is legacy only, we need to ensure it's loaded before duplication
+            // ProjectService.duplicateProject might fail if it only checks V2.
+            // For now, let's rely on ProjectService but if it fails, handle manual duplication?
+            // Actually, best to let the user open -> save (migrate) -> duplicate.
+            // Or strictly:
+            return await projectService.duplicateProject(projectName);
         },
-        duplicateProject(projectName) {
-            try {
-                const stored = localStorage.getItem(STORAGE_KEY);
-                if (!stored) return { success: false };
-                const data = JSON.parse(stored);
-                const originalData = data[projectName];
-                if (!originalData) return { success: false };
-
-                let newName = `${projectName} (Copy)`;
-                let counter = 2;
-                while (data[newName]) {
-                    newName = `${projectName} (Copy ${counter})`;
-                    counter++;
-                }
-
-                const newData = JSON.parse(JSON.stringify(originalData));
-                newData.created = new Date().toISOString();
-                newData.lastModified = new Date().toISOString();
-
-                data[newName] = newData;
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-
-                return { success: true, newName };
-            } catch (e) {
-                console.error('Failed to duplicate project:', e);
-                return { success: false };
-            }
-        },
-        renameProject(oldName, newName, metadata = {}) {
-            try {
-                const stored = localStorage.getItem(STORAGE_KEY);
-                if (!stored) return { success: false };
-                const data = JSON.parse(stored);
-                const oldData = data[oldName];
-                if (!oldData) return { success: false };
-
-                data[newName] = { ...oldData, ...metadata };
-                data[newName].lastModified = new Date().toISOString();
-                delete data[oldName];
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-                return { success: true, lastModified: data[newName].lastModified };
-            } catch (e) {
-                console.error('Rename failed', e);
-                return { success: false };
-            }
-        },
-        createProject(projectName) {
-            if (global.cineLegacyShim) {
-                return new Promise((resolve) => {
-                    global.cineLegacyShim.createProject(projectName);
-
-                    const waitForProject = (attempts = 0) => {
-                        const maxAttempts = 50;
-                        const stored = localStorage.getItem(STORAGE_KEY);
-                        if (stored) {
-                            try {
-                                const data = JSON.parse(stored);
-                                if (data && data[projectName]) {
-                                    resolve(true);
-                                    return;
-                                }
-                            } catch (_e) { void _e; }
-                        }
-                        if (attempts < maxAttempts) {
-                            setTimeout(() => waitForProject(attempts + 1), 100);
-                        } else {
-                            console.warn('[V2] Timed out waiting for project to be saved:', projectName);
-                            resolve(false);
-                        }
-                    };
-                    waitForProject();
-                });
-            }
-
-            return Promise.resolve(false);
+        renameProject: () => ({ success: false }), // Not implemented yet in Service
+        async createProject(projectName) {
+            return await projectService.createProject(projectName);
         }
     };
 }
 
-function createUiOnlyDataProvider() {
-    return {
-        loadProjectMetadata: () => ({}),
-        getProjectNames: () => [],
-        getProjectMetadata: () => null,
-        loadProject: () => null,
-        saveProject: () => false,
-        updateProjectMetadata: () => ({ success: false }),
-        deleteProject: () => false,
-        duplicateProject: () => ({ success: false }),
-        renameProject: () => ({ success: false }),
-        createProject: () => Promise.resolve(false)
-    };
-}
-
-function setDataProvider(provider) {
-    dataProvider = provider || createDefaultDataProvider();
-}
-
 function getDataProvider() {
-    if (!dataProvider) {
-        dataProvider = createDefaultDataProvider();
-    }
-    return dataProvider;
+    return createDefaultDataProvider();
+}
+
+/**
+ * Set the data provider
+ */
+function setDataProvider(provider) {
+    dataProvider = provider;
+}
+
+/**
+ * Create a UI-only data provider (wrapper for default provider for now)
+ */
+function createUiOnlyDataProvider() {
+    return createDefaultDataProvider();
 }
 
 // =====================
@@ -403,10 +292,37 @@ function _t(path, params = {}) {
  * Refresh the project data cache.
  * Uses the optimized loadProjectMetadata API from storage.js if available.
  */
-function refreshProjectDataCache() {
+/**
+ * Refresh the project data cache.
+ * Uses the optimized loadProjectMetadata API from storage.js if available.
+ */
+async function refreshProjectDataCache() {
     const provider = getDataProvider();
-    _cachedProjectData = provider.loadProjectMetadata();
-    if (!_cachedProjectData || typeof _cachedProjectData !== 'object') {
+
+    // 1. Try sync legacy load first (fast path for synchronous providers)
+    let legacyData = provider.loadProjectMetadata();
+    // Only use if it actually returned data, AND didn't warn/stub
+    if (legacyData && Object.keys(legacyData).length > 0) {
+        _cachedProjectData = legacyData;
+        return;
+    }
+
+    // 2. Async path (for ProjectService)
+    try {
+        const names = await provider.getProjectNames();
+        const cache = {};
+
+        // Parallel load of metadata
+        await Promise.all(names.map(async name => {
+            if (name && !name.startsWith('auto-backup-')) {
+                const meta = await provider.getProjectMetadata(name);
+                cache[name] = meta || { lastModified: Date.now() }; // Fallback date
+            }
+        }));
+
+        _cachedProjectData = cache;
+    } catch (e) {
+        console.error('[Dashboard] Failed to refresh project cache:', e);
         _cachedProjectData = {};
     }
 }
@@ -419,7 +335,9 @@ function getProjectNames() {
     if (_cachedProjectData) {
         return Object.keys(_cachedProjectData).filter(name => name && !name.startsWith('auto-backup-'));
     }
-    return getDataProvider().getProjectNames();
+    // If called synchronously without cache, we return empty array.
+    // The render loop must await refreshProjectDataCache() first.
+    return [];
 }
 
 /**
@@ -647,11 +565,14 @@ function createNoResultsHtml(query) {
  * 6. Re-binds all click/keyboard events to the new DOM elements.
  *
  * Triggered by:
+/**
+ * Render Project Grid
+ * Can be triggered from:
  * - Initial Load
  * - 'v2:viewchange' event (when switching to the Projects view)
  * - 'v2:search' event (real-time filtering from the Sidebar)
  */
-function renderProjectGrid() {
+async function renderProjectGrid(isInitial = false) {
     // Release any held project lock when returning to dashboard
     if (global.cineProjectLockManager) {
         global.cineProjectLockManager.releaseLock();
@@ -660,7 +581,15 @@ function renderProjectGrid() {
     const container = document.getElementById(GRID_CONTAINER_ID);
     if (!container) return;
 
-    // Render immediately - Removed artificial 800ms delay for performance
+    // Show loading state if initial
+    if (isInitial) {
+        container.innerHTML = `<div style="display: flex; justify-content: center; align-items: center; padding: 40px; color: var(--v2-text-secondary);">Loading projects...</div>`;
+    }
+
+    // Prime the cache asynchronously
+    await refreshProjectDataCache();
+
+    // Render immediately
     _renderGridContent(container);
 }
 
@@ -672,10 +601,6 @@ function _renderGridContent(container) {
     container.innerHTML = '';
     container.className = 'v2-project-grid';
     container.style = '';
-
-    // Prime the cache ONCE before processing any items
-    // This is the key performance fix
-    refreshProjectDataCache();
 
     // Check if we have ANY projects at all (Global Empty State)
     const allProjects = getProjectNames();
@@ -1574,24 +1499,38 @@ function showCreateProjectDialog(existingProject = null) {
 }
 
 
+// Expose ProjectService for Legacy Shim
+if (typeof global !== 'undefined') {
+    global.cineProjectService = projectService;
+}
+
 /**
- * Create a new project
+ * Handle "Create Project" action
  */
 async function createProject(projectName, metadata = {}) {
     const provider = getDataProvider();
+
+    // Use Native V2 Creation (IndexedDB via ProjectService)
     const created = await provider.createProject(projectName);
+
     if (!created) {
         return false;
     }
 
+    // Apply metadata
     updateProjectMetadata(projectName, metadata);
 
+    // Refresh grid
+    renderProjectGrid();
+
+    // Navigate to detail view
     if (global.cineViewManager) {
         global.cineViewManager.showView('projectDetail', {
             projectId: projectName,
             tab: 'camera'
         });
     }
+
     return true;
 }
 

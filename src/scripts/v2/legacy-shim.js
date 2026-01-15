@@ -212,14 +212,12 @@ function dispatchNativeEvent(element, eventType, options = {}) {
  * Trigger a legacy button click
  */
 function triggerLegacyClick(elementId) {
-    console.log(`[LegacyShim] triggerLegacyClick called for: ${elementId}`);
     const element = document.getElementById(elementId);
     if (!element) {
         console.warn(`[LegacyShim] Cannot trigger click, element not found: ${elementId}`);
         return false;
     }
 
-    console.log(`[LegacyShim] Dispatching click event on: ${elementId}`);
     dispatchNativeEvent(element, 'click');
     return true;
 }
@@ -232,7 +230,11 @@ function triggerLegacyClick(elementId) {
  * Load a project by setting setupSelect and dispatching change
  * @param {string} projectName - The project name to load
  */
-function loadProject(projectName) {
+/**
+ * Load a project by setting setupSelect and dispatching change
+ * @param {string} projectName - The project name to load
+ */
+async function loadProject(projectName) {
     const setupSelect = document.getElementById('setupSelect');
     if (!setupSelect) {
         console.error('[LegacyShim] setupSelect not found');
@@ -242,14 +244,44 @@ function loadProject(projectName) {
     // Find the option with this value
     let option = Array.from(setupSelect.options).find(opt => opt.value === projectName);
 
-    // [V2 Fix] If option doesn't exist (race condition), create it
+    // [V2 Fix] Hydration from Native IDB
     if (!option) {
-        const availableProjects = getProjectNames();
-        if (availableProjects.includes(projectName)) {
-            console.log(`[LegacyShim] Creating missing option for project: ${projectName}`);
+        let nativeData = null;
+        if (global.cineProjectService) {
+            try {
+                nativeData = await global.cineProjectService.getProject(projectName);
+            } catch (e) { console.warn('[LegacyShim] IDB lookup failed', e); }
+        }
+
+        if (nativeData) {
+            console.log(`[LegacyShim] Hydrating native project: ${projectName}`);
             option = document.createElement('option');
             option.value = projectName;
-            option.textContent = projectName; // Basic fallback, app-setups will rename if needed
+            option.textContent = projectName;
+            setupSelect.appendChild(option);
+            setupSelect.value = projectName;
+
+            // Inject Data into Legacy App Form
+            if (typeof window.populateProjectForm === 'function') {
+                window.populateProjectForm(nativeData);
+            }
+            if (typeof window.updateCalculations === 'function') {
+                window.updateCalculations();
+            }
+            // Trigger change to update other watchers (though they might not find data in legacy 'setups')
+            // dispatchNativeEvent(setupSelect, 'change'); 
+            // Better NOT to trigger change if we manually populated, as 'change' might clear form if setups[name] is missing.
+
+            return true;
+        }
+
+        // Fallback checks (Legacy)
+        const availableProjects = getProjectNames();
+        if (availableProjects.includes(projectName)) {
+            console.log(`[LegacyShim] Creating missing option for legacy project: ${projectName}`);
+            option = document.createElement('option');
+            option.value = projectName;
+            option.textContent = projectName;
             setupSelect.appendChild(option);
         } else {
             console.warn(`[LegacyShim] Project not found in storage: ${projectName}`);
@@ -282,7 +314,6 @@ function deleteProject() {
  * @param {string} projectName - The name for the new project
  */
 function createProject(projectName) {
-    console.log(`[LegacyShim] createProject called with name: "${projectName}"`);
     const setupSelect = document.getElementById('setupSelect');
     const setupNameInput = document.getElementById('setupName');
 
@@ -291,17 +322,14 @@ function createProject(projectName) {
         return false;
     }
 
-    console.log('[LegacyShim] Setting setupSelect.value to empty (New Project)');
     // Select "New Project" option (empty value)
     setupSelect.value = '';
     dispatchNativeEvent(setupSelect, 'change');
 
-    console.log(`[LegacyShim] Setting setupNameInput.value to: "${projectName}"`);
     // Set the project name
     setupNameInput.value = projectName;
     dispatchNativeEvent(setupNameInput, 'input');
 
-    console.log('[LegacyShim] Calling saveProject()');
     // Save the project
     return saveProject();
 }
@@ -512,15 +540,93 @@ function verifyLegacyIds() {
 }
 
 /**
- * Initialize the legacy shim
+ * Reverse Sync: Legacy LocalStorage -> Native IDB
+ */
+async function syncLegacyToNative() {
+    if (!global.cineProjectService) return;
+
+    // Read from legacy storage
+    try {
+        const stored = localStorage.getItem('cameraPowerPlanner_setups');
+        if (!stored) return;
+
+        const setups = JSON.parse(stored);
+
+        // Get current selected project
+        const setupSelect = document.getElementById('setupSelect');
+        const currentName = setupSelect ? setupSelect.value : null;
+
+        if (currentName && setups[currentName]) {
+            console.log(`[LegacyShim] Reverse Sync: Saving ${currentName} to Native IDB`);
+            await global.cineProjectService.saveProject(currentName, setups[currentName]);
+        }
+    } catch (e) {
+        console.warn('[LegacyShim] Reverse Sync failed', e);
+    }
+}
+
+/**
+ * Initialize the shim
  */
 function init() {
-    const { found, missing } = verifyLegacyIds();
+    if (document.body && document.body.dataset && document.body.dataset.shimInitialized) return;
+    if (document.body) document.body.dataset.shimInitialized = 'true';
 
-    console.log(`[LegacyShim] Initialized. Found ${found.length}/${ALL_CRITICAL_IDS.length} critical elements.`);
+    console.log('[LegacyShim] Initializing...');
 
+    const { missing } = verifyLegacyIds();
     if (missing.length > 0) {
         console.warn(`[LegacyShim] Missing elements:`, missing);
+    }
+
+    // Hook Legacy Save Button for Reverse Sync
+    const saveBtn = document.getElementById('saveSetupBtn');
+    if (saveBtn) {
+        console.log('[LegacyShim] Hooking Save Button for Reverse Sync');
+        saveBtn.addEventListener('click', () => {
+            // Wait for legacy save to complete (localStorage write)
+            setTimeout(() => syncLegacyToNative(), 200);
+        });
+    }
+
+    // Hook Legacy Delete Button for Reverse Sync
+    const deleteBtn = document.getElementById('deleteSetupBtn');
+    if (deleteBtn) {
+        console.log('[LegacyShim] Hooking Delete Button for Reverse Sync');
+        deleteBtn.addEventListener('click', () => {
+            const setupSelect = document.getElementById('setupSelect');
+            const projectToDelete = setupSelect ? setupSelect.value : null;
+
+            if (!projectToDelete) return;
+
+            // Wait for legacy delete/confirm flow
+            setTimeout(async () => {
+                // Check if it's gone from LocalStorage
+                const stored = localStorage.getItem('cameraPowerPlanner_setups');
+                if (stored) {
+                    const setups = JSON.parse(stored);
+                    if (!setups[projectToDelete]) {
+                        console.log(`[LegacyShim] Reverse Sync: Deleting ${projectToDelete} from Native IDB`);
+                        if (global.cineProjectService) {
+                            await global.cineProjectService.deleteProject(projectToDelete);
+                        }
+                    }
+                }
+            }, 500); // Give enough time for confirm dialog + operation.
+            // Note: Confirm dialog blocks main thread, so timeout starts AFTER dialog closes.
+        });
+    }
+
+    // Hook Legacy Share Button for Pre-Share Persistence
+    // Ensures that if the project was hydrated but not yet saved to legacy memory,
+    // we force a save so the export link generation works correctly.
+    const shareBtn = document.getElementById('shareSetupBtn');
+    if (shareBtn && saveBtn) {
+        console.log('[LegacyShim] Hooking Share Button for Pre-Export Save');
+        shareBtn.addEventListener('click', () => {
+            console.log('[LegacyShim] Pre-Share: Triggering Save to ensure memory consistency');
+            saveBtn.click();
+        }, true); // Capture phase to run BEFORE legacy share handler
     }
 }
 
@@ -536,6 +642,7 @@ const LegacyShim = {
     syncSelectValue,
     syncInputValue,
     syncToV2,
+    syncLegacyToNative,
 
     // Event dispatching
     dispatchNativeEvent,

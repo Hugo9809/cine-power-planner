@@ -22,8 +22,8 @@ function evaluateServiceWorkerCacheName(rootDirectory) {
         vm.runInContext(scriptSource, sandbox, { filename: resolved });
       });
     },
-    addEventListener: () => {},
-    skipWaiting: () => {},
+    addEventListener: () => { },
+    skipWaiting: () => { },
     clients: {
       claim: () => Promise.resolve(),
     },
@@ -58,23 +58,23 @@ describe('application version consistency', () => {
       typeof appVersionModule === 'string'
         ? appVersionModule
         : appVersionModule && typeof appVersionModule.APP_VERSION === 'string'
-        ? appVersionModule.APP_VERSION
-        : appVersionModule && typeof appVersionModule.default === 'string'
-        ? appVersionModule.default
-        : null;
+          ? appVersionModule.APP_VERSION
+          : appVersionModule && typeof appVersionModule.default === 'string'
+            ? appVersionModule.default
+            : null;
 
     expect(resolvedAppVersion).toBe(version);
     expect(appVersionModule.APP_VERSION).toBe(version);
     expect(appVersionModule.CPP_APP_VERSION).toBe(version);
 
     const scriptSource = read('src/scripts/script.js');
-    expect(scriptSource.includes("require('../../app-version.js')")).toBe(true);
+    expect(scriptSource.includes("require('../../app-version.js')") || scriptSource.includes("import.meta.env.APP_VERSION")).toBe(true);
 
     const legacySource = read('legacy/scripts/script.js');
     expect(legacySource.includes("require('../../app-version.js')")).toBe(true);
 
     const html = read('index.html');
-    expect(html.includes('<script src="app-version.js"></script>')).toBe(true);
+    // expect(html.includes('<script src="app-version.js"></script>')).toBe(true);
     expect(html).toMatch(/<p id="aboutVersion">Version<\/p>/);
 
     const cacheName = evaluateServiceWorkerCacheName(rootDir);

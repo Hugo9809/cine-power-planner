@@ -247,7 +247,7 @@ function updateHash(viewName, params) {
     let hash = '';
 
     // Dynamic pattern matching for registered views
-    const viewConfig = VIEWS[viewName];
+
 
     switch (viewName) {
         case 'projects':

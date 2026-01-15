@@ -99,6 +99,7 @@ import './scripts/core/app-session.js';
 import './scripts/loading-indicator-bootstrap.js'; // Bootstrap Loader UI
 import './scripts/ui-feedback.js'; // UI Feedback Helper
 import './scripts/emergency-modal-cleanup.js'; // Dialog Cleanup Helper
+import './scripts/core/dynamic-form-helpers.js'; // [Added by Agent] Missing Form Helpers
 
 // Duplicates removed (consolidated below)
 import './scripts/core/app-core-runtime-ui.js';

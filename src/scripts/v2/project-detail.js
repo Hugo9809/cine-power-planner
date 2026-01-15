@@ -250,7 +250,7 @@ function updateProjectStatus(projectName, status) {
 /**
  * Load project data into the detail view
  */
-function loadProject(projectName) {
+async function loadProject(projectName) {
   if (!projectName) {
     console.warn('[ProjectDetail] No project name provided');
     return false;
@@ -269,7 +269,7 @@ function loadProject(projectName) {
 
   // Load project via legacy shim
   if (global.cineLegacyShim) {
-    global.cineLegacyShim.loadProject(projectName);
+    await global.cineLegacyShim.loadProject(projectName);
   }
 
   // Update Project Periods in Header
@@ -1148,7 +1148,7 @@ function init() {
 /**
  * Handle view change events
  */
-function handleViewChange(event) {
+async function handleViewChange(event) {
   const { view, params } = event.detail || {};
 
   if (view === 'projectDetail' && params && params.projectId) {
@@ -1168,7 +1168,7 @@ function handleViewChange(event) {
     }
 
     // Load the project
-    loadProject(params.projectId);
+    await loadProject(params.projectId);
 
     // Switch to the requested tab if provided
     if (params.tab) {

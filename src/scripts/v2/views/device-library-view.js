@@ -128,7 +128,8 @@
                 const searchInput = child.querySelector('input');
                 if (searchInput) {
                     searchInput.classList.add('v2-input');
-                    searchInput.placeholder = _t('searchPlaceholder') || 'Search database...';
+                    const tVal = _t('searchPlaceholder');
+                    searchInput.placeholder = (tVal && tVal !== 'searchPlaceholder') ? tVal : 'Search database...';
                     // searchInput.style.marginBottom = '20px'; // Add some spacing if needed
                 }
             }
@@ -155,61 +156,7 @@
         console.log('[DeviceLibraryView] Reparenting complete (Hierarchy Preserved).');
     }
 
-    /**
-     * Enhance form sections with icons and styling
-     */
-    function enhanceFormSections(container) {
-        const sections = {
-            'cameraFields': { icon: 'videocam', title: 'Camera Settings' },
-            'monitorFields': { icon: 'desktop_windows', title: 'Monitor Settings' },
-            'lensFields': { icon: 'blur_circular', title: 'Lens Settings' },
-            'viewfinderFields': { icon: 'center_focus_weak', title: 'Viewfinder Settings' },
-            'videoFields': { icon: 'sensors', title: 'Video TX Settings' },
-            'motorFields': { icon: 'settings', title: 'Motor Settings' },
-            'controllerFields': { icon: 'tune', title: 'Controller Settings' },
-            'distanceFields': { icon: 'straighten', title: 'Distance Sensor Settings' },
-            'batteryFields': { icon: 'battery_full', title: 'Battery Settings' }
-        };
 
-        Object.keys(sections).forEach(id => {
-            const el = container.querySelector(`#${id}`);
-            if (el) {
-                el.classList.add('device-form-section');
-
-                // Check if section header already exists  
-                if (!el.querySelector('.section-header')) {
-                    const header = document.createElement('div');
-                    header.className = 'section-header';
-                    header.innerHTML = `
-                        <span class="icon section-icon">${sections[id].icon}</span>
-                        <span class="section-title">${sections[id].title}</span>
-                    `;
-                    el.insertBefore(header, el.firstChild);
-                }
-            }
-        });
-
-        // Enhance subsections with icons
-        const subsectionIcons = {
-            'powerInputsHeading': 'bolt',
-            'powerDistributionHeading': 'power',
-            'videoOutputsHeading': 'connected_tv',
-            'fizConnectorHeading': 'settings_input_composite',
-            'mediaHeading': 'sd_card',
-            'viewfinderHeading': 'visibility',
-            'lensMountHeading': 'camera'
-        };
-
-        Object.keys(subsectionIcons).forEach(id => {
-            const el = container.querySelector(`#${id}`);
-            if (el && !el.querySelector('.icon')) {
-                const icon = document.createElement('span');
-                icon.className = 'icon';
-                icon.textContent = subsectionIcons[id];
-                el.insertBefore(icon, el.firstChild);
-            }
-        });
-    }
 
     /**
      * Apply V2 classes to legacy elements

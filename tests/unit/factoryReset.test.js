@@ -127,5 +127,13 @@ describe('Factory Reset Synchronization', () => {
         expect(global.__cameraPowerPlannerFactoryResetting).toBe(true);
         // And verify data clearing happened (using deleteProject internally)
         expect(localStorageMock.removeItem).toHaveBeenCalled();
+
+        // [New Behavior] Verify that we mark as migrated/native for the next boot
+        // This relies on storage logic ensuring the flag is set during reset or startup
+        // Actually, clearAllData is a destruction event. The *next* startup sets the flag.
+        // But let's verify if the reset process itself touches the flag if we added that.
+        // We didn't add that to clearAllData, we added it to MigrationService.runMigrationIfNeeded.
+        // So the test remains focused on the reset SIGNAL.
+        // We can however add a test case for startup logic if we can mock MigrationService.
     });
 });
