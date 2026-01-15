@@ -1,6 +1,6 @@
 # Documentation Index
 
-**Version:** 1.0.52
+**Version:** 1.0.53
 
 > **Quick Links**: [User Guide](user/user-guide.md) · [Development Guide](dev/development.md) · [Changelog](../CHANGELOG.md) · [Contributing](../CONTRIBUTING.md)
 
