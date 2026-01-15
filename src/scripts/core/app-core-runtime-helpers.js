@@ -31,6 +31,16 @@ export const FALLBACK_HUMANIZE_OVERRIDES = {
   connectivity: 'Connectivity',
 };
 
+/**
+ * Safely serialize a value with deterministic key ordering.
+ * @param {*} value - Any serializable value; supports arrays and plain objects.
+ * @returns {string} Stable JSON-like string output with sorted object keys.
+ * @default Returns `'undefined'` for undefined, `'null'` for null, and JSON strings for primitives.
+ * @why Fallback ensures offline-safe stringification when primary serializers are unavailable,
+ *      preserving deterministic cache keys and recovery metadata in legacy bundles.
+ * @edgecases Arrays are serialized in order; objects sort keys lexicographically; non-objects
+ *            fall back to JSON.stringify. Undefined is stringified as the literal "undefined".
+ */
 export function fallbackStableStringify(value) {
   if (value === null) return 'null';
   if (typeof value === 'undefined') return 'undefined';
@@ -61,6 +71,16 @@ export function fallbackStableStringify(value) {
   return JSON.stringify(value);
 }
 
+/**
+ * Humanize a field key for legacy/UI labeling.
+ * @param {*} key - Any key-like value (string preferred).
+ * @returns {string} Human-readable label for the key.
+ * @default Uses override map when available; otherwise converts camelCase/snake_case to words.
+ * @why Fallback keeps offline/legacy environments readable when translation bundles are missing,
+ *      preventing confusing labels during recovery screens.
+ * @edgecases Non-string keys are stringified; empty/falsey values normalize to empty string
+ *            before formatting.
+ */
 export function fallbackHumanizeKey(key) {
   if (key && Object.prototype.hasOwnProperty.call(FALLBACK_HUMANIZE_OVERRIDES, key)) {
     return FALLBACK_HUMANIZE_OVERRIDES[key];
@@ -73,6 +93,17 @@ export function fallbackHumanizeKey(key) {
     .replace(/^./, (c) => c.toUpperCase());
 }
 
+/**
+ * Build a normalized list of scope candidates for runtime binding resolution.
+ * @param {*} primary - Primary scope (object/function) if available.
+ * @param {*} shared - Shared scope (object/function) if available.
+ * @param {*} globalScope - Global scope override (object/function) if available.
+ * @returns {Array<object|Function>} De-duplicated list of valid scope objects/functions.
+ * @default Always appends global fallbacks (globalThis/window/self/global) in that order.
+ * @why Provides offline-safe, legacy-compatible scope resolution when registry helpers are absent,
+ *      preventing missing bindings during autosave/restore flows.
+ * @edgecases Skips non-objects/functions; removes duplicates by reference equality.
+ */
 export function createArrayFromCandidates(primary, shared, globalScope) {
   const candidates = [];
 
@@ -118,6 +149,15 @@ export function createArrayFromCandidates(primary, shared, globalScope) {
   return resolved;
 }
 
+/**
+ * Extract the default (English) translation texts from a scope.
+ * @param {*} scope - Scope that may include a texts.en object.
+ * @returns {object} The English texts object or an empty object.
+ * @default Returns {} when scope/texts/en are missing or invalid.
+ * @why Fallback keeps operator labels available offline and in legacy bundles without translations,
+ *      ensuring recovery UI text remains consistent.
+ * @edgecases Non-object scopes or missing nested structures yield an empty object.
+ */
 export function createDefaultLanguageTexts(scope) {
   if (
     scope &&
@@ -133,6 +173,15 @@ export function createDefaultLanguageTexts(scope) {
   return {};
 }
 
+/**
+ * Normalize weight operator input into a canonical token.
+ * @param {*} value - User/legacy input (string expected).
+ * @returns {'greater'|'less'|'equal'} Normalized operator token.
+ * @default Returns 'greater' for non-string, empty, or unrecognized input.
+ * @why Fallback ensures offline-safe parsing for auto-gear rules when legacy helpers are missing,
+ *      preventing invalid operators from corrupting saved conditions.
+ * @edgecases Trims, lowercases, and maps symbols/aliases (>, <, ==, match, above, etc.).
+ */
 export function fallbackNormalizeAutoGearWeightOperator(value) {
   if (typeof value !== 'string') return 'greater';
   const normalized = value.trim().toLowerCase();
@@ -169,6 +218,15 @@ export function fallbackNormalizeAutoGearWeightOperator(value) {
   return 'greater';
 }
 
+/**
+ * Normalize and sanitize weight values for auto-gear conditions.
+ * @param {*} value - Numeric or string input representing grams.
+ * @returns {number|null} Rounded non-negative integer value, or null if invalid.
+ * @default Returns null for empty, non-finite, or negative values.
+ * @why Fallback sanitizes legacy/offline inputs to prevent corrupt or unsafe values from being saved,
+ *      protecting backup/restore integrity.
+ * @edgecases Strings strip non-numeric chars, support commas as decimals, and reject NaN/negative.
+ */
 export function fallbackNormalizeAutoGearWeightValue(value) {
   if (typeof value === 'number' && Number.isFinite(value)) {
     const rounded = Math.round(value);
@@ -187,6 +245,15 @@ export function fallbackNormalizeAutoGearWeightValue(value) {
   return null;
 }
 
+/**
+ * Format a numeric weight value for display.
+ * @param {number} value - Numeric weight value in grams.
+ * @returns {string} Locale-formatted string or empty string for invalid input.
+ * @default Returns '' when value is not finite; falls back to String(value) if Intl fails.
+ * @why Fallback keeps display formatting working offline or in legacy bundles without Intl,
+ *      preventing UI regressions during recovery.
+ * @edgecases Catches Intl errors; does not throw to avoid breaking render paths.
+ */
 export function fallbackFormatAutoGearWeight(value) {
   if (!Number.isFinite(value)) return '';
   try {
@@ -238,6 +305,17 @@ function createFallbackFormatAutoGearCameraWeight(formatWeight, getOperatorLabel
   };
 }
 
+/**
+ * Resolve runtime scope candidates with optional registry support.
+ * @param {*} primaryScope - Primary runtime scope.
+ * @param {*} sharedScope - Shared runtime scope.
+ * @param {*} globalScope - Global runtime scope.
+ * @returns {Array<object|Function>} Candidate scopes in priority order.
+ * @default Uses collectRuntimeScopeCandidates when available, else local fallback.
+ * @why Fallback keeps runtime bindings resolvable offline/legacy without registry helpers,
+ *      avoiding lost references during save/restore bootstraps.
+ * @edgecases Ignores invalid scopes; always returns an array.
+ */
 export function fallbackCreateRuntimeScopeCandidates(primaryScope, sharedScope, globalScope) {
   if (typeof collectRuntimeScopeCandidates === 'function') {
     return collectRuntimeScopeCandidates([primaryScope, sharedScope, globalScope]);
@@ -246,6 +324,16 @@ export function fallbackCreateRuntimeScopeCandidates(primaryScope, sharedScope, 
   return createArrayFromCandidates(primaryScope, sharedScope, globalScope);
 }
 
+/**
+ * Read a value from the first scope that defines it.
+ * @param {string} name - The binding name to read.
+ * @param {Array<object|Function>} candidates - Candidate scopes to scan.
+ * @returns {*} The resolved value, or undefined if not found.
+ * @default Returns undefined when name/candidates are invalid or unreadable.
+ * @why Fallback provides offline-safe, exception-tolerant reads for legacy scopes,
+ *      preventing recovery flows from crashing on access errors.
+ * @edgecases Skips non-object candidates; guards against property access errors.
+ */
 export function fallbackReadCoreScopeValue(name, candidates) {
   if (typeof name !== 'string' || !name) {
     return undefined;
@@ -275,6 +363,17 @@ export function fallbackReadCoreScopeValue(name, candidates) {
   return undefined;
 }
 
+/**
+ * Write a value into the first writable scope.
+ * @param {string} name - The binding name to write.
+ * @param {*} value - The value to assign.
+ * @param {Array<object|Function>} candidates - Candidate scopes to mutate.
+ * @returns {boolean} True if the value was written, false otherwise.
+ * @default Returns false when name/candidates are invalid or writes fail.
+ * @why Fallback ensures offline/legacy environments can store bindings during boot,
+ *      preventing missing helpers that could risk data loss in recovery.
+ * @edgecases Attempts direct assignment then defineProperty; swallows errors.
+ */
 export function fallbackWriteCoreScopeValue(name, value, candidates) {
   if (typeof name !== 'string' || !name) {
     return false;
@@ -310,6 +409,17 @@ export function fallbackWriteCoreScopeValue(name, value, candidates) {
   return false;
 }
 
+/**
+ * Declare a binding if it does not already exist.
+ * @param {string} name - The binding name to ensure.
+ * @param {Function|*} factory - Factory function or value for the fallback.
+ * @param {Array<object|Function>} candidates - Candidate scopes to receive the binding.
+ * @returns {*} The existing or newly created value.
+ * @default If already present, returns existing without overwriting.
+ * @why Fallback avoids overwriting live bindings while keeping offline-safe defaults available,
+ *      protecting legacy recovery paths and autosave integrity.
+ * @edgecases Factory is only invoked when missing; write failures still return the computed value.
+ */
 export function fallbackDeclareCoreFallbackBinding(name, factory, candidates) {
   const existing = fallbackReadCoreScopeValue(name, candidates);
   if (typeof existing !== 'undefined') {
@@ -320,6 +430,17 @@ export function fallbackDeclareCoreFallbackBinding(name, factory, candidates) {
   return fallbackValue;
 }
 
+/**
+ * Resolve auto-gear weight helper functions with safe fallbacks.
+ * @param {object} [options] - Optional scope overrides for shared/global helpers.
+ * @param {object} [options.coreShared] - Shared helper scope.
+ * @param {object} [options.globalScope] - Global scope override.
+ * @returns {object} Helper functions for normalization, labeling, and formatting.
+ * @default Uses built-in fallback implementations when shared helpers are absent or invalid.
+ * @why Fallback keeps offline/legacy rule normalization stable, preventing corrupted conditions
+ *      that could break saved projects or backups.
+ * @edgecases Sanitizes errors from shared helpers; enforces string return types where expected.
+ */
 export function resolveAutoGearWeightHelpers(options) {
   const opts = options || {};
   const shared = opts.coreShared && typeof opts.coreShared === 'object' ? opts.coreShared : null;
@@ -447,6 +568,19 @@ export function resolveAutoGearWeightHelpers(options) {
   };
 }
 
+/**
+ * Resolve runtime scope tools for reading/writing bindings.
+ * @param {object} [options] - Optional scope overrides and resolver.
+ * @param {*} [options.runtimeScope] - Runtime scope override.
+ * @param {*} [options.sharedScope] - Shared scope override.
+ * @param {*} [options.globalScope] - Global scope override.
+ * @param {Function} [options.resolveSupportModule] - Resolver for support modules.
+ * @returns {object} Runtime scope bridge, candidates, and read/write/declare helpers.
+ * @default Uses global fallbacks when bridge/resolver is unavailable.
+ * @why Fallback ensures offline-safe and legacy-compatible scope access for save/restore flows,
+ *      preventing missing bindings during recovery.
+ * @edgecases Bridge errors are swallowed; candidate list is always available.
+ */
 export function resolveRuntimeScopeTools(options) {
   const opts = options || {};
   const runtimeScope =
