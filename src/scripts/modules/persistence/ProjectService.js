@@ -137,6 +137,10 @@ export class ProjectService {
      */
     async duplicateProject(sourceId) {
         try {
+            if (typeof sourceId !== 'string' || sourceId.length === 0) {
+                return { success: false };
+            }
+
             const cleanSourceId = sourceId.trim();
             const sourceProject = await this.getProject(cleanSourceId);
 
