@@ -430,6 +430,13 @@ export const data = {
         "content": "Activate **Pink Mode** in Settings or the top bar to add playful accents and animated icons. The unicorn icon cycles every 30 seconds, and floating stickers drift across the screen. Click any floating sticker **3 times** to trigger a celebratory rain effect."
       }
     },
+    "v2HelpTopics": {
+      "dataProtection": {
+        "title": "Saving, Sharing & Offline Protection",
+        "keywords": "save manual save autosave auto-backup export share import backup restore rehearsal offline safety data integrity",
+        "content": "<p>Use this guide to keep every offline copy safe.</p>\n\n<h4>Save, autosave, auto-backups</h4>\n<ul>\n<li><strong>Save</strong> (Ctrl/⌘+S) writes a new timestamped project snapshot; it never overwrites another project without confirmation.</li>\n<li><strong>Autosave</strong> captures rolling snapshots while you work so you can roll back after unexpected closes.</li>\n<li><strong>Auto-backups</strong> create background snapshots. Turn on <strong>Show auto-backups in project list</strong> in Settings → Backup &amp; Restore to review them.</li>\n</ul>\n\n<h4>Export, share, import</h4>\n<ul>\n<li><strong>Export Project</strong> downloads a JSON safety copy for offline storage.</li>\n<li><strong>Share Project</strong> packages a handoff file; recipients open it with <strong>Import Project</strong>.</li>\n<li>Imports load into the workspace without overwriting saved projects. If a name conflicts, you must confirm an overwrite or save under a new name.</li>\n</ul>\n\n<h4>Backup, restore &amp; rehearsal</h4>\n<ul>\n<li><strong>Download Backup</strong> creates a full-app backup (projects, gear, rules, preferences).</li>\n<li><strong>Restore</strong> replaces local data only after creating a safety snapshot.</li>\n<li><strong>Restore Rehearsal</strong> opens a sandbox comparison so you can verify differences before promotion.</li>\n</ul>\n\n<h4>Offline integrity guarantees</h4>\n<ul>\n<li>All saves, exports, and backups stay on this device; the app works without a network connection.</li>\n<li>Safe-save keeps timestamped snapshots, and destructive actions take a backup-before-delete snapshot when possible.</li>\n<li>Keep at least two offline copies of exports or backups before deleting anything.</li>\n</ul>"
+      }
+    },
     "documentationTrackerHelpStart": "Start Here & navigation",
     "documentationTrackerHelpSave": "Saving, sharing & exports",
     "documentationTrackerHelpBackup": "Backup & restore drills",

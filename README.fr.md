@@ -53,6 +53,11 @@ partageables — entièrement dans votre navigateur, même hors ligne. Toutes le
    backup ou un bundle partagé pour confirmer que ce poste peut récupérer les
    données de bout en bout.
 
+Consultez **Aide → Sauvegarde, partage et protection hors ligne** pour
+confirmer les libellés hors ligne actuels (dont **Afficher les sauvegardes
+auto dans la liste des projets**, **Télécharger la Sauvegarde**, **Restaurer**
+et **Restauration de Test**).
+
 ## Index de documentation
 
 Le hub canonique de documentation se trouve dans

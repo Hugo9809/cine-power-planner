@@ -145,6 +145,16 @@
             `
         },
         {
+            id: 'v2-data-protection',
+            titleKey: 'v2HelpTopics.dataProtection.title',
+            contentKey: 'v2HelpTopics.dataProtection.content',
+            keywordsKey: 'v2HelpTopics.dataProtection.keywords',
+            title: '',
+            keywords: '',
+            icon: '💾',
+            content: ''
+        },
+        {
             id: 'v2-auto-gear',
             title: 'Auto Gear Rules',
             keywords: 'auto gear rules automation kit list scenarios production requirements',

@@ -52,6 +52,11 @@ archivi isolati.
    bundle condiviso per confermare che questa macchina può recuperare i dati
    end-to-end.
 
+Consulta **Help → Salvataggio, condivisione e protezione offline** per
+confermare le etichette offline correnti (incluse **Mostra backup automatici
+nella lista progetti**, **Scarica Backup**, **Ripristina** e **Ripristino di
+Prova**).
+
 ## Indice della documentazione
 
 L’hub canonico della documentazione è in [`docs/README.md`](docs/README.md).

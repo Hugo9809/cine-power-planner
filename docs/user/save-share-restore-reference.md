@@ -9,18 +9,21 @@ workstations.
 
 1. **Manual save now.** Trigger a manual save so the latest work is committed
    before any export, share or restore step.
-2. **Confirm autosave evidence.** Open **Settings → Data & Storage → Latest activity**
+2. **Confirm help labels.** Open **Help → Saving, Sharing & Offline Protection** to
+   verify the on-screen labels match this build (including **Show auto-backups in
+   project list**, **Download Backup**, **Restore**, and **Restore Rehearsal**).
+3. **Confirm autosave evidence.** Open **Settings → Data & Storage → Latest activity**
    and verify the autosave ledger includes the most recent manual save,
    autosave, and guardian result entries.
-3. **Export redundantly.** Produce both a planner backup and the relevant
+4. **Export redundantly.** Produce both a planner backup and the relevant
    project bundle. Store each on two offline media locations.
-4. **Rehearse restore in the sandbox.** Import into **Restore rehearsal** on a
+5. **Rehearse restore in the sandbox.** Import into **Restore rehearsal** on a
    secondary profile or machine, review the compatibility summary, then
    promote only after the sandbox matches the source.
-5. **Freeze source exports.** Treat the exported files as read-only evidence.
+6. **Freeze source exports.** Treat the exported files as read-only evidence.
    Never overwrite, rename, or delete them until the rehearsal confirms parity
    and the verification log is complete.
-6. **Archive evidence.** Capture screenshots and logs listed in the lifecycle
+7. **Archive evidence.** Capture screenshots and logs listed in the lifecycle
    guide so every handoff is reproducible and auditable.
 
 ## Save & autosave

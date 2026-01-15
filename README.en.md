@@ -49,6 +49,10 @@ without phoning home.
 4. **Drill recovery.** Run a restore test from a backup or share bundle
    periodically to confirm this workstation can recover data end-to-end.
 
+Review **Help → Saving, Sharing & Offline Protection** to confirm the current
+offline labels (including **Show auto-backups in project list**, **Download
+Backup**, **Restore**, and **Restore Rehearsal**) match this build.
+
 ## Documentation index
 
 The canonical documentation hub lives in [`docs/README.md`](docs/README.md).

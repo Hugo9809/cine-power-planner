@@ -54,6 +54,11 @@ portátiles de campo o archivos aislados.
    backup o bundle compartido para confirmar que esta estación puede recuperar
    datos de extremo a extremo.
 
+Revisa **Ayuda → Guardado, compartición y protección sin conexión** para
+confirmar los textos offline actuales (incluidos **Mostrar copias automáticas
+en lista de proyectos**, **Descargar Copia de Seguridad**, **Restaurar** y
+**Restauración de Prueba**).
+
 ## Índice de documentación
 
 El hub canónico de documentación está en [`docs/README.md`](docs/README.md).

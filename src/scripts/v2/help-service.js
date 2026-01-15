@@ -7,17 +7,71 @@
 (function (global) {
     'use strict';
 
-    // V2 "Getting Started" Content (Hardcoded for now, could be moved to localization later)
     // V2 Content (Loaded from help-data.js)
     const V2_TOPICS = global.cineV2HelpData || [];
+
+    function getLocalizationHelper() {
+        let localization = global.cineCoreLocalization ||
+            global.cineCoreLocalizationBridge ||
+            (global.cineModuleBase && global.cineModuleBase.resolveLocalization && global.cineModuleBase.resolveLocalization());
+
+        if (localization && typeof localization.getString === 'function') {
+            return localization;
+        }
+
+        if (typeof global.getText === 'function') {
+            return {
+                getString: (key) => global.getText(key)
+            };
+        }
+
+        if (global.texts) {
+            const resolveKey = (obj, path) => {
+                return path.split('.').reduce((prev, curr) => prev && prev[curr], obj);
+            };
+
+            const lang = global.currentLanguage || global.currentLang || 'en';
+            const texts = global.texts[lang] || global.texts.en;
+
+            return {
+                getString: (key) => resolveKey(texts, key) || ''
+            };
+        }
+
+        return null;
+    }
+
+    function resolveV2Topic(topic, localization) {
+        if (!topic) return topic;
+        if (!localization || typeof localization.getString !== 'function') {
+            return topic;
+        }
+
+        const resolvedTitle = topic.titleKey ? localization.getString(topic.titleKey) : '';
+        const resolvedContent = topic.contentKey ? localization.getString(topic.contentKey) : '';
+        const resolvedKeywords = topic.keywordsKey ? localization.getString(topic.keywordsKey) : '';
+
+        return {
+            ...topic,
+            title: resolvedTitle || topic.title,
+            content: resolvedContent || topic.content,
+            keywords: resolvedKeywords || topic.keywords
+        };
+    }
+
+    function getLocalizedV2Topics() {
+        const localization = getLocalizationHelper();
+        return V2_TOPICS.map(topic => resolveV2Topic(topic, localization));
+    }
 
     // Helper to categorize topics
     function getCategorizedV2Topics() {
         const essentials = ['v2-quick-start', 'v2-shortcuts', 'v2-data-safety', 'v2-features'];
+        const localizedTopics = getLocalizedV2Topics();
 
         return {
-            essentials: V2_TOPICS.filter(t => essentials.includes(t.id)),
-            guides: V2_TOPICS.filter(t => !essentials.includes(t.id))
+            essentials: localizedTopics.filter(t => essentials.includes(t.id)),
+            guides: localizedTopics.filter(t => !essentials.includes(t.id))
         };
     }
 
@@ -50,35 +104,10 @@
     function getV1Topics() {
         // Try to access the localization helper globally
         // It might be 'cineCoreLocalization' or a similar exposure
-        let localization = global.cineCoreLocalization ||
-            global.cineCoreLocalizationBridge || // Agent: Added bridge check
-            (global.cineModuleBase && global.cineModuleBase.resolveLocalization && global.cineModuleBase.resolveLocalization());
-
+        let localization = getLocalizationHelper();
         if (!localization || typeof localization.getString !== 'function') {
-            // Fallback 1: global.getText
-            if (typeof global.getText === 'function') {
-                localization = {
-                    getString: (key) => global.getText(key)
-                };
-            }
-            // Fallback 2: global.texts (Direct access)
-            else if (global.texts) {
-                // Helper to resolve dot notation
-                const resolveKey = (obj, path) => {
-                    return path.split('.').reduce((prev, curr) => prev && prev[curr], obj);
-                };
-
-                const lang = global.currentLanguage || global.currentLang || 'en';
-                const texts = global.texts[lang] || global.texts.en;
-
-                localization = {
-                    getString: (key) => resolveKey(texts, key) || ''
-                };
-            }
-            else {
-                console.warn('[HelpService] Localization module not found. V1 topics unavailable.');
-                return [];
-            }
+            console.warn('[HelpService] Localization module not found. V1 topics unavailable.');
+            return [];
         }
 
         const topicOrder = [
@@ -149,7 +178,7 @@
      * Get all help sections, organized or flat
      */
     function getAllSections() {
-        const guideTopics = V2_TOPICS;
+        const guideTopics = getLocalizedV2Topics();
         const refTopics = getV1Topics();
 
         return [

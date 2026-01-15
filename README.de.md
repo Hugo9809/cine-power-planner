@@ -55,6 +55,11 @@ Feld-Laptops oder luftgetrennten Archiven funktioniert.
    Share-Bundle, um sicherzustellen, dass dieses Gerät Daten vollständig
    wiederherstellen kann.
 
+Sieh in **Hilfe → Speichern, Teilen & Offline-Schutz** nach, um die aktuellen
+Offline-Labels zu bestätigen (einschließlich **Automatische Sicherungen in
+Projektliste anzeigen**, **Sicherung herunterladen**, **Wiederherstellen** und
+**Probe-Wiederherstellung**).
+
 ## Dokumentationsindex
 
 Der kanonische Dokumentationshub befindet sich in
