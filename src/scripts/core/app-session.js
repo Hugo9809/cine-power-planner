@@ -12010,7 +12010,13 @@ function createSettingsBackup(notifyOrEvent = true, timestamp = new Date()) {
   let notify = notifyOrEvent;
   let time = timestamp;
 
-  if (notifyOrEvent && typeof notifyOrEvent === 'object' && (notifyOrEvent instanceof Event || !!notifyOrEvent.type)) {
+  const hasEventConstructor = typeof Event !== 'undefined';
+  if (
+    notifyOrEvent
+    && typeof notifyOrEvent === 'object'
+    && ((hasEventConstructor && notifyOrEvent instanceof Event)
+      || (!hasEventConstructor && !!notifyOrEvent.type))
+  ) {
     // Called as event listener
     notify = true;
     time = new Date();
