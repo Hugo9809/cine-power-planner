@@ -24,6 +24,8 @@ without phoning home.
 - **Layered safety nets.** Save, autosave, share, import, backup, and restore
   workflows always create safety snapshots so recovery is possible before any
   data is promoted.
+- **Legacy-safe imports.** Project bundle imports recognize `{ name, project }`
+  wrapper entries to prevent data loss when loading older exports.
 - **Offline by design.** All core features including icons, Uicons, fonts, and
   helper scripts are stored in this repo, so offline usage never degrades
   usability or data protection.
