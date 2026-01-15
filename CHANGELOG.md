@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Awaited async project deletion in the V2 dashboard before refreshing cached data.
+- Synced V2 sidebar search selection with the input value and results list.
 
 ## [Unreleased]
 
