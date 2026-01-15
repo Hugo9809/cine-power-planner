@@ -25,6 +25,9 @@ portátiles de campo o archivos aislados.
 - **Capas de seguridad.** Guardar, autoguardado, compartir, importar, backup y
   restaurar crean siempre snapshots de seguridad para recuperar datos antes de
   promoverlos.
+- **Importaciones seguras para versiones anteriores.** Las importaciones de
+  bundles de proyecto reconocen entradas envoltorio `{ name, project }` para
+  evitar pérdida de datos al cargar exportaciones antiguas.
 - **Diseño offline.** Todos los iconos, fuentes, Uicons y scripts auxiliares
   están en este repo, así que el uso offline no degrada la usabilidad ni la
   protección de datos.

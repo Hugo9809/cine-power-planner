@@ -24,6 +24,9 @@ archivi isolati.
 - **Reti di sicurezza a strati.** Salvataggio, auto-salvataggio, condivisione,
   importazione, backup e ripristino creano sempre snapshot di sicurezza per
   recuperare i dati prima della promozione.
+- **Importazioni compatibili con legacy.** Le importazioni dei bundle di
+  progetto riconoscono le voci wrapper `{ name, project }` per evitare perdita
+  di dati quando si caricano export precedenti.
 - **Offline by design.** Tutte le icone, i font, gli Uicons e gli script di
   supporto sono nel repo, quindi l’uso offline non degrada usabilità o
   protezione dati.
