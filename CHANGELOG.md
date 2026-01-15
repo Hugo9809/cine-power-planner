@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Reused the V2 sidebar search index between input updates and added a refresh hook for legacy entry changes.
 
+### Fixed
+- Localized delete gear list dialogs now resolve through safe language fallbacks and shared translation keys.
+
 ## [1.0.53] - 2026-01-15
 
 ### Changed

@@ -186,6 +186,10 @@ describe('Translation Validation', () => {
             'texts.projectForm.heading',
             'texts.gearListNav',
             'texts.generateGearListBtn',
+            'texts.deleteGearListDialogTitle',
+            'texts.deleteGearListConfirmLabel',
+            'texts.deleteGearListConfirmAgainTitle',
+            'texts.deleteGearListConfirmAgainLabel',
         ];
 
         test.each(requiredKeys)('key "%s" exists in all locales', (key) => {
