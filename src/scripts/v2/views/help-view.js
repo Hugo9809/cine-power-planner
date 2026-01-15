@@ -9,6 +9,7 @@
 const TOC_ID = 'v2HelpToc';
 const CONTENT_ID = 'v2HelpContent';
 const SEARCH_ID = 'v2HelpSearch';
+const SEARCH_LIVE_ID = 'v2HelpSearchStatus';
 
 let observer = null;
 let isInitialized = false;
@@ -246,11 +247,24 @@ function initSearch() {
     // Append to container (assuming container is relative/flex)
     searchInput.parentNode.appendChild(clearBtn);
 
+    let liveRegion = getElement(SEARCH_LIVE_ID);
+    if (!liveRegion) {
+        liveRegion = document.createElement('div');
+        liveRegion.id = SEARCH_LIVE_ID;
+        liveRegion.className = 'visually-hidden';
+        liveRegion.setAttribute('aria-live', 'polite');
+        liveRegion.setAttribute('role', 'status');
+        liveRegion.setAttribute('aria-atomic', 'true');
+        searchInput.parentNode.appendChild(liveRegion);
+    }
+
     function performSearch() {
-        const term = searchInput.value.toLowerCase().trim();
+        const rawTerm = searchInput.value.trim();
+        const term = rawTerm.toLowerCase();
         const sections = document.querySelectorAll('.v2-help-section');
         const noResults = getElement('v2HelpNoResults');
         let hasVisible = false;
+        let visibleCount = 0;
 
         sections.forEach(section => {
             const text = section.innerText.toLowerCase();
@@ -258,7 +272,10 @@ function initSearch() {
             const match = text.includes(term) || keywords.includes(term);
 
             section.style.display = match ? 'block' : 'none';
-            if (match) hasVisible = true;
+            if (match) {
+                hasVisible = true;
+                visibleCount += 1;
+            }
         });
 
         // Toggle Dividers visibility based on search (hide if searching)
@@ -269,6 +286,15 @@ function initSearch() {
         // Show/Hide No Results
         if (noResults) {
             noResults.style.display = !hasVisible && term ? 'flex' : 'none';
+        }
+
+        if (liveRegion) {
+            const template = rawTerm
+                ? _t('helpSearchStatusQuery')
+                : _t('helpSearchStatusAll');
+            liveRegion.textContent = template
+                .replace('{count}', String(visibleCount))
+                .replace('{query}', rawTerm);
         }
 
         // Toggle Clear Button
@@ -282,6 +308,8 @@ function initSearch() {
         performSearch();
         searchInput.focus();
     });
+
+    performSearch();
 }
 
 function updateSearchLabels() {

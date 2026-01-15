@@ -382,6 +382,8 @@ export const data = {
     "helpServiceUnavailable": "Help service unavailable.",
     "helpSearchNoResultsTitle": "No results found",
     "helpSearchNoResultsHint": "Try adjusting your search terms.",
+    "helpSearchStatusAll": "Showing {count} help topics.",
+    "helpSearchStatusQuery": "Showing {count} results for “{query}”.",
     "helpSearchClearLabel": "Clear search",
     "helpV2WelcomeTitle": "Welcome to V2",
     "helpV2WelcomeKeywords": "v2 new interface update overview navigation sidebar",

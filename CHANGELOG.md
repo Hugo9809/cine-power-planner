@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Awaited async project deletion in the V2 dashboard before refreshing cached data.
+- Announced help search result counts via the polite live region in the Help Center.
 
 ## [1.0.52] - 2026-01-13
 

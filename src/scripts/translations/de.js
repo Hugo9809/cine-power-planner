@@ -1084,6 +1084,8 @@ export const data = {
     "helpServiceUnavailable": "Hilfedienst nicht verfügbar.",
     "helpSearchNoResultsTitle": "Keine Ergebnisse gefunden",
     "helpSearchNoResultsHint": "Passe deine Suchbegriffe an.",
+    "helpSearchStatusAll": "Es werden {count} Hilfethemen angezeigt.",
+    "helpSearchStatusQuery": "Es werden {count} Ergebnisse für „{query}“ angezeigt.",
     "helpSearchClearLabel": "Suche löschen",
     "helpV2WelcomeTitle": "Willkommen in V2",
     "helpV2WelcomeKeywords": "v2 neue oberfläche update übersicht navigation seitenleiste",

@@ -1053,6 +1053,8 @@ export const data = {
     "helpServiceUnavailable": "Service d’aide indisponible.",
     "helpSearchNoResultsTitle": "Aucun résultat trouvé",
     "helpSearchNoResultsHint": "Essayez d’ajuster vos termes de recherche.",
+    "helpSearchStatusAll": "{count} sujets d’aide affichés.",
+    "helpSearchStatusQuery": "{count} résultats affichés pour « {query} ».",
     "helpSearchClearLabel": "Effacer la recherche",
     "helpV2WelcomeTitle": "Bienvenue dans V2",
     "helpV2WelcomeKeywords": "v2 nouvelle interface mise à jour aperçu navigation barre latérale",
