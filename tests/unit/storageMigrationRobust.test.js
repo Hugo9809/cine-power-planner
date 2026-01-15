@@ -169,6 +169,25 @@ describe('StorageMigrationService Robustness', () => {
         });
     });
 
+    describe('runMigrationIfNeeded() - UserContext failures', () => {
+        test('Aborts migration safely if UserContext cannot be loaded', async () => {
+            mockLs.getKeys.mockResolvedValue(['my_project']);
+            mockLs.getItem.mockImplementation((k) => {
+                if (k === 'cine_storage_migrated_v2') return Promise.resolve(null);
+                if (k === 'my_project') return Promise.resolve('{"data":1}');
+                return Promise.resolve(null);
+            });
+
+            jest.spyOn(service, 'loadUserContext').mockRejectedValue(new Error('Failed import'));
+
+            const result = await service.runMigrationIfNeeded();
+
+            expect(result).toBe(false);
+            expect(mockIdb.setItem).not.toHaveBeenCalled();
+            expect(mockLs.setItem).not.toHaveBeenCalledWith('cine_storage_migrated_v2', 'true');
+        });
+    });
+
     describe('markAsMigrated() Error Handling', () => {
         test('Continues if one storage fails to write flag', async () => {
             // If IDB writes fail, LS success should be enough (or vice versa)

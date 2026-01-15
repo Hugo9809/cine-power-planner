@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated application version to 1.0.53 (Maintenance release)
 
+### Fixed
+- Awaited async project deletion in the V2 dashboard before refreshing cached data.
+
 ## [1.0.52] - 2026-01-13
 
 ### Added
