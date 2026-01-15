@@ -175,6 +175,9 @@ workstation will operate offline:
   any referenced custom devices or automatic gear rules. If the import dialog
   reports missing sections or version incompatibility, capture the warning and
   re-export from the source build.
+- **Legacy project wrappers stay supported.** Imports accept bundles that
+  serialize projects as `{ name, project }` pairs so older exports load without
+  stripping the actual project payload.
 - **Compatibility summary is the gate.** Always review the restore
   compatibility summary before promotion. Missing sections or version warnings
   mean the file must be regenerated on the source workstation before it is

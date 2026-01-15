@@ -2901,6 +2901,20 @@ describe('export/import all data', () => {
     expect(arrayKeyEntry).toBeDefined();
   });
 
+  test('importAllData handles named project wrappers with nested project payloads', () => {
+    importAllData({
+      projects: [
+        { name: 'Wrapped', project: { gearList: '<ul>Wrapped</ul>' } },
+      ],
+      project: [
+        { name: 'Solo', project: { gearList: '<ul>Solo</ul>' } },
+      ],
+    });
+
+    expect(loadProject('Wrapped')).toEqual(withGenerationFlag({ gearList: '<ul>Wrapped</ul>', projectInfo: null }));
+    expect(loadProject('Solo')).toEqual(withGenerationFlag({ gearList: '<ul>Solo</ul>', projectInfo: null }));
+  });
+
   test('importAllData handles legacy project string payload', () => {
     const data = { project: '<section>Legacy</section>' };
     importAllData(data);

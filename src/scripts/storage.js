@@ -13801,7 +13801,11 @@ function importProjectCollection(collection, ensureImporter, fallbackLabel = "Im
           return { name: proj[0], project: proj[1] };
         }
         if (isPlainObject(proj) && typeof proj.name === "string") {
-          return { name: proj.name, project: proj };
+          const projectData = Object.prototype.hasOwnProperty.call(proj, "project")
+            ? proj.project
+            : proj;
+          // Preserve named project wrappers from legacy exports without dropping the actual project payload.
+          return { name: proj.name, project: projectData };
         }
         return { name: '', project: proj };
       })
