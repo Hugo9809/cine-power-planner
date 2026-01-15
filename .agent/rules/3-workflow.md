@@ -2,11 +2,9 @@
 trigger: always_on
 ---
 
-IMPLEMENTATION & VERIFICATION PROTOCOL
-1. Artifact Persistence & Naming (CRITICAL)
-You must ALWAYS save artifacts to the specific local directories listed below. NEVER delete these files; only update their status or content.
-
-A. Directory Structure
+WORKFLOW & DEFINITION OF DONE
+1. Artifact Persistence & Naming
+You must ALWAYS save artifacts to the specific local directories listed below.
 
 Task Lists: /Users/lucazanner/Documents/GitHub/cine-power-planner/.agent/tasks
 
@@ -14,56 +12,35 @@ Implementation Plans: /Users/lucazanner/Documents/GitHub/cine-power-planner/.age
 
 Walkthroughs: /Users/lucazanner/Documents/GitHub/cine-power-planner/.agent/walkthrough
 
-B. Naming Conventions
+Naming Format: {artifact_type}-{task_slug}.md (e.g., implementationplan-refactor-auth.md).
 
-Variable: {task_slug} = kebab-case version of the agent task name (e.g., "fix-navbar-bug").
+2. The "Definition of Done" (Strict Testing Mandate)
+No feature or bug fix is considered "Complete" until it meets the Strict Testing Protocol.
 
-Implementation Plan:
+Zero "TODOs": You are FORBIDDEN from leaving comments like // TODO: write tests. You must write them immediately.
 
-Format: implementationplan-{task_slug}.md
+Mandatory Coverage:
 
-Example: implementationplan-refactor-auth.md
+Unit Tests (Vitest): Cover the primary logic/utility functions.
 
-Task List:
+Integration Tests: Cover the component interactions (e.g., "Clicking Save writes to IndexedDB").
 
-Format: task-{task_slug}.md
+Edge Cases: You must test at least one failure scenario (e.g., "What if storage quota is full?", "What if network is offline?").
 
-Example: task-refactor-auth.md
+3. Implementation Plan Protocol
+Before coding, generate a plan including a Verification Strategy:
 
-Walkthrough:
+Define exactly which automated tests you will write.
 
-Format: walkthrough-{task_slug}.md
+Define what manual browser verification you will record.
 
-Example: walkthrough-refactor-auth.md
+Constraint: You cannot write feature code until the user approves this testing strategy.
 
-2. Implementation Plan Requirement
-For any task involving modification of >1 file or significant refactoring, you MUST generate an Implementation Plan (saved to the path defined above) that follows this structure:
+4. Visual Verification (Browser Agent)
+For UI changes:
 
-Architectural Impact: List all files to be created, modified, or deleted. Diagram changes to data flow.
+Launch Browser: Visit the local development server.
 
-Step-by-Step Execution: Break the task into atomic steps.
+Capture: Record a video or screenshot of the feature and the passing test results in the terminal.
 
-Verification Strategy: Define specific tests to run or specific UI elements to check in the browser.
-
-Constraint: You cannot proceed to coding until the user approves this verification strategy.
-
-3. Visual Regression Prevention (Browser Agent)
-For any task involving frontend changes (CSS, HTML, React Components):
-
-Launch Browser: You MUST use the Browser Agent to visit the local development server.
-
-Verify: Navigate to the specific route affected by the change.
-
-Capture: Take a screenshot or record a video of the interaction.
-
-Report: Include this visual evidence in the Walkthrough Artifact (saved to the path defined above).
-
-4. Task Completion Criteria
-A task on the Task List can ONLY be marked as checked if:
-
-The code has been written.
-
-The code compiles without errors.
-
-Verification: The defined Verification Strategy (Test or Walkthrough) has been executed and passed.
-
+Report: Include this visual evidence in the walkthrough-{task_slug}.md.
