@@ -10,6 +10,7 @@ import devicesCatalog from '../../data/devices/index.js';
 
 const V2_SEARCH_FLAG = 'cine_use_v2_search';
 const MAX_RESULTS = 40;
+const EMPTY_SEARCH_ENTRIES = [];
 
 const DEFAULT_CATEGORY_LABELS = {
     cameras: 'Cameras',
@@ -74,7 +75,7 @@ function shouldEnableV2Search() {
 function resolveLegacyEntries() {
     const legacyEntries = Array.isArray(window.featureSearchEntries)
         ? window.featureSearchEntries
-        : [];
+        : EMPTY_SEARCH_ENTRIES;
 
     return legacyEntries.map(entry => {
         const label = entry?.optionLabel || entry?.display || entry?.label || '';
@@ -173,6 +174,53 @@ function buildSearchIndex() {
     buildDeviceEntries(devicesCatalog).forEach(addEntry);
 
     return { entries, index };
+}
+
+function getLegacyEntriesSnapshot() {
+    const legacyEntries = Array.isArray(window.featureSearchEntries)
+        ? window.featureSearchEntries
+        : EMPTY_SEARCH_ENTRIES;
+    return {
+        ref: legacyEntries,
+        length: legacyEntries.length
+    };
+}
+
+/**
+ * Creates a cached search index manager with lightweight invalidation checks.
+ * @param {Object} params
+ * @param {Function} params.buildIndex Function that builds the search index.
+ * @param {Function} params.getSnapshot Function that returns the legacy entry snapshot.
+ * @returns {{getIndexState: Function, refreshIfStale: Function, markStale: Function}}
+ */
+function createSearchIndexManager({ buildIndex = buildSearchIndex, getSnapshot = getLegacyEntriesSnapshot } = {}) {
+    let indexState = buildIndex();
+    let legacySnapshot = getSnapshot();
+    let stale = false;
+
+    const markStale = () => {
+        stale = true;
+    };
+
+    const refreshIfStale = () => {
+        const nextSnapshot = getSnapshot();
+        const referenceChanged = nextSnapshot.ref !== legacySnapshot.ref;
+        const lengthChanged = nextSnapshot.length !== legacySnapshot.length;
+
+        if (stale || referenceChanged || lengthChanged) {
+            indexState = buildIndex();
+            legacySnapshot = nextSnapshot;
+            stale = false;
+        }
+    };
+
+    const getIndexState = () => indexState;
+
+    return {
+        getIndexState,
+        refreshIfStale,
+        markStale
+    };
 }
 
 function resolveDefaultEntries(index) {
@@ -388,19 +436,24 @@ function resolveEntryFromOption(option, entryIndex) {
 }
 
 function setupSearchEvents(input, dropdown) {
-    let indexState = buildSearchIndex();
+    const indexManager = createSearchIndexManager();
     let currentResults = [];
 
-    const refreshIndex = () => {
-        indexState = buildSearchIndex();
+    const hasCachedResults = () => currentResults.length > 0;
+
+    const handleIndexRefresh = () => {
+        indexManager.markStale();
     };
 
+    window.addEventListener('v2:search-index-refresh', handleIndexRefresh);
+
     const updateResults = query => {
-        refreshIndex();
+        indexManager.refreshIfStale();
+        const { entries, index } = indexManager.getIndexState();
         if (!query) {
-            currentResults = resolveDefaultEntries(indexState.index);
+            currentResults = resolveDefaultEntries(index);
         } else {
-            currentResults = findMatches(indexState.entries, query);
+            currentResults = findMatches(entries, query);
         }
         renderDropdown(dropdown, currentResults);
         if (dropdown.dataset.count !== '0') {
@@ -417,6 +470,9 @@ function setupSearchEvents(input, dropdown) {
     });
 
     input.addEventListener('focus', () => {
+        if (!input.value && !hasCachedResults()) {
+            indexManager.refreshIfStale();
+        }
         updateResults(input.value.trim());
         openDropdown(dropdown);
     });
@@ -435,7 +491,7 @@ function setupSearchEvents(input, dropdown) {
 
         if (e.key === 'Enter') {
             const option = options[activeIndex];
-            const entry = resolveEntryFromOption(option, indexState.index);
+            const entry = resolveEntryFromOption(option, indexManager.getIndexState().index);
             applySelection(entry, input.value.trim());
             closeDropdown(input, dropdown);
             return;
@@ -478,7 +534,7 @@ function setupSearchEvents(input, dropdown) {
     dropdown.addEventListener('click', e => {
         const option = e.target.closest('[data-value]');
         if (!option) return;
-        const entry = resolveEntryFromOption(option, indexState.index);
+        const entry = resolveEntryFromOption(option, indexManager.getIndexState().index);
         applySelection(entry, input.value.trim());
         closeDropdown(input, dropdown);
     });
@@ -502,7 +558,7 @@ function setupSearchEvents(input, dropdown) {
         } else if (e.key === 'Enter') {
             e.preventDefault();
             if (currentIndex >= 0 && options[currentIndex]) {
-                const entry = resolveEntryFromOption(options[currentIndex], indexState.index);
+                const entry = resolveEntryFromOption(options[currentIndex], indexManager.getIndexState().index);
                 applySelection(entry, input.value.trim());
                 closeDropdown(input, dropdown);
             }
@@ -514,6 +570,12 @@ function setupSearchEvents(input, dropdown) {
     });
 }
 
+/**
+ * Initializes the V2 sidebar search UI.
+ * @param {Object} options
+ * @param {string} options.inputId Search input element id.
+ * @returns {boolean} True when the V2 search was activated.
+ */
 function setupV2Search({ inputId } = {}) {
     if (!shouldEnableV2Search()) {
         return false;
@@ -528,5 +590,5 @@ function setupV2Search({ inputId } = {}) {
     return true;
 }
 
-export { setupV2Search, shouldEnableV2Search };
-export default { setupV2Search, shouldEnableV2Search };
+export { setupV2Search, shouldEnableV2Search, createSearchIndexManager };
+export default { setupV2Search, shouldEnableV2Search, createSearchIndexManager };
