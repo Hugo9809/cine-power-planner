@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Localized delete gear list dialogs now resolve through safe language fallbacks and shared translation keys.
 - Routed Auto-Gear backup export/import through the persistence cache for offline-safe restores.
+- Captured a safety snapshot before restoring a Data Vault backup and localized the backup vault view.
 
 ## [1.0.53] - 2026-01-15
 
