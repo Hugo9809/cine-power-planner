@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Localized delete gear list dialogs now resolve through safe language fallbacks and shared translation keys.
 - Routed Auto-Gear backup export/import through the persistence cache for offline-safe restores.
 - Captured a safety snapshot before restoring a Data Vault backup and localized the backup vault view.
+- Prevented V2 search device results from collapsing across categories with identical names.
+- Added polite live updates for Help Center search result counts to improve screen reader feedback.
 
 ## [1.0.53] - 2026-01-15
 
@@ -24,12 +26,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Awaited async project deletion in the V2 dashboard before refreshing cached data.
 - Preserved Help Center search filtering after content refreshes and language changes.
-
-## [Unreleased]
-
-### Fixed
-- Prevented V2 search device results from collapsing across categories with identical names.
-- Added polite live updates for Help Center search result counts to improve screen reader feedback.
 
 ## [1.0.52] - 2026-01-13
 

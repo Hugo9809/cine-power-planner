@@ -4,27 +4,32 @@ const vm = require('vm');
 
 const BACKUP_MODULE_PATH = path.resolve(__dirname, '../../src/scripts/modules/features/backup.js');
 const BACKUP_MODULE_SOURCE = fs.readFileSync(BACKUP_MODULE_PATH, 'utf8');
-const BACKUP_MODULE_SOURCE_WITH_TEST_STUBS = BACKUP_MODULE_SOURCE.replace(/\}\)\(\);\s*$/u, (
-  match,
-) => `  GLOBAL_SCOPE.__setBackupTestStubs = function (overrides) {\n` +
-    `    if (!overrides || typeof overrides !== 'object') {\n` +
-    `      return;\n` +
-    `    }\n` +
-    `    if (Object.prototype.hasOwnProperty.call(overrides, 'monitorAutomaticDownloadPermission')) {\n` +
-    `      monitorAutomaticDownloadPermission = overrides.monitorAutomaticDownloadPermission;\n` +
-    `    }\n` +
-    `    if (Object.prototype.hasOwnProperty.call(overrides, 'triggerBackupDownload')) {\n` +
-    `      triggerBackupDownload = overrides.triggerBackupDownload;\n` +
-    `    }\n` +
-    `    if (Object.prototype.hasOwnProperty.call(overrides, 'openBackupFallbackWindow')) {\n` +
-    `      openBackupFallbackWindow = overrides.openBackupFallbackWindow;\n` +
-    `    }\n` +
-    `  };\n` +
-    `  GLOBAL_SCOPE.__getFallbackStorageKeys = function () {\n` +
-    `    return FALLBACK_STORAGE_KEYS;\n` +
-    `  };\n` +
-    match,
-);
+
+// Strip ESM export statements before execution in VM
+const BACKUP_MODULE_SOURCE_STRIPPED = BACKUP_MODULE_SOURCE
+  .replace(/export\s+\{.*?\};/gu, '')
+  .replace(/export\s+default\s+.*?;/gu, '');
+
+// Append test stubs directly to the stripped source
+const TEST_STUBS_CODE = `
+  GLOBAL_SCOPE.__setBackupTestStubs = function (overrides) {
+    if (!overrides || typeof overrides !== 'object') return;
+    if (Object.prototype.hasOwnProperty.call(overrides, 'monitorAutomaticDownloadPermission')) {
+      monitorAutomaticDownloadPermission = overrides.monitorAutomaticDownloadPermission;
+    }
+    if (Object.prototype.hasOwnProperty.call(overrides, 'triggerBackupDownload')) {
+      triggerBackupDownload = overrides.triggerBackupDownload;
+    }
+    if (Object.prototype.hasOwnProperty.call(overrides, 'openBackupFallbackWindow')) {
+      openBackupFallbackWindow = overrides.openBackupFallbackWindow;
+    }
+  };
+  GLOBAL_SCOPE.__getFallbackStorageKeys = function () {
+    return FALLBACK_STORAGE_KEYS;
+  };
+`;
+
+const BACKUP_MODULE_SOURCE_WITH_TEST_STUBS = BACKUP_MODULE_SOURCE_STRIPPED + '\n' + TEST_STUBS_CODE;
 
 function createDeepFreeze() {
   const freeze = (value, seen = new WeakSet()) => {

@@ -5,19 +5,16 @@
  * Extracted from app-core-ui-helpers.js during Vite migration.
  */
 
-let escapeDiv = null;
-
 function detectDocument() {
     if (typeof document !== 'undefined') return document;
     return null;
 }
 
 export function escapeHtml(str) {
-    if (!escapeDiv) {
-        const doc = detectDocument();
-        if (doc) {
-            escapeDiv = doc.createElement('div');
-        }
+    let escapeDiv = null;
+    const doc = detectDocument();
+    if (doc) {
+        escapeDiv = doc.createElement('div');
     }
 
     if (!escapeDiv) {

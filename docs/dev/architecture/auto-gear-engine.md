@@ -38,3 +38,38 @@ This command:
 3.  **Verify**: Restart the dev server (if needed) or trigger a calculation in the app.
 
 > **Warning**: If you change the TS code but forget to run the build script, the application will continue running into the *old* logic.
+
+---
+
+## Helper Module Integration
+
+The Auto-Gear system uses helpers from the [Runtime Environment](runtime-environment.md) module:
+
+| Helper | Source | Usage |
+|--------|--------|-------|
+| `ensureAutoGearGlobal` | `AutoGear` namespace | Ensures Auto-Gear globals exist with fallbacks |
+| `repairAutoGearGlobals` | `AutoGear` namespace | Repairs all Auto-Gear globals on startup |
+| `AUTO_GEAR_GLOBAL_FALLBACKS` | `AutoGear` namespace | Default values for Auto-Gear globals |
+
+### Global Fallbacks
+
+The Auto-Gear engine relies on several global variables that may not be defined at boot:
+
+```javascript
+import { AutoGear } from './helpers/auto-gear.js';
+
+// Ensure a global exists before use
+AutoGear.ensure('autoGearRules', () => []);
+
+// Repair all Auto-Gear globals on startup
+AutoGear.repair();
+```
+
+---
+
+## Related Architecture
+
+- [Runtime Environment](runtime-environment.md) — Auto-Gear helper utilities
+- [Storage Layer](storage-layer.md) — Auto-Gear persistence (`cine_autogear:` keys)
+- [Module Registry](module-registry.md) — Auto-Gear module registration
+

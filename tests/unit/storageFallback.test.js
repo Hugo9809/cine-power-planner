@@ -380,6 +380,7 @@ describe('SAFE_LOCAL_STORAGE compressed entry handling', () => {
   });
 
   test('recovers from backup when compressed primary value cannot be decoded', () => {
+    jest.doMock('lz-string', () => null);
     let storageModule = require('../../src/scripts/storage');
     if (storageModule && storageModule.default) {
       storageModule = storageModule.default;

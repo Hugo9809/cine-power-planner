@@ -22,6 +22,26 @@ module must follow.
    instantiation that logs load order, validates exports and captures failures
    without corrupting persistence state.
 
+```mermaid
+graph TD
+    subgraph Boot
+        K[architecture-kernel.js] --> R[registry.js]
+        R --> C[architecture-core.js]
+        C --> H[architecture-helpers.js]
+    end
+    
+    subgraph Resolution
+        H --> M1[cineModuleBase]
+        M1 --> M2[cinePersistence]
+        M1 --> M3[cineRuntime]
+        M2 --> M4[Feature Modules]
+        M3 --> M4
+    end
+    
+    style K fill:#4a9eff,color:#fff
+    style R fill:#4a9eff,color:#fff
+```
+
 ## Available tokens
 
 The following canonical tokens are registered with the module registry. These

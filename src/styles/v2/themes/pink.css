@@ -9,10 +9,10 @@ body.pink-mode {
     /* =====================
    * BRAND COLORS
    * ===================== */
-    --v2-brand-blue: #ff69b4;
-    --v2-brand-blue-hover: #f255a8;
-    --v2-brand-blue-active: #d1308a;
-    --v2-brand-blue-dark: #b0267a;
+    --v2-brand-blue: #f255a8;
+    --v2-brand-blue-hover: #d1308a;
+    --v2-brand-blue-active: #b0267a;
+    --v2-brand-blue-dark: #8a1c5e;
 
     /* Global Accent Mapping */
     --v2-accent-color: var(--v2-brand-blue);

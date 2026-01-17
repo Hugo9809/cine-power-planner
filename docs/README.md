@@ -87,6 +87,8 @@ See [Development & Maintenance Guide](dev/development.md#vite-build-system) for 
   - [Application Lifecycle](dev/architecture/application-lifecycle.md)
   - [Design System & Tokens](dev/architecture/design-system.md)
   - [Module Registry](dev/architecture/module-registry.md)
+  - [Runtime Environment](dev/architecture/runtime-environment.md)
+  - [Storage Layer](dev/architecture/storage-layer.md)
   - [Data Catalog Maintenance](dev/data-catalog-maintenance.md)
   - [Release Management](dev/release-management.md)
   - [Debugging Guide](dev/debugging-guide.md)

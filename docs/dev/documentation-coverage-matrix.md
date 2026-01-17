@@ -18,6 +18,8 @@ whenever you ship a feature, adjust persistence logic or revise workflows.
 | Docs/schema-inventory.md | Engineering | 2026-01-13 | JSON shape definitions for persistence payloads. | Exported schema diff, console log of validation pass. |
 | Docs/api-quick-reference.md | Engineering | 2026-01-13 | Internal API reference for developers. | N/A (Internal). |
 | Docs/architecture/v2-views.md | Engineering | 2026-01-13 | V2 UI architecture and routing. | N/A (Internal). |
+| Docs/architecture/runtime-environment.md | Engineering | 2026-01-17 | ESM runtime helpers, scope detection, freeze registry. | N/A (Internal). |
+| Docs/architecture/storage-layer.md | Engineering | 2026-01-17 | Twin-store pattern, key prefixes, migration strategy. | N/A (Internal). |
 | Docs/pink-mode-reference.md | Product | 2025-12-22 | Animations, triggers, stickers and celebratory rain events. | Console capture of rain effect, Lottie asset manifest check. |
 
 ## How to use the matrix

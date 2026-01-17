@@ -58,3 +58,23 @@ The app automatically migrates data on startup via `StorageMigrationService.js`.
 *   **Destination**: IndexedDB store `keyval` (Sharded records).
 *   **Trigger**: On boot, if `cine_project_index` is empty but legacy localstorage exists.
 *   **Safety**: The legacy `localStorage` data is **NOT deleted** after migration, serving as a disaster recovery backup.
+
+---
+
+## Storage Key Prefixes
+
+| Prefix | Purpose | Example |
+|--------|---------|---------|
+| `cine_project:` | Individual project data | `cine_project:abc-123-def` |
+| `cine_project_index` | Project listing index | — |
+| `cine_autogear:` | Auto-Gear rules and presets | `cine_autogear:rules` |
+| `cine_contacts:` | Contact records | `cine_contacts:index` |
+| `cine_backup:` | Backup vault entries | `cine_backup:timestamp` |
+
+---
+
+## Related Architecture
+
+*   [Runtime Environment](runtime-environment.md) — Global scope utilities used by storage
+*   [Module Registry](module-registry.md) — Module registration for `cinePersistence`
+

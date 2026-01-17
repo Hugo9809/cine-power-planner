@@ -2671,6 +2671,17 @@ function downloadBackupPayload(payload, fileName, options = {}) {
     return failureResult;
   }
 
+  // [Debug] Validate payload integrity
+  try {
+    JSON.parse(payload);
+  } catch (parseError) {
+    console.error('Corruption Detected: Generated backup payload is not valid JSON', parseError);
+    if (typeof showNotification === 'function') {
+      showNotification('error', 'Backup failed: Data corruption detected during export.');
+    }
+    return failureResult;
+  }
+
   let blob = null;
   if (typeof Blob !== 'undefined') {
     try {
@@ -2924,5 +2935,5 @@ globalExports.forEach(([name, value]) => {
 });
 // }) ();
 
-export { backupAPI as cineFeatureBackup };
+export { backupAPI as cineFeatureBackup, downloadBackupPayload };
 export default backupAPI;

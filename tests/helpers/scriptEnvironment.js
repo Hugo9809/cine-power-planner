@@ -248,21 +248,26 @@ function setupScriptEnvironment(options = {}) {
 
 
   if (typeof localStorage !== 'undefined') {
-    const originalGetItem = localStorage.getItem.bind(localStorage);
-    const originalSetItem = localStorage.setItem.bind(localStorage);
-    const originalRemoveItem = localStorage.removeItem.bind(localStorage);
-    localStorage.getItem = (key) => {
-      // console.log('localStorage.getItem:', key);
-      return originalGetItem(key);
-    };
-    localStorage.setItem = (key, value) => {
-      console.log('localStorage.setItem:', key, typeof value === 'string' ? value.substring(0, 50) + '...' : value);
-      originalSetItem(key, value);
-    };
-    localStorage.removeItem = (key) => {
-      console.log('localStorage.removeItem:', key);
-      originalRemoveItem(key);
-    };
+    try {
+      const originalGetItem = localStorage.getItem.bind(localStorage);
+      const originalSetItem = localStorage.setItem.bind(localStorage);
+      const originalRemoveItem = localStorage.removeItem.bind(localStorage);
+      localStorage.getItem = (key) => {
+        // console.log('localStorage.getItem:', key);
+        return originalGetItem(key);
+      };
+      localStorage.setItem = (key, value) => {
+        console.log('localStorage.setItem:', key, typeof value === 'string' ? value.substring(0, 50) + '...' : value);
+        originalSetItem(key, value);
+      };
+      localStorage.removeItem = (key) => {
+        console.log('localStorage.removeItem:', key);
+        originalRemoveItem(key);
+      };
+    } catch (localStorageOverrideError) {
+      // JSDOM may freeze localStorage properties; skip override if not writable
+      console.warn('Could not override localStorage methods:', localStorageOverrideError.message);
+    }
   }
 
   if (options.injectHtml === false) {

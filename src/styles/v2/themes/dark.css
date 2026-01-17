@@ -49,9 +49,9 @@ body.dark-mode {
        But reset text links to white.
        Let's stick to the previous defined blue but ensure text on top of it is white.
     */
-    --v2-brand-blue: #001589;
-    --v2-brand-blue-hover: #00106a;
-    --v2-brand-blue-active: #000a4b;
+    --v2-brand-blue: #3d5afe;
+    --v2-brand-blue-hover: #5c7cfa;
+    --v2-brand-blue-active: #7ea3ff;
 
     --v2-accent-color: var(--v2-brand-blue);
     --v2-header-color: var(--v2-text-primary);

@@ -47,3 +47,41 @@ When a V2 Component needs to trigger legacy logic (e.g., recalculating power):
 When porting legacy logic:
 1.  **Do NOT delete** valid global variables in `legacy-globals-shim.js` until *every* reference is removed.
 2.  **Use `globalThis`** when accessing them in modern modules to signal intent.
+
+---
+
+## Runtime Environment Integration
+
+The [Runtime Environment](runtime-environment.md) module provides utilities for safe legacy integration:
+
+| Utility | Purpose |
+|---------|---------|
+| `Global.read(name)` | Safely read a global without throwing |
+| `Global.write(name, value)` | Safely write a global |
+| `Global.ensure(name, fallback)` | Ensure global exists with fallback |
+| `Helpers.detectGlobalScope()` | Get the best available global object |
+| `Helpers.collectCandidateScopes()` | Gather all candidate scopes |
+
+### Example: Bridging ESM to Legacy
+
+```javascript
+import { Global, Helpers } from './modules/runtime-environment.js';
+
+// Safe global read
+const devices = Global.read('devices') || [];
+
+// Ensure a global fallback exists
+Global.ensure('sessionState', () => ({ projects: [] }));
+
+// Detect scope for cross-environment code
+const scope = Helpers.detectGlobalScope();
+```
+
+---
+
+## Related Architecture
+
+- [Runtime Environment](runtime-environment.md) — Safe global access utilities
+- [Storage Layer](storage-layer.md) — Twin-store pattern for persistence
+- [Module Registry](module-registry.md) — Module registration and lookup
+

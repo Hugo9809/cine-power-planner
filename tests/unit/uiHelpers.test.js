@@ -2,7 +2,6 @@ import {
     escapeHtml,
     escapeButtonLabelSafely,
     resolveButtonIconMarkup,
-    setButtonLabelWithIcon,
     whenElementAvailable
 } from '../../src/scripts/modules/ui-helpers.js';
 
@@ -55,12 +54,7 @@ describe('UI Helpers Module', () => {
 
     describe('escapeButtonLabelSafely', () => {
         it('returns empty string for non-strings', () => {
-            expect(escapeButtonLabelSafely(123)).toBe('123'); // Oh wait, implementation does String(text) at the end fall back
-            // Let's check implementation again:
-            // if (typeof text !== 'string' || text === '') return '';
-            // So numbers should effectively return '' ? No.
-            // Wait, the implementation says:
-            // if (typeof text !== 'string' || text === '') { return ''; }
+            expect(escapeButtonLabelSafely(123)).toBe('');
         });
 
         it('escapes dangerous characters', () => {

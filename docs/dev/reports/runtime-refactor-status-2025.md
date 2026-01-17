@@ -1,5 +1,26 @@
 # Runtime Refactor Status
 
+> **Status**: Step 24 Complete (Environment Module Migration)
+> **Last Updated**: 2026-01-17
+> **Next Phase**: Storage test mock verification
+
+---
+
+## Quick Navigation
+
+| Phase | Steps | Status |
+|-------|-------|--------|
+| Runtime Helpers | 1-3 | ✅ Complete |
+| Localization | 4-5 | ✅ Complete |
+| State Extraction | 6-10 | ✅ Complete |
+| Pink Mode | 11-12, 16 | ✅ Complete |
+| Scope Helpers | 13-15 | ✅ Complete |
+| Consolidation | 17-19 | ✅ Complete |
+| UI Helpers | 20-23 | ✅ Complete |
+| Environment | 24 | ✅ Complete |
+
+---
+
 ## Step 1 – Runtime environment helpers
 
 | File | Previous lines | Current lines | Delta |
@@ -207,8 +228,6 @@
 - Added the mirrored legacy bridge so older bundles reuse the same orchestration without regressing ES5 compatibility during offline cache hydration.【F:legacy/scripts/modules/app-core/pink-mode-support-bridge.js†L1-L449】【F:legacy/scripts/app-core-new-1.js†L73-L155】
 - Updated the bundler manifests, loader, script aggregator, and service worker asset list to ship the bridge in all environments, preserving offline availability and script integrity checks.【F:src/scripts/script.js†L39-L47】【F:legacy/scripts/script.js†L1-L4】【F:src/scripts/loader.js†L3176-L3193】【F:legacy/scripts/loader.js†L2662-L2666】【F:service-worker-assets.js†L80-L118】【F:service-worker-assets.js†L236-L270】
 
-
-
 ## Step 17 – Helper consolidation
 
 | File | Previous lines | Current lines | Delta |
@@ -276,3 +295,77 @@
 - Extracted text normalization and resolution logic into a pure ESM module `src/scripts/modules/text.js`.
 - Refactored `app-core-text.js` to act as a backwards-compatibility shim that imports the new module and exposes the legacy global namespace `cineCoreTextEntries`.
 - Verified the migration with a new unit test suite `tests/unit/textUtils.test.js`.
+
+## Step 22 - UI Helpers utility migration
+
+| File | Previous lines | Current lines | Delta |
+| --- | --- | --- | --- |
+| `src/scripts/core/app-core-ui-helpers.js` | 465 | 74 | -391 |
+| `src/scripts/modules/ui-helpers.js` | – | 329 | +329 |
+
+*Notes:*
+
+- Extracted DOM manipulation, HTML escaping, and icon resolution logic into a pure ESM module `src/scripts/modules/ui-helpers.js`.
+- Refactored `app-core-ui-helpers.js` to act as a backwards-compatibility shim that imports the new module and exposes the legacy global namespace `cineCoreUiHelpers`.
+- Included legacy adapters for `resolveButtonIconMarkup` and `setButtonLabelWithIcon` to inject global `iconMarkup` dependencies if present.
+- Verified the migration with a new unit test suite `tests/unit/uiHelpers.test.js`.
+
+### Step 23 - Runtime Support migration
+
+Migration of `app-core-runtime-support.js` and dependencies.
+- **New Modules**:
+  - `src/scripts/modules/device-schema.js`: Device schema loading and caching.
+  - `src/scripts/modules/runtime-module-loader.js`: Module resolution logic.
+  - `src/scripts/modules/runtime-support.js`: Aggregate module.
+- **Legacy Shims**:
+  - `src/scripts/core/app-core-runtime-support.js`
+  - `src/scripts/core/modules/core/device-schema.js`
+  - `src/scripts/core/modules/core/runtime-module-loader.js`
+- **Changes**: Decomposed the runtime support stack into focused ESM modules. `runtime-support.js` now serves as the central entry point for text, UI, device schema, and loader utilities. The legacy `app-core-runtime-support.js` shim maintains backward compatibility by exposing globals like `CORE_DEVICE_SCHEMA`.
+
+### Step 24 - Environment Module Migration (Ongoing)
+
+- **Extracted Modules**:
+  - `src/scripts/modules/helpers/scope-utils.js` (Existing utility leveraged)
+  - `src/scripts/modules/helpers/freeze-registry.js` (Frozen object tracking)
+  - `src/scripts/modules/helpers/global-scope.js` (Global value read/write/ensure)
+  - `src/scripts/modules/helpers/auto-gear.js` (Auto Gear global fallbacks)
+  - `src/scripts/modules/helpers/icons.js` (Icon fonts and SVG utilities)
+  - `src/scripts/modules/helpers/connectors.js` (Connector summary generation)
+  - `src/scripts/modules/runtime-environment.js` (Aggregates all helpers)
+- **Legacy Shim (Updated)**:
+  - `src/scripts/core/app-core-environment.js` refactored to check global state and import from new ESM modules.
+- **Verification**:
+  - Created 33 new unit tests across `freezeRegistry.test.js`, `globalScope.test.js`, `autoGear.test.js`, `icons.test.js`, and `connectors.test.js`.
+  - All tests passing.
+  - Verified backward compatibility via `runtimeSupport.test.js`.
+
+### Step 25 - UI Feedback Migration (Complete)
+
+- **Extracted Modules**:
+  - `src/scripts/modules/ui-feedback.js`: Manages the global loading overlay.
+- **Legacy Shim (Updated)**:
+  - `src/scripts/ui-feedback.js`: Refactored to import from the new module and expose `window.cineUiFeedback` for backward compatibility.
+- **Verification**:
+  - Created `tests/unit/uiFeedback.test.js`.
+  - Verified functionality of both the new module and the legacy global shim.
+
+### Step 26 - Console Helpers Migration (Complete)
+
+- **Extracted Modules**:
+  - `src/scripts/modules/console-helpers.js`: Utilities for ensuring console methods are writable.
+- **Legacy Shim (Updated)**:
+  - `src/scripts/console-helpers.js`: Refactored to import from the new module and expose `window.__cineEnsureConsoleMethodsWritable` for backward compatibility.
+- **Verification**:
+  - Created `tests/unit/consoleHelpers.test.js`.
+  - Verified presence of global shim and module functionality.
+
+### Step 27 - Emergency Modal Cleanup Migration (Complete)
+
+- **Extracted Modules**:
+  - `src/scripts/modules/emergency-modal-cleanup.js`: Utilities for closing stuck dialogs on load.
+- **Legacy Shim (Updated)**:
+  - `src/scripts/emergency-modal-cleanup.js`: Refactored to import from the new module while retaining auto-execution logic.
+- **Verification**:
+  - Created `tests/unit/emergencyModalCleanup.test.js`.
+  - Verified dialog closing logic handling both standard dialogs and app-modals.

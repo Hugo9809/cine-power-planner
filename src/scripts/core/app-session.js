@@ -11935,8 +11935,16 @@ async function buildSettingsBackupPackage(timestamp = new Date()) {
     generatedAt: iso,
     settings,
     sessionStorage: Object.keys(sessionEntries).length ? sessionEntries : undefined,
-    data: backupData,
+    data: backupData || {},
   };
+
+  // [Debug] Log export stats
+  const dataKeys = backup.data ? Object.keys(backup.data) : [];
+  console.log(`[Backup] Generated package with ${dataKeys.length} keys`, dataKeys);
+  if (dataKeys.length === 0) {
+    console.warn('[Backup] Warning: Backup data object is empty.');
+  }
+
   if (Array.isArray(diagnostics) && diagnostics.length) {
     backup.diagnostics = diagnostics;
   }

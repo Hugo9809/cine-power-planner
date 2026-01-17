@@ -1,13 +1,39 @@
 const path = require('path');
 
+// Mock StorageRepository at the module level so all imports get the same mock
+jest.mock('../../src/scripts/modules/storage/StorageRepository.js', () => ({
+  storageRepo: {
+    initialized: true,
+    instanceId: 'mock-instance',
+    getItem: jest.fn(),
+    setItem: jest.fn().mockResolvedValue(),
+    removeItem: jest.fn().mockResolvedValue(),
+    getKeys: jest.fn().mockResolvedValue([]),
+    getProjectKeys: jest.fn().mockResolvedValue([]),
+    init: jest.fn().mockResolvedValue(),
+  },
+  StorageRepository: jest.fn(),
+}));
+
+// Mock UserContext
+jest.mock('../../src/scripts/modules/core/UserContext.js', () => ({
+  userContext: {
+    userId: 'test-user',
+    deviceId: 'test-device',
+    sessionId: 'test-session',
+    getUserId: jest.fn(() => 'test-user'),
+    getScopedKey: jest.fn((key) => `user_test-user_${key}`),
+    init: jest.fn().mockResolvedValue(),
+  },
+}));
+
 describe('auto gear storage helpers', () => {
   let storage;
   let autoGearService;
   let storageRepo;
-  let userContext;
 
   beforeEach(async () => {
-    jest.resetModules();
+    // Set up globals required by normalizers
     global.AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE = 1;
     global.AUTO_GEAR_BACKUP_RETENTION_MAX = 50;
     global.AUTO_GEAR_BACKUP_RETENTION_DEFAULT = 10;
@@ -28,21 +54,26 @@ describe('auto gear storage helpers', () => {
     });
     global.currentLang = 'en';
     global.document = { getElementById: () => null };
-    // Ensure normalizers are loaded so shared helpers exist.
+
+    // Load normalizers to set up shared globals
     require(path.join(__dirname, '../../src/scripts/auto-gear/normalizers.js'));
+
+    // Get the mocked storageRepo
+    ({ storageRepo } = require('../../src/scripts/modules/storage/StorageRepository.js'));
+
+    // Clear mock call history
+    storageRepo.getItem.mockClear();
+    storageRepo.setItem.mockClear();
+    storageRepo.removeItem.mockClear();
+
+    // Import AutoGearService (it uses the mocked storageRepo)
     ({ autoGearService } = await import('../../src/scripts/modules/persistence/AutoGearService.js'));
-    ({ storageRepo } = await import('../../src/scripts/modules/storage/StorageRepository.js'));
-    ({ userContext } = await import('../../src/scripts/modules/core/UserContext.js'));
-    userContext.userId = 'test-user';
-    userContext.deviceId = 'test-device';
-    userContext.sessionId = 'test-session';
-    storageRepo.initialized = true;
-    storageRepo.getItem = jest.fn();
-    storageRepo.setItem = jest.fn().mockResolvedValue();
-    storageRepo.removeItem = jest.fn().mockResolvedValue();
     autoGearService.__internalResetCache();
+
+    // Load the storage helpers
     storage = require(path.join(__dirname, '../../src/scripts/auto-gear/storage.js'));
-    localStorage.clear();
+
+    // Clean up legacy globals
     delete global.loadAutoGearBackups;
     delete global.saveAutoGearBackups;
   });
@@ -65,17 +96,9 @@ describe('auto gear storage helpers', () => {
     delete global.getLanguageTexts;
     delete global.currentLang;
     delete global.document;
+
     if (autoGearService) {
       autoGearService.__internalResetCache();
-    }
-    if (storageRepo) {
-      storageRepo.initialized = false;
-      storageRepo.driver = null;
-    }
-    if (userContext) {
-      userContext.userId = null;
-      userContext.deviceId = null;
-      userContext.sessionId = null;
     }
   });
 
@@ -91,6 +114,7 @@ describe('auto gear storage helpers', () => {
       { id: 'b', createdAt: now, rules: [{ label: 'B' }], monitorDefaults: { focus: 'B' } },
       { id: 'a', createdAt: '2021-01-01T00:00:00Z', rules: [{ label: 'A' }], monitorDefaults: {} },
     ];
+
     storageRepo.getItem.mockImplementation(async (key) => {
       if (key === 'cameraPowerPlanner_autoGearBackups') {
         return payload;
@@ -117,6 +141,7 @@ describe('auto gear storage helpers', () => {
 
     const stored = storage.persistAutoGearBackups(input);
     await new Promise(resolve => setImmediate(resolve));
+
     expect(storageRepo.setItem).toHaveBeenCalledWith(
       'cameraPowerPlanner_autoGearBackups',
       expect.any(Array),

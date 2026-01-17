@@ -139,6 +139,26 @@ When working with global state or bridging modules, follow these rules to avoid 
 2. **Use `typeof` Guards**: Never access a potential global variable directly without a `typeof` check if it might not be defined.
 3. **Registry Over Globals**: Prefer registering your API with the `cineModules` registry via `cineModuleBase.registerOrQueueModule` instead of attaching raw objects to `window`.
 
+### ESM/Legacy Interop Quick Reference
+
+| Pattern | ESM Module | Legacy/IIFE | Notes |
+|---------|-----------|-------------|-------|
+| **Import from ESM** | `import { fn } from './module.js'` | Use `cineModules.get('moduleName')` | Registry lookup is safer |
+| **Expose to Legacy** | `window.myFn = myFn` in ESM | Access via `window.myFn` | Check with `typeof` first |
+| **Safe Global Read** | `Global.read('name')` | `typeof window.name !== 'undefined' ? window.name : null` | From `runtime-environment.js` |
+| **Registry Registration** | `cineModules.register('name', api)` | Same | Works in both contexts |
+| **Deferred Init** | `enqueueCoreBootTask(callback)` | Same | Ensures DOM ready |
+
+### Debugging Cheatsheet
+
+| Symptom | Likely Cause | Quick Fix |
+|---------|-------------|-----------|
+| `ReferenceError: X is not defined` | Module not loaded yet | Use `typeof` guard or boot queue |
+| `Cannot use import statement` | ESM loaded as script | Import via `main.js` not `<script>` |
+| `Module provides no export` | Circular import or typo | Check export name spelling |
+| `Storage writes lost` | Direct IDB write | Use `cinePersistence` manager |
+| `undefined` from cache | Cache not hydrated | Check hydration timing |
+
 ### Troubleshooting Common Issues
 
 #### "SyntaxError: Cannot use import statement outside a module"

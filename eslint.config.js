@@ -171,4 +171,21 @@ export default [
     {
         ignores: ['**/*.cjs'],
     },
+    // Ensure Jest globals and ESM support for tests (overriding previous matches)
+    {
+        files: ['tests/**/*.js'],
+        languageOptions: {
+            sourceType: 'module',
+            globals: {
+                ...globals.jest,
+                ...globals.node,
+                ...globals.browser,
+            },
+        },
+        rules: {
+            'no-unused-vars': 'off',
+            'no-empty': 'off',
+            'no-undef': 'off', // Should be handled by globals, but safety first for legacy code
+        },
+    },
 ];

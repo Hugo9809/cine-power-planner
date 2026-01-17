@@ -1,139 +1,32 @@
 /*
  * Cine Power Planner runtime support bridge.
  *
- * This module extracts the shared runtime support helpers from the
- * oversized `app-core-new-1.js` bundle so the ongoing refactor can
- * proceed in smaller, reviewable steps without risking regressions.
+ * MIGRATION NOTE: Logic extracted to `src/scripts/modules/runtime-support.js`.
+ * This file remains as a backwards-compatibility shim.
  */
 import { CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE, collectRuntimeScopeCandidates } from './app-core-runtime-scopes.js';
-/* Keeping the resolvers and fallbacks together ensures autosave,
- * sharing, backup, and restore routines keep working flawlessly
- * across online and offline environments while we continue splitting
- * the monolith. Please retain this banner until the refactor is
- * complete so Git keeps treating this file as intentionally new.
- */
+import {
+  DeviceSchema as CoreDeviceSchema,
+  Loader as RuntimeLoader,
+  Text as CoreText,
+  CORE_TEMPERATURE_STORAGE_KEY_FALLBACK,
+  resolvePreferredTemperatureStorageKey
+} from '../modules/runtime-support.js';
 
-function resolveCoreDeviceSchemaNamespace() {
-  if (typeof collectRuntimeScopeCandidates !== 'function') {
-    return null;
-  }
-  const candidates = collectRuntimeScopeCandidates();
+// --- Device Schema ---
+export var CORE_DEVICE_SCHEMA = CoreDeviceSchema;
 
-  for (let index = 0; index < candidates.length; index += 1) {
-    const scope = candidates[index];
-    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
-      continue;
-    }
-
-    try {
-      if (scope.CORE_DEVICE_SCHEMA && typeof scope.CORE_DEVICE_SCHEMA === 'object') {
-        return scope.CORE_DEVICE_SCHEMA;
-      }
-    } catch (coreDeviceSchemaLookupError) {
-      void coreDeviceSchemaLookupError;
-    }
-
-    try {
-      if (scope.cineCoreDeviceSchema && typeof scope.cineCoreDeviceSchema === 'object') {
-        return scope.cineCoreDeviceSchema;
-      }
-    } catch (cineCoreDeviceSchemaLookupError) {
-      void cineCoreDeviceSchemaLookupError;
-    }
-  }
-
-  // if (typeof require === 'function') {
-  //   try {
-  //     const moduleNamespace = require('./modules/core/device-schema.js');
-  //     if (moduleNamespace && typeof moduleNamespace === 'object') {
-  //       return moduleNamespace;
-  //     }
-  //   } catch (coreDeviceSchemaRequireError) {
-  //     void coreDeviceSchemaRequireError;
-  //   }
-  // }
-
-  return null;
-}
-
-export var CORE_DEVICE_SCHEMA = resolveCoreDeviceSchemaNamespace();
-
-function resolveRuntimeModuleLoader() {
-  function readLoaderFromScope(scope) {
-    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
-      return null;
-    }
-
-    try {
-      const loader = scope.cineCoreRuntimeModuleLoader;
-      return loader && typeof loader === 'object' ? loader : null;
-    } catch (loaderLookupError) {
-      void loaderLookupError;
-    }
-
-    return null;
-  }
-
-  if (
-    typeof cineCoreRuntimeModuleLoader !== 'undefined' &&
-    cineCoreRuntimeModuleLoader &&
-    typeof cineCoreRuntimeModuleLoader === 'object'
-  ) {
-    return cineCoreRuntimeModuleLoader;
-  }
-
-  if (typeof collectRuntimeScopeCandidates !== 'function') {
-    return null;
-  }
-  const candidates = collectRuntimeScopeCandidates();
-  for (let index = 0; index < candidates.length; index += 1) {
-    const loader = readLoaderFromScope(candidates[index]);
-    if (loader) {
-      return loader;
-    }
-  }
-
-  // if (typeof require === 'function') {
-  //   try {
-  //     const requiredLoader = require('./modules/core/runtime-module-loader.js');
-  //     if (requiredLoader && typeof requiredLoader === 'object') {
-  //       return requiredLoader;
-  //     }
-  //   } catch (runtimeLoaderError) {
-  //     void runtimeLoaderError;
-  //   }
-  // }
-
-  for (let index = 0; index < candidates.length; index += 1) {
-    const loader = readLoaderFromScope(candidates[index]);
-    if (loader) {
-      return loader;
-    }
-  }
-
-  return null;
+// --- Runtime Module Loader ---
+export function resolveRuntimeModuleLoader() {
+  return RuntimeLoader;
 }
 
 function requireCoreRuntimeModule(moduleId, options) {
-  const loader = resolveRuntimeModuleLoader();
-  if (
-    loader &&
-    typeof loader.resolveCoreRuntimeModule === 'function'
-  ) {
-    try {
-      const resolved = loader.resolveCoreRuntimeModule(moduleId, options);
-      if (resolved && typeof resolved === 'object') {
-        return resolved;
-      }
-      return resolved;
-    } catch (moduleResolutionError) {
-      void moduleResolutionError;
-    }
-  }
-
-  return null;
+  // Basic shim for require-like behavior if needed by legacy code in this file
+  return RuntimeLoader.resolveCoreRuntimeModule(moduleId, options);
 }
 
+// --- Runtime Support Bootstrap (Not yet full migrated, keeping shim logic) ---
 export const CORE_RUNTIME_SUPPORT_BOOTSTRAP = (function resolveRuntimeSupportBootstrap() {
   const namespaceName = 'cineCoreRuntimeSupportBootstrap';
 
@@ -219,10 +112,6 @@ export const CORE_RUNTIME_SUPPORT_RESOLUTION = (function resolveRuntimeSupportRe
   }
 
   const requiredResolution = null;
-  //   const requiredResolution = requireCoreRuntimeModule(
-  //     'modules/core/runtime-support-resolution.js',
-  //     { primaryScope: CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE }
-  //   );
   if (requiredResolution && typeof requiredResolution === 'object') {
     return requiredResolution;
   }
@@ -237,225 +126,14 @@ export const CORE_RUNTIME_SUPPORT_RESOLUTION = (function resolveRuntimeSupportRe
   return null;
 })();
 
-export const CORE_TEXT_ENTRY_TOOLS = (function resolveCoreTextEntryTools() {
-  const namespaceName = 'cineCoreTextEntries';
+// --- Text Entry Tools ---
+export const CORE_TEXT_ENTRY_TOOLS = CoreText;
+export const CORE_TEXT_ENTRY_SEPARATOR = CoreText.TEXT_ENTRY_SEPARATOR;
+export const normaliseTextEntryValue = CoreText.normaliseTextEntryValue;
+export const resolveTextEntryRuntime = CoreText.resolveTextEntry;
 
-  if (
-    typeof cineCoreTextEntries !== 'undefined' &&
-    cineCoreTextEntries &&
-    typeof cineCoreTextEntries === 'object'
-  ) {
-    return cineCoreTextEntries;
-  }
-
-  const candidates = typeof collectRuntimeScopeCandidates === 'function' ? collectRuntimeScopeCandidates() : [];
-
-  for (let index = 0; index < candidates.length; index += 1) {
-    const scope = candidates[index];
-    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
-      continue;
-    }
-
-    try {
-      const tools = scope[namespaceName];
-      if (tools && typeof tools === 'object') {
-        return tools;
-      }
-    } catch (namespaceLookupError) {
-      void namespaceLookupError;
-    }
-  }
-
-  // if (typeof require === 'function') {
-  //   try {
-  //     const requiredTools = require('./app-core-text.js');
-  //     if (requiredTools && typeof requiredTools === 'object') {
-  //       return requiredTools;
-  //     }
-  //   } catch (textEntriesRequireError) {
-  //     void textEntriesRequireError;
-  //   }
-  // }
-
-  return null;
-})();
-
-export const CORE_TEXT_ENTRY_SEPARATOR =
-  CORE_TEXT_ENTRY_TOOLS &&
-    typeof CORE_TEXT_ENTRY_TOOLS.TEXT_ENTRY_SEPARATOR === 'string' &&
-    CORE_TEXT_ENTRY_TOOLS.TEXT_ENTRY_SEPARATOR
-    ? CORE_TEXT_ENTRY_TOOLS.TEXT_ENTRY_SEPARATOR
-    : '\n';
-
-function inlineNormaliseTextEntryValue(entry) {
-  if (typeof entry === 'string') {
-    return entry;
-  }
-
-  if (typeof entry === 'number' || typeof entry === 'boolean') {
-    try {
-      return String(entry);
-    } catch (stringifyPrimitiveError) {
-      void stringifyPrimitiveError;
-    }
-    return '';
-  }
-
-  if (Array.isArray(entry)) {
-    const parts = [];
-    for (let index = 0; index < entry.length; index += 1) {
-      const value = inlineNormaliseTextEntryValue(entry[index]);
-      if (value) {
-        parts.push(value);
-      }
-    }
-    return parts.join(CORE_TEXT_ENTRY_SEPARATOR);
-  }
-
-  if (entry && typeof entry === 'object') {
-    if (typeof entry.text === 'string') {
-      return entry.text;
-    }
-
-    if (Array.isArray(entry.text)) {
-      return inlineNormaliseTextEntryValue(entry.text);
-    }
-
-    if (typeof entry.label === 'string') {
-      return entry.label;
-    }
-
-    try {
-      const objectString = String(entry);
-      if (objectString && objectString !== '[object Object]') {
-        return objectString;
-      }
-    } catch (stringifyObjectError) {
-      void stringifyObjectError;
-    }
-  }
-
-  return '';
-}
-
-function inlineResolveTextEntry(primaryTexts, fallbackTexts, key, defaultValue = '') {
-  const normalizedDefault = typeof defaultValue === 'string' ? defaultValue : '';
-  const dictionaries = [];
-
-  if (primaryTexts && (typeof primaryTexts === 'object' || typeof primaryTexts === 'function')) {
-    dictionaries.push(primaryTexts);
-  }
-
-  if (
-    fallbackTexts &&
-    fallbackTexts !== primaryTexts &&
-    (typeof fallbackTexts === 'object' || typeof fallbackTexts === 'function')
-  ) {
-    dictionaries.push(fallbackTexts);
-  }
-
-  for (let index = 0; index < dictionaries.length; index += 1) {
-    const dictionary = dictionaries[index];
-
-    let entry;
-    try {
-      entry = dictionary[key];
-    } catch (dictionaryLookupError) {
-      void dictionaryLookupError;
-      entry = undefined;
-    }
-
-    if (typeof entry === 'undefined' || entry === null) {
-      continue;
-    }
-
-    const resolved = inlineNormaliseTextEntryValue(entry);
-    if (typeof resolved === 'string') {
-      return resolved;
-    }
-  }
-
-  return normalizedDefault;
-}
-
-export const normaliseTextEntryValue =
-  CORE_TEXT_ENTRY_TOOLS && typeof CORE_TEXT_ENTRY_TOOLS.normaliseTextEntryValue === 'function'
-    ? function normaliseTextEntryValueProxy(entry) {
-      return CORE_TEXT_ENTRY_TOOLS.normaliseTextEntryValue(entry, CORE_TEXT_ENTRY_SEPARATOR);
-    }
-    : inlineNormaliseTextEntryValue;
-
-export const resolveTextEntryRuntime =
-  CORE_TEXT_ENTRY_TOOLS && typeof CORE_TEXT_ENTRY_TOOLS.resolveTextEntry === 'function'
-    ? function resolveTextEntryProxy(
-      primaryTexts,
-      fallbackTexts,
-      key,
-      defaultValue = ''
-    ) {
-      return CORE_TEXT_ENTRY_TOOLS.resolveTextEntry(
-        primaryTexts,
-        fallbackTexts,
-        key,
-        defaultValue,
-        CORE_TEXT_ENTRY_SEPARATOR
-      );
-    }
-    : inlineResolveTextEntry;
-
-const resolveTextEntryInternal = (function ensureResolveTextEntryAvailability(resolver) {
-  const candidateScopes = [
-    CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE,
-    typeof CORE_GLOBAL_SCOPE === 'object' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null,
-    typeof globalThis !== 'undefined' ? globalThis : null,
-    typeof window !== 'undefined' ? window : null,
-    typeof self !== 'undefined' ? self : null,
-    typeof global !== 'undefined' ? global : null,
-  ];
-
-  for (let index = 0; index < candidateScopes.length; index += 1) {
-    const scope = candidateScopes[index];
-    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
-      continue;
-    }
-
-    try {
-      if (typeof scope.resolveTextEntry === 'function') {
-        return scope.resolveTextEntry;
-      }
-    } catch (scopeLookupError) {
-      void scopeLookupError;
-    }
-  }
-
-  try {
-    if (typeof resolveTextEntry === 'function') {
-      return resolveTextEntry;
-    }
-  } catch (globalLookupError) {
-    void globalLookupError;
-  }
-
-  for (let index = 0; index < candidateScopes.length; index += 1) {
-    const scope = candidateScopes[index];
-    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
-      continue;
-    }
-
-    try {
-      scope.resolveTextEntry = resolver;
-      if (typeof scope.resolveTextEntry === 'function') {
-        return scope.resolveTextEntry;
-      }
-    } catch (assignmentError) {
-      void assignmentError;
-    }
-  }
-
-  return resolver;
-})(resolveTextEntryRuntime);
-
-// Explicitly expose resolveTextEntryInternal to global scope for cross-module access
+// Explicitly expose resolveTextEntryInternal to global scope for cross-module access (Legacy behavior)
+const resolveTextEntryInternal = CoreText.resolveTextEntry;
 (function ensureResolveTextEntryGlobal(fn) {
   if (typeof fn !== 'function') return;
   if (typeof globalThis !== 'undefined' && typeof globalThis.resolveTextEntryInternal !== 'function') {
@@ -466,89 +144,23 @@ const resolveTextEntryInternal = (function ensureResolveTextEntryAvailability(re
   }
 })(resolveTextEntryInternal);
 
-const CORE_TEMPERATURE_STORAGE_KEY_FALLBACK = 'cameraPowerPlanner_temperatureUnit';
 
-function resolvePreferredTemperatureStorageKey() {
-  const candidates = typeof collectRuntimeScopeCandidates === 'function' ? collectRuntimeScopeCandidates() : [];
-
-  for (let index = 0; index < candidates.length; index += 1) {
-    const scope = candidates[index];
-    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
-      continue;
-    }
-
-    if (typeof scope.TEMPERATURE_STORAGE_KEY === 'string' && scope.TEMPERATURE_STORAGE_KEY) {
-      return scope.TEMPERATURE_STORAGE_KEY;
-    }
-
-    if (
-      typeof scope.TEMPERATURE_UNIT_STORAGE_KEY === 'string' &&
-      scope.TEMPERATURE_UNIT_STORAGE_KEY
-    ) {
-      return scope.TEMPERATURE_UNIT_STORAGE_KEY;
-    }
-
-    if (
-      scope.CORE_SHARED &&
-      typeof scope.CORE_SHARED === 'object' &&
-      typeof scope.CORE_SHARED.TEMPERATURE_STORAGE_KEY === 'string' &&
-      scope.CORE_SHARED.TEMPERATURE_STORAGE_KEY
-    ) {
-      return scope.CORE_SHARED.TEMPERATURE_STORAGE_KEY;
-    }
-
-    if (
-      scope.__cineStorageApi &&
-      typeof scope.__cineStorageApi === 'object'
-    ) {
-      const storageApi = scope.__cineStorageApi;
-      if (
-        typeof storageApi.TEMPERATURE_STORAGE_KEY === 'string' &&
-        storageApi.TEMPERATURE_STORAGE_KEY
-      ) {
-        return storageApi.TEMPERATURE_STORAGE_KEY;
-      }
-
-      if (typeof storageApi.getTemperaturePreferenceStorageKey === 'function') {
-        try {
-          const key = storageApi.getTemperaturePreferenceStorageKey();
-          if (typeof key === 'string' && key) {
-            return key;
-          }
-        } catch (temperaturePreferenceLookupError) {
-          void temperaturePreferenceLookupError;
-        }
-      }
-    }
-
-    if (typeof scope.resolveTemperatureStorageKey === 'function') {
-      try {
-        const resolved = scope.resolveTemperatureStorageKey();
-        if (typeof resolved === 'string' && resolved) {
-          return resolved;
-        }
-      } catch (resolveTemperatureStorageKeyError) {
-        void resolveTemperatureStorageKeyError;
-      }
-    }
-  }
-
-  return CORE_TEMPERATURE_STORAGE_KEY_FALLBACK;
-}
-
+// --- Temperature Storage Key ---
 const PREEXISTING_TEMPERATURE_STORAGE_KEY =
   typeof TEMPERATURE_STORAGE_KEY === 'string' && TEMPERATURE_STORAGE_KEY
     ? TEMPERATURE_STORAGE_KEY
     : null;
 
 export const CORE_TEMPERATURE_STORAGE_KEY =
-  PREEXISTING_TEMPERATURE_STORAGE_KEY || resolvePreferredTemperatureStorageKey();
+  PREEXISTING_TEMPERATURE_STORAGE_KEY || resolvePreferredTemperatureStorageKey(collectRuntimeScopeCandidates());
 
 (function ensureTemperatureStorageKeyGlobal(key) {
   const candidates = [
     CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE,
     typeof globalThis !== 'undefined' ? globalThis : null,
     typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null, // Added self
+    typeof global !== 'undefined' ? global : null // Added global
   ];
 
   for (let index = 0; index < candidates.length; index += 1) {
@@ -568,6 +180,7 @@ export const CORE_TEMPERATURE_STORAGE_KEY =
     }
   }
 
+  // Shared scope injection
   const sharedCandidates = candidates
     .map(scope => {
       if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
@@ -605,7 +218,8 @@ export const CORE_TEMPERATURE_STORAGE_KEY =
   }
 })(CORE_TEMPERATURE_STORAGE_KEY);
 
-// [Added by Agent] Expose Boot Task Helpers
+
+// --- Boot Task Helpers ---
 (function exposeBootTaskHelpers() {
   const scope = typeof window !== 'undefined' ? window : (typeof globalThis !== 'undefined' ? globalThis : null);
   if (scope) {
@@ -621,6 +235,7 @@ export const CORE_TEMPERATURE_STORAGE_KEY =
   }
 })();
 
+// --- Runtime Resolution Defaults ---
 export const CORE_RUNTIME_SUPPORT_DEFAULTS_NAMESPACE = (function resolveRuntimeSupportDefaultsNamespace() {
   const namespaceName = 'cineCoreRuntimeSupportDefaults';
 
@@ -643,22 +258,6 @@ export const CORE_RUNTIME_SUPPORT_DEFAULTS_NAMESPACE = (function resolveRuntimeS
   }
 
   const candidates = typeof collectRuntimeScopeCandidates === 'function' ? collectRuntimeScopeCandidates() : [];
-
-  for (let index = 0; index < candidates.length; index += 1) {
-    const defaults = readFromScope(candidates[index]);
-    if (defaults) {
-      return defaults;
-    }
-  }
-
-  const requiredDefaults = null;
-  //   const requiredDefaults = requireCoreRuntimeModule(
-  //     'modules/core/runtime-support-defaults.js',
-  //     { primaryScope: CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE }
-  //   );
-  if (requiredDefaults && typeof requiredDefaults === 'object') {
-    return requiredDefaults;
-  }
 
   for (let index = 0; index < candidates.length; index += 1) {
     const defaults = readFromScope(candidates[index]);
@@ -703,18 +302,8 @@ function createInlineRuntimeSupportDefaults() {
       return runtimeScope[namespaceName];
     }
 
-    if (typeof require === 'function' && typeof requirePath === 'string' && requirePath) {
-      try {
-        const required = require(requirePath);
-        if (required && typeof required === 'object') {
-          return required;
-        }
-      } catch (supportModuleError) {
-        void supportModuleError;
-      }
-    }
-
-    return null;
+    // Fallback to module loader
+    return RuntimeLoader.resolveCoreRuntimeModule(requirePath);
   }
 
   return {

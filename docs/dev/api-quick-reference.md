@@ -37,6 +37,59 @@ shared.activeProjectId     // Current project
 shared.bootComplete        // Initialization flag
 ```
 
+## Runtime Environment
+
+From `src/scripts/modules/runtime-environment.js`:
+
+The unified ESM module aggregates scope detection, freeze registries, and global utilities.
+See [Runtime Environment Architecture](architecture/runtime-environment.md) for full documentation.
+
+### Namespace Import
+
+```javascript
+import { Helpers, Freeze, Global, AutoGear, Icons, Connectors } from './modules/runtime-environment.js';
+```
+
+### Scope Detection (Helpers)
+
+```javascript
+// Detect the global scope
+const scope = Helpers.detectGlobalScope();
+
+// Collect all candidate scopes
+const candidates = Helpers.collectCandidateScopes(window, [self]);
+
+// Safe require for CommonJS
+const module = Helpers.tryRequire('some-module');
+```
+
+### Freeze Registry
+
+```javascript
+// Track frozen objects
+Freeze.sharedAdd(myFrozenObject);
+
+// Check if tracked
+if (Freeze.sharedHas(myFrozenObject)) {
+  console.log('Object is frozen');
+}
+```
+
+### Safe Global Access
+
+```javascript
+// Read global safely (returns undefined if missing)
+const devices = Global.read('devices');
+
+// Ensure global exists with fallback
+Global.ensure('sessionState', () => ({ projects: [] }));
+
+// Normalize a global value
+Global.normalise('autoGearRules', Array.isArray, () => []);
+```
+
+---
+
 ## Runtime Bootstrap
 
 From `src/scripts/runtime/bootstrap.js`:

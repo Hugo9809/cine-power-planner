@@ -1,4 +1,4 @@
-import { normaliseTextEntryValue, resolveTextEntry, TEXT_ENTRY_SEPARATOR } from '../../src/scripts/modules/text.js';
+import { normaliseTextEntryValue, resolveTextEntry } from '../../src/scripts/modules/text.js';
 
 describe('Text Utilities Module', () => {
 
