@@ -2,7 +2,13 @@
  * Cine Power Planner Connector Helpers
  *
  * Pure ESM module for generating connector summaries.
- * Extracted from app-core-environment.js during Vite migration.
+ * Provides a fallback generator when primary bindings are unavailable.
+ *
+ * @module helpers/connectors
+ * @see {@link ../runtime-environment.js} for the aggregate API
+ * @see {@link ../../docs/dev/architecture/runtime-environment.md} for architecture docs
+ *
+ * Extracted from app-core-environment.js during Vite migration (Step 24).
  */
 
 /**

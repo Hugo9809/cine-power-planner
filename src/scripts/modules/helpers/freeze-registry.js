@@ -2,7 +2,14 @@
  * Cine Power Planner Freeze Registry
  *
  * Pure ESM module for managing a registry of frozen objects.
- * Extracted from app-core-environment.js during Vite migration.
+ * Tracks immutably frozen objects to prevent accidental re-freezing
+ * and provides shared singleton access for cross-module coordination.
+ *
+ * @module helpers/freeze-registry
+ * @see {@link ../runtime-environment.js} for the aggregate API
+ * @see {@link ../../docs/dev/architecture/runtime-environment.md} for architecture docs
+ *
+ * Extracted from app-core-environment.js during Vite migration (Step 24).
  */
 
 /**

@@ -51,3 +51,15 @@
     - [x] Convert `src/scripts/core/modules/ui-cache.js`
     - [x] Update `loader.js` and `main.js`
     - [x] Verify Build
+- [x] **Batch 4: UI & Feedback Utilities**
+    - [x] Convert `src/scripts/modules/ui-feedback.js`
+    - [x] Convert `src/scripts/modules/console-helpers.js`
+    - [x] Convert `src/scripts/modules/emergency-modal-cleanup.js`
+    - [x] Convert `src/scripts/modules/autosave-overlay.js`
+    - [x] Convert `src/scripts/modules/loading-indicator.js`
+- [x] **Batch 5: Top-Level Utilities**
+    - [x] Convert `src/scripts/legal-topbar.js`
+    - [x] Convert `src/scripts/static-theme.js`
+    - [x] Convert `src/scripts/force-populate.js`
+
+

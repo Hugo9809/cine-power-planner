@@ -65,3 +65,33 @@ outcome for offline audits.
 2. Regenerate offline bundles if any assets or data schemas changed.
 3. Update the documentation references in `docs/` and localized `README.*.md`
    files so offline teams receive the corrected workflow.
+
+---
+
+## Console Debugging
+
+When troubleshooting persistence issues, these commands help identify the problem:
+
+```javascript
+// Check runtime integrity
+window.__cineRuntimeIntegrity
+
+// Verify critical flows are working
+window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })
+
+// Inspect module connections
+window.cineRuntime.inspectModuleConnections()
+
+// Check storage repository state
+window.cineModules?.cinePersistence?.getStorageStatus?.()
+```
+
+---
+
+## Related Documentation
+
+- [Operations Checklist](operations-checklist.md) — Pre-release and workstation setup
+- [Backup Rotation Guide](backup-rotation-guide.md) — Backup scheduling and retention
+- [Storage Layer Architecture](../dev/architecture/storage-layer.md) — Persistence internals
+- [Runtime Environment](../dev/architecture/runtime-environment.md) — Global utilities
+

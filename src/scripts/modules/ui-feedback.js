@@ -1,6 +1,9 @@
 /**
  * UI Feedback Module
  * Provides a global loading overlay for long-running operations.
+ *
+ * @module modules/ui-feedback
+ * @see {@link ../../docs/dev/architecture/v2-views.md} for interaction patterns
  */
 
 const OVERLAY_ID = 'cineGlobalOperationOverlay';

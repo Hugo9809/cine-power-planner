@@ -181,6 +181,7 @@ window.CORE_FREEZE_REGISTRY = Freeze.getShared();
 
 ## Related Documentation
 
+- [**System Architecture Overview**](system-overview.md) (New)
 - [Module Registry](module-registry.md) — Module registration system
 - [Storage Layer](storage-layer.md) — Data persistence architecture
 - [Legacy Integration](legacy-integration.md) — ESM/IIFE bridging

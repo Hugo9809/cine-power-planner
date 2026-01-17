@@ -1,8 +1,8 @@
 # Runtime Refactor Status
 
-> **Status**: Step 24 Complete (Environment Module Migration)
+> **Status**: Step 33 Complete (Force Populate Migration)
 > **Last Updated**: 2026-01-17
-> **Next Phase**: Storage test mock verification
+> **Next Phase**: Deployment Preparation
 
 ---
 
@@ -18,6 +18,7 @@
 | Consolidation | 17-19 | ✅ Complete |
 | UI Helpers | 20-23 | ✅ Complete |
 | Environment | 24 | ✅ Complete |
+| Utilities | 25-31 | ✅ Complete |
 
 ---
 
@@ -369,3 +370,64 @@ Migration of `app-core-runtime-support.js` and dependencies.
 - **Verification**:
   - Created `tests/unit/emergencyModalCleanup.test.js`.
   - Verified dialog closing logic handling both standard dialogs and app-modals.
+
+### Step 28 - Autosave Overlay Migration (Complete)
+
+- **Extracted Modules**:
+  - `src/scripts/modules/autosave-overlay.js`: Logic for mirroring autosave status to settings dialog.
+- **Legacy Shim (Updated)**:
+  - `src/scripts/autosave-overlay.js`: Refactored to import from new module.
+- **Verification**:
+  - Created `tests/unit/autosaveOverlay.test.js`.
+  - Verified overlay creation and text synchronization functionality.
+
+### Step 29 - Loading Indicator Migration (Complete)
+
+- **Extracted Modules**:
+  - `src/scripts/modules/loading-indicator.js`: Manages the global loading indicator ("Preparing planner...") with resilience patterns.
+- **Legacy Shim (Updated)**:
+  - `src/scripts/loading-indicator-bootstrap.js`: Refactored to import from the new module and expose `window.__cineLoadingNotice`.
+- **Verification**:
+  - Created `tests/unit/loadingIndicator.test.js`.
+  - Verified container creation, localization support, and global shim exposure.
+
+### Step 30 - Legal Top Bar Migration (Complete)
+
+- **Extracted Modules**:
+  - `src/scripts/modules/legal-topbar.js`: Manages theme toggling, pink mode, and locale selection on static pages.
+- **Legacy Shim (Updated)**:
+  - `src/scripts/legal-topbar.js`: Refactored to import from the new module and auto-initialize.
+- **Verification**:
+  - Created `tests/unit/legalTopBar.test.js`.
+  - Verified theme toggling, storage parsing, and secure navigation logic.
+
+### Step 31 - Storage Test Mock Verification (Complete)
+
+- **Verification Strategy**:
+  - Validated "Twin-Store" architecture (IndexedDB + StorageRepository).
+  - Confirmed `StorageRepository` correctly utilizes asynchronous `IndexedDBAdapter`.
+  - Confirmed `hydrateProjectCache` correctly populates memory cache from async storage.
+  - Confirmed `UserContext` prefix scoping works as expected.
+- **Verification**:
+  - Created `tests/unit/storage_async.test.js`.
+  - All tests passed, confirming proper async handling and mock fidelity.
+
+### Step 32 - Static Theme Migration (Complete)
+
+- **Extracted Modules**:
+  - `src/scripts/modules/static-theme.js`: Applies static theme preferences (Dark Mode, Pink Mode, Accessibility settings) to pages immediately upon load.
+- **Legacy Shim (Updated)**:
+  - `src/scripts/static-theme.js`: Refactored to import from the new module and auto-apply preferences.
+- **Verification**:
+  - Created `tests/unit/staticTheme.test.js`.
+  - Verified preference application logic and storage/system fallback handling.
+
+### Step 33 - Force Populate Migration (Complete)
+
+- **Extracted Modules**:
+  - `src/scripts/modules/force-populate.js`: Logic to ensure UI elements are populated and trigger V2 initialization.
+- **Legacy Shim (Updated)**:
+  - `src/scripts/force-populate.js`: Refactored to import from the new module and initiate the process.
+- **Verification**:
+  - Created `tests/unit/forcePopulate.test.js`.
+  - Verified dependency waiting, boot queue processing, and error handling.

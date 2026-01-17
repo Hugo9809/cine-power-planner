@@ -16,10 +16,16 @@ whenever you ship a feature, adjust persistence logic or revise workflows.
 | Docs/documentation-maintenance.md | Documentation | _(fill date)_ | Update cadence, review triggers. | Checklist copy with initials. |
 | Docs/testing-plan.md | QA | 2026-01-13 | Automated/manual test coverage for persistence + offline surfaces. | Test run output archived with release. |
 | Docs/schema-inventory.md | Engineering | 2026-01-13 | JSON shape definitions for persistence payloads. | Exported schema diff, console log of validation pass. |
-| Docs/api-quick-reference.md | Engineering | 2026-01-13 | Internal API reference for developers. | N/A (Internal). |
+| Docs/api-quick-reference.md | Engineering | 2026-01-17 | Internal API reference for developers. | N/A (Internal). |
 | Docs/architecture/v2-views.md | Engineering | 2026-01-13 | V2 UI architecture and routing. | N/A (Internal). |
 | Docs/architecture/runtime-environment.md | Engineering | 2026-01-17 | ESM runtime helpers, scope detection, freeze registry. | N/A (Internal). |
 | Docs/architecture/storage-layer.md | Engineering | 2026-01-17 | Twin-store pattern, key prefixes, migration strategy. | N/A (Internal). |
+| Docs/architecture/auto-gear-engine.md | Engineering | 2026-01-17 | Auto Gear build pipeline and helper integration. | N/A (Internal). |
+| Docs/architecture/system-overview.md | Engineering | 2026-01-17 | High-level mermaid diagram of UI, Runtime, and Storage layers. | N/A (Internal). |
+| src/scripts/modules/helpers/*.js | Engineering | 2026-01-17 | JSDoc module headers with @module and @see references. | N/A (Code). |
+| src/scripts/modules/loading-indicator.js | Engineering | 2026-01-17 | JSDoc module header. | N/A (Code). |
+| src/scripts/modules/autosave-overlay.js | Engineering | 2026-01-17 | JSDoc module header. | N/A (Code). |
+| src/scripts/modules/ui-feedback.js | Engineering | 2026-01-17 | JSDoc module header. | N/A (Code). |
 | Docs/pink-mode-reference.md | Product | 2025-12-22 | Animations, triggers, stickers and celebratory rain events. | Console capture of rain effect, Lottie asset manifest check. |
 
 ## How to use the matrix

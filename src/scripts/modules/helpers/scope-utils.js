@@ -1,4 +1,18 @@
 /**
+ * Cine Power Planner Scope Utilities
+ *
+ * Pure ESM module for cross-environment global scope detection.
+ * Provides utilities to locate and interact with the global scope across
+ * browsers, workers, Node environments, and legacy contexts.
+ *
+ * @module helpers/scope-utils
+ * @see {@link ../runtime-environment.js} for the aggregate API
+ * @see {@link ../../docs/dev/architecture/runtime-environment.md} for architecture docs
+ *
+ * Extracted from app-core-environment.js during Vite migration (Step 24).
+ */
+
+/**
  * Locate the best-available global scope in a resilient, legacy-safe way.
  * Falls back to an empty object to avoid throwing in sandboxed/offline contexts.
  * Exists to provide a stable entry point for global access across browsers,

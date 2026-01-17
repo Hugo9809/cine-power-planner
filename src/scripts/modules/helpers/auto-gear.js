@@ -2,7 +2,14 @@
  * Cine Power Planner Auto Gear Helpers
  *
  * Pure ESM module for managing Auto Gear global fallbacks and repairs.
- * Extracted from app-core-environment.js during Vite migration.
+ * Provides utilities to ensure Auto Gear globals exist and are properly
+ * initialized across different runtime environments.
+ *
+ * @module helpers/auto-gear
+ * @see {@link ../runtime-environment.js} for the aggregate API
+ * @see {@link ../../docs/dev/architecture/auto-gear-engine.md} for architecture docs
+ *
+ * Extracted from app-core-environment.js during Vite migration (Step 24).
  */
 
 // Fallback providers for Auto Gear globals

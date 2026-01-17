@@ -4,6 +4,21 @@
  * Aggregate ESM module for environment and runtime state utilities.
  * Unifies scope collection, freeze registries, global value management,
  * and auxiliary helpers (Auto Gear, Icons, Connectors) into a single API.
+ *
+ * This is the primary entry point for runtime utilities in modern ESM code.
+ * Legacy code should continue using app-core-environment.js which imports
+ * from this module and exposes globals for backward compatibility.
+ *
+ * @module runtime-environment
+ * @see {@link ./docs/dev/architecture/runtime-environment.md} for architecture docs
+ * @see {@link ./helpers/scope-utils.js} for scope detection
+ * @see {@link ./helpers/freeze-registry.js} for freeze tracking
+ * @see {@link ./helpers/global-scope.js} for global value access
+ * @see {@link ./helpers/auto-gear.js} for Auto Gear utilities
+ * @see {@link ./helpers/icons.js} for icon utilities
+ * @see {@link ./helpers/connectors.js} for connector utilities
+ *
+ * Created during Vite migration (Step 24) to consolidate environment helpers.
  */
 
 import {

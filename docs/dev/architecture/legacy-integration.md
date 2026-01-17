@@ -81,6 +81,7 @@ const scope = Helpers.detectGlobalScope();
 
 ## Related Architecture
 
+- [**System Architecture Overview**](system-overview.md) (New)
 - [Runtime Environment](runtime-environment.md) — Safe global access utilities
 - [Storage Layer](storage-layer.md) — Twin-store pattern for persistence
 - [Module Registry](module-registry.md) — Module registration and lookup

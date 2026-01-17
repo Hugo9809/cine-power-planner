@@ -57,3 +57,24 @@ restore workflows protect every bit of user data.
 - [ ] Export updated verification packet (logs, screenshots, backups).
 - [ ] Update [Documentation Status Report](documentation-status-report-template.md).
 - [ ] Store evidence with release archives and note locations in `../dev/reviews/review-findings.md`.
+
+---
+
+## Developer Resources
+
+### Console Verification Commands
+
+| Command | Purpose |
+|---------|---------|
+| `window.__cineRuntimeIntegrity` | View runtime verification status |
+| `window.cineRuntime.verifyCriticalFlows()` | Verify save/share/restore gateways |
+| `window.cineRuntime.inspectModuleConnections()` | Audit module registry links |
+| `window.APP_VERSION` | Check current planner version |
+
+### Related Documentation
+
+- [Testing Plan](../dev/testing-plan.md) — Automated and manual test procedures
+- [Runtime Environment](../dev/architecture/runtime-environment.md) — ESM module utilities
+- [Storage Layer](../dev/architecture/storage-layer.md) — Twin-store persistence
+- [Debugging Guide](../dev/debugging-guide.md) — Troubleshooting reference
+

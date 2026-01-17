@@ -2,7 +2,14 @@
  * Cine Power Planner Icon Helpers
  *
  * Pure ESM module for managing icon glyphs and SVG markup.
- * Extracted from app-core-environment.js during Vite migration.
+ * Provides utilities for resolving icon fonts, formatting SVG coordinates,
+ * and applying glyphs to DOM elements.
+ *
+ * @module helpers/icons
+ * @see {@link ../runtime-environment.js} for the aggregate API
+ * @see {@link ../../docs/dev/architecture/runtime-environment.md} for architecture docs
+ *
+ * Extracted from app-core-environment.js during Vite migration (Step 24).
  */
 
 /**

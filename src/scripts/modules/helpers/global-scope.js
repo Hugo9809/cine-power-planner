@@ -2,7 +2,14 @@
  * Cine Power Planner Global Scope Helpers
  *
  * Pure ESM module for reading, writing, and ensuring global values.
- * Extracted from app-core-environment.js during Vite migration.
+ * Provides safe access to global scope properties across browser, worker,
+ * and Node environments without throwing errors on undefined values.
+ *
+ * @module helpers/global-scope
+ * @see {@link ../runtime-environment.js} for the aggregate API
+ * @see {@link ../../docs/dev/architecture/runtime-environment.md} for architecture docs
+ *
+ * Extracted from app-core-environment.js during Vite migration (Step 24).
  */
 
 import { collectCandidateScopes, detectGlobalScope } from './scope-utils.js';

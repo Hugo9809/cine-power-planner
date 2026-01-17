@@ -83,6 +83,7 @@ See [Development & Maintenance Guide](dev/development.md#vite-build-system) for 
 - [Runtime Refactor Status](dev/runtime-refactor-status.md)
 - [Missing Devices Research](dev/missing_devices_research.md)
 - Architecture & Guides:
+  - [**System Architecture Overview**](dev/architecture/system-overview.md) (New)
   - [Codebase Overview](dev/codebase-overview.md)
   - [Application Lifecycle](dev/architecture/application-lifecycle.md)
   - [Design System & Tokens](dev/architecture/design-system.md)
