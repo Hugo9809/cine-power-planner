@@ -5,14 +5,22 @@
  * Matches V1 pink mode from style.css
  */
 
-body.pink-mode {
+body.pink-mode,
+html[data-theme='pink-light'],
+body[data-theme='pink-light'],
+html[data-theme='pink-dark'],
+body[data-theme='pink-dark'] {
     /* =====================
    * BRAND COLORS
    * ===================== */
-    --v2-brand-blue: #f255a8;
-    --v2-brand-blue-hover: #d1308a;
-    --v2-brand-blue-active: #b0267a;
-    --v2-brand-blue-dark: #8a1c5e;
+    --v2-brand-primary: var(--v2-brand-secondary-base);
+    --v2-brand-primary-hover: var(--v2-brand-secondary-base-hover);
+    --v2-brand-primary-active: var(--v2-brand-secondary-base-active);
+    --v2-brand-primary-dark: var(--v2-brand-secondary-base-active);
+    --v2-brand-secondary: var(--v2-brand-primary-base);
+    --v2-brand-secondary-hover: var(--v2-brand-primary-base-hover);
+    --v2-brand-secondary-active: var(--v2-brand-primary-base-active);
+    --v2-brand-secondary-foreground: var(--v2-brand-primary-base-foreground);
 
     /* Global Accent Mapping */
     --v2-accent-color: var(--v2-brand-blue);
@@ -45,7 +53,9 @@ body.pink-mode {
 /* =====================
  * DARK MODE + PINK MODE INTERACTION
  * ===================== */
-body.dark-mode.pink-mode {
+body.dark-mode.pink-mode,
+html[data-theme='pink-dark'],
+body[data-theme='pink-dark'] {
     /* Ensure text remains readable on dark backgrounds if needed */
     --v2-text-link: #ff80c0;
 }

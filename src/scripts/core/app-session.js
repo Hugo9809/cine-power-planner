@@ -7606,6 +7606,7 @@ const appearanceContext = {
     darkModeToggle: typeof darkModeToggle !== 'undefined' ? darkModeToggle : null,
     pinkModeToggle: typeof pinkModeToggle !== 'undefined' ? pinkModeToggle : null,
     pinkModeHelpIcon: typeof pinkModeHelpIcon !== 'undefined' ? pinkModeHelpIcon : null,
+    themeVariantSelect: typeof themeVariantSelect !== 'undefined' ? themeVariantSelect : null,
   },
   settings: {
     darkMode: typeof settingsDarkMode !== 'undefined' ? settingsDarkMode : null,
@@ -8035,6 +8036,9 @@ function attemptAppearanceModuleInitialization(moduleCandidate) {
     if (!appearanceContext.elements.pinkModeToggle) {
       appearanceContext.elements.pinkModeToggle = pinkModeToggle || document.getElementById('pinkModeToggle');
     }
+    if (!appearanceContext.elements.themeVariantSelect) {
+      appearanceContext.elements.themeVariantSelect = document.getElementById('themeVariantSelect');
+    }
     if (!appearanceContext.settings.darkMode) {
       appearanceContext.settings.darkMode = (typeof settingsDarkMode !== 'undefined' ? settingsDarkMode : null) || document.getElementById('settingsDarkMode');
     }
@@ -8382,6 +8386,47 @@ const setThemePreference = (value, options = {}) => {
   });
 };
 
+const setPinkModePreference = (value, options = {}) => {
+  const normalized = !!value;
+  if (pinkModePreferenceController && typeof pinkModePreferenceController.setValue === 'function') {
+    pinkModePreferenceController.setValue(normalized, options);
+    return;
+  }
+
+  applyPinkMode(normalized);
+  const serialized = normalized ? 'true' : 'false';
+  const persistTargets = [];
+  try {
+    if (typeof resolveSafeLocalStorage === 'function') {
+      const safeStorage = resolveSafeLocalStorage();
+      if (safeStorage && typeof safeStorage.setItem === 'function') {
+        persistTargets.push({ name: 'safeLocalStorage', storage: safeStorage });
+      }
+    }
+  } catch (error) {
+    console.warn('Could not resolve SafeLocalStorage while persisting pink mode preference', error);
+  }
+  try {
+    if (typeof localStorage !== 'undefined') {
+      persistTargets.push({ name: 'localStorage', storage: localStorage });
+    }
+  } catch (error) {
+    console.warn('Could not access localStorage while persisting pink mode preference', error);
+  }
+
+  persistTargets.forEach(entry => {
+    if (!entry || !entry.storage || typeof entry.storage.setItem !== 'function') {
+      return;
+    }
+    try {
+      entry.storage.setItem(PINK_MODE_STORAGE_KEY, serialized);
+      entry.storage.setItem(LEGACY_PINK_MODE_STORAGE_KEY, serialized);
+    } catch (persistError) {
+      console.warn(`Could not persist pink mode preference to ${entry.name}`, persistError);
+    }
+  });
+};
+
 const getThemePreference = () => {
   if (themePreferenceController && typeof themePreferenceController.getValue === 'function') {
     return !!themePreferenceController.getValue();
@@ -8390,6 +8435,13 @@ const getThemePreference = () => {
     && document.body
     && typeof document.body.classList !== 'undefined'
     && document.body.classList.contains('dark-mode');
+};
+
+const getPinkModePreference = () => {
+  if (pinkModePreferenceController && typeof pinkModePreferenceController.getValue === 'function') {
+    return !!pinkModePreferenceController.getValue();
+  }
+  return isPinkModeActive();
 };
 
 let unregisterHeaderThemeControl = () => { };
@@ -8421,6 +8473,35 @@ const registerPinkModeControl = (element, config) => {
   return () => unregister();
 };
 
+const resolveThemeVariant = (darkEnabled, pinkEnabled) => {
+  if (pinkEnabled) {
+    return darkEnabled ? 'pink-dark' : 'pink-light';
+  }
+  return darkEnabled ? 'dark' : 'light';
+};
+
+const applyThemeVariantSelection = (variant) => {
+  const normalized = typeof variant === 'string' ? variant : 'light';
+  switch (normalized) {
+    case 'dark':
+      setThemePreference(true, { source: 'theme-variant' });
+      setPinkModePreference(false, { source: 'theme-variant' });
+      return;
+    case 'pink-light':
+      setThemePreference(false, { source: 'theme-variant' });
+      setPinkModePreference(true, { source: 'theme-variant' });
+      return;
+    case 'pink-dark':
+      setThemePreference(true, { source: 'theme-variant' });
+      setPinkModePreference(true, { source: 'theme-variant' });
+      return;
+    case 'light':
+    default:
+      setThemePreference(false, { source: 'theme-variant' });
+      setPinkModePreference(false, { source: 'theme-variant' });
+  }
+};
+
 if (darkModeToggle || (typeof document !== 'undefined' && document.getElementById('darkModeToggle'))) {
   unregisterHeaderThemeControl = registerThemeControl(darkModeToggle || document.getElementById('darkModeToggle'), { type: 'button' });
 }
@@ -8428,6 +8509,20 @@ if (typeof settingsDarkMode !== 'undefined' || (typeof document !== 'undefined' 
   const settingsToggle = (typeof settingsDarkMode !== 'undefined' ? settingsDarkMode : null) || document.getElementById('settingsDarkMode');
   if (settingsToggle) {
     unregisterSettingsThemeControl = registerThemeControl(settingsToggle, { type: 'checkbox' });
+  }
+}
+
+if (typeof document !== 'undefined') {
+  const themeVariantSelect = document.getElementById('themeVariantSelect');
+  if (themeVariantSelect) {
+    const initialVariant = resolveThemeVariant(getThemePreference(), getPinkModePreference());
+    if (themeVariantSelect.value !== initialVariant) {
+      themeVariantSelect.value = initialVariant;
+    }
+
+    themeVariantSelect.addEventListener('change', () => {
+      applyThemeVariantSelection(themeVariantSelect.value);
+    });
   }
 }
 

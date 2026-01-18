@@ -9156,6 +9156,30 @@ async function setLanguage(lang, options = {}) {
   if (existingDevicesHeading) {
     existingDevicesHeading.textContent = texts[lang].existingDevicesHeading;
   }
+  const themeVariantSelect = document.getElementById('themeVariantSelect');
+  const themeVariantLabel = document.querySelector('label[for="themeVariantSelect"]');
+  if (themeVariantLabel) {
+    themeVariantLabel.textContent = texts[lang].themeVariantLabel || 'Theme';
+  }
+  if (themeVariantSelect) {
+    const label = texts[lang].themeVariantLabel || 'Theme';
+    themeVariantSelect.setAttribute('title', texts[lang].themeVariantHelp || label);
+    themeVariantSelect.setAttribute('aria-label', label);
+    themeVariantSelect.setAttribute('data-help', texts[lang].themeVariantHelp || label);
+    const optionMap = {
+      light: texts[lang].themeVariantLight,
+      dark: texts[lang].themeVariantDark,
+      'pink-light': texts[lang].themeVariantPinkLight,
+      'pink-dark': texts[lang].themeVariantPinkDark,
+    };
+    themeVariantSelect.querySelectorAll('option[data-theme-option]').forEach(option => {
+      const key = option.dataset.themeOption;
+      const labelText = optionMap[key];
+      if (labelText) {
+        option.textContent = labelText;
+      }
+    });
+  }
   if (darkModeToggle) {
     darkModeToggle.setAttribute("title", texts[lang].darkModeLabel);
     darkModeToggle.setAttribute("aria-label", texts[lang].darkModeLabel);

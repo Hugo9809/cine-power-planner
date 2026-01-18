@@ -568,6 +568,32 @@ function initThemes() {
     applyStoredThemes();
 }
 
+function resolveThemeVariant(isDark, isPink) {
+    if (isPink) {
+        return isDark ? 'pink-dark' : 'pink-light';
+    }
+    return isDark ? 'dark' : 'light';
+}
+
+function syncThemeVariantAttributes() {
+    const body = document.body;
+    const root = document.documentElement;
+    if (!body || !root) {
+        return;
+    }
+
+    const isDark = body.classList.contains('dark-mode');
+    const isPink = body.classList.contains('pink-mode');
+    const variant = resolveThemeVariant(isDark, isPink);
+    root.setAttribute('data-theme', variant);
+    body.setAttribute('data-theme', variant);
+
+    const themeVariantSelect = document.getElementById('themeVariantSelect');
+    if (themeVariantSelect && themeVariantSelect.value !== variant) {
+        themeVariantSelect.value = variant;
+    }
+}
+
 function injectThemeControls(container) {
     // Prevent duplicate injection
     if (container.querySelector('#v2ThemeToggleDark')) return;
@@ -641,6 +667,7 @@ function updateDarkModeDisplay(enabled) {
             sun.style.display = enabled ? 'block' : 'none';
         }
     }
+    syncThemeVariantAttributes();
 }
 
 function togglePinkMode() {
@@ -656,6 +683,7 @@ function updatePinkModeDisplay(enabled) {
     updateAppLogo(enabled);
     const btn = document.getElementById('v2ThemeTogglePink');
     if (btn) btn.classList.toggle('active', enabled);
+    syncThemeVariantAttributes();
 }
 
 function updateAppLogo(isPink) {

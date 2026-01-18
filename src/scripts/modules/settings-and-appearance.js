@@ -707,6 +707,48 @@
       return doc && doc.body ? doc.body : null;
     }
 
+    function isDarkModeActive() {
+      const body = getBody();
+      return !!(body && body.classList && body.classList.contains('dark-mode'));
+    }
+
+    function isPinkModeApplied() {
+      const body = getBody();
+      return !!(body && body.classList && body.classList.contains('pink-mode'));
+    }
+
+    function resolveThemeVariant(state = {}) {
+      const darkEnabled = typeof state.darkEnabled === 'boolean' ? state.darkEnabled : isDarkModeActive();
+      const pinkEnabled = typeof state.pinkEnabled === 'boolean' ? state.pinkEnabled : isPinkModeApplied();
+      if (pinkEnabled) {
+        return darkEnabled ? 'pink-dark' : 'pink-light';
+      }
+      return darkEnabled ? 'dark' : 'light';
+    }
+
+    function applyThemeVariantAttributes(state = {}) {
+      const root = getRoot();
+      const body = getBody();
+      if (!root || !body) {
+        return null;
+      }
+
+      const theme = resolveThemeVariant(state);
+      try {
+        root.setAttribute('data-theme', theme);
+        body.setAttribute('data-theme', theme);
+      } catch (error) {
+        safeWarn('cineSettingsAppearance: Unable to set theme variant attributes.', error);
+      }
+
+      const control = elements.themeVariantSelect;
+      if (control && control.value !== theme) {
+        control.value = theme;
+      }
+
+      return theme;
+    }
+
     function getAccentColor() {
       if (typeof accent.getAccentColor === 'function') {
         return accent.getAccentColor();
@@ -1080,6 +1122,7 @@
       const accentSource = highContrast ? getHighContrastAccentColor() : getAccentColor();
       refreshDarkModeAccentBoost({ color: accentSource, highContrast });
       updateThemeColor(enabled);
+      applyThemeVariantAttributes({ darkEnabled: enabled });
       if (settings.darkMode) {
         settings.darkMode.checked = !!enabled;
       }
@@ -1934,6 +1977,7 @@
       if (settings.pinkMode) {
         settings.pinkMode.checked = !!enabled;
       }
+      applyThemeVariantAttributes({ pinkEnabled: enabled });
       updateAccentColorResetButtonState();
     }
 
