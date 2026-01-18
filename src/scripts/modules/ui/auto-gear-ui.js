@@ -1144,9 +1144,5 @@ export function initAutoGearUi(doc, options = {}) {
     };
   }
 
+  return AUTO_GEAR_UI_EXPORTS;
 }
-
-return AUTO_GEAR_UI_EXPORTS;
-}
-
-

@@ -50,6 +50,22 @@ import {
 
 import { generateConnectorSummary } from './app-setups.js';
 
+import {
+  ensureNotificationContainer as importedEnsureNotificationContainer,
+  showNotification as importedShowNotification,
+  announceForceReloadOfflineNotice as importedAnnounceForceReloadOfflineNotice,
+  resolveForceReloadOfflineNotice as importedResolveForceReloadOfflineNotice,
+  getNotificationAccentColor as importedGetNotificationAccentColor,
+  getNotificationTextColor as importedGetNotificationTextColor
+} from '../modules/ui/notifications.js';
+
+import {
+  getSessionCloneScope as importedGetSessionCloneScope,
+  resolveSessionRuntimeFunction as importedResolveSessionRuntimeFunction
+} from '../modules/core/session-runtime.js';
+
+import { webLockManager } from '../modules/core/web-lock-manager.js';
+
 // Fallack for non-ESM globals
 const adjustGearListSelectWidths = (typeof window !== 'undefined' ? window.adjustGearListSelectWidths : null) || (() => { });
 const cameraFizPort = (typeof window !== 'undefined' ? window.cameraFizPort : null) || '';
@@ -504,113 +520,12 @@ if (typeof globalThis !== 'undefined' && hotswapSelect && typeof globalThis.hots
 
 
 
-/**
- * DEEP DIVE: Session Scope Resolution
- *
- * This function determines the "global" context for the current executing environment.
- * It is critical for the "Islands of Automation" architecture because it allows the session
- * state to anchor itself to whatever global object is available (Window in browsers,
- * Self in workers, or Global in Node/Tests).
- *
- * Why order matters:
- * 1. CORE_GLOBAL_SCOPE: Explicit override for testing or strict sandboxing.
- * 2. globalThis: Modern standard.
- * 3. window: Traditional browser.
- * 4. self: Service Workers.
- * 5. global: Node.js.
- */
 function getSessionCloneScope() {
-  if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
-    return CORE_GLOBAL_SCOPE;
-  }
-
-  if (typeof globalThis !== 'undefined') {
-    return globalThis;
-  }
-  // ...
-
-  if (typeof window !== 'undefined') {
-    return window;
-  }
-
-  if (typeof self !== 'undefined') {
-    return self;
-  }
-
-  if (typeof global !== 'undefined') {
-    return global;
-  }
-
-  return null;
+  return importedGetSessionCloneScope();
 }
 
 function resolveSessionRuntimeFunction(name) {
-  if (typeof name !== 'string' || !name) {
-    return null;
-  }
-
-  const candidates = [];
-  const seen = new Set();
-  const enqueue = (scope) => {
-    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
-      return;
-    }
-    if (seen.has(scope)) {
-      return;
-    }
-    seen.add(scope);
-    candidates.push(scope);
-  };
-
-  try { enqueue(typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null); } catch { /* noop */ }
-  try { enqueue(typeof globalThis !== 'undefined' ? globalThis : null); } catch { /* noop */ }
-  try { enqueue(typeof window !== 'undefined' ? window : null); } catch { /* noop */ }
-  try { enqueue(typeof self !== 'undefined' ? self : null); } catch { /* noop */ }
-  try { enqueue(typeof global !== 'undefined' ? global : null); } catch { /* noop */ }
-
-  let iterationCount = 0;
-  for (let index = 0; index < candidates.length; index += 1) {
-    iterationCount++;
-    if (iterationCount > 1000) {
-      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('resolveSessionRuntimeFunction: exceeded max iterations', name);
-      }
-      break;
-    }
-    const scope = candidates[index];
-    if (!scope) {
-      continue;
-    }
-
-    try {
-      const directCandidate = scope[name];
-      if (typeof directCandidate === 'function') {
-        return directCandidate;
-      }
-    } catch (directError) {
-      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('resolveSessionRuntimeFunction: failed to read candidate from scope', name, directError);
-      }
-    }
-
-    try {
-      const nestedScope = scope.CORE_GLOBAL_SCOPE || scope.core || scope.__cineRuntimeState;
-      if (nestedScope && !seen.has(nestedScope)) {
-        enqueue(nestedScope);
-        // Re-evaluate the nested scope immediately to surface direct matches sooner.
-        const nestedCandidate = nestedScope[name];
-        if (typeof nestedCandidate === 'function') {
-          return nestedCandidate;
-        }
-      }
-    } catch (nestedError) {
-      if (typeof console !== 'undefined' && typeof console.debug === 'function') {
-        console.debug('resolveSessionRuntimeFunction: nested scope probe failed', name, nestedError);
-      }
-    }
-  }
-
-  return null;
+  return importedResolveSessionRuntimeFunction(name);
 }
 
 function isNavigatorExplicitlyOffline(navigatorLike) {
@@ -625,106 +540,12 @@ function isNavigatorExplicitlyOffline(navigatorLike) {
   return navigatorLike.onLine === false;
 }
 
-/**
- * Resolves the message to display when the application needs to force a reload
- * but is currently offline. Checks DOM attributes and localized strings.
- */
 function resolveForceReloadOfflineNotice() {
-  let notice = '';
-
-  if (typeof document !== 'undefined' && document && typeof document.getElementById === 'function') {
-    const indicator = document.getElementById('offlineIndicator');
-    if (indicator) {
-      const dataset = indicator.dataset || {};
-      const dataNotice =
-        (typeof dataset.forceReloadNotice === 'string' && dataset.forceReloadNotice.trim())
-          ? dataset.forceReloadNotice.trim()
-          : null;
-      const dataHelp =
-        (typeof dataset.reloadNotice === 'string' && dataset.reloadNotice.trim())
-          ? dataset.reloadNotice.trim()
-          : null;
-      const helpAttr =
-        typeof indicator.getAttribute === 'function'
-          ? indicator.getAttribute('data-help')
-          : null;
-      const helpAttrNormalized = typeof helpAttr === 'string' && helpAttr.trim() ? helpAttr.trim() : null;
-      const textContent = typeof indicator.textContent === 'string' && indicator.textContent.trim()
-        ? indicator.textContent.trim()
-        : null;
-
-      notice = dataNotice || dataHelp || helpAttrNormalized || textContent || '';
-
-      if (!notice) {
-        const baseLabel =
-          (typeof dataset.baseLabel === 'string' && dataset.baseLabel.trim())
-            ? dataset.baseLabel.trim()
-            : null;
-        if (baseLabel) {
-          notice = baseLabel;
-        }
-      }
-
-      if (notice) {
-        return notice;
-      }
-    }
-  }
-
-  const resolveLocale = resolveSessionRuntimeFunction('resolveLocaleString');
-  if (typeof resolveLocale === 'function') {
-    try {
-      const localized = resolveLocale('reloadAppOfflineNotice');
-      if (typeof localized === 'string' && localized.trim()) {
-        return localized.trim();
-      }
-    } catch (localeError) {
-      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('resolveForceReloadOfflineNotice: failed to resolve locale string', localeError);
-      }
-    }
-  }
-
-  return FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK;
+  return importedResolveForceReloadOfflineNotice();
 }
 
 function announceForceReloadOfflineNotice() {
-  const notice = resolveForceReloadOfflineNotice();
-  let handled = false;
-
-  if (typeof document !== 'undefined' && document && typeof document.getElementById === 'function') {
-    const indicator = document.getElementById('offlineIndicator');
-    if (indicator) {
-      handled = true;
-
-      if (indicator.dataset) {
-        indicator.dataset.forceReloadNotice = notice;
-        indicator.dataset.reloadNotice = notice;
-      }
-
-      if (typeof indicator.setAttribute === 'function') {
-        indicator.setAttribute('data-help', notice);
-        indicator.setAttribute('role', 'status');
-        indicator.setAttribute('aria-live', 'polite');
-      }
-
-      if (typeof indicator.removeAttribute === 'function') {
-        indicator.removeAttribute('hidden');
-      }
-
-      if (typeof indicator.textContent === 'string' || typeof indicator.textContent === 'object') {
-        indicator.textContent = notice;
-      }
-    }
-  }
-
-  if (!handled && typeof window !== 'undefined' && typeof window.alert === 'function') {
-    try {
-      window.alert(notice);
-    } catch (alertError) {
-      void alertError;
-    }
-  }
+  return importedAnnounceForceReloadOfflineNotice();
 }
 
 try {
@@ -739,70 +560,10 @@ try {
 
 // --- PROJECT LOCK MANAGER ---
 // Implements exclusive access to projects using Web Locks API
+// Extracted to web-lock-manager.js
 (function (scope) {
   if (scope.cineProjectLockManager) return;
-
-
-
-  scope.cineProjectLockManager = {
-    requestLock: async (projectName) => {
-      // If we already hold the lock for this project, return true
-      if (currentLockController && currentLockController.name === projectName) {
-        return true;
-      }
-
-      // Release any existing lock
-      if (currentLockController) {
-        if (currentLockController.unlock) {
-          currentLockController.unlock();
-        }
-        currentLockController = null;
-      }
-
-      if (!projectName) return true;
-
-      if (typeof navigator === 'undefined' || !navigator.locks) {
-        return true; // Graceful degradation
-      }
-
-      const lockName = `cine_project_lock_${projectName}`;
-
-      return new Promise((resolve) => {
-        // ifAvailable: true means we immediately get null if locked by another tab
-        navigator.locks.request(lockName, { ifAvailable: true }, async (lock) => {
-          if (!lock) {
-            resolve(false);
-            return;
-          }
-
-          // Create a trigger to release the lock later
-          let unlock;
-          const unlockPromise = new Promise(r => { unlock = r; });
-
-          currentLockController = {
-            name: projectName,
-            unlock: unlock
-          };
-
-          resolve(true);
-
-          // Hold lock until unlock is called
-          await unlockPromise;
-        });
-      });
-    },
-    releaseLock: () => {
-      if (currentLockController) {
-        if (currentLockController.unlock) {
-          currentLockController.unlock();
-        }
-        currentLockController = null;
-      }
-    },
-    isLocked: (projectName) => {
-      return currentLockController && currentLockController.name === projectName;
-    }
-  };
+  scope.cineProjectLockManager = webLockManager;
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : {}));
 
 function safeGetCurrentProjectName(defaultValue = '') {
@@ -9646,28 +9407,9 @@ const createAccentTint = (alpha = 0.16) => {
   return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
 };
 
-const getNotificationAccentColor = () => {
-  const fallback = typeof accentColor === 'string' && accentColor
-    ? accentColor
-    : DEFAULT_ACCENT_COLOR;
-  const resolved = getCssVariableValue('--accent-color', fallback);
-  return resolved || fallback;
-};
+const getNotificationAccentColor = () => importedGetNotificationAccentColor();
 
-const getNotificationTextColor = (backgroundColor) => {
-  try {
-    if (typeof computeRelativeLuminance === 'function') {
-      const rgb = parseColorToRgb(backgroundColor);
-      if (rgb) {
-        const luminance = computeRelativeLuminance(rgb);
-        return luminance > 0.55 ? '#000000' : '#ffffff';
-      }
-    }
-  } catch (colorError) {
-    console.warn('Failed to determine notification text color', colorError);
-  }
-  return '#ffffff';
-};
+const getNotificationTextColor = (backgroundColor) => importedGetNotificationTextColor(backgroundColor);
 
 const getNotificationTopOffset = () => {
   const baseOffset = 16;
@@ -9708,100 +9450,10 @@ const scheduleNotificationContainerEnsure = () => {
   }
 };
 
-const ensureNotificationContainer = () => {
-  if (typeof document === 'undefined') return null;
-  const id = 'backupNotificationContainer';
-  let container = document.getElementById(id);
-  let isNew = false;
-  if (!container && typeof window !== 'undefined') {
-    const bootstrapNotice = window.__cineLoadingNotice;
-    if (bootstrapNotice && typeof bootstrapNotice.ensureContainer === 'function') {
-      try {
-        container = bootstrapNotice.ensureContainer();
-      } catch (noticeError) {
-        console.warn('Failed to reuse bootstrap notification container', noticeError);
-        container = null;
-      }
-    }
-  }
-  if (!container) {
-    container = document.createElement('div');
-    container.id = id;
-    container.style.position = 'fixed';
-    container.style.right = '1rem';
-    container.style.zIndex = '10000';
-    isNew = true;
-  }
-
-  if (container.classList && !container.classList.contains('cine-notification-stack')) {
-    container.classList.add('cine-notification-stack');
-  }
-  if (container.dataset && container.dataset.bootstrap) {
-    delete container.dataset.bootstrap;
-  }
-
-  const preferredParent = (typeof document.body !== 'undefined' && document.body)
-    ? document.body
-    : (typeof document.documentElement !== 'undefined' ? document.documentElement : null);
-
-  if (preferredParent) {
-    if (container.parentNode !== preferredParent) {
-      preferredParent.appendChild(container);
-    }
-    container.style.top = getNotificationTopOffset();
-  } else if (!container.parentNode) {
-    // Document still parsing without a body element. Retry once the DOM has progressed.
-    scheduleNotificationContainerEnsure();
-  }
-
-  if (isNew && typeof document.addEventListener === 'function') {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => {
-        try {
-          ensureNotificationContainer();
-        } catch (ensureError) {
-          console.warn('Failed to ensure notification container after DOMContentLoaded', ensureError);
-        }
-      }, { once: true });
-    } else {
-      scheduleNotificationContainerEnsure();
-    }
-  }
-
-  if (typeof window !== 'undefined') {
-    const bootstrapNotice = window.__cineLoadingNotice;
-    if (bootstrapNotice && typeof bootstrapNotice === 'object') {
-      bootstrapNotice.container = container;
-    }
-  }
-
-  return container;
-};
+const ensureNotificationContainer = () => importedEnsureNotificationContainer();
 
 function showNotification(type, message) {
-  if (typeof document === 'undefined') return;
-  const container = ensureNotificationContainer();
-  if (!container) {
-    return;
-  }
-  const note = document.createElement('div');
-  note.textContent = message;
-  note.style.padding = '0.75rem 1.25rem';
-  note.style.marginTop = '0.5rem';
-  note.style.borderRadius = '0.75rem';
-  note.style.border = 'none';
-  note.style.boxShadow = '0 0.75rem 2.5rem rgba(0, 0, 0, 0.14)';
-  const background = getNotificationAccentColor();
-  const textColor = getNotificationTextColor(background);
-  note.style.background = background;
-  note.style.color = textColor;
-  container.appendChild(note);
-  setTimeout(() => {
-    removeNode(note);
-    if (!container.children.length) {
-      removeNode(container);
-    }
-  }, 4000);
+  return importedShowNotification(type, message);
 }
 
 const AUTO_BACKUP_INDICATOR_ID = 'cineAutoBackupIndicator';
