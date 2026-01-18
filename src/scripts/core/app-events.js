@@ -1,7 +1,8 @@
 /* global getSchemaAttributesForCategory */
 import { cineCoreUiHelpers } from './app-core-ui-helpers.js';
 import { cineUiCache } from './modules/ui-cache.js';
-import * as cineStorage from '../storage.js';
+import { cineStorage } from '../storage.js';
+
 import { cineFeatureBackup } from '../modules/features/backup.js';
 import { cineLoggingResolver } from '../modules/logging-resolver.js';
 import { initializeGlobalUiAccessors } from '../modules/ui/dom-definitions.js';

@@ -112,3 +112,13 @@
     - [x] Manual Browser Verification (Bootstrap, Notifications, Web Lock)
     - [x] Regression Fixes
     - [x] Finalize "Runtime Refactor Status"
+
+- [ ] **Batch 14: Setups & Project Management Modularization**
+    - [x] Plan Batch 14
+    - [ ] Create `project-manager.js` (Project Derivation)
+    - [ ] Create `setups-ui.js` (UI Helpers)
+    - [ ] Create `connector-summary.js` (Summary Logic)
+    - [ ] Refactor `app-setups.js` (Shim)
+    - [ ] Automated Verification (Tests)
+    - [ ] Manual Verification (Browser)
+

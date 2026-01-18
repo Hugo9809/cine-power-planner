@@ -16,40 +16,35 @@
 import { cineCoreAutoGearUi } from './app-core-auto-gear-ui.js';
 import { cineCoreUiHelpers } from './app-core-ui-helpers.js';
 import * as cineTranslations from '../translations.js';
+import {
+  deriveProjectInfo as deriveProjectInfoModule,
+  safeGetCurrentProjectName as safeGetCurrentProjectNameModule,
+  normalizeProjectFieldLabel as normalizeProjectFieldLabelModule,
+  getProductionCompanyLabelSets as getProductionCompanyLabelSetsModule,
+  getProjectInfoFieldLines as getProjectInfoFieldLinesModule,
+  buildCombinedProductionCompanyDisplay as buildCombinedProductionCompanyDisplayModule,
+  applyCombinedProductionCompanyDisplay as applyCombinedProductionCompanyDisplayModule,
+  expandCombinedProductionCompanyInfo as expandCombinedProductionCompanyInfoModule
+} from '../modules/core/project-manager.js';
+
+import {
+  generateConnectorSummary as generateConnectorSummaryModule,
+  suggestChargerCounts as suggestChargerCountsModule,
+  addArriKNumber as addArriKNumberModule,
+  suggestArriFizCables as suggestArriFizCablesModule
+} from '../modules/core/connector-summary.js';
+
+import { setSetupButtonLabel } from '../modules/ui/setups-ui.js';
+import { escapeHtml as escapeHtmlHelper } from '../modules/ui-helpers.js';
 
 // Setups orchestrates saving and restoring complex project forms. A gentle
 // reminder: every helper here feeds into autosave, backup and sharing flows, so
 // prefer descriptive names and leave breadcrumbs when adjusting logic.
 
-function escapeHtmlFallback(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
+// Migrated to ui-helpers.js
+var escapeHtml = escapeHtmlHelper;
 
-// Initialize with a fallback so early re-entrant imports never see an
-// uninitialized binding while the module wires up shared helpers.
-var escapeHtml = escapeHtmlFallback;
-
-const deriveProjectInfo = (function resolveDeriveProjectInfo() {
-  if (typeof globalThis !== 'undefined' && typeof globalThis.deriveProjectInfo === 'function') {
-    return globalThis.deriveProjectInfo;
-  }
-  if (typeof window !== 'undefined' && typeof window.deriveProjectInfo === 'function') {
-    return window.deriveProjectInfo;
-  }
-  if (typeof global !== 'undefined' && typeof global.deriveProjectInfo === 'function') {
-    return global.deriveProjectInfo;
-  }
-  return function fallbackDeriveProjectInfo(info) {
-    // Fallback if core not loaded? Return basic info or throw?
-    // Returning input as placeholder.
-    return info || {};
-  };
-})();
+const deriveProjectInfo = deriveProjectInfoModule;
 
 const normalizeVideoDistributionOptionValueForSetups = (
   cineCoreAutoGearUi &&
@@ -85,65 +80,9 @@ if (TRANSLATIONS_RUNTIME_FOR_SETUPS && typeof TRANSLATIONS_RUNTIME_FOR_SETUPS.lo
   }
 }
 
-escapeHtml =
-  typeof SETUPS_UI_HELPERS.escapeHtml === 'function'
-    ? SETUPS_UI_HELPERS.escapeHtml
-    : escapeHtmlFallback;
+// escapeHtml resolved via import
 
-const setButtonLabelWithIconForSetups = (function resolveSetButtonLabelWithIconForSetups() {
-  if (typeof SETUPS_UI_HELPERS.setButtonLabelWithIcon === 'function') {
-    return SETUPS_UI_HELPERS.setButtonLabelWithIcon;
-  }
-
-  const candidates = [];
-
-  try {
-    if (
-      typeof CORE_GLOBAL_SCOPE === 'object' &&
-      CORE_GLOBAL_SCOPE &&
-      typeof CORE_GLOBAL_SCOPE.setButtonLabelWithIcon === 'function'
-    ) {
-      candidates.push(CORE_GLOBAL_SCOPE.setButtonLabelWithIcon);
-    }
-  } catch (coreScopeError) {
-    void coreScopeError;
-  }
-
-  if (
-    typeof globalThis !== 'undefined' &&
-    globalThis &&
-    typeof globalThis.setButtonLabelWithIcon === 'function'
-  ) {
-    candidates.push(globalThis.setButtonLabelWithIcon);
-  }
-
-  if (typeof window !== 'undefined' && window && typeof window.setButtonLabelWithIcon === 'function') {
-    candidates.push(window.setButtonLabelWithIcon);
-  }
-
-  if (typeof self !== 'undefined' && self && typeof self.setButtonLabelWithIcon === 'function') {
-    candidates.push(self.setButtonLabelWithIcon);
-  }
-
-  if (typeof global !== 'undefined' && global && typeof global.setButtonLabelWithIcon === 'function') {
-    candidates.push(global.setButtonLabelWithIcon);
-  }
-
-  if (candidates.length > 0) {
-    return candidates[0];
-  }
-
-  return function setButtonLabelWithIconFallback(button, label) {
-    if (!button) {
-      return;
-    }
-    try {
-      button.textContent = typeof label === 'string' ? label : '';
-    } catch (assignError) {
-      void assignError;
-    }
-  };
-})();
+const setButtonLabelWithIconForSetups = setSetupButtonLabel;
 
 const AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK =
   (typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN)
@@ -189,23 +128,7 @@ function resolveSetupRuntimeFunction(name) {
 }
 
 function safeGetCurrentProjectName(defaultValue = '') {
-  const resolver = resolveSetupRuntimeFunction('getCurrentProjectName');
-  if (typeof resolver !== 'function') {
-    return defaultValue;
-  }
-
-  try {
-    const resolved = resolver();
-    if (typeof resolved === 'string' && resolved.trim()) {
-      return resolved;
-    }
-    return defaultValue;
-  } catch (projectNameError) {
-    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-      console.warn('safeGetCurrentProjectName failed, falling back to default', projectNameError);
-    }
-    return defaultValue;
-  }
+  return safeGetCurrentProjectNameModule(defaultValue);
 }
 
 const CAMERA_LINK_LETTERS = ['A', 'B', 'C', 'D', 'E'];
@@ -243,456 +166,32 @@ function resolveCameraLinkedSupportName(name) {
   return getCameraLinkedSupportItemKeys().has(normalized) ? resolvedName : '';
 }
 
-const PRODUCTION_COMPANY_FIELD_ORDER = [
-  'productionCompanyAddress',
-  'productionCompanyStreet',
-  'productionCompanyStreet2',
-  'productionCompanyCity',
-  'productionCompanyRegion',
-  'productionCompanyPostalCode',
-  'productionCompanyCountry'
-];
+// Project constants migrated to project-manager.js
 
-const LEGACY_PROJECT_FIELD_LABELS = {
-  productionCompany: [
-    'Production Company',
-    'Produktionsfirma',
-    'Société de production',
-    'Productora',
-    'Casa di produzione',
-  ],
-  productionCompanyAddress: [
-    'Production Company Address',
-    'Adresse der Produktionsfirma',
-    'Adresse de la société de production',
-    'Dirección de la productora',
-    'Indirizzo della casa di produzione',
-  ],
-  productionCompanyStreet: [
-    'Street address',
-    'Straße und Hausnummer',
-    'Adresse',
-    'Dirección',
-    'Indirizzo',
-  ],
-  productionCompanyStreet2: [
-    'Address line 2',
-    'Adresszusatz',
-    "Complément d'adresse",
-    'Línea 2 de dirección',
-    'Seconda linea indirizzo',
-  ],
-  productionCompanyCity: [
-    'City',
-    'Stadt',
-    'Ville',
-    'Ciudad',
-    'Città',
-  ],
-  productionCompanyRegion: [
-    'State / Province / Region',
-    'Bundesland / Region',
-    'État / Région / Département',
-    'Estado / Provincia / Región',
-    'Regione / Provincia / Stato',
-  ],
-  productionCompanyPostalCode: [
-    'Postal code',
-    'Postleitzahl',
-    'Code postal',
-    'Código postal',
-    'CAP',
-  ],
-  productionCompanyCountry: [
-    'Country',
-    'Land',
-    'Pays',
-    'País',
-    'Paese',
-  ],
-};
+// Migrated legacy labels
 
 function normalizeProjectFieldLabel(label) {
-  if (typeof label !== 'string') {
-    return '';
-  }
-  return label.trim().replace(/[:：]\s*$/, '').trim();
+  return normalizeProjectFieldLabelModule(label);
 }
 
 function getProductionCompanyLabelSets(projectLabels) {
-  const textsObj = typeof texts !== 'undefined' ? texts : null;
-  const labelSets = {};
-  const fallbackProjectLabels = (textsObj && textsObj.en && textsObj.en.projectFields) || {};
-  const allKeys = ['productionCompany'].concat(PRODUCTION_COMPANY_FIELD_ORDER);
-  allKeys.forEach((key) => {
-    const set = new Set();
-    const addLabel = (value) => {
-      if (typeof value !== 'string') return;
-      const normalized = normalizeProjectFieldLabel(value);
-      if (normalized) {
-        set.add(normalized);
-      }
-    };
-    if (projectLabels && projectLabels[key]) {
-      addLabel(projectLabels[key]);
-    }
-    if (fallbackProjectLabels && fallbackProjectLabels[key]) {
-      addLabel(fallbackProjectLabels[key]);
-    }
-    const legacyLabels = LEGACY_PROJECT_FIELD_LABELS[key];
-    if (Array.isArray(legacyLabels)) {
-      legacyLabels.forEach(addLabel);
-    }
-    labelSets[key] = set;
-  });
-  return labelSets;
+  return getProductionCompanyLabelSetsModule(projectLabels);
 }
 
 function getProjectInfoFieldLines(source, fieldKey) {
-  if (!source || typeof source !== 'object') {
-    return [];
-  }
-  const rawValue = source[fieldKey];
-  if (rawValue === null || rawValue === undefined) {
-    return [];
-  }
-  if (Array.isArray(rawValue)) {
-    const parts = [];
-    rawValue.forEach((item) => {
-      if (item === null || item === undefined) return;
-      const str = typeof item === 'string' ? item : String(item);
-      str.split(/\r?\n/).forEach((segment) => {
-        const trimmed = segment.trim();
-        if (trimmed) {
-          parts.push(trimmed);
-        }
-      });
-    });
-    return parts;
-  }
-  if (typeof rawValue === 'string') {
-    return rawValue
-      .split(/\r?\n/)
-      .map((segment) => segment.trim())
-      .filter((segment) => segment);
-  }
-  return [String(rawValue)].map((segment) => segment.trim()).filter((segment) => segment);
+  return getProjectInfoFieldLinesModule(source, fieldKey);
 }
 
 function buildCombinedProductionCompanyDisplay(sourceInfo, projectLabels) {
-  const htmlLines = [];
-  const textLines = [];
-  const labelSets = getProductionCompanyLabelSets(projectLabels);
-  const knownLabelLines = new Set();
-  Object.values(labelSets).forEach((set) => {
-    if (!set) return;
-    set.forEach((value) => {
-      if (typeof value === 'string' && value) {
-        knownLabelLines.add(value);
-      }
-    });
-  });
-  const isLabelLine = (value) => {
-    if (typeof value !== 'string' || !value.trim()) {
-      return false;
-    }
-    return knownLabelLines.has(normalizeProjectFieldLabel(value));
-  };
-  const addLine = (value, className, associatedFields) => {
-    if (typeof value !== 'string') return;
-    const trimmed = value.trim();
-    if (!trimmed) return;
-    const safe = escapeHtml(trimmed);
-    const fieldList = Array.isArray(associatedFields)
-      ? associatedFields.filter((field) => typeof field === 'string' && field.trim())
-      : [];
-    const fieldAttr = fieldList.length
-      ? ` data-fields="${escapeHtml(fieldList.join(' '))}"`
-      : '';
-    htmlLines.push(className ? `<span class="${className}"${fieldAttr}>${safe}</span>` : safe);
-    textLines.push(trimmed);
-  };
-  const textsObj = typeof texts !== 'undefined' ? texts : null;
-  const addressAccumulator = {
-    entries: [],
-    indexMap: new Map()
-  };
-  const appendAddressEntry = (line, fieldKey) => {
-    if (typeof line !== 'string') return;
-    const trimmed = line.trim();
-    if (!trimmed) return;
-    if (isLabelLine(trimmed)) return;
-    const normalized = trimmed.toLowerCase();
-    let entry = addressAccumulator.indexMap.get(normalized);
-    if (!entry) {
-      entry = { value: trimmed, fields: [] };
-      addressAccumulator.entries.push(entry);
-      addressAccumulator.indexMap.set(normalized, entry);
-    }
-    if (
-      typeof fieldKey === 'string'
-      && PRODUCTION_COMPANY_FIELD_ORDER.includes(fieldKey)
-      && !entry.fields.includes(fieldKey)
-    ) {
-      entry.fields.push(fieldKey);
-    }
-  };
-
-  const companyLines = getProjectInfoFieldLines(sourceInfo, 'productionCompany');
-  companyLines.forEach((line) => addLine(line, 'req-primary-line'));
-
-  PRODUCTION_COMPANY_FIELD_ORDER.forEach((fieldKey) => {
-    const lines = getProjectInfoFieldLines(sourceInfo, fieldKey);
-    if (!lines.length) return;
-    lines.forEach((line) => appendAddressEntry(line, fieldKey));
-  });
-
-  const { entries: addressEntries } = addressAccumulator;
-  if (addressEntries.length) {
-    const locationFieldSet = new Set([
-      'productionCompanyCity',
-      'productionCompanyRegion',
-      'productionCompanyPostalCode',
-    ]);
-    const locationValues = {
-      productionCompanyCity: [],
-      productionCompanyRegion: [],
-      productionCompanyPostalCode: [],
-    };
-    const filteredEntries = [];
-    let locationInsertIndex = null;
-
-    addressEntries.forEach((entry) => {
-      const { value, fields } = entry;
-      const isLocationEntry = Array.isArray(fields)
-        ? fields.some((field) => locationFieldSet.has(field))
-        : false;
-      if (isLocationEntry) {
-        if (locationInsertIndex === null) {
-          locationInsertIndex = filteredEntries.length;
-        }
-        fields.forEach((field) => {
-          if (locationFieldSet.has(field)) {
-            locationValues[field].push(value);
-          }
-        });
-      } else {
-        filteredEntries.push(entry);
-      }
-    });
-
-    const pickFirstValue = (arr) => {
-      if (!Array.isArray(arr)) return '';
-      const found = arr.find((item) => typeof item === 'string' && item.trim());
-      return found ? found.trim() : '';
-    };
-
-    const cityValue = pickFirstValue(locationValues.productionCompanyCity);
-    const regionValue = pickFirstValue(locationValues.productionCompanyRegion);
-    const postalValue = pickFirstValue(locationValues.productionCompanyPostalCode);
-
-    const locationParts = [];
-    const locationFields = [];
-    if (cityValue) {
-      locationParts.push(cityValue);
-      locationFields.push('productionCompanyCity');
-    }
-    const regionPostalParts = [];
-    if (regionValue) {
-      regionPostalParts.push(regionValue);
-      locationFields.push('productionCompanyRegion');
-    }
-    if (postalValue) {
-      regionPostalParts.push(postalValue);
-      locationFields.push('productionCompanyPostalCode');
-    }
-    if (regionPostalParts.length) {
-      const combinedRegionPostal = regionPostalParts.join(', ');
-      locationParts.push(combinedRegionPostal);
-    }
-
-    const combinedLocationLine = locationParts.join(', ').trim();
-    if (combinedLocationLine) {
-      const normalizedCombined = combinedLocationLine.toLowerCase();
-      const hasExisting = filteredEntries.some((entry) => {
-        const entryValue = typeof entry.value === 'string' ? entry.value.trim() : '';
-        return entryValue && entryValue.toLowerCase() === normalizedCombined;
-      });
-      if (!hasExisting) {
-        const insertAt = locationInsertIndex === null
-          ? filteredEntries.length
-          : locationInsertIndex;
-        filteredEntries.splice(insertAt, 0, {
-          value: combinedLocationLine,
-          fields: locationFields,
-        });
-      }
-    }
-
-    filteredEntries.forEach((entry) => {
-      const { value, fields } = entry;
-      addLine(value, 'req-sub-line', fields);
-    });
-  }
-
-  if (!htmlLines.length) {
-    return null;
-  }
-
-  return {
-    __html: htmlLines.join('<br>'),
-    text: textLines.join('\n')
-  };
+  return buildCombinedProductionCompanyDisplayModule(sourceInfo, projectLabels);
 }
 
 function applyCombinedProductionCompanyDisplay(targetInfo, sourceInfo, projectLabels) {
-  if (!targetInfo || typeof targetInfo !== 'object') {
-    return false;
-  }
-  const source = (sourceInfo && typeof sourceInfo === 'object') ? sourceInfo : targetInfo;
-  const combined = buildCombinedProductionCompanyDisplay(source, projectLabels);
-  if (!combined) {
-    return false;
-  }
-  targetInfo.productionCompany = combined;
-  PRODUCTION_COMPANY_FIELD_ORDER.forEach((key) => {
-    if (Object.prototype.hasOwnProperty.call(targetInfo, key)) {
-      delete targetInfo[key];
-    }
-  });
-  return true;
+  return applyCombinedProductionCompanyDisplayModule(targetInfo, sourceInfo, projectLabels);
 }
 
 function expandCombinedProductionCompanyInfo(rawText, projectLabels, metadata) {
-  if (typeof rawText !== 'string') {
-    return null;
-  }
-  const normalizedText = rawText
-    .replace(/\r\n?/g, '\n')
-    .split('\n')
-    .map((segment) => segment.trim())
-    .filter((segment) => segment);
-  if (!normalizedText.length) {
-    return null;
-  }
-  const labelSets = getProductionCompanyLabelSets(projectLabels);
-  const result = {};
-  const [firstLine, ...rest] = normalizedText;
-  if (firstLine) {
-    result.productionCompany = firstLine;
-  }
-  const metadataLines = Array.isArray(metadata?.lines) ? metadata.lines : null;
-  if (metadataLines && metadataLines.length) {
-    const collectedFromMetadata = {};
-    metadataLines.forEach((entry) => {
-      if (!entry || typeof entry.text !== 'string') return;
-      const text = entry.text.trim();
-      if (!text) return;
-      let fields = entry.fields;
-      if (typeof fields === 'string') {
-        fields = fields.split(/\s+/);
-      }
-      if (!Array.isArray(fields) || !fields.length) return;
-      fields
-        .map((field) => (typeof field === 'string' ? field.trim() : ''))
-        .filter((field) => field && PRODUCTION_COMPANY_FIELD_ORDER.includes(field))
-        .forEach((field) => {
-          if (!collectedFromMetadata[field]) {
-            collectedFromMetadata[field] = [];
-          }
-          collectedFromMetadata[field].push(text);
-        });
-    });
-    if (Object.keys(collectedFromMetadata).length) {
-      if (collectedFromMetadata.productionCompanyAddress && collectedFromMetadata.productionCompanyAddress.length) {
-        result.productionCompanyAddress = collectedFromMetadata.productionCompanyAddress.join('\n');
-      }
-      if (collectedFromMetadata.productionCompanyStreet && collectedFromMetadata.productionCompanyStreet.length) {
-        const streetParts = collectedFromMetadata.productionCompanyStreet;
-        [result.productionCompanyStreet] = streetParts;
-        if (streetParts.length > 1) {
-          const secondary = streetParts.slice(1).join('\n');
-          if (secondary) {
-            result.productionCompanyStreet2 = secondary;
-          }
-        }
-      }
-      if (collectedFromMetadata.productionCompanyStreet2 && collectedFromMetadata.productionCompanyStreet2.length) {
-        const streetTwo = collectedFromMetadata.productionCompanyStreet2.join('\n');
-        if (streetTwo) {
-          result.productionCompanyStreet2 = result.productionCompanyStreet2
-            ? `${result.productionCompanyStreet2}\n${streetTwo}`
-            : streetTwo;
-        }
-      }
-      const joinCollected = (field) => {
-        if (!collectedFromMetadata[field] || !collectedFromMetadata[field].length) return;
-        const combined = collectedFromMetadata[field].join(' ');
-        if (combined) {
-          result[field] = combined;
-        }
-      };
-      ['productionCompanyCity', 'productionCompanyRegion', 'productionCompanyPostalCode', 'productionCompanyCountry']
-        .forEach(joinCollected);
-      return result;
-    }
-  }
-  const collected = {};
-  let activeField = null;
-  rest.forEach((line) => {
-    const normalizedLine = normalizeProjectFieldLabel(line);
-    let matchedField = null;
-    PRODUCTION_COMPANY_FIELD_ORDER.forEach((field) => {
-      if (matchedField || !labelSets[field]) return;
-      if (labelSets[field].has(normalizedLine)) {
-        matchedField = field;
-      }
-    });
-    if (matchedField) {
-      activeField = matchedField;
-      if (!collected[activeField]) {
-        collected[activeField] = [];
-      }
-      return;
-    }
-    if (!activeField) {
-      if (result.productionCompany) {
-        result.productionCompany += `\n${line}`;
-      } else {
-        result.productionCompany = line;
-      }
-      return;
-    }
-    if (!collected[activeField]) {
-      collected[activeField] = [];
-    }
-    collected[activeField].push(line);
-  });
-
-  if (collected.productionCompanyAddress && collected.productionCompanyAddress.length) {
-    result.productionCompanyAddress = collected.productionCompanyAddress.join('\n');
-  }
-  if (collected.productionCompanyStreet && collected.productionCompanyStreet.length) {
-    const streetParts = collected.productionCompanyStreet;
-    result.productionCompanyStreet = streetParts[0];
-    if (streetParts.length > 1) {
-      result.productionCompanyStreet2 = streetParts.slice(1).join('\n');
-    }
-  }
-  if (collected.productionCompanyCity && collected.productionCompanyCity.length) {
-    result.productionCompanyCity = collected.productionCompanyCity.join(' ');
-  }
-  if (collected.productionCompanyRegion && collected.productionCompanyRegion.length) {
-    result.productionCompanyRegion = collected.productionCompanyRegion.join(' ');
-  }
-  if (collected.productionCompanyPostalCode && collected.productionCompanyPostalCode.length) {
-    result.productionCompanyPostalCode = collected.productionCompanyPostalCode.join(' ');
-  }
-  if (collected.productionCompanyCountry && collected.productionCompanyCountry.length) {
-    result.productionCompanyCountry = collected.productionCompanyCountry.join(' ');
-  }
-
-  return result;
+  return expandCombinedProductionCompanyInfoModule(rawText, projectLabels, metadata);
 }
 
 const EXTRA_GEAR_CATEGORY_KEY = 'temporary-extras';
@@ -5074,502 +4573,45 @@ if (cineResultsModule && typeof cineResultsModule.setupRuntimeFeedback === 'func
 
 
 
-function summarizeByType(list) {
-  if (!Array.isArray(list)) return {};
-  return list.reduce((counts, it) => {
-    if (it?.type) {
-      counts[it.type] = (counts[it.type] || 0) + 1;
-    }
-    return counts;
-  }, {});
-}
-
-function renderInfoLabel(text) {
-  const str = text != null ? String(text).trim() : '';
-  if (!str) return '';
-  return `<span class="info-box-label">${escapeHtml(str)}:</span> `;
-}
-
-function connectorBlocks(items, icon, cls = 'neutral-conn', label = '', dir = '') {
-  if (!Array.isArray(items) || items.length === 0) return '';
-  const counts = summarizeByType(items);
-  const entries = Object.entries(counts).map(([type, count]) => {
-    return `${escapeHtml(type)}${count > 1 ? ` ×${count}` : ''}`;
-  });
-  if (!entries.length) return '';
-  const labelText = label ? `${label}${dir ? ` ${dir}` : ''}` : '';
-  const labelHtml = renderInfoLabel(labelText);
-  const iconHtml = iconMarkup(icon, 'connector-icon');
-  return `<span class="connector-block ${cls}">${iconHtml}${labelHtml}${entries.join(', ')}</span>`;
-}
+// Connector utilities migrated to connector-summary.js
 
 function generateConnectorSummary(device) {
-  if (!device || typeof device !== 'object') return '';
-
-  const normalizeFocusScaleValue = (value) => {
-    if (typeof value !== 'string') {
-      return '';
-    }
-    const normalized = value.trim().toLowerCase();
-    return normalized === 'imperial' || normalized === 'metric' ? normalized : '';
+  const config = {
+    focusScalePreference: (typeof focusScalePreference !== 'undefined' ? focusScalePreference : undefined),
+    normalizeFocusScale: (typeof normalizeFocusScale === 'function' ? normalizeFocusScale : undefined),
+    currentLang: (typeof currentLang !== 'undefined' ? currentLang : 'en'),
+    diagramConnectorIcons: (typeof diagramConnectorIcons !== 'undefined' ? diagramConnectorIcons : {}),
+    powerInputTypes: (typeof powerInputTypes === 'function' ? powerInputTypes : () => []),
+    ICON_GLYPHS: (typeof ICON_GLYPHS !== 'undefined' ? ICON_GLYPHS : {}),
+    DIAGRAM_MONITOR_ICON: (typeof DIAGRAM_MONITOR_ICON !== 'undefined' ? DIAGRAM_MONITOR_ICON : ''),
+    parseBatteryCurrentLimit: (typeof parseBatteryCurrentLimit === 'function' ? parseBatteryCurrentLimit : undefined),
   };
-
-  const resolveFocusScaleMode = () => {
-    const scope =
-      (typeof globalThis !== 'undefined' && globalThis)
-      || (typeof window !== 'undefined' && window)
-      || (typeof self !== 'undefined' && self)
-      || (typeof global !== 'undefined' && global)
-      || null;
-    const scopePreference = scope && typeof scope.focusScalePreference === 'string'
-      ? scope.focusScalePreference
-      : null;
-    const rawPreference = scopePreference
-      || (typeof focusScalePreference === 'string' ? focusScalePreference : null)
-      || 'metric';
-    if (typeof normalizeFocusScale === 'function') {
-      try {
-        const normalized = normalizeFocusScale(rawPreference);
-        if (normalized === 'imperial' || normalized === 'metric') {
-          return normalized;
-        }
-      } catch (normalizeError) {
-        void normalizeError;
-      }
-    }
-    const normalized = normalizeFocusScaleValue(rawPreference);
-    return normalized || 'metric';
-  };
-
-  const focusScaleMode = resolveFocusScaleMode();
-  const focusScaleLang = typeof currentLang === 'string' && currentLang.trim() ? currentLang : 'en';
-
-  const formatNumber = (value, options = {}) => {
-    const numeric = typeof value === 'string' ? Number(value) : value;
-    if (!Number.isFinite(numeric)) {
-      return '';
-    }
-
-    const maximumFractionDigits = typeof options.maximumFractionDigits === 'number'
-      ? options.maximumFractionDigits
-      : 0;
-    const minimumFractionDigits = typeof options.minimumFractionDigits === 'number'
-      ? options.minimumFractionDigits
-      : Math.min(0, maximumFractionDigits);
-
-    if (typeof Intl !== 'undefined' && typeof Intl.NumberFormat === 'function') {
-      try {
-        return new Intl.NumberFormat(focusScaleLang, {
-          maximumFractionDigits,
-          minimumFractionDigits,
-        }).format(numeric);
-      } catch (formatError) {
-        void formatError;
-      }
-    }
-
-    const digits = Math.max(minimumFractionDigits, Math.min(20, maximumFractionDigits));
-    try {
-      return numeric.toFixed(digits);
-    } catch (toFixedError) {
-      void toFixedError;
-    }
-
-    return String(numeric);
-  };
-
-  const formatWeight = (grams, mode = focusScaleMode) => {
-    const numeric = typeof grams === 'string' ? Number(grams) : grams;
-    if (!Number.isFinite(numeric)) {
-      return '';
-    }
-    const useImperial = mode === 'imperial';
-    if (useImperial) {
-      const pounds = numeric / 453.59237;
-      const digits = pounds >= 10 ? 1 : 2;
-      const formatted = formatNumber(pounds, { maximumFractionDigits: digits, minimumFractionDigits: 0 });
-      return formatted ? `${formatted} lb` : '';
-    }
-    const formatted = formatNumber(numeric, { maximumFractionDigits: 0, minimumFractionDigits: 0 });
-    return formatted ? `${formatted} g` : '';
-  };
-
-  let portHtml = '';
-  const connectors = [
-    { items: device.power?.powerDistributionOutputs, icon: diagramConnectorIcons.powerOut, cls: 'power-conn', label: 'Power', dir: 'Out' },
-    { items: powerInputTypes(device).map(t => ({ type: t })), icon: diagramConnectorIcons.powerIn, cls: 'power-conn', label: 'Power', dir: 'In' },
-    { items: device.fizConnectors, icon: diagramConnectorIcons.fiz, cls: 'fiz-conn', label: 'FIZ Port' },
-    { items: device.video?.inputs || device.videoInputs, icon: diagramConnectorIcons.video, cls: 'video-conn', label: 'Video', dir: 'In' },
-    { items: device.video?.outputs || device.videoOutputs, icon: diagramConnectorIcons.video, cls: 'video-conn', label: 'Video', dir: 'Out' },
-    { items: device.timecode, icon: diagramConnectorIcons.timecode, cls: 'neutral-conn', label: 'Timecode' },
-    { items: device.audioInput?.portType ? [{ type: device.audioInput.portType }] : undefined, icon: diagramConnectorIcons.audioIn, cls: 'neutral-conn', label: 'Audio', dir: 'In' },
-    { items: device.audioOutput?.portType ? [{ type: device.audioOutput.portType }] : undefined, icon: diagramConnectorIcons.audioOut, cls: 'neutral-conn', label: 'Audio', dir: 'Out' },
-    { items: device.audioIo?.portType ? [{ type: device.audioIo.portType }] : undefined, icon: diagramConnectorIcons.audioIo, cls: 'neutral-conn', label: 'Audio', dir: 'I/O' },
-  ];
-
-  for (const { items, icon, cls, label, dir } of connectors) {
-    portHtml += connectorBlocks(items, icon, cls, label, dir);
-  }
-
-  let specHtml = '';
-  if (typeof device.powerDrawWatts === 'number') {
-    specHtml += `<span class="info-box power-conn">${iconMarkup(diagramConnectorIcons.powerSpec)}${renderInfoLabel('Power')}${device.powerDrawWatts} W</span>`;
-  }
-  if (device.power?.input?.voltageRange) {
-    specHtml += `<span class="info-box power-conn">${iconMarkup(ICON_GLYPHS.batteryBolt)}${renderInfoLabel('Voltage')}${escapeHtml(String(device.power.input.voltageRange))}V</span>`;
-  }
-  if (typeof device.weight_g === 'number') {
-    const weightLabel = formatWeight(device.weight_g);
-    if (weightLabel) {
-      specHtml += `<span class="info-box neutral-conn">${iconMarkup(ICON_GLYPHS.gears)}${renderInfoLabel('Weight')}${escapeHtml(weightLabel)}</span>`;
-    }
-  }
-  if (typeof device.capacity === 'number') {
-    specHtml += `<span class="info-box power-conn">${iconMarkup(ICON_GLYPHS.batteryFull)}${renderInfoLabel('Capacity')}${device.capacity} Wh</span>`;
-  }
-  const pinLimit = parseBatteryCurrentLimit(device.pinA);
-  if (Number.isFinite(pinLimit) && pinLimit > 0) {
-    specHtml += `<span class="info-box power-conn">${renderInfoLabel('Pins')}${pinLimit}A</span>`;
-  }
-  if (typeof device.dtapA === 'number') {
-    specHtml += `<span class="info-box power-conn">${renderInfoLabel('D-Tap')}${device.dtapA}A</span>`;
-  }
-  if (device.mount_type) {
-    specHtml += `<span class="info-box power-conn">${renderInfoLabel('Mount')}${escapeHtml(String(device.mount_type))}</span>`;
-  }
-  if (typeof device.screenSizeInches === 'number') {
-    specHtml += `<span class="info-box video-conn">${iconMarkup(DIAGRAM_MONITOR_ICON)}${renderInfoLabel('Screen')}${device.screenSizeInches}"</span>`;
-  }
-  if (typeof device.brightnessNits === 'number') {
-    specHtml += `<span class="info-box video-conn">${iconMarkup(ICON_GLYPHS.brightness)}${renderInfoLabel('Brightness')}${device.brightnessNits} nits</span>`;
-  }
-  if (typeof device.wirelessTx === 'boolean') {
-    specHtml += `<span class="info-box video-conn">${iconMarkup(ICON_GLYPHS.wifi)}${renderInfoLabel('Wireless')}${device.wirelessTx}</span>`;
-  }
-  if (device.internalController) {
-    specHtml += `<span class="info-box fiz-conn">${iconMarkup(diagramConnectorIcons.controller)}${renderInfoLabel('Controller')}Internal</span>`;
-  }
-  if (typeof device.torqueNm === 'number') {
-    specHtml += `<span class="info-box fiz-conn">${iconMarkup(diagramConnectorIcons.torque)}${renderInfoLabel('Torque')}${device.torqueNm} Nm</span>`;
-  }
-  if (device.powerSource) {
-    specHtml += `<span class="info-box power-conn">${iconMarkup(diagramConnectorIcons.powerSource)}${renderInfoLabel('Power Source')}${escapeHtml(String(device.powerSource))}</span>`;
-  }
-
-  const uniqueList = list => {
-    if (!Array.isArray(list)) return [];
-    const seen = new Set();
-    const values = [];
-    list.forEach(entry => {
-      const str = entry != null ? String(entry).trim() : '';
-      if (!str || seen.has(str)) return;
-      seen.add(str);
-      values.push(escapeHtml(str));
-    });
-    return values;
-  };
-
-  const appendListBox = (html, values, label, cls, icon) => {
-    const formatted = uniqueList(values);
-    if (!formatted.length) return html;
-    const iconHtml = iconMarkup(icon);
-    const labelHtml = renderInfoLabel(label);
-    const valuesHtml = `<span class="info-box-values">${formatted.join(', ')}</span>`;
-    return `${html}<span class="info-box ${cls} info-box-list">${iconHtml}${labelHtml}${valuesHtml}</span>`;
-  };
-
-  let recordingHtml = '';
-  if (Array.isArray(device.sensorModes)) {
-    recordingHtml = appendListBox(recordingHtml, device.sensorModes, 'Sensor Modes', 'video-conn', ICON_GLYPHS.sensor);
-  }
-  if (Array.isArray(device.resolutions)) {
-    recordingHtml = appendListBox(recordingHtml, device.resolutions, 'Resolutions', 'video-conn', ICON_GLYPHS.screen);
-  }
-  if (Array.isArray(device.frameRates)) {
-    const frameRateIcon = diagramConnectorIcons?.timecode || ICON_GLYPHS.camera;
-    recordingHtml = appendListBox(recordingHtml, device.frameRates, 'Frame Rates', 'video-conn', frameRateIcon);
-  }
-  if (Array.isArray(device.recordingCodecs)) {
-    recordingHtml = appendListBox(recordingHtml, device.recordingCodecs, 'Codecs', 'video-conn', ICON_GLYPHS.camera);
-  }
-  if (Array.isArray(device.recordingMedia)) {
-    const mediaTypes = device.recordingMedia
-      .map(item => (item && item.type ? item.type : ''));
-    recordingHtml = appendListBox(recordingHtml, mediaTypes, 'Media', 'video-conn', ICON_GLYPHS.save);
-  }
-
-  let extraHtml = '';
-  if (Array.isArray(device.power?.batteryPlateSupport) && device.power.batteryPlateSupport.length) {
-    const types = device.power.batteryPlateSupport.map(p => {
-      const mount = p.mount ? ` (${escapeHtml(p.mount)})` : '';
-      return `${escapeHtml(p.type)}${mount}`;
-    });
-    extraHtml += `<span class="info-box power-conn">${renderInfoLabel('Battery Plate')}${types.join(', ')}</span>`;
-  }
-  if (Array.isArray(device.viewfinder) && device.viewfinder.length) {
-    const types = device.viewfinder.map(v => escapeHtml(v.type));
-    extraHtml += `<span class="info-box video-conn">${renderInfoLabel('Viewfinder')}${types.join(', ')}</span>`;
-  }
-  if (Array.isArray(device.gearTypes) && device.gearTypes.length) {
-    const types = device.gearTypes.map(g => escapeHtml(g));
-    extraHtml += `<span class="info-box fiz-conn">${renderInfoLabel('Gear')}${types.join(', ')}</span>`;
-  }
-  if (device.connectivity) {
-    extraHtml += `<span class="info-box video-conn">${renderInfoLabel('Connectivity')}${escapeHtml(String(device.connectivity))}</span>`;
-  }
-  if (device.notes) {
-    extraHtml += `<span class="info-box neutral-conn">${renderInfoLabel('Notes')}${escapeHtml(String(device.notes))}</span>`;
-  }
-
-  let lensHtml = '';
-  if (Array.isArray(device.lensMount)) {
-    const boxes = device.lensMount.map(lm => {
-      const mount = lm.mount ? ` (${escapeHtml(lm.mount)})` : '';
-      return `<span class="info-box neutral-conn">${escapeHtml(lm.type)}${mount}</span>`;
-    }).join('');
-    if (boxes) lensHtml = `<div class="lens-mount-box">${boxes}</div>`;
-  }
-
-  let html = '';
-  const section = (label, content) => {
-    if (!content) return '';
-    return `<div class="info-label">${label}</div>${content}`;
-  };
-
-  html += section('Ports', portHtml);
-  html += section('Specs', specHtml);
-  html += section('Recording', recordingHtml);
-  html += section('Extras', extraHtml);
-  if (lensHtml) html += `<div class="info-label">Lens Mount</div>${lensHtml}`;
-
-  // Automatically handle any remaining attributes not explicitly covered above
-  const handledKeys = new Set([
-    'power', 'powerDrawWatts', 'weight_g', 'capacity', 'pinA', 'dtapA', 'mount_type',
-    'screenSizeInches', 'brightnessNits', 'wirelessTx', 'internalController', 'torqueNm', 'powerSource',
-    'sensorModes', 'resolutions', 'frameRates', 'recordingCodecs', 'recordingMedia',
-    'viewfinder', 'gearTypes', 'connectivity', 'notes', 'lensMount',
-    'video', 'videoInputs', 'videoOutputs', 'fizConnectors', 'timecode',
-    'audioInput', 'audioOutput', 'audioIo'
-  ]);
-
-  let otherHtml = '';
-  const formatKeyLabel = (key) => {
-    // CamelContext to Words
-    return key
-      .replace(/([A-Z])/g, ' $1')
-      .replace(/^./, str => str.toUpperCase())
-      .replace(/_/g, ' ')
-      .trim();
-  };
-
-  Object.entries(device).forEach(([key, value]) => {
-    if (handledKeys.has(key)) return;
-    if (value === null || value === undefined || value === '') return;
-
-    // Handle verified_source specially or generic
-    if (key === 'verified_source') {
-      const url = String(value);
-      otherHtml += `<span class="info-box neutral-conn"><a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline;">Source</a></span>`;
-      return;
-    }
-
-    const label = formatKeyLabel(key);
-
-    if (Array.isArray(value)) {
-      // Render as array box
-      const safeValues = value.map(v => typeof v === 'string' ? v : JSON.stringify(v));
-      if (safeValues.length) {
-        const valuesHtml = `<span class="info-box-values">${safeValues.map(escapeHtml).join(', ')}</span>`;
-        // Use a generic icon or circle - assuming ICON_GLYPHS.fileText exists or fallback
-        const iconHtml = (typeof ICON_GLYPHS !== 'undefined' && ICON_GLYPHS.fileText) ? iconMarkup(ICON_GLYPHS.fileText) : '';
-        otherHtml += `<span class="info-box neutral-conn info-box-list">${iconHtml}${renderInfoLabel(label)}${valuesHtml}</span>`;
-      }
-    } else if (typeof value === 'object') {
-      // Skip complex objects
-    } else {
-      // Primitive
-      let displayValue = String(value);
-      if (typeof value === 'boolean') {
-        displayValue = value ? 'Yes' : 'No';
-      }
-      otherHtml += `<span class="info-box neutral-conn">${renderInfoLabel(label)}${escapeHtml(displayValue)}</span>`;
-    }
-  });
-
-  if (otherHtml) {
-    html += section('Other Attributes', otherHtml);
-  }
-
-  return html ? `<div class="connector-summary">${html}</div>` : '';
+  return generateConnectorSummaryModule(device, config);
 }
 
 
 function suggestChargerCounts(total) {
-  let quad = Math.floor(total / 4);
-  const remainder = total % 4;
-  let dual = 0;
-  let single = 0;
-  if (remainder === 0) {
-    // nothing
-  } else if (remainder === 3) {
-    quad += 1;
-  } else if (remainder > 0) {
-    dual += 1;
-  }
-  return { quad, dual, single };
+  return suggestChargerCountsModule(total);
 }
 
 function addArriKNumber(name) {
-  if (!name) return name;
   const d = typeof devices !== 'undefined' ? devices : {};
-  const collections = [
-    d.viewfinders,
-    d.directorMonitors,
-    d.iosVideo,
-    d.videoAssist,
-    d.media,
-    d.lenses
-  ];
-  for (const col of collections) {
-    if (col && col[name]) {
-      const item = col[name];
-      if (item.brand && item.brand.toUpperCase().includes('ARRI') && item.kNumber && !name.includes(item.kNumber)) {
-        return name.replace(/^ARRI\s*/i, `ARRI ${item.kNumber} `);
-      }
-      return name;
-    }
-  }
-  if (d.accessories) {
-    const findItem = obj => {
-      if (!obj) return null;
-      if (obj[name]) return obj[name];
-      for (const val of Object.values(obj)) {
-        if (val && typeof val === 'object') {
-          const found = findItem(val);
-          if (found) return found;
-        }
-      }
-      return null;
-    };
-    for (const col of Object.values(d.accessories)) {
-      const item = findItem(col);
-      if (item) {
-        if (item.brand && item.brand.toUpperCase().includes('ARRI') && item.kNumber && !name.includes(item.kNumber)) {
-          return /^ARRI\s*/i.test(name) ? name.replace(/^ARRI\s*/i, `ARRI ${item.kNumber} `) : `ARRI ${item.kNumber} ${name}`;
-        }
-        return name;
-      }
-    }
-  }
-  return name;
+  return addArriKNumberModule(name, { devices: d });
 }
 
-const sanitizeFizContext = context => (context || '')
-  .replace(/[()]/g, '')
-  .replace(/\s{2,}/g, ' ')
-  .trim();
-
 const formatFizCable = (name, context) => {
-  const cleaned = sanitizeFizContext(context);
-  return cleaned ? `${name} (${cleaned})` : name;
+  return formatFizCableModule(name, context);
 };
 
 function suggestArriFizCables() {
-  const CABLE_LBUS_05 = 'LBUS to LBUS 0,5m';
-  const CABLE_UDM_SERIAL_4P = 'Cable UDM – SERIAL (4p) 0,5m';
-  const CABLE_UDM_SERIAL_7P = 'Cable UDM – SERIAL (7p) 1,5m';
-  const cables = [];
-  const lbusLengths = [];
-  const camSpare = [];
-  const camera = cameraSelect?.value || '';
-  const motors = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None');
-  const controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None');
-  const distance = distanceSelect?.value || '';
-  const motor = motors[0] || '';
-  const hasMasterGrip = controllers.includes('Arri Master Grip (single unit)');
-  const hasRIA = controllers.includes('Arri RIA-1');
-  let hasUDM = distance.includes('UDM');
-  let hasLCube = distance.includes('LCube');
-  if (hasLCube && (hasRIA || camera === 'Arri Alexa 35')) hasLCube = false;
-  const isCforceMiniRF = /cforce mini rf/i.test(motor);
-  const isCforceMini = /cforce mini/i.test(motor) && !isCforceMiniRF;
-  const motorContext = motor ? `for ${motor}` : 'for FIZ motor';
-  const masterGripContext = 'for Arri Master Grip (single unit)';
-  const distanceContext = distance ? `for ${distance}` : 'for distance sensor';
-  const controllersToCheck = [];
-  if (hasRIA) controllersToCheck.push('Arri RIA-1');
-  if (isCforceMiniRF) controllersToCheck.push('Arri cforce mini RF');
-  const primaryController = controllersToCheck[0] || controllers[0] || '';
-  const pushLbus = (len, contextOverride) => {
-    const formatted = String(len).replace('.', ',');
-    const ctx = contextOverride || motorContext;
-    cables.push(formatFizCable(`LBUS to LBUS ${formatted}m`, ctx));
-    lbusLengths.push(Number(len));
+  const config = {
+    camera: (typeof cameraSelect !== 'undefined' && cameraSelect ? cameraSelect.value : ''),
+    motors: (typeof motorSelects !== 'undefined' ? motorSelects.map(sel => sel.value).filter(v => v && v !== 'None') : []),
+    controllers: (typeof controllerSelects !== 'undefined' ? controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None') : []),
+    distance: (typeof distanceSelect !== 'undefined' && distanceSelect ? distanceSelect.value : ''),
+    devices: (typeof devices !== 'undefined' ? devices : {}),
   };
-  if ((camera === 'Arri Alexa Mini' || camera === 'Arri Alexa Mini LF') && isCforceMini) {
-    pushLbus(0.3);
-    if (hasLCube) pushLbus(0.4, distanceContext);
-    if (hasMasterGrip) pushLbus(0.5, masterGripContext);
-  } else if (camera === 'Arri Alexa 35' && isCforceMini) {
-    pushLbus(0.3);
-    if (hasMasterGrip) pushLbus(0.5, masterGripContext);
-  } else if (isCforceMiniRF) {
-    if (hasLCube) {
-      pushLbus(0.4, distanceContext);
-      if (hasMasterGrip) pushLbus(0.5, masterGripContext);
-    } else if (hasMasterGrip) {
-      pushLbus(0.5, masterGripContext);
-    }
-  } else if (hasRIA && isCforceMini) {
-    pushLbus(0.4);
-    if (hasMasterGrip) pushLbus(0.5, masterGripContext);
-  }
-  if (controllersToCheck.length) {
-    const cablesData = devices.accessories?.cables || {};
-    let chosen = null;
-    for (const [name, data] of Object.entries(cablesData)) {
-      const connectors = [];
-      if (Array.isArray(data.connectors)) connectors.push(...data.connectors);
-      if (data.from) connectors.push(data.from);
-      if (data.to) connectors.push(data.to);
-      if (!connectors.some(c => /CAM \(7-pin/i.test(c))) continue;
-      const ctrlOk = (data.compatibleControllers || []).some(cc =>
-        controllersToCheck.some(ct => cc.toLowerCase().includes(ct.toLowerCase())));
-      if (!ctrlOk) continue;
-      const camOk = !data.compatibleCameras ||
-        data.compatibleCameras.some(c => c.toLowerCase() === camera.toLowerCase());
-      if (!camOk) continue;
-      if (!chosen || (data.lengthM ?? Infinity) < (cablesData[chosen].lengthM ?? Infinity)) {
-        chosen = name;
-      }
-    }
-    if (chosen) {
-      const camContext = camera ? `for ${camera}` : 'for camera control';
-      cables.push(formatFizCable(chosen, camContext));
-      camSpare.push(chosen);
-    } else if (hasRIA && cablesData['Cable CAM (7-pin) – D-Tap 0,5m']) {
-      const fallback = 'Cable CAM (7-pin) – D-Tap 0,5m';
-      const fallbackContext = primaryController ? `for ${primaryController} power` : 'for controller power';
-      cables.push(formatFizCable(fallback, fallbackContext));
-      camSpare.push(fallback);
-    }
-  }
-  if (hasUDM) {
-    if (hasLCube) {
-      cables.push(formatFizCable(CABLE_UDM_SERIAL_7P, distanceContext));
-    } else {
-      cables.push(formatFizCable(CABLE_UDM_SERIAL_4P, distanceContext));
-      cables.push(formatFizCable(CABLE_UDM_SERIAL_4P, 'spare'));
-    }
-  }
-  if (lbusLengths.length) {
-    const shortest = Math.min(...lbusLengths);
-    const formattedShortest = String(shortest).replace('.', ',');
-    cables.push(formatFizCable(`LBUS to LBUS ${formattedShortest}m`, 'spare'));
-    cables.push(formatFizCable(CABLE_LBUS_05, 'spare'));
-  }
-  camSpare.forEach(n => cables.push(formatFizCable(n, 'spare')));
-  return cables;
+  return suggestArriFizCablesModule(config);
 }
 
 function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
@@ -16254,3 +15296,13 @@ window.bindGearListProGaffTapeListener = bindGearListProGaffTapeListener;
 window.bindGearListDirectorMonitorListener = bindGearListDirectorMonitorListener;
 
 export { ensureZoomRemoteSetup, saveCurrentGearList, generateConnectorSummary, downloadSharedProject };
+
+// Expose shims to global scope for legacy compatibility
+if (typeof window !== 'undefined') {
+  window.deriveProjectInfo = deriveProjectInfo;
+  window.generateConnectorSummary = generateConnectorSummaryModule;
+  window.addArriKNumber = addArriKNumberModule;
+  window.suggestArriFizCables = suggestArriFizCablesModule;
+  window.suggestChargerCounts = suggestChargerCountsModule;
+  window.safeGetCurrentProjectName = safeGetCurrentProjectName;
+}

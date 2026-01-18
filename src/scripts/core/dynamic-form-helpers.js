@@ -5,7 +5,7 @@
  * Refactored to import from pure ESM modules.
  */
 
-import { clearDynamicFields, placeWattField, buildDynamicFields } from '../../modules/ui/dynamic-forms.js';
+import { clearDynamicFields, placeWattField, buildDynamicFields } from '../modules/ui/dynamic-forms.js';
 
 const getScope = () => (typeof window !== 'undefined' ? window : globalThis);
 

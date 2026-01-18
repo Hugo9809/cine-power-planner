@@ -9,7 +9,7 @@ import {
   isRtlLanguage,
   resolveDocumentDirection,
   applyLocaleMetadata
-} from '../../modules/core/localization-accessors.js';
+} from '../modules/core/localization-accessors.js';
 
 var ACTIVE_LOCALIZATION_ACCESSORS = createLocalizationAccessorsFactory();
 
