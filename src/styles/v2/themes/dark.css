@@ -5,7 +5,11 @@
  * Matches V1 dark mode from style.css
  */
 
-body.dark-mode {
+body.dark-mode,
+html[data-theme='dark'],
+body[data-theme='dark'],
+html[data-theme='pink-dark'],
+body[data-theme='pink-dark'] {
     /* =====================
    * SURFACE COLORS
    * ===================== */
@@ -41,17 +45,10 @@ body.dark-mode {
    * BRAND COLORS (Dark Mode Adjustments)
    * ===================== */
     /* Ensure Brand Blue is visible on dark bg (if used for text) or keeps contrast */
-    --v2-brand-blue: #3d5afe;
-    /* Lighter blue for better visibility on dark, OR stick to #001589 if mainly backgrounds */
-    /* However, V1 used #001589 for headers even in dark mode? 
-       Actually V1 `style.css` dark mode often kept blue headers or white?
-       The previous file had: --v2-brand-blue: #001589;
-       But reset text links to white.
-       Let's stick to the previous defined blue but ensure text on top of it is white.
-    */
-    --v2-brand-blue: #3d5afe;
-    --v2-brand-blue-hover: #5c7cfa;
-    --v2-brand-blue-active: #7ea3ff;
+    --v2-brand-primary: #3d5afe;
+    --v2-brand-primary-hover: #5c7cfa;
+    --v2-brand-primary-active: #7ea3ff;
+    --v2-brand-primary-dark: #3d5afe;
 
     --v2-accent-color: var(--v2-brand-blue);
     --v2-header-color: var(--v2-text-primary);
