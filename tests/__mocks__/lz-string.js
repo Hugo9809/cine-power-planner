@@ -1,10 +1,4 @@
-const mock = {
-  compressToEncodedURIComponent: s => s,
-  decompressFromEncodedURIComponent: s => s,
-  compressToUTF16: s => s,
-  decompressFromUTF16: s => s,
-  compress: s => s,
-  decompress: s => s
-};
-
-export default mock;
+const real = require('lz-string/libs/lz-string');
+module.exports = real; // Export the real implementation directly
+module.exports.default = real; // Ensure default export is also strictly the real implementation
+module.exports.__esModule = true;

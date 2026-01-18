@@ -10,12 +10,25 @@ describe('core module registrations', () => {
     return require(modulePath);
   }
 
+  function unwrapModule(module, exportName) {
+    if (typeof module.install === 'function') {
+      return module;
+    }
+    if (module[exportName] && typeof module[exportName].install === 'function') {
+      return module[exportName];
+    }
+    // Fallback: maybe the export is the module itself but install is missing/hidden?
+    if (module[exportName]) return module[exportName];
+    return module;
+  }
+
   afterEach(() => {
     if (harness && typeof harness.teardown === 'function') {
       harness.teardown();
     }
     harness = null;
 
+    // Cleanup globals...
     [
       'deriveProjectInfo',
       'setCurrentProjectInfo',
@@ -157,7 +170,8 @@ describe('core module registrations', () => {
     global.filterSelectElem = { id: 'filter' };
     global.filterDetailsStorage = { id: 'details' };
 
-    const projectModule = requireModule(path.join('core', 'project-intelligence.js'));
+    const rawModule = requireModule(path.join('core', 'project-intelligence.js'));
+    const projectModule = unwrapModule(rawModule, 'cineCoreProject');
 
     projectModule.install({
       deriveProjectInfo: global.deriveProjectInfo,
@@ -227,7 +241,8 @@ describe('core module registrations', () => {
     global.saveFeedbackSafe = jest.fn();
     global.saveCurrentGearList = jest.fn();
 
-    const guardModule = requireModule(path.join('core', 'persistence-guard.js'));
+    const rawModule = requireModule(path.join('core', 'persistence-guard.js'));
+    const guardModule = unwrapModule(rawModule, 'cineCoreGuard');
 
     guardModule.install({
       ensureDefaultProjectInfoSnapshot: global.ensureDefaultProjectInfoSnapshot,
@@ -329,7 +344,8 @@ describe('core module registrations', () => {
     global.diagramConnectorIcons = Object.freeze({});
     global.DIAGRAM_MONITOR_ICON = 'monitor';
 
-    const experienceModule = requireModule(path.join('core', 'experience.js'));
+    const rawModule = requireModule(path.join('core', 'experience.js'));
+    const experienceModule = unwrapModule(rawModule, 'cineCoreExperience');
 
     experienceModule.install({
       populateSelect: global.populateSelect,

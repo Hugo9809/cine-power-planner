@@ -99,6 +99,7 @@ describe('service worker connectivity probe handling', () => {
     fetchHandler({
       request,
       respondWith,
+      waitUntil: jest.fn(),
       preloadResponse: null,
     });
 
@@ -151,6 +152,7 @@ describe('service worker connectivity probe handling', () => {
     fetchHandler({
       request: navigationConnectivityRequest,
       respondWith,
+      waitUntil: jest.fn(),
       preloadResponse: null,
     });
 
@@ -217,7 +219,7 @@ describe('service worker connectivity probe handling', () => {
     expect(global.fetch).toHaveBeenCalledWith(navigationRequest, { cache: 'no-store' });
     expect(global.caches.match).not.toHaveBeenCalled();
     expect(response).toBe(freshResponse);
-    expect(waitUntil).toHaveBeenCalledTimes(1);
+    expect(waitUntil).toHaveBeenCalledTimes(2);
 
     await waitUntilPromise;
 

@@ -1,0 +1,156 @@
+{
+  "version": "0.5.0",
+  "generated_at": 1768744836,
+  "modules": {
+    "tests-script": {
+      "latest_mtime": 1763921779,
+      "file_count": 13,
+      "files_hash": 14806490646027848421
+    },
+    "legacy-scripts-auto-gear": {
+      "latest_mtime": 1768292731,
+      "file_count": 5,
+      "files_hash": 3738285264434794013
+    },
+    "src-scripts-v2-views": {
+      "latest_mtime": 1768731492,
+      "file_count": 8,
+      "files_hash": 6934563578849624900
+    },
+    "tests-dom": {
+      "latest_mtime": 1768509645,
+      "file_count": 33,
+      "files_hash": 6984368906681656434
+    },
+    "src-data-devices": {
+      "latest_mtime": 1768256058,
+      "file_count": 19,
+      "files_hash": 6351210706550982264
+    },
+    "legacy-scripts-modules-features": {
+      "latest_mtime": 1766779154,
+      "file_count": 14,
+      "files_hash": 14432361536267382024
+    },
+    "legacy-scripts-shims": {
+      "latest_mtime": 1766772764,
+      "file_count": 5,
+      "files_hash": 15512382889696229365
+    },
+    "src-scripts-core-modules-core": {
+      "latest_mtime": 1768593441,
+      "file_count": 14,
+      "files_hash": 1036661809363592814
+    },
+    "src-scripts-modules-storage": {
+      "latest_mtime": 1768726788,
+      "file_count": 7,
+      "files_hash": 11211187780755385950
+    },
+    "legacy-data": {
+      "latest_mtime": 1766734836,
+      "file_count": 2,
+      "files_hash": 16280406058638333705
+    },
+    "src-data": {
+      "latest_mtime": 1768201747,
+      "file_count": 2,
+      "files_hash": 8846321102467574443
+    },
+    "tests-unit-modules": {
+      "latest_mtime": 1768691416,
+      "file_count": 5,
+      "files_hash": 16737927040493555851
+    },
+    "tests-verify": {
+      "latest_mtime": 1767292845,
+      "file_count": 15,
+      "files_hash": 1384204485143944693
+    },
+    "legacy-scripts-core": {
+      "latest_mtime": 1766772764,
+      "file_count": 20,
+      "files_hash": 10790465939981514793
+    },
+    "src-scripts-modules-features": {
+      "latest_mtime": 1768731172,
+      "file_count": 14,
+      "files_hash": 15900397987356591480
+    },
+    "src-scripts-translations": {
+      "latest_mtime": 1768586251,
+      "file_count": 5,
+      "files_hash": 5309941863829106326
+    },
+    "legacy-scripts-core-modules-core": {
+      "latest_mtime": 1766734836,
+      "file_count": 10,
+      "files_hash": 11176456621108347580
+    },
+    "src-scripts-core-modules-app-core": {
+      "latest_mtime": 1768728909,
+      "file_count": 5,
+      "files_hash": 16628961081678903782
+    },
+    "src-scripts-auto-gear": {
+      "latest_mtime": 1768726943,
+      "file_count": 8,
+      "files_hash": 13981595687895651748
+    },
+    "scripts": {
+      "latest_mtime": 1768302747,
+      "file_count": 7,
+      "files_hash": 7460164057090012805
+    },
+    "legacy-scripts-translations": {
+      "latest_mtime": 1767974075,
+      "file_count": 5,
+      "files_hash": 8089194971381457425
+    },
+    "src-scripts-modules-helpers": {
+      "latest_mtime": 1768730663,
+      "file_count": 11,
+      "files_hash": 8571126904736281622
+    },
+    "legacy-data-devices": {
+      "latest_mtime": 1766734836,
+      "file_count": 18,
+      "files_hash": 14331542242998898461
+    },
+    "tests-helpers": {
+      "latest_mtime": 1768732118,
+      "file_count": 7,
+      "files_hash": 431876226142390346
+    },
+    "src-modules": {
+      "latest_mtime": 1767991451,
+      "file_count": 3,
+      "files_hash": 14639742178391531868
+    },
+    "tools": {
+      "latest_mtime": 1768509645,
+      "file_count": 15,
+      "files_hash": 3868566351434193109
+    },
+    "legacy-scripts-core-modules-app-core": {
+      "latest_mtime": 1766772764,
+      "file_count": 5,
+      "files_hash": 177994920523734408
+    },
+    "tests-data": {
+      "latest_mtime": 1766184959,
+      "file_count": 8,
+      "files_hash": 7030712714578152517
+    },
+    "root": {
+      "latest_mtime": 1768728926,
+      "file_count": 334,
+      "files_hash": 9432127645182038964
+    },
+    "src-scripts-modules-core": {
+      "latest_mtime": 1768728866,
+      "file_count": 10,
+      "files_hash": 15260774695628119249
+    }
+  }
+}
