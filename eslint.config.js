@@ -110,7 +110,7 @@ const appScriptConfigs = Object.entries(appScriptGlobals).flatMap(([key, names])
 });
 
 export default [
-    { ignores: ['vendor/**', 'src/vendor/**', 'legacy/**', 'dist/**', 'build/**', 'legacy */**'] },
+    { ignores: ['vendor/**', 'src/vendor/**', 'legacy/**', 'dist/**', 'build/**', 'legacy */**', '.legacy-backup-*/**'] },
     {
         ...js.configs.recommended,
         files: ['**/*.js'],

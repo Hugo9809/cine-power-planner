@@ -72,7 +72,7 @@ export function getCssVariableValue(name, fallback = '') {
     try {
         const value = window.getComputedStyle(document.documentElement).getPropertyValue(name);
         return value ? value.trim() : fallback;
-    } catch (e) {
+    } catch {
         return fallback;
     }
 }

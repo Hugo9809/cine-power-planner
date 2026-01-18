@@ -42,7 +42,7 @@ function getNotificationTopOffset() {
                 offset = Math.max(offset, rect.bottom + baseOffset);
             }
         }
-    } catch (measureError) {
+    } catch {
         // Ignore
     }
     return `${Math.ceil(offset)}px`;
@@ -82,7 +82,7 @@ export function ensureNotificationContainer() {
         if (bootstrapNotice && typeof bootstrapNotice.ensureContainer === 'function') {
             try {
                 container = bootstrapNotice.ensureContainer();
-            } catch (e) {
+            } catch {
                 container = null;
             }
         }
@@ -201,7 +201,7 @@ export function resolveForceReloadOfflineNotice() {
         try {
             const localized = window.resolveLocaleString('reloadAppOfflineNotice');
             if (localized && localized.trim()) return localized.trim();
-        } catch (e) {
+        } catch {
             // ignore
         }
     }
