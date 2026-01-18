@@ -83,7 +83,7 @@ import './scripts/core/app-setups.js';
 console.log('Main: importing app-events...');
 import './scripts/core/app-events.js';
 console.log('Main: importing app-core-new-1 (SKIPPED)...');
-// import './scripts/core/app-core-new-1.js';
+import './scripts/core/app-core-new-1.js';
 
 
 /*

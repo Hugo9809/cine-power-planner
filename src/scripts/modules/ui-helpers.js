@@ -185,7 +185,7 @@ function normalizeFallbackGlyphConfig(glyph) {
     return { char, font, className, style, size, scale };
 }
 
-function createFallbackIconMarkup(glyph, baseClassName) {
+export function createFallbackIconMarkup(glyph, baseClassName) {
     const resolved = normalizeFallbackGlyphConfig(glyph);
     if (!resolved) {
         return '';
