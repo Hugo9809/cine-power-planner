@@ -456,3 +456,6 @@ if (COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE) {
 }
 
 
+// Export as collectRuntimeScopeCandidates to match ESM resolution expectations
+export const collectRuntimeScopeCandidates = resolvedCollectCoreRuntimeCandidateScopes;
+export default CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED;

@@ -60,3 +60,20 @@ export function resolvePreferredTemperatureStorageKey(scopeCandidates = []) {
     }
     return CORE_TEMPERATURE_STORAGE_KEY_FALLBACK;
 }
+
+export function resolveCoreSupportModule(namespaceName, requirePath, scope) {
+    // Basic implementation mimicking app-core-runtime-support
+    // As we are in ESM, we essentially already resolved things or can use RuntimeLoader.
+    // The legacy shim relies on this.
+
+    // Check global namespace first
+    if (scope && scope[namespaceName]) {
+        return scope[namespaceName];
+    }
+
+    // Otherwise try loader (which might be circular or unavailable in pure ESM without top-level await)
+    // For now, return null or try simplified lookup
+    if (typeof window !== 'undefined' && window[namespaceName]) return window[namespaceName];
+
+    return null;
+}

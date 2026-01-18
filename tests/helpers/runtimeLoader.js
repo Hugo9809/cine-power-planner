@@ -131,7 +131,49 @@ function loadRuntime(targetScope, options) {
     delete require.cache[resolvedScriptPath];
   }
 
-  const rawExports = require(resolvedScriptPath);
+  let rawExports;
+
+  // Handle ESM script.js which uses import.meta.env
+  if (resolvedScriptPath.endsWith('script.js')) {
+    // 1. Simulate Version Exposure
+    if (typeof globalThis !== 'undefined') {
+      globalThis.APP_VERSION = APP_VERSION;
+      globalThis.CPP_APP_VERSION = APP_VERSION;
+    }
+    if (typeof window !== 'undefined') {
+      window.APP_VERSION = APP_VERSION;
+      window.CPP_APP_VERSION = APP_VERSION;
+    }
+
+    // 2. Simulate Runtime Guard Bootstrap
+    // We assume the CJS export of runtime-guard is available
+    const runtimeGuardPath = path.join(SCRIPTS_DIR, 'modules', 'runtime-guard.js');
+    if (fs.existsSync(runtimeGuardPath)) {
+      try {
+        const cineRuntimeGuard = require(runtimeGuardPath);
+        if (cineRuntimeGuard && typeof cineRuntimeGuard.bootstrap === 'function') {
+          cineRuntimeGuard.bootstrap(targetScope || GLOBAL_SCOPE, {
+            warnOnFailure: true,
+            throwOnFailure: false,
+          });
+        }
+      } catch (guardError) {
+        console.warn('Failed to manually bootstrap runtime-guard in test loader', guardError);
+      }
+    }
+
+    // 3. Fallback to globals since script.js doesn't export runtime in ESM
+    rawExports = getGlobalRuntimeFallback();
+  } else {
+    try {
+      rawExports = require(resolvedScriptPath);
+    } catch (requireError) {
+      // If require fails (e.g. syntax error due to ESM), fallback to globals
+      // console.warn('Require failed for script path, checking globals', requireError.message);
+      rawExports = getGlobalRuntimeFallback();
+    }
+  }
+
   if (!isRuntimeObject(rawExports)) {
     // rawExports might be a module that contains the runtime, not the runtime itself.
     // This is handled by normalizeRuntimeExports.

@@ -1,57 +1,89 @@
-const verification = require('../../src/scripts/restore-verification.js');
+import { jest } from '@jest/globals';
 
-describe('restore verification reporting', () => {
-  const translator = (key, fallback) => {
-    const messages = {
-      restoreVerificationMatch: 'Verification passed.',
-      restoreVerificationMismatch: 'Differences detected:',
-      restoreVerificationDifference: '{label}: backup {expected}, live {actual}',
-      restoreVerificationFailed: 'Verification failed.',
-    };
-    if (Object.prototype.hasOwnProperty.call(messages, key)) {
-      return messages[key];
-    }
-    return fallback;
-  };
+describe('Restore Verification Module', () => {
+  let restoreVerificationModule;
 
-  test('returns success when no differences are present', () => {
-    const rows = [
-      { label: 'Projects', live: 2, sandbox: 2, diff: 0 },
-      { label: 'Rules', live: 5, sandbox: 5, diff: 0 },
-    ];
-    const report = verification.buildReport({ rows, translation: translator });
-    expect(report.status).toBe('match');
-    expect(report.differences).toHaveLength(0);
-    expect(report.notificationType).toBe('success');
-    expect(report.alertMessage).toBe('Verification passed.');
+  beforeEach(async () => {
+    jest.resetModules();
+    restoreVerificationModule = await import('../../src/scripts/modules/restore-verification.js');
   });
 
-  test('treats an empty dataset as a successful verification', () => {
-    const report = verification.buildReport({ rows: [], translation: translator });
-    expect(report.status).toBe('empty');
-    expect(report.differences).toHaveLength(0);
-    expect(report.notificationType).toBe('success');
-    expect(report.alertMessage).toBe('Verification passed.');
-    expect(report.notificationMessage).toBe('Verification passed.');
+  describe('buildReport', () => {
+    test('handles empty rows', () => {
+      const report = restoreVerificationModule.buildReport({});
+      expect(report.status).toBe('empty');
+      expect(report.notificationType).toBe('success');
+      expect(report.rows).toEqual([]);
+    });
+
+    test('reports match when no differences exist', () => {
+      const rows = [
+        { label: 'Projects', live: 5, sandbox: 5 },
+        { label: 'Devices', live: 10, sandbox: 10 }
+      ];
+      const report = restoreVerificationModule.buildReport({ rows });
+      expect(report.status).toBe('match');
+      expect(report.notificationType).toBe('success');
+      expect(report.differences).toHaveLength(0);
+    });
+
+    test('reports mismatch when differences exist', () => {
+      const rows = [
+        { label: 'Projects', live: 5, sandbox: 6 }, // Differs
+        { label: 'Devices', live: 10, sandbox: 10 }
+      ];
+      const report = restoreVerificationModule.buildReport({ rows });
+      expect(report.status).toBe('mismatch');
+      expect(report.notificationType).toBe('warning');
+      expect(report.differences).toHaveLength(1);
+      expect(report.differences[0].label).toBe('Projects');
+      expect(report.differences[0].diff).toBe(1); // sandbox(6) - live(5)
+    });
+
+    test('uses explicit diff if provided', () => {
+      const rows = [
+        { label: 'Custom', live: 0, sandbox: 0, diff: -5 }
+      ];
+      const report = restoreVerificationModule.buildReport({ rows });
+      expect(report.status).toBe('mismatch');
+      expect(report.differences[0].diff).toBe(-5);
+    });
+
+    test('normalises invalid row data safely', () => {
+      const rows = [null, { label: null }, { live: 'invalid' }];
+      const report = restoreVerificationModule.buildReport({ rows });
+      expect(report.rows).toHaveLength(3);
+      expect(report.rows[0].label).toBe('Metric');
+      expect(report.rows[2].live).toBe(0);
+    });
+
+    test('uses translator provided in options', () => {
+      const mockTranslator = jest.fn((key, fallback) => `[${key}]`);
+      const rows = [{ label: 'Foo', live: 1, sandbox: 2 }];
+      const report = restoreVerificationModule.buildReport({ rows, translation: mockTranslator });
+
+      expect(report.status).toBe('mismatch');
+      expect(mockTranslator).toHaveBeenCalledWith('restoreVerificationMismatch', expect.any(String));
+      // Alert message should contain translated strings
+      expect(report.alertMessage).toContain('[restoreVerificationMismatch]');
+    });
   });
 
-  test('includes difference details when counts diverge', () => {
-    const rows = [
-      { label: 'Projects', live: 1, sandbox: 3, diff: 2 },
-      { label: 'Rules', live: 4, sandbox: 4, diff: 0 },
-    ];
-    const report = verification.buildReport({ rows, translation: translator });
-    expect(report.status).toBe('mismatch');
-    expect(report.differences).toHaveLength(1);
-    expect(report.notificationType).toBe('warning');
-    expect(report.alertMessage).toContain('Differences detected:');
-    expect(report.alertMessage).toContain('Projects: backup 3, live 1');
-  });
+  describe('buildFailureReport', () => {
+    test('returns error structure', () => {
+      const error = new Error('Test Error');
+      const report = restoreVerificationModule.buildFailureReport({ error });
 
-  test('produces failure report when requested', () => {
-    const report = verification.buildFailureReport({ translation: translator });
-    expect(report.status).toBe('error');
-    expect(report.notificationType).toBe('warning');
-    expect(report.alertMessage).toBe('Verification failed.');
+      expect(report.status).toBe('error');
+      expect(report.notificationType).toBe('warning');
+      expect(report.error).toBe(error);
+      expect(report.rows).toEqual([]);
+    });
+
+    test('uses translation', () => {
+      const mockTranslator = jest.fn(() => 'Translated Error');
+      const report = restoreVerificationModule.buildFailureReport({ translation: mockTranslator });
+      expect(report.alertMessage).toBe('Translated Error');
+    });
   });
 });

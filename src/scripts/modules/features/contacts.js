@@ -234,6 +234,207 @@ function saveContactsToStorage(contacts, options = {}) {
   }
 }
 
+function generateVCard(contact) {
+  if (!contact || typeof contact !== 'object') return '';
+  const lines = ['BEGIN:VCARD', 'VERSION:3.0'];
+
+  if (contact.name) {
+    lines.push(`FN:${contact.name}`);
+    const parts = contact.name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      // Last name;First name;Middle;Prefix;Suffix
+      lines.push(`N:${parts.slice(1).join(' ')};${parts[0]};;;`);
+    } else {
+      lines.push(`N:;${contact.name};;;`);
+    }
+  }
+
+  if (contact.role) lines.push(`TITLE:${contact.role}`);
+  if (contact.phone) lines.push(`TEL:${contact.phone}`);
+  if (contact.email) lines.push(`EMAIL:${contact.email}`);
+  if (contact.website) lines.push(`URL:${contact.website}`);
+  if (contact.notes) lines.push(`NOTE:${contact.notes.replace(/\r?\n/g, '\\n')}`);
+
+  // Avatar as PHOTO if present (base64)
+  if (contact.avatar && contact.avatar.startsWith('data:')) {
+    try {
+      const [header, data] = contact.avatar.split(',');
+      const mimeMatch = header.match(/data:([^;]+)/);
+      const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+      const type = mime.split('/')[1].toUpperCase();
+      lines.push(`PHOTO;ENCODING=b;TYPE=${type}:${data}`);
+    } catch (e) {
+      safeWarn('Failed to encode avatar for vCard', e);
+    }
+  }
+
+  lines.push('END:VCARD');
+  return lines.join('\r\n');
+}
+
+function generateAllContactsVCard(contacts) {
+  if (!Array.isArray(contacts) || contacts.length === 0) return '';
+  return contacts.map(generateVCard).join('\r\n\r\n');
+}
+
+const DEFAULT_CONTACT_FIELDS = Object.freeze(['id', 'name', 'role', 'phone', 'email', 'website', 'avatar', 'createdAt', 'updatedAt']);
+
+function parseVCard(text, options = {}) {
+  const sanitize = typeof options.sanitize === 'function' ? options.sanitize : sanitizeContactValue;
+  if (typeof text !== 'string') return [];
+  const normalized = text.replace(/\r\n?/g, '\n');
+  const folded = [];
+  normalized.split('\n').forEach(line => {
+    if (/^[ \t]/.test(line) && folded.length) {
+      folded[folded.length - 1] += line.replace(/^[ \t]/, '');
+    } else {
+      folded.push(line);
+    }
+  });
+  const contacts = [];
+  let current = null;
+  folded.forEach(line => {
+    if (/^BEGIN:VCARD/i.test(line)) {
+      current = { name: '', role: '', phone: '', email: '', website: '', avatar: '' };
+      return;
+    }
+    if (/^END:VCARD/i.test(line)) {
+      if (current && (current.name || current.email || current.phone || current.website)) {
+        contacts.push({ ...current });
+      }
+      current = null;
+      return;
+    }
+    if (!current) return;
+    const [rawKey, ...rawValueParts] = line.split(':');
+    if (!rawValueParts.length) return;
+    const keySegments = rawKey.split(';');
+    const baseKey = keySegments[0]?.toUpperCase();
+    const value = rawValueParts.join(':').trim();
+    if (!baseKey) return;
+    if (baseKey === 'FN') {
+      current.name = sanitize(value);
+      return;
+    }
+    if (baseKey === 'N' && !current.name) {
+      current.name = value
+        .split(';')
+        .filter(Boolean)
+        .join(' ')
+        .trim();
+      return;
+    }
+    if (baseKey === 'TEL') {
+      if (!current.phone) current.phone = sanitize(value);
+      return;
+    }
+    if (baseKey === 'EMAIL') {
+      if (!current.email) current.email = sanitize(value);
+      return;
+    }
+    if (baseKey === 'URL' || /\.URL$/.test(baseKey)) {
+      if (!current.website) current.website = sanitize(value);
+      return;
+    }
+    if ((baseKey === 'ROLE' || baseKey === 'TITLE') && !current.role) {
+      current.role = sanitize(value);
+      return;
+    }
+    if (baseKey === 'ORG' && !current.role) {
+      current.role = sanitize(value);
+      return;
+    }
+    if (baseKey === 'PHOTO') {
+      let dataValue = value;
+      if (!dataValue) return;
+      if (/^data:/i.test(dataValue)) {
+        current.avatar = dataValue;
+        return;
+      }
+      const params = keySegments.slice(1);
+      let mime = 'image/jpeg';
+      params.forEach(param => {
+        const [paramKey, paramValue] = param.split('=');
+        if (!paramValue) return;
+        const normalizedKey = paramKey.trim().toUpperCase();
+        const normalizedValue = paramValue.trim();
+        if (normalizedKey === 'MEDIATYPE') {
+          mime = normalizedValue;
+        } else if (normalizedKey === 'TYPE') {
+          const lowered = normalizedValue.toLowerCase();
+          if (lowered.includes('/')) {
+            mime = lowered;
+          } else {
+            mime = `image/${lowered}`;
+          }
+        }
+      });
+      current.avatar = `data:${mime};base64,${dataValue}`;
+    }
+  });
+  return contacts
+    .map(entry => ({
+      name: sanitize(entry.name),
+      role: sanitize(entry.role),
+      phone: sanitize(entry.phone),
+      email: sanitize(entry.email),
+      website: sanitize(entry.website),
+      avatar: typeof entry.avatar === 'string' && entry.avatar.startsWith('data:') ? entry.avatar : ''
+    }))
+    .filter(entry => entry.name || entry.email || entry.phone || entry.website);
+}
+
+function mergeImportedContacts(options = {}) {
+  const {
+    existing = [],
+    imported = [],
+    now = () => Date.now(),
+    generateContactIdFn = generateContactId
+  } = options;
+  const contacts = existing.map(entry => normalizeContactEntry(entry));
+  let added = 0;
+  let updated = 0;
+  imported.forEach(entry => {
+    const candidate = normalizeContactEntry({
+      ...entry,
+      id: entry.id || generateContactIdFn(),
+      createdAt: now(),
+      updatedAt: now()
+    });
+
+    // Attempt to match existing contact
+    const existingMatch = contacts.find(contact => {
+      if (candidate.email && contact.email && candidate.email.toLowerCase() === contact.email.toLowerCase()) return true;
+      if (candidate.phone && contact.phone) {
+        const normalizedCandidate = candidate.phone.replace(/\D+/g, '');
+        const normalizedExisting = contact.phone.replace(/\D+/g, '');
+        if (normalizedCandidate && normalizedExisting && normalizedCandidate === normalizedExisting) return true;
+      }
+      if (candidate.name && contact.name && candidate.name.toLowerCase() === contact.name.toLowerCase()) return true;
+      if (candidate.website && contact.website && candidate.website.toLowerCase() === contact.website.toLowerCase()) return true;
+      return false;
+    });
+
+    if (existingMatch) {
+      DEFAULT_CONTACT_FIELDS.forEach(field => {
+        if (candidate[field]) {
+          existingMatch[field] = candidate[field];
+        }
+      });
+      existingMatch.updatedAt = now();
+      updated += 1;
+    } else {
+      contacts.push(candidate);
+      added += 1;
+    }
+  });
+  return {
+    contacts: sortContacts(contacts),
+    added,
+    updated
+  };
+}
+
 const moduleApi = Object.freeze({
   CONTACTS_STORAGE_KEY,
   generateContactId,
@@ -242,6 +443,10 @@ const moduleApi = Object.freeze({
   sortContacts,
   loadStoredContacts,
   saveContactsToStorage,
+  generateVCard,
+  generateAllContactsVCard,
+  parseVCard,
+  mergeImportedContacts,
 });
 
 if (MODULE_BASE && typeof MODULE_BASE.registerOrQueueModule === 'function') {

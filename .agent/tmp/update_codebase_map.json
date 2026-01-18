@@ -1,0 +1,8 @@
+[
+    {
+        "file": "CODEBASE_MAP.md",
+        "description": "Added bootstrap modules to core list",
+        "before": "    │   ├── runtime-helpers.js        # Runtime Fallback Helpers\n    │   └── pink-mode.js              # Pink Mode logic",
+        "after": "    │   ├── runtime-helpers.js        # Runtime Fallback Helpers\n    │   ├── pink-mode.js              # Pink Mode logic\n    │   ├── bootstrap.js              # Bootstrap Orchestrator\n    │   ├── bootstrap-environment.js  # Bootstrap Environment Detection\n    │   └── bootstrap-results.js      # Bootstrap Result Handling"
+    }
+]

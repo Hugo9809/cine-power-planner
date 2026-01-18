@@ -23,6 +23,7 @@
 @import url('./components/tabs.css');
 @import url('./components/tiles.css');
 @import url('./components/modals.css');
+@import url('./components/avatar-editor.css');
 
 /* =====================
  * LAYOUTS & VIEWS
@@ -38,6 +39,7 @@
 @import url('./views/rules-view.css');
 @import url('./views/device-library.css');
 @import url('./views/help.css');
+@import url('./views/contacts.css');
 
 /* =====================
  * THEMES

@@ -229,6 +229,37 @@ src/scripts/modules/
 ├── runtime-guard.js              # Safety checks
 ├── runtime-module-loader.js      # Dynamic loading
 ├── runtime-support.js            # Feature detection
+├── restore-verification.js       # Backup restore verification
+├── ui-feedback.js                # Loading overlay management
+├── console-helpers.js            # Console method safety
+├── emergency-modal-cleanup.js    # Stuck dialog cleanup
+├── autosave-overlay.js           # Autosave status mirroring
+├── loading-indicator.js          # "Preparing planner..." indicator
+├── legal-topbar.js               # Static page theme/locale
+├── static-theme.js               # Theme preference application
+├── force-populate.js             # V2 boot population
+├── translations.js               # Translation loader
+├── overview/                     # Overview & Print logic
+│   ├── generator.js              # Print overview generation
+│   ├── print-manager.js          # Print dialog management
+│   ├── gear-list.js              # Gear list utilities
+│   └── logging.js                # Overview logging
+├── core/
+│   ├── localization-accessors.js # Localization Utilities
+│   ├── auto-backup.js            # Auto backup logic & logging
+│   ├── runtime-ui.js             # Runtime UI bridging
+│   ├── runtime-shared.js         # Runtime Shared State
+│   ├── runtime-helpers.js        # Runtime Fallback Helpers
+│   ├── pink-mode.js              # Pink Mode logic
+    ├── bootstrap.js              # Bootstrap Orchestrator
+    ├── bootstrap-environment.js  # Bootstrap Environment Detection
+    └── bootstrap-results.js      # Bootstrap Result Handling
+├── ui/
+│   ├── dynamic-forms.js          # Form Generation
+│   ├── auto-gear-ui.js           # Auto Gear UI management
+│   └── dom-definitions.js        # Global UI Definitions
+├── events/
+│   └── manager.js                # Event Management
 └── helpers/
     ├── scope-utils.js            # Scope manipulation
     ├── freeze-registry.js        # Object freezing
@@ -237,8 +268,10 @@ src/scripts/modules/
     ├── icons.js                  # Icon utilities
     ├── connectors.js             # Device connectors
     ├── immutability-builtins.js  # Immutable helpers
+    ├── deep-clone.js             # Deep Clone utilities
     ├── module-linker.js          # Module linking
-    └── scope-collector.js        # Scope collection
+    ├── scope-collector.js        # Scope collection
+    └── download-manager.js       # File download utility
 ```
 
 ### Shim Layer
@@ -417,11 +450,12 @@ tools/
 
 | Workstream | Status | Description |
 | :--- | :--- | :--- |
-| ESM Migration | 🟡 In Progress | Phase 2 runtime-environment module extraction |
+| ESM Migration | 🟡 In Progress | Finalizing Runtime Bootstrap & Verification |
+
 | Storage Tests | 🟡 In Progress | Fixing storage test mock architecture |
-| V2 UI Polish | 🟡 In Progress | Tab bar improvements, pink mode |
+| V2 UI Polish | 🟡 In Progress | Device Library overhaul complete, global dropdown styling fixed |
 | Documentation | 🟢 Active | Continuous documentation updates |
 
 ---
 
-*Last updated: 2026-01-17*
+*Last updated: 2026-01-18*

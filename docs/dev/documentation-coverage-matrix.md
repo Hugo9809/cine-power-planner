@@ -26,6 +26,13 @@ whenever you ship a feature, adjust persistence logic or revise workflows.
 | src/scripts/modules/loading-indicator.js | Engineering | 2026-01-17 | JSDoc module header. | N/A (Code). |
 | src/scripts/modules/autosave-overlay.js | Engineering | 2026-01-17 | JSDoc module header. | N/A (Code). |
 | src/scripts/modules/ui-feedback.js | Engineering | 2026-01-17 | JSDoc module header. | N/A (Code). |
+| src/scripts/modules/restore-verification.js | Engineering | 2026-01-17 | JSDoc module header for restore verification report builder. | N/A (Code). |
+| src/scripts/modules/console-helpers.js | Engineering | 2026-01-17 | JSDoc module header for console method safety. | N/A (Code). |
+| src/scripts/modules/emergency-modal-cleanup.js | Engineering | 2026-01-17 | JSDoc module header for stuck dialog cleanup. | N/A (Code). |
+| src/scripts/modules/legal-topbar.js | Engineering | 2026-01-17 | JSDoc module header for static page theme/locale. | N/A (Code). |
+| src/scripts/modules/static-theme.js | Engineering | 2026-01-17 | JSDoc module header for theme preference application. | N/A (Code). |
+| src/scripts/modules/force-populate.js | Engineering | 2026-01-17 | JSDoc module header for V2 boot population. | N/A (Code). |
+| src/scripts/modules/translations.js | Engineering | 2026-01-17 | JSDoc module header for translation loader. | N/A (Code). |
 | Docs/pink-mode-reference.md | Product | 2025-12-22 | Animations, triggers, stickers and celebratory rain events. | Console capture of rain effect, Lottie asset manifest check. |
 
 ## How to use the matrix

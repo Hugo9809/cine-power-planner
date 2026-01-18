@@ -1,8 +1,10 @@
 # Runtime Refactor Status
 
-> **Status**: Step 33 Complete (Force Populate Migration)
-> **Last Updated**: 2026-01-17
-> **Next Phase**: Deployment Preparation
+> **Status**: Step 43 Complete (Runtime Bootstrap Migration)
+> **Last Updated**: 2026-01-18
+> **Next Phase**: Batch 13 - Final Verification
+
+
 
 ---
 
@@ -431,3 +433,151 @@ Migration of `app-core-runtime-support.js` and dependencies.
 - **Verification**:
   - Created `tests/unit/forcePopulate.test.js`.
   - Verified dependency waiting, boot queue processing, and error handling.
+
+### Step 34 - Restore Verification Migration (Complete)
+
+- **Extracted Modules**:
+  - `src/scripts/modules/restore-verification.js`: Restore verification logic, comparing live session to backup sandbox.
+- **Legacy Shim (Updated)**:
+  - `src/scripts/restore-verification.js`: Refactored to import from the new module and expose global API `__cineRestoreVerification`.
+- **Verification**:
+  - Created `tests/unit/restoreVerification.test.js`.
+  - Verified report generation, difference calculation, and safe fallbacks.
+
+### Step 35 - Translations Migration (Complete)
+
+- **Extracted Modules**:
+  - `src/scripts/modules/translations.js`: Core translation loader, alignment logic, and global registration.
+- **Legacy Shim (Updated)**:
+  - `src/scripts/translations.js`: Refactored to import from the new module and expose `window.__cineTranslationsLoader__`.
+- **Verification**:
+  - Created `tests/unit/translations.test.js`.
+  - Verified dynamic loading resolution, global scope registration, and structure alignment logic.
+
+### Step 36 - Globals Bootstrap Migration (Complete)
+
+- **Extracted Modules**:
+  - `src/scripts/modules/globals-mount-voltage.js`: Extracted logic for Mount Voltage global state and delegates.
+  - `src/scripts/modules/globals-bootstrap.js`: Main bootstrap logic, importing Mount Voltage logic.
+- **Legacy Shim (Updated)**:
+  - `src/scripts/globals-bootstrap.js`: Refactored to act as a shim importing `bootstrapGlobals` from the new module.
+- **Verification**:
+  - Created `tests/unit/globalsBootstrap.test.js`.
+  - Verified initialization, type safety, delegates, and Mount Voltage integration.
+
+
+### Step 37 - Overview Module Migration
+
+- **Original File**: `src/scripts/overview.js` (Legacy Script, ~2400 lines)
+- **New Modules**:
+  - `src/scripts/modules/overview/logging.js`: Dedicated logging with proxy and robust deep cloning.
+  - `src/scripts/modules/overview/gear-list.js`: Gear list DOM utilities (`resolveOverviewGearListSections`, `convertGearListSelectorsToPlainText`).
+  - `src/scripts/modules/overview/print-manager.js`: Print preferences persistence and dialog management.
+  - `src/scripts/modules/overview/generator.js`: Core logic for generating printable overview (`generatePrintableOverview`).
+- **Legacy Shim (Refactored)**:
+  - `src/scripts/overview.js`: Now acts as a shim, importing and exposing `generatePrintableOverview` to `window`.
+- **Verification**:
+  - Created `tests/unit/modules/overview.test.js`.
+  - Verified logging proxy, gear selector conversion, print logic, and module organization.
+
+### Step 38 - Core Accessors & UI Utils Migration
+
+- **Original Files**: 
+  - `src/scripts/core/app-core-localization-accessors.js`
+  - `src/scripts/core/dynamic-form-helpers.js`
+- **New Modules**:
+  - `src/scripts/modules/core/localization-accessors.js`: Pure ESM localization utilities.
+  - `src/scripts/modules/ui/dynamic-forms.js`: Pure ESM dynamic form generation utilities.
+- **Legacy Shims (Refactored)**:
+  - Both original files now act as shims importing the new modules and maintaining global API compatibility.
+- **Verification**:
+  - Created `tests/unit/modules/localizationAccessors.test.js`.
+  - Created `tests/unit/modules/dynamicForms.test.js`.
+  - Verified language normalization, RTL detection, and form generation logic.
+
+### Step 39 - Auto Backup & Auto Gear UI Migration
+
+- **Original Files**: 
+  - `src/scripts/core/app-core-auto-backup.js`
+  - `src/scripts/core/app-core-auto-gear-ui.js`
+- **New Modules**:
+  - `src/scripts/modules/core/auto-backup.js`: Pure ESM auto-backup logic, logging, and snapshot utilities.
+  - `src/scripts/modules/ui/auto-gear-ui.js`: Pure ESM Auto Gear UI initialization and DOM management.
+- **Legacy Shims (Refactored)**:
+  - Both original files now act as shims importing the new modules and maintaining global API compatibility.
+- **Additional Tests**:
+  - Created `tests/unit/modules/text.test.js` for the previously untested `text.js` module.
+  - Created `tests/unit/modules/autoBackup.test.js`.
+- **Verification**:
+  - All tests passed.
+  - Build completed successfully.
+
+### Step 40 - Runtime Glue Migration
+
+- **Original Files**:
+  - `src/scripts/core/app-core-runtime-ui.js`
+  - `src/scripts/core/app-core-runtime-shared.js`
+  - `src/scripts/core/app-core-runtime-helpers.js`
+- **New Modules**:
+  - `src/scripts/modules/core/runtime-ui.js`: Pure ESM UI bridge and fallback tools.
+  - `src/scripts/modules/core/runtime-shared.js`: Centralized runtime state resolution.
+  - `src/scripts/modules/core/runtime-helpers.js`: Runtime helper utilities (weight normalization, stable stringify).
+- **Legacy Shims (Refactored)**:
+  - Original files refactored to act as backward-compatibility shims importing from the new ESM modules.
+- **Verification**:
+  - Build verified with Vite 7.3.1.
+  - Manual verification of UI functionality.
+
+## Step 41 – App Events Migration
+
+| File | Status | Notes |
+| --- | --- | --- |
+| `src/scripts/modules/ui/dom-definitions.js` | ✅ Created | Extracted Global UI Accessors |
+| `src/scripts/modules/events/manager.js` | ✅ Created | Extracted Event Management Logic |
+| `src/scripts/core/app-events.js` | ⚠️ Refactored | Converted to shim utilizing new modules |
+| `src/scripts/modules/storage/event-helpers.js` | ✅ Created | Extracted Storage Event Helpers |
+| `tests/unit/modules/ui/domDefinitions.test.js` | ✅ Created | Verified DOM definition logic |
+| `tests/unit/modules/events/manager.test.js` | ✅ Created | Verified Event Manager basics |
+
+*Notes:*
+- Extracted massive global UI definitions from `app-events.js` into `dom-definitions.js`, removing hundreds of lines of boilerplate.
+- Created `events/manager.js` to begin encapsulating event initialization logic.
+- Moved storage-related event helpers to `storage/event-helpers.js`.
+- `app-events.js` is now a shim that imports these modules, significantly reducing its complexity and improving testability.
+
+## Step 42 – Pink Mode & Runtime Clean-up
+
+| File | Status | Notes |
+| --- | --- | --- |
+| `src/scripts/modules/core/pink-mode.js` | ✅ Created | Extracted Pink Mode Logic |
+| `src/scripts/modules/helpers/deep-clone.js` | ✅ Created | Extracted Deep Clone utilities |
+| `src/scripts/core/app-core-pink-mode.js` | ✅ Shimmed | Uses new `pink-mode.js` |
+| `src/scripts/core/app-core-runtime-global-tools.js` | ✅ Shimmed | Uses `scope-utils.js` & `deep-clone.js` |
+| `src/scripts/core/app-core-runtime-scopes.js` | ✅ Shimmed | Uses `scope-utils.js` |
+| `src/scripts/core/app-core-runtime-support.js` | ✅ Shimmed | Uses `runtime-support.js` |
+| `tests/unit/modules/core/pinkMode.test.js` | ✅ Created | Verified Pink Mode logic |
+| `tests/unit/modules/helpers/deepClone.test.js` | ✅ Created | Verified Deep Clone logic |
+
+*Notes:*
+- Proactively migrated Pink Mode core logic to `modules/core/pink-mode.js` to decouple it from the legacy runtime core.
+- Refactored `app-core-runtime-*.js` files to act as lightweight shims, delegating to the new pure ESM helpers in `modules/helpers/` and `modules/core/`.
+- Ensured legacy globals like `CORE_DEEP_CLONE` and `cineCorePinkModeSupport` are still exposed for backward compatibility during the transition.
+
+## Step 43 – Runtime Bootstrap Migration
+
+| File | Status | Notes |
+| --- | --- | --- |
+| `src/scripts/modules/core/bootstrap.js` | ✅ Created | Main orchestrator |
+| `src/scripts/modules/core/bootstrap-environment.js` | ✅ Created | Environment detection |
+| `src/scripts/modules/core/bootstrap-results.js` | ✅ Created | Result handling |
+| `src/scripts/core/modules/app-core/bootstrap.js` | ✅ Shimmed | Legacy compatibility |
+| `src/scripts/core/app-core-bootstrap.js` | ✅ Updated | Shim updated |
+| `tests/unit/modules/core/bootstrap.test.js` | ✅ Created | Unit tests |
+
+*Notes:*
+- Decomposed monolithic bootstrap logic into three focused modules.
+- Implemented recursion guards in environment resolution to prevent stack overflows.
+- Maintained exact legacy API through shims to ensure no disruption to app startup.
+- Verified build and unit tests pass.
+
+

@@ -16694,6 +16694,45 @@ function safeSetLocalStorage(key, value) {
     && storageRepo.driver.constructor.name === 'IndexedDBAdapter',
   );
 
+  // [Agent Fix] Hoisted keysWithMemoryCache to fix ReferenceError in writeLegacyStorage
+  const keysWithMemoryCache = new Set([
+    CUSTOM_FONT_STORAGE_KEY_DEFAULT,
+    CUSTOM_LOGO_STORAGE_KEY,
+    CAMERA_COLOR_STORAGE_KEY,
+    PRINT_PREFERENCES_STORAGE_KEY,
+    CONTACTS_STORAGE_KEY,
+    OWN_GEAR_STORAGE_KEY,
+    USER_PROFILE_STORAGE_KEY,
+    FAVORITES_STORAGE_KEY,
+    TEMPERATURE_UNIT_STORAGE_KEY_NAME,
+    FOCUS_SCALE_STORAGE_KEY_NAME,
+    TEMPERATURE_UNIT_STORAGE_KEY_NAME,
+    FOCUS_SCALE_STORAGE_KEY_NAME,
+    getMountVoltageStorageKeyName(),
+    FULL_BACKUP_HISTORY_STORAGE_KEY,
+    'darkMode',
+    'pinkMode',
+    'highContrast',
+    'reduceMotion',
+    'relaxedSpacing',
+    'showAutoBackups',
+    'accentColor',
+    'fontSize',
+    'fontFamily',
+    'language',
+    'iosPwaHelpShown',
+    DEVICE_SCHEMA_CACHE_KEY,
+    AUTO_GEAR_RULES_STORAGE_KEY,
+    AUTO_GEAR_BACKUPS_STORAGE_KEY,
+    AUTO_GEAR_PRESETS_STORAGE_KEY,
+    AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY,
+    AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY,
+    AUTO_GEAR_SEEDED_STORAGE_KEY,
+    AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY,
+    AUTO_GEAR_AUTO_PRESET_STORAGE_KEY,
+    AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY,
+  ]);
+
   const clearCacheForKey = () => {
     if (key === CUSTOM_FONT_STORAGE_KEY_DEFAULT) { customFontsCache = null; }
     if (key === CUSTOM_LOGO_STORAGE_KEY) { customLogoCache = null; }
@@ -16806,43 +16845,6 @@ function safeSetLocalStorage(key, value) {
         });
       }
 
-      const keysWithMemoryCache = new Set([
-        CUSTOM_FONT_STORAGE_KEY_DEFAULT,
-        CUSTOM_LOGO_STORAGE_KEY,
-        CAMERA_COLOR_STORAGE_KEY,
-        PRINT_PREFERENCES_STORAGE_KEY,
-        CONTACTS_STORAGE_KEY,
-        OWN_GEAR_STORAGE_KEY,
-        USER_PROFILE_STORAGE_KEY,
-        FAVORITES_STORAGE_KEY,
-        TEMPERATURE_UNIT_STORAGE_KEY_NAME,
-        FOCUS_SCALE_STORAGE_KEY_NAME,
-        TEMPERATURE_UNIT_STORAGE_KEY_NAME,
-        FOCUS_SCALE_STORAGE_KEY_NAME,
-        getMountVoltageStorageKeyName(),
-        FULL_BACKUP_HISTORY_STORAGE_KEY,
-        'darkMode',
-        'pinkMode',
-        'highContrast',
-        'reduceMotion',
-        'relaxedSpacing',
-        'showAutoBackups',
-        'accentColor',
-        'fontSize',
-        'fontFamily',
-        'language',
-        'iosPwaHelpShown',
-        DEVICE_SCHEMA_CACHE_KEY,
-        AUTO_GEAR_RULES_STORAGE_KEY,
-        AUTO_GEAR_BACKUPS_STORAGE_KEY,
-        AUTO_GEAR_PRESETS_STORAGE_KEY,
-        AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY,
-        AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY,
-        AUTO_GEAR_SEEDED_STORAGE_KEY,
-        AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY,
-        AUTO_GEAR_AUTO_PRESET_STORAGE_KEY,
-        AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY,
-      ]);
 
       // Optimization: For IDB, we generally rely on the async write above.
       // BUT, for preference keys and memory-cached keys, we MUST also write to localStorage synchronously

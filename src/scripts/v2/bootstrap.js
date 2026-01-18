@@ -313,6 +313,7 @@ async function loadV2Assets() {
         await import('../modules/features/contacts.js');
         await import('../modules/features/own-gear.js');
 
+        await import('./components/avatar-editor-modal.js');
         await import('./views/contacts-view.js');
         await import('./views/settings-view.js');
         await import('./views/owned-gear-view.js');

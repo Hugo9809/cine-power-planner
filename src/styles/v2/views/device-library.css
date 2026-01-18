@@ -1,14 +1,9 @@
 /*
  * Cine Power Planner V2 - Device Library View
  * ===========================================
- * Design Theme: Responsive Utility (Clean & Robust)
- * Layout: Split View (Desktop) -> Stacked View (Mobile)
+ * Layout: Two separate tiles (Form Tile + Device List Tile)
+ * Header: Unified global design with action buttons
  */
-
-/* =====================
- * VARIABLES
- * ===================== */
-/* Local variables removed in favor of global v2-* tokens */
 
 /* =====================
  * MAIN CONTAINER
@@ -17,262 +12,446 @@
     width: 100%;
     max-width: var(--v2-content-max-width);
     margin: 0 auto;
-    padding: var(--v2-space-md);
+    padding: var(--v2-space-lg);
     box-sizing: border-box;
-    min-height: 100vh;
+    min-height: 100%;
 }
 
 @media (max-width: 600px) {
     #v2-device-library-content {
-        padding: var(--v2-space-sm);
+        padding: var(--v2-space-md);
     }
 }
 
 /* =====================
- * VIEW HEADER
+ * VIEW HEADER (Unified Global Design)
  * ===================== */
-#v2-device-library-content .view-header {
+#view-devices .view-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* Centered like sidebar controls */
     flex-wrap: wrap;
     gap: var(--v2-space-md);
-    margin-bottom: var(--v2-space-lg);
-    padding-bottom: var(--v2-space-md);
-    border-bottom: 2px solid var(--v2-border-default);
+    margin-bottom: 0; /* Header margin handled by global styles */
+    padding-bottom: 0;
+    border-bottom: 1px solid var(--v2-border-subtle);
 }
 
-#v2-device-library-content .view-header h1 {
-    /* Match Sidebar Title Aesthetic */
-    font-size: clamp(20px, 6vw, 26px);
+#view-devices .view-header h1 {
+    font-size: var(--v2-font-size-xl);
     font-weight: var(--v2-font-weight-semibold);
     color: var(--v2-header-color);
-    /* Use Brand Blue/Header color */
     margin: 0;
-    line-height: 1.0;
+    line-height: 1.2;
 }
 
-#v2-device-library-content .header-subtitle {
-    font-size: var(--v2-font-size-sm);
-    color: var(--v2-text-secondary);
-    margin-top: 4px;
-}
-
-#v2-device-library-content .view-header-actions {
+#view-devices .view-header-actions {
     display: flex;
+    align-items: center;
     gap: var(--v2-space-sm);
+    flex-shrink: 0;
 }
 
-/* =====================
- * RESPONSIVE GRID LAYOUT
- * ===================== */
-/* =====================
- * RESPONSIVE GRID LAYOUT - DISABLED FOR V1 REVERSION
- * ===================== */
-/*
-.device-library-layout {
-    display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: var(--v2-space-lg);
-    align-items: start;
-}
-
-@media (max-width: 900px) {
-    .device-library-layout {
-        grid-template-columns: 1fr;
-        gap: var(--v2-space-lg);
-    }
-
-    .v2-device-list {
-        max-height: none !important;
-    }
-}
-*/
-
-/* =====================
- * PANEL STYLING (Common)
- * ===================== */
-.device-list-panel,
-.device-form-panel {
-    background: var(--v2-surface-0);
-    border: 1px solid var(--v2-border-default);
+/* Header action buttons */
+#view-devices .view-header-actions .v2-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    font-size: var(--v2-font-size-sm);
+    font-weight: var(--v2-font-weight-medium);
     border-radius: var(--v2-radius-md);
-    overflow: hidden;
-    /* Use shadow from Settings for consistency? Sidebar has no shadow, but panels usually do */
-    /* device-library used none, let's keep it clean or minimal */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+#view-devices .view-header-actions .v2-btn svg {
+    flex-shrink: 0;
+}
+
+#view-devices .view-header-actions .v2-btn-secondary {
+    background-color: var(--v2-surface-2);
+    color: var(--v2-text-primary);
+    border: 1px solid var(--v2-border-default);
+}
+
+#view-devices .view-header-actions .v2-btn-secondary:hover {
+    background-color: var(--v2-surface-3);
+    border-color: var(--v2-border-hover);
+}
+
+#view-devices .view-header-actions .v2-btn-danger {
+    background-color: transparent;
+    color: var(--v2-status-error);
+    border: 1px solid var(--v2-status-error);
+}
+
+#view-devices .view-header-actions .v2-btn-danger:hover {
+    background-color: var(--v2-status-error);
+    color: white;
 }
 
 /* =====================
- * LEFT PANEL: LIST
+ * CONTENT WRAPPER (Two Tile Layout)
  * ===================== */
-.device-list-panel {
+.device-library-content-wrapper {
     display: flex;
     flex-direction: column;
+    gap: var(--v2-space-lg);
 }
 
-/* Search Bar */
-.device-library-search {
-    padding: var(--v2-space-md);
-    background: var(--v2-surface-elevated);
-    border-bottom: 1px solid var(--v2-border-default);
+/* =====================
+ * TILE STYLING (v2-card)
+ * ===================== */
+#v2-device-library-content .v2-card {
+    background: var(--v2-surface-0);
+    border: 1px solid var(--v2-border-default);
+    border-radius: var(--v2-radius-lg);
+    padding: var(--v2-space-lg);
+    box-shadow: var(--v2-shadow-sm);
 }
 
-.device-library-search input {
-    /* Match Sidebar Search Input */
+#v2-device-library-content .tile-heading {
+    font-size: var(--v2-font-size-lg);
+    font-weight: var(--v2-font-weight-semibold);
+    color: var(--v2-header-color);
+    margin: 0 0 var(--v2-space-md) 0;
+    padding-bottom: var(--v2-space-sm);
+    border-bottom: 2px solid var(--v2-border-muted);
+}
+
+/* =====================
+ * FORM TILE (Add New Device)
+ * ===================== */
+.device-library-form-tile .button-group {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+.device-library-form-tile .button-group h3 {
+    display: none; /* Hide legacy heading, we have tile-heading */
+}
+
+/* Form Rows - Proper inline layout (label | input) */
+.device-library-form-tile .form-row,
+.device-library-form-tile .form-row.v2-form-row {
+    display: flex;
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--v2-space-sm) var(--v2-space-md);
+    margin-bottom: var(--v2-space-md);
+}
+
+.device-library-form-tile .form-row:last-of-type {
+    margin-bottom: 0;
+}
+
+.device-library-form-tile .form-row label,
+.device-library-form-tile .form-row .form-row-label {
+    flex: 0 0 auto;
+    width: 140px;
+    min-width: 100px;
+    font-size: var(--v2-font-size-sm);
+    font-weight: var(--v2-font-weight-medium);
+    color: var(--v2-text-secondary);
+    height: auto;
+    line-height: 1.4;
+}
+
+/* Form Inputs */
+.device-library-form-tile input[type="text"],
+.device-library-form-tile input[type="number"],
+.device-library-form-tile input[type="search"] {
+    flex: 1;
+    min-width: 150px;
+    padding: 12px 14px;
+    font-size: var(--v2-font-size-base);
+    color: var(--v2-text-primary);
+    background-color: var(--v2-surface-0);
+    border: 1px solid var(--v2-border-default);
+    border-radius: var(--v2-radius-md);
+    line-height: 1.5;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.device-library-form-tile input:hover:not(:disabled):not(:focus) {
+    border-color: var(--v2-border-hover);
+}
+
+.device-library-form-tile input:focus {
+    outline: none;
+    border-color: var(--v2-brand-blue);
+    background-color: var(--v2-surface-1);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--v2-brand-blue) 15%, transparent);
+}
+
+/* Select/Dropdown Styling */
+.device-library-form-tile select {
+    flex: 1;
+    min-width: 150px;
+    height: auto !important;
+    min-height: 44px;
+    padding: 12px 40px 12px 14px;
+    font-size: var(--v2-font-size-base);
+    color: var(--v2-text-primary);
+    background-color: var(--v2-surface-0);
+    border: 1px solid var(--v2-border-default);
+    border-radius: var(--v2-radius-md);
+    line-height: 1.4;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.device-library-form-tile select:hover:not(:disabled):not(:focus) {
+    border-color: var(--v2-border-hover);
+}
+
+.device-library-form-tile select:focus {
+    outline: none;
+    border-color: var(--v2-brand-blue);
+    background-color: var(--v2-surface-1);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--v2-brand-blue) 15%, transparent);
+}
+
+/* Add Device Button */
+.device-library-form-tile #addDeviceBtn {
+    background-color: var(--v2-brand-blue);
+    color: var(--v2-text-inverse);
+    border: none;
+    padding: 12px 24px;
+    border-radius: var(--v2-radius-md);
+    font-size: var(--v2-font-size-base);
+    font-weight: var(--v2-font-weight-semibold);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: var(--v2-space-md);
+}
+
+.device-library-form-tile #addDeviceBtn:hover {
+    background-color: var(--v2-brand-blue-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--v2-shadow-md);
+}
+
+/* =====================
+ * LIST TILE (Existing Devices)
+ * ===================== */
+.device-library-list-tile .device-library-search {
+    margin-bottom: var(--v2-space-md);
+}
+
+.device-library-list-tile .device-library-search label {
+    display: block;
+    font-size: var(--v2-font-size-sm);
+    font-weight: var(--v2-font-weight-medium);
+    color: var(--v2-text-secondary);
+    margin-bottom: var(--v2-space-xs);
+}
+
+.device-library-list-tile .device-library-search input[type="search"] {
     width: 100%;
-    /* Padded like sidebar search for consistency, though no icon strictly enforced here unless added via JS */
-    padding: 10px 14px;
+    padding: 12px 16px;
     border: 1px solid var(--v2-border-default);
     border-radius: var(--v2-radius-md);
     background-color: var(--v2-surface-input);
     color: var(--v2-text-primary);
     font-size: var(--v2-font-size-base);
     font-weight: var(--v2-font-weight-medium);
-    transition: border-color var(--v2-transition-fast);
-    height: auto;
-    /* Remove fixed height constraint if standard padding works */
+    transition: border-color var(--v2-transition-fast), box-shadow var(--v2-transition-fast);
 }
 
-.device-library-search input:focus {
-    outline: none;
-    border-color: var(--v2-brand-blue);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--v2-brand-blue) 10%, transparent);
-}
-
-/* Device List */
-.v2-device-list {
-    max-height: 600px;
-    /* Only limit height of list, not the whole page */
-    overflow-y: auto;
-    /* Custom Scrollbar for desktop */
-    scrollbar-width: thin;
-}
-
-.device-list-container summary {
-    padding: var(--v2-space-md);
-    border-bottom: 1px solid var(--v2-border-default);
-    cursor: pointer;
-    font-weight: var(--v2-font-weight-semibold);
-    /* Match heavy links */
-    display: flex;
-    justify-content: space-between;
-    transition: background-color var(--v2-transition-fast);
-    color: var(--v2-text-primary);
-}
-
-.device-list-container summary:hover {
-    background: var(--v2-surface-muted);
-}
-
-/* Active State */
-.device-list-container details[open] summary {
-    background-color: color-mix(in srgb, var(--v2-brand-blue) 8%, transparent);
-    border-left: 4px solid var(--v2-brand-blue);
-    color: var(--v2-brand-blue-dark);
-    /* Ensure contrast */
-}
-
-/* =====================
- * RIGHT PANEL: FORM
- * ===================== */
-.device-form-panel .panel-content {
-    padding: var(--v2-space-lg);
-}
-
-@media (max-width: 600px) {
-    .device-form-panel .panel-content {
-        padding: var(--v2-space-md);
-    }
-}
-
-.device-form-section {
-    margin-bottom: var(--v2-space-xl);
-    padding: var(--v2-space-lg);
-    border: 1px solid var(--v2-border-default);
-    border-radius: var(--v2-radius-md);
-    background: var(--v2-surface-base);
-}
-
-.device-form-section .section-header {
-    display: flex;
-    align-items: center;
-    gap: var(--v2-space-sm);
-    margin-bottom: var(--v2-space-md);
-    padding-bottom: var(--v2-space-sm);
-    border-bottom: 2px solid var(--v2-border-muted);
-}
-
-.device-form-section .section-title {
-    font-size: var(--v2-font-size-base);
-    font-weight: var(--v2-font-weight-bold);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--v2-text-primary);
-}
-
-.device-form-section .icon {
-    font-size: 20px;
-    color: var(--v2-brand-blue);
-}
-
-/* Form Controls - Reuse forms.css classes wherever possible, 
-   but override inputs if specific structure demands it */
-.v2-form-row {
-    margin-bottom: var(--v2-space-md);
-}
-
-.v2-label {
-    display: block;
-    margin-bottom: var(--v2-space-sm);
-    font-size: var(--v2-font-size-xs);
-    font-weight: var(--v2-font-weight-semibold);
-    color: var(--v2-text-secondary);
-    text-transform: uppercase;
-}
-
-/* Rely on global forms.css for .v2-input, .v2-select. 
-   If elements use generic input/select tags, style them to match */
-
-.device-form-panel input[type="text"],
-.device-form-panel input[type="number"] {
-    display: block;
-    width: 100%;
-    padding: 10px 14px;
-    font-size: var(--v2-font-size-base);
-    color: var(--v2-text-primary);
-    background-color: var(--v2-surface-0);
-    border: 1px solid var(--v2-border-default);
-    border-radius: var(--v2-radius-md);
-    box-sizing: border-box;
-}
-
-.device-form-panel input:focus {
+.device-library-list-tile .device-library-search input[type="search"]:focus {
     outline: none;
     border-color: var(--v2-brand-blue);
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--v2-brand-blue) 15%, transparent);
 }
 
-/* Action Buttons */
-.button-group {
-    display: flex;
-    flex-wrap: wrap;
+/* Device List Container */
+.device-library-list-tile #deviceListContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: var(--v2-space-md);
-    margin-top: var(--v2-space-xl);
-    padding-top: var(--v2-space-md);
-    border-top: 1px solid var(--v2-border-default);
 }
 
-/* Removed local .v2-btn definitions to use buttons.css */
+/* Device Category Cards */
+.device-library-list-tile #deviceListContainer details {
+    background: var(--v2-surface-1);
+    border: 1px solid var(--v2-border-muted);
+    border-radius: var(--v2-radius-md);
+    overflow: hidden;
+}
 
-/* Responsive Button Group */
-@media (max-width: 600px) {
-    .button-group {
-        flex-direction: column-reverse;
+.device-library-list-tile #deviceListContainer summary {
+    padding: var(--v2-space-md);
+    cursor: pointer;
+    font-weight: var(--v2-font-weight-semibold);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color var(--v2-transition-fast);
+    color: var(--v2-text-primary);
+    user-select: none;
+}
+
+.device-library-list-tile #deviceListContainer summary:hover {
+    background: var(--v2-surface-muted);
+}
+
+.device-library-list-tile #deviceListContainer details[open] summary {
+    background-color: color-mix(in srgb, var(--v2-brand-blue) 8%, transparent);
+    border-left: 4px solid var(--v2-brand-blue);
+    color: var(--v2-brand-blue-dark);
+}
+
+/* Device table inside details */
+.device-library-list-tile #deviceListContainer table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.device-library-list-tile #deviceListContainer table td,
+.device-library-list-tile #deviceListContainer table th {
+    padding: var(--v2-space-sm) var(--v2-space-md);
+    text-align: left;
+    border-bottom: 1px solid var(--v2-border-muted);
+}
+
+.device-library-list-tile #deviceListContainer table tr:last-child td {
+    border-bottom: none;
+}
+
+.device-library-list-tile #deviceListContainer table tr:hover {
+    background-color: var(--v2-surface-1);
+}
+
+/* Edit/Delete buttons in table */
+.device-library-list-tile #deviceListContainer table button {
+    padding: 6px 12px;
+    border-radius: var(--v2-radius-sm);
+    font-size: var(--v2-font-size-xs);
+    cursor: pointer;
+    margin-right: 4px;
+}
+
+/* =====================
+ * HIDE LEGACY DUPLICATE ELEMENTS
+ * ===================== */
+#v2-device-library-content #deviceManagerHeading,
+#v2-device-library-content #addDeviceHeading,
+#v2-device-library-content #existingDevicesHeading,
+#v2-device-library-content #exportDataBtn,
+#v2-device-library-content #importDataBtn,
+#v2-device-library-content #exportAndRevertBtn {
+    display: none !important;
+}
+
+/* =====================
+ * SPECIAL FIELDS (Camera, Monitor, Battery)
+ * ===================== */
+.device-library-form-tile #cameraFields,
+.device-library-form-tile #monitorFields,
+.device-library-form-tile #viewfinderFields,
+.device-library-form-tile #videoFields,
+.device-library-form-tile #motorFields,
+.device-library-form-tile #controllerFields,
+.device-library-form-tile #distanceFields,
+.device-library-form-tile #batteryFields,
+.device-library-form-tile #lensFields {
+    background: var(--v2-surface-1);
+    border: 1px solid var(--v2-border-muted);
+    border-radius: var(--v2-radius-md);
+    padding: var(--v2-space-md);
+    margin-top: var(--v2-space-md);
+}
+
+/* =====================
+ * RESPONSIVE ADJUSTMENTS
+ * ===================== */
+@media (max-width: 768px) {
+    .device-library-form-tile .form-row {
+        flex-direction: column !important;
+        align-items: stretch;
     }
 
-    .v2-btn {
+    .device-library-form-tile .form-row label {
+        flex: none;
+        width: auto;
+        margin-bottom: var(--v2-space-xs);
+    }
+
+    .device-library-form-tile input,
+    .device-library-form-tile select {
         width: 100%;
+    }
+
+    #v2-device-library-content > .view-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #v2-device-library-content .view-header-actions {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    #v2-device-library-content .view-header-actions .v2-btn {
+        flex: 1;
         justify-content: center;
     }
+}
+
+@media (max-width: 480px) {
+    .device-library-list-tile #deviceListContainer {
+        grid-template-columns: 1fr;
+    }
+
+    #v2-device-library-content .view-header-actions .v2-btn span {
+        display: none;
+    }
+
+    #v2-device-library-content .view-header-actions .v2-btn {
+        padding: 10px;
+        min-width: auto;
+    }
+}
+
+/* =====================
+ * DARK MODE OVERRIDES
+ * ===================== */
+body.dark-mode #v2-device-library-content .v2-card {
+    background: var(--v2-surface-elevated, #2c2c2f);
+    border-color: var(--v2-border-default, #444);
+}
+
+body.dark-mode .device-library-form-tile input,
+body.dark-mode .device-library-form-tile select,
+body.dark-mode .device-library-form-tile textarea {
+    background-color: var(--v2-surface-0, #1c1c1e);
+    color: var(--v2-text-primary, #f0f0f0);
+    border-color: var(--v2-border-default, #444);
+}
+
+body.dark-mode .device-library-form-tile select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+}
+
+body.dark-mode .device-library-list-tile #deviceListContainer details {
+    background: var(--v2-surface-1, #2a2a2d);
 }

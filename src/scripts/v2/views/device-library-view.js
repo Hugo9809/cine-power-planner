@@ -50,28 +50,38 @@
     // =====================
 
     /**
-     * Create the view header
+     * Inject action buttons into the existing view-header (from index.html)
      */
-    function createViewHeader() {
-        const header = document.createElement('header');
-        header.className = 'view-header';
-        header.innerHTML = `
-            <div class="header-content">
-                <h1>${_t('deviceLibraryTitle') || 'Device Library'}</h1>
-                <p class="header-subtitle">${_t('deviceLibrarySubtitle') || 'Database Management'} / ${_t('v2ui.revision') || 'REV.01'}</p>
-            </div>
-            <div class="view-header-actions">
-                <button class="v2-btn" id="v2-export-db-btn">
-                    <span class="icon">download</span>
-                    <span>Export</span>
-                </button>
-                <button class="v2-btn" id="v2-import-db-btn">
-                    <span class="icon">upload</span>
-                    <span>Import</span>
-                </button>
-            </div>
+    function injectHeaderActions() {
+        const viewSection = document.getElementById('view-devices');
+        if (!viewSection) return;
+
+        const existingHeader = viewSection.querySelector('.view-header');
+        if (!existingHeader) return;
+
+        // Check if actions already exist
+        let actionsContainer = existingHeader.querySelector('.view-header-actions');
+        if (!actionsContainer) {
+            actionsContainer = document.createElement('div');
+            actionsContainer.className = 'view-header-actions';
+            existingHeader.appendChild(actionsContainer);
+        }
+
+        // Clear and add our buttons
+        actionsContainer.innerHTML = `
+            <button class="v2-btn v2-btn-secondary" id="v2-export-db-btn" title="Export database to file">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Export</span>
+            </button>
+            <button class="v2-btn v2-btn-secondary" id="v2-import-db-btn" title="Import database from file">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span>Import</span>
+            </button>
+            <button class="v2-btn v2-btn-danger" id="v2-reset-db-btn" title="Reset to default database">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                <span>Reset</span>
+            </button>
         `;
-        return header;
     }
 
     /**
@@ -106,51 +116,122 @@
         placeholder.style.display = 'none';
         legacyContainer.parentNode.insertBefore(placeholder, legacyContainer);
 
-        // 2. Clear V2 container and add header
+        // 2. Inject action buttons into existing header (not a new one)
+        injectHeaderActions();
+
+        // 3. Clear V2 content container (not creating header here anymore)
         v2Container.innerHTML = '';
-        v2Container.appendChild(createViewHeader());
 
-        // 3. Move #device-manager into V2 container
-        v2Container.appendChild(legacyContainer);
+        // 3. Create wrapper for content tiles
+        const contentWrapper = document.createElement('div');
+        contentWrapper.className = 'device-library-content-wrapper';
 
-        // BUG FIX: Remove 'hidden' class from legacy container so it becomes visible
-        // The legacy #device-manager starts hidden; we must show it in V2 context.
+        // 4. Move #device-manager into our container
         legacyContainer.classList.remove('hidden');
 
-        // legacyContainer.classList.add('device-library-layout'); // REMOVED: Restore V1 (no grid)
+        // 5. Organize content into TWO SEPARATE TILES
 
-        // 4. Organize children - SKIP PANEL CREATION FOR V1 LAYOUT RESTORATION
-        // We just want to apply V2 styles to the existing structure, not change the layout.
+        // Tile 1: Add New Device Form
+        const formTile = document.createElement('section');
+        formTile.className = 'v2-card device-library-form-tile';
+        formTile.innerHTML = '<h2 class="tile-heading">Add New Device</h2>';
 
+        // Tile 2: Existing Devices List
+        const listTile = document.createElement('section');
+        listTile.className = 'v2-card device-library-list-tile';
+        listTile.innerHTML = '<h2 class="tile-heading">Existing Devices</h2>';
+
+        // 6. Process legacy children and move to appropriate tiles
         const children = Array.from(legacyContainer.children);
         children.forEach(child => {
-            if (child.classList.contains('device-library-search')) {
-                const searchInput = child.querySelector('input');
-                if (searchInput) {
-                    searchInput.classList.add('v2-input');
-                    const tVal = _t('searchPlaceholder');
-                    searchInput.placeholder = (tVal && tVal !== 'searchPlaceholder') ? tVal : 'Search database...';
-                    // searchInput.style.marginBottom = '20px'; // Add some spacing if needed
-                }
+            // Hide all duplicate headings
+            if (child.id === 'deviceManagerHeading' || child.id === 'addDeviceHeading' || child.id === 'existingDevicesHeading') {
+                child.style.display = 'none';
             }
+            // Hide legacy action buttons (now in header)
+            else if (child.id === 'exportDataBtn' || child.id === 'importDataBtn' || child.id === 'exportAndRevertBtn') {
+                child.style.display = 'none';
+            }
+            // Button group (Add New Device form) -> Form Tile
             else if (child.classList.contains('button-group')) {
-                // Keep strictly V1 UI, no extra icons or panel styling.
-                // Just let it flow.
+                // Hide extra buttons within button-group (Export/Import/Reset now in header)
+                const extraButtons = child.querySelectorAll('#exportDataBtn, #importDataBtn, #exportAndRevertBtn');
+                extraButtons.forEach(btn => btn.style.display = 'none');
+
+                formTile.appendChild(child);
             }
-            // headings etc: let's keep them or hide them? 
-            // If we use CreateViewHeader, we might have double headings.
-            else if (child.id === 'deviceManagerHeading') {
-                child.style.display = 'none'; // Hide legacy main heading
+            // Search and device list -> List Tile
+            else if (child.classList.contains('device-library-search') || child.id === 'deviceListContainer') {
+                if (child.classList.contains('device-library-search')) {
+                    const searchInput = child.querySelector('input');
+                    if (searchInput) {
+                        searchInput.classList.add('v2-input');
+                        const tVal = _t('searchPlaceholder');
+                        searchInput.placeholder = (tVal && tVal !== 'searchPlaceholder') ? tVal : 'Search all device categories...';
+                    }
+                }
+                listTile.appendChild(child);
             }
         });
 
-        // 5. Append organized panels - SKIPPED
+        // 7. Append tiles to wrapper
+        contentWrapper.appendChild(formTile);
+        contentWrapper.appendChild(listTile);
+
+        // 8. Add wrapper to container and legacy container for event delegation
+        v2Container.appendChild(contentWrapper);
+        v2Container.appendChild(legacyContainer); // Keep for event delegation, hidden
+        legacyContainer.style.display = 'none'; // Hide original container
+
+        // Apply V2 Classes to the tile content
+        applyV2Styles(formTile);
+        applyV2Styles(listTile);
 
         // Apply V2 Classes
         applyV2Styles(legacyContainer);
 
         // Attach export/import button handlers
         attachActionListeners();
+
+        // Trigger device list population
+        // Uses syncDeviceManagerCategories as the primary method (verified to work)
+        // Falls back to refreshDeviceLists or loadDeviceData if available
+        const triggerDeviceListPopulation = () => {
+            if (typeof window.syncDeviceManagerCategories === 'function') {
+                console.log('[DeviceLibraryView] Triggering syncDeviceManagerCategories...');
+                try {
+                    window.syncDeviceManagerCategories();
+                    return true;
+                } catch (e) {
+                    console.warn('[DeviceLibraryView] syncDeviceManagerCategories failed:', e);
+                }
+            }
+            if (typeof window.refreshDeviceLists === 'function') {
+                console.log('[DeviceLibraryView] Triggering refreshDeviceLists...');
+                try {
+                    window.refreshDeviceLists();
+                    return true;
+                } catch (e) {
+                    console.warn('[DeviceLibraryView] refreshDeviceLists failed:', e);
+                }
+            }
+            if (typeof window.loadDeviceData === 'function') {
+                console.log('[DeviceLibraryView] Triggering loadDeviceData...');
+                try {
+                    window.loadDeviceData();
+                    return true;
+                } catch (e) {
+                    console.warn('[DeviceLibraryView] loadDeviceData failed:', e);
+                }
+            }
+            console.warn('[DeviceLibraryView] No device list population function found');
+            return false;
+        };
+
+        // Try immediately and also with a small delay (in case functions aren't ready yet)
+        if (!triggerDeviceListPopulation()) {
+            setTimeout(triggerDeviceListPopulation, 100);
+        }
 
         isReparented = true;
         console.log('[DeviceLibraryView] Reparenting complete (Hierarchy Preserved).');
@@ -211,6 +292,7 @@
     function attachActionListeners() {
         const exportBtn = document.getElementById('v2-export-db-btn');
         const importBtn = document.getElementById('v2-import-db-btn');
+        const resetBtn = document.getElementById('v2-reset-db-btn');
 
         if (exportBtn) {
             exportBtn.removeEventListener('click', handleExportClick);
@@ -220,6 +302,21 @@
         if (importBtn) {
             importBtn.removeEventListener('click', handleImportClick);
             importBtn.addEventListener('click', handleImportClick);
+        }
+
+        if (resetBtn) {
+            resetBtn.removeEventListener('click', handleResetClick);
+            resetBtn.addEventListener('click', handleResetClick);
+        }
+    }
+
+    function handleResetClick() {
+        // Trigger the legacy exportAndRevert button
+        const legacyBtn = document.getElementById('exportAndRevertBtn');
+        if (legacyBtn) {
+            legacyBtn.click();
+        } else {
+            console.warn('[DeviceLibraryView] Legacy reset button not found');
         }
     }
 

@@ -284,6 +284,7 @@ if (GLOBAL_SCOPE && !GLOBAL_SCOPE.cineScopeUtils) {
 
 export {
   baseDetectGlobalScope,
+  safeAssign,
   safeAssign as defineHiddenProperty,
   api as cineScopeUtils
 };

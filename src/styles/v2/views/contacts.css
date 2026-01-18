@@ -1,89 +1,118 @@
 /* =============================================
- * CONTACTS VIEW - SWISS UTILITY DESIGN
- * ============================================= */
-
-/* Local Scope Variables - "Paper & Ink" */
-#view-contacts,
-.contact-modal {
-    --sw-bg: #f5f6f7;
-    --sw-surface: #ffffff;
-    --sw-text-primary: #1a1a1a;
-    --sw-text-secondary: #5e6c84;
-    --sw-text-muted: #8993a4;
-    --sw-border: #e0e2e7;
-    --sw-border-hover: #b3b9c4;
-    --sw-accent: #0044cc;
-    /* International Blue */
-    --sw-accent-fg: #ffffff;
-    --sw-danger: #d93025;
-
-    --sw-radius-sm: 4px;
-    --sw-radius-md: 6px;
-    --sw-radius-lg: 12px;
-
-    --sw-font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-    --sw-shadow-raised: 0 4px 12px rgba(0, 0, 0, 0.06);
-    --sw-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04);
-}
+ * CONTACTS VIEW - V2 Design System
+ * =============================================
+ * Uses v2 design tokens for proper theming support
+ * (dark mode, pink mode)
+ */
 
 /* =====================
  * LAYOUT CONTAINERS
  * ===================== */
 #view-contacts .view-content.swiss-content {
-    background-color: var(--sw-bg);
-    padding: 32px;
+    background-color: var(--v2-surface-app-bg);
+    padding: var(--v2-space-lg);
     height: calc(100vh - 80px);
-    /* Adjust based on your top nav height */
     overflow-y: auto;
+}
+
+@media (min-width: 768px) {
+    #view-contacts .view-content.swiss-content {
+        padding: var(--v2-space-xl);
+    }
 }
 
 .swiss-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-    gap: 20px;
+    grid-template-columns: 1fr;
+    gap: var(--v2-space-md);
     padding-bottom: 60px;
+}
+
+@media (min-width: 768px) {
+    .swiss-grid {
+        grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+        gap: var(--v2-space-lg);
+    }
+}
+
+@media (min-width: 1200px) {
+    .swiss-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 /* =====================
  * HEADER
  * ===================== */
 .swiss-header {
-    background: var(--sw-surface);
-    border-bottom: 1px solid var(--sw-border);
-    padding: 24px 32px;
+    background: var(--v2-surface-elevated);
+    border-bottom: 1px solid var(--v2-border-default);
+    padding: var(--v2-space-lg) var(--v2-space-xl);
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--v2-space-md);
 }
 
 .swiss-title {
-    font-family: var(--sw-font-sans);
-    font-size: 28px;
-    font-weight: 700;
+    font-family: var(--v2-font-family);
+    font-size: var(--v2-font-size-2xl);
+    font-weight: var(--v2-font-weight-bold);
     letter-spacing: -0.02em;
-    color: var(--sw-text-primary, #1a1a1a);
+    color: var(--v2-text-primary);
     margin: 0;
-    line-height: 1.2;
+    line-height: var(--v2-line-height-tight);
 }
 
 .swiss-subtitle {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    color: var(--sw-text-secondary);
-    margin-top: 4px;
-    font-weight: 500;
+    gap: var(--v2-space-sm);
+    font-size: var(--v2-font-size-sm);
+    color: var(--v2-text-secondary);
+    margin-top: var(--v2-space-xs);
+    font-weight: var(--v2-font-weight-medium);
 }
 
 .count-badge {
-    background: var(--sw-bg);
-    color: var(--sw-text-primary);
-    padding: 2px 8px;
-    border-radius: 999px;
+    background: var(--v2-surface-muted);
+    color: var(--v2-text-primary);
+    padding: 2px var(--v2-space-sm);
+    border-radius: var(--v2-radius-full);
     font-size: 11px;
-    font-weight: 700;
-    border: 1px solid var(--sw-border);
+    font-weight: var(--v2-font-weight-bold);
+    border: 1px solid var(--v2-border-default);
+}
+
+/* =====================
+ * TOOLBAR
+ * ===================== */
+.contacts-toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--v2-space-sm);
+    flex-wrap: wrap;
+}
+
+/* =====================
+ * ICON ALIGNMENT
+ * ===================== */
+#view-contacts .icon {
+    font-family: 'Material Icons';
+    font-size: 18px;
+    line-height: 1;
+    vertical-align: middle;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#view-contacts .v2-btn .icon,
+#view-contacts .swiss-btn .icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
 }
 
 /* =====================
@@ -93,74 +122,97 @@
     appearance: none;
     border: none;
     background: transparent;
-    font-family: var(--sw-font-sans);
-    font-size: 14px;
-    font-weight: 600;
+    font-family: var(--v2-font-family);
+    font-size: var(--v2-font-size-sm);
+    font-weight: var(--v2-font-weight-semibold);
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--v2-space-sm);
     padding: 10px 20px;
-    border-radius: var(--sw-radius-md);
-    transition: all 0.2s ease;
+    border-radius: var(--v2-radius-md);
+    transition: all var(--v2-transition-fast);
 }
 
 .swiss-btn-primary {
-    background: var(--sw-text-primary, #1a1a1a) !important;
-    /* Stark Black */
-    color: #ffffff !important;
+    background: var(--v2-text-primary) !important;
+    color: var(--v2-text-inverse) !important;
 }
 
 .swiss-btn-primary:hover {
-    background: #000000 !important;
+    background: var(--v2-surface-inverse) !important;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--v2-shadow-md);
 }
 
 .swiss-btn-primary .icon {
     font-size: 18px;
 }
 
+.swiss-btn-secondary {
+    background: var(--v2-surface-elevated);
+    color: var(--v2-text-primary);
+    border: 1px solid var(--v2-border-default);
+}
+
+.swiss-btn-secondary:hover {
+    background: var(--v2-surface-muted);
+    border-color: var(--v2-border-hover);
+}
+
+.swiss-btn-ghost {
+    background: transparent;
+    color: var(--v2-text-secondary);
+}
+
+.swiss-btn-ghost:hover {
+    background: var(--v2-surface-muted);
+    color: var(--v2-text-primary);
+}
+
 /* =====================
- * SWISS CARD
+ * SWISS CARD (Contact Cards)
  * ===================== */
 .swiss-card {
-    background: var(--sw-surface);
-    border: 1px solid var(--sw-border);
-    border-radius: var(--sw-radius-lg);
+    background: var(--v2-surface-elevated);
+    border: 1px solid var(--v2-border-default);
+    border-radius: var(--v2-radius-lg);
     overflow: hidden;
     position: relative;
-    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
-    box-shadow: var(--sw-shadow-card);
+    transition: all var(--v2-transition-fast);
+    box-shadow: var(--v2-shadow-xs);
     display: flex;
     flex-direction: column;
 }
 
 .swiss-card:hover {
     transform: translateY(-2px);
-    box-shadow: var(--sw-shadow-raised);
-    border-color: var(--sw-border-hover);
+    box-shadow: var(--v2-shadow-md);
+    border-color: var(--v2-border-hover);
 }
 
 .swiss-card:focus {
     outline: none;
-    border-color: var(--sw-accent, #0044cc);
-    box-shadow: 0 0 0 3px rgba(0, 68, 204, 0.15);
+    border-color: var(--v2-accent-color);
+    box-shadow: 0 0 0 3px rgba(0, 21, 137, 0.15);
+}
+
+body.dark-mode .swiss-card:focus {
+    box-shadow: 0 0 0 3px rgba(61, 90, 254, 0.3);
 }
 
 /* Card Identity (Top) */
 .swiss-card-main {
-    padding: 20px;
+    padding: var(--v2-space-lg);
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    border-bottom: 1px solid var(--sw-bg);
     position: relative;
 }
 
 .swiss-card-identity {
     display: flex;
-    gap: 16px;
+    gap: var(--v2-space-md);
     align-items: center;
 }
 
@@ -168,15 +220,14 @@
 .swiss-avatar {
     width: 48px;
     height: 48px;
-    border-radius: var(--sw-radius-md);
-    /* Squared circle */
-    background: var(--sw-bg);
+    border-radius: 50%;
+    background: var(--v2-surface-muted);
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    border: 1px solid var(--sw-border);
+    border: 1px solid var(--v2-border-default);
 }
 
 .avatar-img {
@@ -187,8 +238,8 @@
 
 .avatar-initials {
     font-size: 16px;
-    font-weight: 700;
-    color: var(--sw-text-primary);
+    font-weight: var(--v2-font-weight-bold);
+    color: var(--v2-text-primary);
     letter-spacing: -0.5px;
 }
 
@@ -201,24 +252,28 @@
 
 .swiss-name {
     font-size: 16px;
-    font-weight: 700;
-    color: var(--sw-text-primary);
+    font-weight: var(--v2-font-weight-bold);
+    color: var(--v2-text-primary);
     margin: 0;
-    line-height: 1.3;
+    line-height: var(--v2-line-height-tight);
 }
 
 .swiss-role {
     font-size: 13px;
-    color: var(--sw-text-secondary);
-    font-weight: 500;
+    color: var(--v2-text-secondary);
+    font-weight: var(--v2-font-weight-medium);
 }
 
-/* Hover Actions */
+/* Hover Actions - Positioned top right */
 .swiss-card-actions-overlay {
+    position: absolute;
+    top: var(--v2-space-sm);
+    right: var(--v2-space-sm);
     display: flex;
-    gap: 4px;
+    gap: var(--v2-space-xs);
     opacity: 0;
-    transition: opacity 0.2s ease;
+    transition: opacity var(--v2-transition-fast);
+    z-index: 10;
 }
 
 .swiss-card:hover .swiss-card-actions-overlay,
@@ -229,43 +284,52 @@
 .swiss-icon-btn {
     width: 32px;
     height: 32px;
-    border-radius: var(--sw-radius-sm);
+    border-radius: var(--v2-radius-sm);
     border: none;
-    background: var(--sw-bg);
-    color: var(--sw-text-secondary);
+    background: var(--v2-surface-muted);
+    color: var(--v2-text-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.1s ease;
+    transition: all var(--v2-transition-fast);
 }
 
 .swiss-icon-btn:hover {
-    background: var(--sw-text-primary);
-    color: white;
+    background: var(--v2-text-primary);
+    color: var(--v2-text-inverse);
 }
 
 .swiss-icon-btn .icon {
     font-size: 16px;
 }
 
-/* Data Grid (Bottom) */
+/* Data Grid (Bottom) - Full Width */
 .swiss-card-data-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1px;
-    background: var(--sw-border);
-    /* Grid lines color */
+    background: var(--v2-border-muted);
     padding-top: 1px;
 }
 
+@media (min-width: 768px) {
+    .swiss-card-data-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .swiss-card-data-grid .data-cell.full-width {
+        grid-column: span 4;
+    }
+}
+
 .data-cell {
-    background: var(--sw-surface);
-    padding: 12px 20px;
+    background: var(--v2-surface-elevated);
+    padding: var(--v2-space-sm) var(--v2-space-md);
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    min-height: 64px;
+    gap: var(--v2-space-xs);
+    min-height: 56px;
 }
 
 .data-cell.full-width {
@@ -276,48 +340,157 @@
     font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--sw-text-muted);
-    font-weight: 600;
+    color: var(--v2-text-muted);
+    font-weight: var(--v2-font-weight-semibold);
 }
 
 .data-value {
     font-size: 13px;
-    font-weight: 500;
-    color: var(--sw-text-primary);
+    font-weight: var(--v2-font-weight-medium);
+    color: var(--v2-text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .swiss-link {
-    color: var(--sw-text-primary);
+    color: var(--v2-text-primary);
     text-decoration: none;
     border-bottom: 1px solid transparent;
-    transition: border-color 0.2s;
+    transition: all var(--v2-transition-fast);
 }
 
 .swiss-link:hover {
-    border-bottom-color: var(--sw-accent);
-    color: var(--sw-accent);
+    border-bottom-color: var(--v2-accent-color);
+    color: var(--v2-accent-color);
 }
 
 .swiss-placeholder {
-    color: var(--sw-border);
+    color: var(--v2-border-default);
 }
 
 .notes-cell {
-    background: #fcfcfd;
+    background: var(--v2-surface-1);
 }
 
 .notes-text {
     white-space: normal;
     font-size: 12px;
-    line-height: 1.5;
-    color: var(--sw-text-secondary);
+    line-height: var(--v2-line-height-normal);
+    color: var(--v2-text-secondary);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+/* =====================
+ * PROFILE CARD (Distinct Style)
+ * ===================== */
+.swiss-profile-section {
+    margin-bottom: var(--v2-space-xl);
+}
+
+.swiss-profile-header {
+    margin-bottom: var(--v2-space-md);
+}
+
+.swiss-profile-header h3 {
+    font-size: var(--v2-font-size-lg);
+    font-weight: var(--v2-font-weight-semibold);
+    color: var(--v2-text-primary);
+    margin: 0 0 var(--v2-space-xs) 0;
+}
+
+.swiss-profile-header p {
+    font-size: var(--v2-font-size-sm);
+    color: var(--v2-text-secondary);
+    margin: 0;
+}
+
+.swiss-profile-card {
+    background: var(--v2-surface-elevated);
+    border: 1px solid var(--v2-border-default);
+    border-left: 3px solid var(--v2-accent-color);
+    border-radius: var(--v2-radius-lg);
+    box-shadow: var(--v2-shadow-sm);
+    /* overflow: visible to allow dropdowns to extend beyond card */
+}
+
+.swiss-profile-card .swiss-card-main {
+    padding: var(--v2-space-lg) var(--v2-space-xl);
+    display: flex;
+    align-items: center;
+    gap: var(--v2-space-lg);
+}
+
+.swiss-profile-card .swiss-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all var(--v2-transition-fast);
+}
+
+.swiss-profile-card .swiss-avatar:hover {
+    box-shadow: 0 0 0 3px var(--v2-accent-color);
+}
+
+.swiss-profile-card .avatar-initials {
+    font-size: 24px;
+}
+
+.swiss-profile-form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--v2-space-md);
+    flex: 1;
+}
+
+@media (min-width: 768px) {
+    .swiss-profile-form {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.swiss-profile-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--v2-space-xs);
+}
+
+.swiss-profile-field label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--v2-text-muted);
+    font-weight: var(--v2-font-weight-semibold);
+}
+
+.swiss-profile-field input,
+.swiss-profile-field select {
+    padding: var(--v2-space-sm) var(--v2-space-md);
+    border: 1px solid var(--v2-border-default);
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-surface-input);
+    color: var(--v2-text-primary);
+    font-size: var(--v2-font-size-sm);
+    font-family: var(--v2-font-family);
+    transition: all var(--v2-transition-fast);
+    height: 40px;
+    line-height: 1.4;
+}
+
+.swiss-profile-field input:focus,
+.swiss-profile-field select:focus {
+    outline: none;
+    border-color: var(--v2-accent-color);
+    box-shadow: 0 0 0 3px rgba(0, 21, 137, 0.1);
+}
+
+body.dark-mode .swiss-profile-field input:focus,
+body.dark-mode .swiss-profile-field select:focus {
+    box-shadow: 0 0 0 3px rgba(61, 90, 254, 0.2);
 }
 
 /* =====================
@@ -328,7 +501,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 80px 20px;
+    padding: 80px var(--v2-space-lg);
     text-align: center;
     max-width: 480px;
     margin: 0 auto;
@@ -338,12 +511,12 @@
     width: 64px;
     height: 64px;
     border-radius: 50%;
-    background: var(--sw-bg);
+    background: var(--v2-surface-muted);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 24px;
-    color: var(--sw-text-muted);
+    margin-bottom: var(--v2-space-lg);
+    color: var(--v2-text-muted);
 }
 
 .swiss-empty-icon .icon {
@@ -352,38 +525,38 @@
 
 .swiss-empty-state h2 {
     font-size: 20px;
-    font-weight: 700;
-    color: var(--sw-text-primary);
-    margin: 0 0 12px 0;
+    font-weight: var(--v2-font-weight-bold);
+    color: var(--v2-text-primary);
+    margin: 0 0 var(--v2-space-sm) 0;
 }
 
 .swiss-empty-state p {
-    color: var(--sw-text-secondary);
+    color: var(--v2-text-secondary);
     font-size: 15px;
-    line-height: 1.5;
-    margin-bottom: 32px;
+    line-height: var(--v2-line-height-normal);
+    margin-bottom: var(--v2-space-xl);
 }
 
 /* =====================
- * MODAL SPECIFIC (SWISS)
+ * MODAL SPECIFIC
  * ===================== */
 
 .contact-form-section {
-    margin-bottom: 24px;
+    margin-bottom: var(--v2-space-lg);
 }
 
 .contact-form-section-title {
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    font-weight: 700;
-    color: var(--sw-text-muted);
-    border-bottom: 1px solid var(--sw-border);
-    padding-bottom: 8px;
-    margin-bottom: 16px;
+    font-weight: var(--v2-font-weight-bold);
+    color: var(--v2-text-muted);
+    border-bottom: 1px solid var(--v2-border-default);
+    padding-bottom: var(--v2-space-sm);
+    margin-bottom: var(--v2-space-md);
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--v2-space-sm);
 }
 
 .contact-form-section-title .icon {
@@ -391,37 +564,37 @@
     opacity: 0.8;
 }
 
-/* Avatar Upload - Swiss Style */
+/* Avatar Upload */
 .avatar-upload-section {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
-    padding: 24px;
-    border: 1px dashed var(--sw-border);
-    border-radius: var(--sw-radius-lg);
-    background: #fafafa;
-    margin-bottom: 24px;
-    transition: all 0.2s ease;
+    gap: var(--v2-space-md);
+    padding: var(--v2-space-lg);
+    border: 1px dashed var(--v2-border-default);
+    border-radius: var(--v2-radius-lg);
+    background: var(--v2-surface-1);
+    margin-bottom: var(--v2-space-lg);
+    transition: all var(--v2-transition-fast);
 }
 
 .avatar-upload-section:hover,
 .avatar-upload-section.drag-over {
-    border-color: var(--sw-accent);
-    background: #ffffff;
+    border-color: var(--v2-accent-color);
+    background: var(--v2-surface-elevated);
 }
 
 .avatar-preview {
     width: 80px;
     height: 80px;
-    border-radius: var(--sw-radius-md);
-    background: var(--sw-surface);
-    border: 1px solid var(--sw-border);
+    border-radius: 50%;
+    background: var(--v2-surface-elevated);
+    border: 1px solid var(--v2-border-default);
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    color: var(--sw-text-muted);
+    color: var(--v2-text-muted);
 }
 
 .avatar-preview img {
@@ -432,16 +605,16 @@
 
 .avatar-buttons {
     display: flex;
-    gap: 8px;
+    gap: var(--v2-space-sm);
     align-items: center;
 }
 
 .avatar-hint {
     font-size: 11px;
-    color: var(--sw-text-muted);
+    color: var(--v2-text-muted);
 }
 
-/* Input Groups - Swiss Style */
+/* Input Groups */
 .v2-input-group {
     position: relative;
     display: flex;
@@ -453,7 +626,7 @@
     left: 12px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--sw-text-muted);
+    color: var(--v2-text-muted);
     pointer-events: none;
     display: flex;
     align-items: center;
@@ -465,54 +638,118 @@
 
 .v2-input-group .v2-input {
     padding-left: 40px;
-    /* Space for icon */
-    border-radius: var(--sw-radius-md);
-    border-color: var(--sw-border);
+    border-radius: var(--v2-radius-md);
+    border-color: var(--v2-border-default);
 }
 
 .v2-input-group .v2-input:focus {
-    border-color: var(--sw-accent);
-    box-shadow: 0 0 0 3px rgba(0, 68, 204, 0.1);
+    border-color: var(--v2-accent-color);
+    box-shadow: 0 0 0 3px rgba(0, 21, 137, 0.1);
+}
+
+body.dark-mode .v2-input-group .v2-input:focus {
+    box-shadow: 0 0 0 3px rgba(61, 90, 254, 0.2);
 }
 
 /* Modal Body Layout */
 .detail-row-group {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: var(--v2-space-md);
 }
 
 .contacts-modal-body .v2-form-group {
-    margin-bottom: 16px;
+    margin-bottom: var(--v2-space-md);
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 
 /* =====================
+ * ERROR STATE
+ * ===================== */
+.swiss-error-state {
+    padding: var(--v2-space-xl);
+    text-align: center;
+    color: var(--v2-status-error);
+}
+
+/* =====================
  * RESPONSIVE
  * ===================== */
-@media (max-width: 600px) {
+
+/* Tablet breakpoint - Header stacks */
+@media (max-width: 900px) {
+    .swiss-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--v2-space-md);
+    }
+
+    .contacts-toolbar {
+        justify-content: flex-start;
+    }
+
+    /* Single column grid for contact cards */
     .swiss-grid {
         grid-template-columns: 1fr;
     }
+}
 
-    .swiss-header {
+/* Small tablet breakpoint - Profile form stacks */
+@media (max-width: 768px) {
+    .swiss-profile-form {
+        grid-template-columns: 1fr;
+    }
+
+    .swiss-profile-card .swiss-card-main {
         flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
+        gap: var(--v2-space-lg);
     }
 
-    .view-header-actions {
+    .swiss-profile-card .swiss-card-identity {
+        align-self: flex-start;
+    }
+
+    /* Data grid goes to 2 columns */
+    .swiss-card-data-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .detail-row-group {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Mobile breakpoint - Full stack layout */
+@media (max-width: 600px) {
+    .swiss-header {
+        padding: var(--v2-space-md);
+    }
+
+    .view-header-actions,
+    .contacts-toolbar {
         width: 100%;
+        flex-direction: column;
     }
 
-    .swiss-btn {
+    .contacts-toolbar .v2-btn {
         width: 100%;
         justify-content: center;
     }
 
-    .detail-row-group {
+    .swiss-profile-card .swiss-card-main {
+        align-items: center;
+        text-align: center;
+    }
+
+    .swiss-profile-card .swiss-card-identity {
+        flex-direction: column;
+        align-self: center;
+    }
+
+    /* Data grid single column on mobile */
+    .swiss-card-data-grid {
         grid-template-columns: 1fr;
     }
 }

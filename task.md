@@ -61,5 +61,49 @@
     - [x] Convert `src/scripts/legal-topbar.js`
     - [x] Convert `src/scripts/static-theme.js`
     - [x] Convert `src/scripts/force-populate.js`
+    - [x] Convert `src/scripts/restore-verification.js`
+    - [x] Convert `src/scripts/translations.js`
+- [x] **Batch 6: Core Pillars**
+    - [x] Convert `src/scripts/globals-bootstrap.js`
+    - [x] Convert `src/scripts/overview.js` (Split into `modules/overview/`)
+- [x] **Batch 7: Core Accessors & UI Utils**
+    - [x] Convert `src/scripts/core/app-core-localization-accessors.js`
+    - [x] Convert `src/scripts/core/dynamic-form-helpers.js`
+    - [x] Verify Build
+- [x] **Batch 8: Auto Backup & Auto Gear UI**
+    - [x] Convert `src/scripts/core/app-core-auto-backup.js`
+    - [x] Convert `src/scripts/core/app-core-auto-gear-ui.js`
+    - [x] Create `tests/unit/modules/text.test.js`
+    - [x] Verify Build
+- [x] **Batch 9: Runtime Glue**
+    - [x] Convert `src/scripts/core/app-core-runtime-ui.js`
+    - [x] Convert `src/scripts/core/app-core-runtime-shared.js`
+    - [x] Convert `src/scripts/core/app-core-runtime-helpers.js`
+    - [x] Verify Build
+- [x] **Batch 10: App Events**
+    - [x] Create `src/scripts/modules/ui/dom-definitions.js`
+    - [x] Create `src/scripts/modules/events/manager.js`
+    - [x] Refactor `src/scripts/core/app-events.js`
+    - [x] Create Unit Tests for new modules
+    - [x] Verify Build
+- [x] **Batch 11: Pink Mode & Runtime Clean-up**
+    - [x] Create `src/scripts/modules/core/pink-mode.js`
+    - [x] Create `src/scripts/modules/helpers/deep-clone.js`
+    - [x] Refactor `src/scripts/core/app-core-pink-mode.js`
+    - [x] Refactor `src/scripts/core/app-core-runtime-global-tools.js`
+    - [x] Refactor `src/scripts/core/app-core-runtime-scopes.js`
+    - [x] Refactor `src/scripts/core/app-core-runtime-support.js`
+    - [x] Create Unit Tests for new modules (`pinkMode`, `deepClone`)
+    - [x] Verify Build
+- [x] **Batch 12: Runtime Bootstrap**
+    - [x] Create `src/scripts/modules/core/bootstrap.js`
+    - [x] Create `src/scripts/modules/core/bootstrap-environment.js`
+    - [x] Create `src/scripts/modules/core/bootstrap-results.js`
+    - [x] Refactor `src/scripts/core/modules/app-core/bootstrap.js` (Shim)
+    - [x] Refactor `src/scripts/core/app-core-bootstrap.js` (Shim)
+    - [x] Create Unit Tests for bootstrap modules
+    - [x] Verify Build
+
+
 
 
