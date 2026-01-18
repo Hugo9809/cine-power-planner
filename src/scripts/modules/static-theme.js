@@ -65,6 +65,23 @@ function applyAccent(color, root, body) {
     }
 }
 
+function resolveThemeVariant({ darkEnabled, pinkEnabled }) {
+    if (pinkEnabled) {
+        return darkEnabled ? 'pink-dark' : 'pink-light';
+    }
+    return darkEnabled ? 'dark' : 'light';
+}
+
+function applyThemeVariantAttributes(darkEnabled, pinkEnabled, root, body) {
+    const theme = resolveThemeVariant({ darkEnabled, pinkEnabled });
+    if (root && typeof root.setAttribute === 'function') {
+        root.setAttribute('data-theme', theme);
+    }
+    if (body && typeof body.setAttribute === 'function') {
+        body.setAttribute('data-theme', theme);
+    }
+}
+
 export function applyStaticTheme(scope = window) {
     if (typeof document === 'undefined') return;
 
@@ -132,6 +149,7 @@ export function applyStaticTheme(scope = window) {
         body.classList.toggle('light-mode', !darkModeEnabled);
     }
     updateThemeColor(darkModeEnabled, document);
+    applyThemeVariantAttributes(darkModeEnabled, pinkModeEnabled, root, body);
 
     // Accent Color
     const storedAccent = safeGet('accentColor', scope);

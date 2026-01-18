@@ -9,13 +9,35 @@
   /* =====================
    * BRAND COLORS
    * ===================== */
-  --v2-brand-blue: #001589;
-  --v2-brand-blue-hover: #00106a;
-  --v2-brand-blue-active: #000a4b;
-  --v2-brand-blue-dark: #000835;
-  --v2-brand-pink: #ff69b4;
-  --v2-brand-pink-hover: #f255a8;
-  --v2-brand-pink-active: #d1308a;
+  --v2-brand-primary-base: #001589;
+  --v2-brand-primary-base-hover: #00106a;
+  --v2-brand-primary-base-active: #000a4b;
+  --v2-brand-primary-base-dark: #000835;
+  --v2-brand-primary-base-foreground: #ffffff;
+
+  --v2-brand-secondary-base: #ff69b4;
+  --v2-brand-secondary-base-hover: #f255a8;
+  --v2-brand-secondary-base-active: #d1308a;
+  --v2-brand-secondary-base-foreground: #18181b;
+
+  --v2-brand-primary: var(--v2-brand-primary-base);
+  --v2-brand-primary-hover: var(--v2-brand-primary-base-hover);
+  --v2-brand-primary-active: var(--v2-brand-primary-base-active);
+  --v2-brand-primary-dark: var(--v2-brand-primary-base-dark);
+  --v2-brand-primary-foreground: var(--v2-brand-primary-base-foreground);
+
+  --v2-brand-secondary: var(--v2-brand-secondary-base);
+  --v2-brand-secondary-hover: var(--v2-brand-secondary-base-hover);
+  --v2-brand-secondary-active: var(--v2-brand-secondary-base-active);
+  --v2-brand-secondary-foreground: var(--v2-brand-secondary-base-foreground);
+
+  --v2-brand-blue: var(--v2-brand-primary);
+  --v2-brand-blue-hover: var(--v2-brand-primary-hover);
+  --v2-brand-blue-active: var(--v2-brand-primary-active);
+  --v2-brand-blue-dark: var(--v2-brand-primary-dark);
+  --v2-brand-pink: var(--v2-brand-secondary);
+  --v2-brand-pink-hover: var(--v2-brand-secondary-hover);
+  --v2-brand-pink-active: var(--v2-brand-secondary-active);
 
   /* =====================
    * COLOR PALETTE (Project Tiles)
@@ -193,4 +215,18 @@
    * GLOBAL ACCENT
    * ===================== */
   --v2-accent-color: var(--v2-brand-blue);
+}
+
+html[data-theme='light'],
+body[data-theme='light'],
+html[data-theme='pink-light'],
+body[data-theme='pink-light'] {
+  color-scheme: light;
+}
+
+html[data-theme='dark'],
+body[data-theme='dark'],
+html[data-theme='pink-dark'],
+body[data-theme='pink-dark'] {
+  color-scheme: dark;
 }
