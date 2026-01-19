@@ -1,26 +1,35 @@
-// import { describe, it, expect, vi } from 'vitest';
+/**
+ * @jest-environment jsdom
+ */
 
-import { getSessionCloneScope, resolveSessionRuntimeFunction, CORE_GLOBAL_SCOPE } from '../../../../src/scripts/modules/core/session-runtime.js';
+import {
+    getSessionCloneScope,
+    resolveSessionRuntimeFunction,
+    CORE_GLOBAL_SCOPE
+} from '../../../../src/scripts/modules/core/session-runtime.js';
 
 describe('Session Runtime Module', () => {
-    it('getSessionCloneScope returns CORE_GLOBAL_SCOPE or detectGlobalScope result', () => {
+    it('detects global scope correctly', () => {
         const scope = getSessionCloneScope();
-        expect(scope).toBeTruthy();
-        expect(typeof scope).toBe('object');
-        // In test environment, it should probably be globalThis or CORE_GLOBAL_SCOPE if shimmed
-        expect(scope === globalThis || scope === window).toBe(true);
+        expect(scope).toBeDefined();
+        // In JSDOM, window is global scope
+        if (typeof window !== 'undefined') {
+            expect(scope).toBe(window);
+        }
     });
 
-    it('resolveSessionRuntimeFunction finds global function', () => {
-        globalThis.testRuntimeFn = () => 'found';
-        const fn = resolveSessionRuntimeFunction('testRuntimeFn');
-        expect(fn).toBeDefined();
-        expect(fn()).toBe('found');
-        delete globalThis.testRuntimeFn;
+    it('resolves runtime functions from scope', () => {
+        const testFn = () => 'test';
+        CORE_GLOBAL_SCOPE.testRuntimeFn = testFn;
+
+        const resolved = resolveSessionRuntimeFunction('testRuntimeFn');
+        expect(resolved).toBe(testFn);
+
+        delete CORE_GLOBAL_SCOPE.testRuntimeFn;
     });
 
-    it('resolveSessionRuntimeFunction returns null for missing function', () => {
-        const fn = resolveSessionRuntimeFunction('nonExistentFn_xyz');
-        expect(fn).toBeNull();
+    it('returns null for missing functions', () => {
+        const resolved = resolveSessionRuntimeFunction('nonExistentFunction');
+        expect(resolved).toBeNull();
     });
 });

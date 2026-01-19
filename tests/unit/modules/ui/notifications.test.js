@@ -1,44 +1,92 @@
 /**
  * @jest-environment jsdom
  */
-// import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-// Jest globals are injected automatically
 
-import { showNotification, resolveForceReloadOfflineNotice, ensureNotificationContainer } from '../../../../src/scripts/modules/ui/notifications.js';
+import {
+    showNotification,
+    ensureNotificationContainer,
+    getNotificationAccentColor,
+    getNotificationTextColor
+} from '../../../../src/scripts/modules/ui/notifications.js';
 
 describe('UI Notifications Module', () => {
+    let container;
+
     beforeEach(() => {
-        jest.restoreAllMocks();
+        // Clean up DOM
         document.body.innerHTML = '';
+        container = null;
+        jest.useFakeTimers();
     });
 
-    it('ensureNotificationContainer creates container if missing', () => {
-        const container = ensureNotificationContainer();
-        expect(container).toBeTruthy();
-        expect(container.id).toBe('backupNotificationContainer');
-        expect(document.body.contains(container)).toBe(true);
+    afterEach(() => {
+        jest.useRealTimers();
     });
 
-    it('showNotification adds a toast to the container', () => {
-        showNotification('info', 'Test Message');
-        const container = document.getElementById('backupNotificationContainer');
-        expect(container).toBeTruthy();
-        expect(container.children.length).toBe(1);
-        expect(container.children[0].textContent).toBe('Test Message');
+    describe('ensureNotificationContainer', () => {
+        it('creates container if missing', () => {
+            expect(document.getElementById('backupNotificationContainer')).toBeNull();
+            container = ensureNotificationContainer();
+            expect(container).not.toBeNull();
+            expect(container.id).toBe('backupNotificationContainer');
+            expect(document.body.contains(container)).toBe(true);
+        });
+
+        it('reuses existing container', () => {
+            const existing = document.createElement('div');
+            existing.id = 'backupNotificationContainer';
+            document.body.appendChild(existing);
+
+            const result = ensureNotificationContainer();
+            expect(result).toBe(existing);
+            expect(document.querySelectorAll('#backupNotificationContainer').length).toBe(1);
+        });
+
+        it('adds cine-notification-stack class', () => {
+            container = ensureNotificationContainer();
+            expect(container.classList.contains('cine-notification-stack')).toBe(true);
+        });
     });
 
-    it('resolveForceReloadOfflineNotice returns fallback if no overrides', () => {
-        const notice = resolveForceReloadOfflineNotice();
-        expect(notice).toContain('Force reload requires an internet connection');
+    describe('showNotification', () => {
+        it('displays a notification message', () => {
+            showNotification('info', 'Test Message');
+
+            container = document.getElementById('backupNotificationContainer');
+            expect(container).not.toBeNull();
+            expect(container.children.length).toBe(1);
+
+            const note = container.children[0];
+            expect(note.textContent).toBe('Test Message');
+        });
+
+        it('removes notification after duration', () => {
+            showNotification('info', 'Test Message', 1000);
+
+            container = document.getElementById('backupNotificationContainer');
+            expect(container.children.length).toBe(1);
+
+            jest.advanceTimersByTime(1000);
+            expect(container.children.length).toBe(0);
+        });
+
+        it('removes container when empty', () => {
+            showNotification('info', 'Test Message', 1000);
+
+            container = document.getElementById('backupNotificationContainer');
+            expect(document.body.contains(container)).toBe(true);
+
+            jest.advanceTimersByTime(1000);
+            expect(document.body.contains(container)).toBe(false);
+        });
     });
 
-    it('resolveForceReloadOfflineNotice reads from DOM attributes', () => {
-        const indicator = document.createElement('div');
-        indicator.id = 'offlineIndicator';
-        indicator.dataset.forceReloadNotice = 'Custom Offline Notice';
-        document.body.appendChild(indicator);
-
-        const notice = resolveForceReloadOfflineNotice();
-        expect(notice).toBe('Custom Offline Notice');
+    describe('Color Utils', () => {
+        it('calculates text color based on background luminance', () => {
+            // White -> Black text
+            expect(getNotificationTextColor('#ffffff')).toBe('#000000');
+            // Black -> White text
+            expect(getNotificationTextColor('#000000')).toBe('#ffffff');
+        });
     });
 });

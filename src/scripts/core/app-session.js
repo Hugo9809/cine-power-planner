@@ -64,7 +64,8 @@ import {
   resolveSessionRuntimeFunction as importedResolveSessionRuntimeFunction
 } from '../modules/core/session-runtime.js';
 
-import { webLockManager } from '../modules/core/web-lock-manager.js';
+import { projectLockService } from '../modules/storage/ProjectLockService.js';
+import { createAppearanceManager, initialize as initializeAppearance } from '../modules/settings-and-appearance.js';
 
 // Fallack for non-ESM globals
 const adjustGearListSelectWidths = (typeof window !== 'undefined' ? window.adjustGearListSelectWidths : null) || (() => { });
@@ -560,10 +561,41 @@ try {
 
 // --- PROJECT LOCK MANAGER ---
 // Implements exclusive access to projects using Web Locks API
-// Extracted to web-lock-manager.js
+// compatibility adapter for ProjectLockService matching legacy webLockManager API
+const projectLockAdapter = {
+  requestLock: async (projectName) => {
+    // Legacy behavior: Release any existing locks first (singleton behavior)
+    if (projectLockService.localLocks && projectLockService.localLocks.size > 0) {
+      const pids = Array.from(projectLockService.localLocks.keys());
+      await Promise.all(pids.map(p => projectLockService.releaseLock(p)));
+    }
+
+    // Attempt acquire
+    if (!projectName) return true; // match web-lock-manager safe guard
+
+    const result = await projectLockService.acquireLock(projectName);
+    return result.success;
+  },
+  releaseLock: async (projectName) => {
+    // Legacy behavior: if no project name, release all (assumes returning to dashboard)
+    if (!projectName) {
+      if (projectLockService.localLocks) {
+        const pids = Array.from(projectLockService.localLocks.keys());
+        await Promise.all(pids.map(p => projectLockService.releaseLock(p)));
+      }
+    } else {
+      await projectLockService.releaseLock(projectName);
+    }
+  },
+  isLocked: (projectName) => {
+    const info = projectLockService.getLockInfo(projectName);
+    return info.status === 'locked_by_self';
+  }
+};
+
 (function (scope) {
   if (scope.cineProjectLockManager) return;
-  scope.cineProjectLockManager = webLockManager;
+  scope.cineProjectLockManager = projectLockAdapter;
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : {}));
 
 function safeGetCurrentProjectName(defaultValue = '') {
@@ -7816,11 +7848,64 @@ function attemptAppearanceModuleInitialization(moduleCandidate) {
   return initialized;
 }
 
-const resolvedAppearanceModuleFactory = appearanceModuleValidator(appearanceModuleFactoryPlaceholder)
-  ? appearanceModuleFactoryPlaceholder
-  : resolveModuleApi('cineSettingsAppearance', appearanceModuleValidator);
+// ESM Direct Initialization (replaces legacy dynamic module loading)
+let appearanceModuleReady = false;
+try {
+  const appearanceManager = initializeAppearance(appearanceContext);
+  if (appearanceManager && typeof appearanceManager === 'object') {
+    appearanceModule = appearanceManager;
+    appearanceModuleInitialized = true;
+    appearanceModuleReady = true;
 
-const appearanceModuleReady = attemptAppearanceModuleInitialization(resolvedAppearanceModuleFactory);
+    // Bind functions from the ESM manager
+    updateThemeColor = appearanceManager.updateThemeColor || updateThemeColor;
+    setToggleIcon = appearanceManager.setToggleIcon || setToggleIcon;
+    applyDarkMode = appearanceManager.applyDarkMode || applyDarkMode;
+    applyHighContrast = appearanceManager.applyHighContrast || applyHighContrast;
+    applyReduceMotion = appearanceManager.applyReduceMotion || applyReduceMotion;
+    applyRelaxedSpacing = appearanceManager.applyRelaxedSpacing || applyRelaxedSpacing;
+    applyPinkMode = appearanceManager.applyPinkMode || applyPinkMode;
+    persistPinkModePreference = appearanceManager.persistPinkModePreference || persistPinkModePreference;
+    applyShowAutoBackupsPreference = appearanceManager.applyShowAutoBackupsPreference || applyShowAutoBackupsPreference;
+    isPinkModeActive = appearanceManager.isPinkModeActive || isPinkModeActive;
+
+    // Build preference controllers
+    if (typeof appearanceManager.createThemePreferenceController === 'function') {
+      const controller = appearanceManager.createThemePreferenceController({
+        detectSystemPreference: detectSystemThemePreference,
+      });
+      if (controller) {
+        themePreferenceController = controller;
+        processPendingControls(themePreferenceController, pendingThemeControls);
+      }
+    }
+
+    if (typeof appearanceManager.createPinkModePreferenceController === 'function') {
+      const pinkController = appearanceManager.createPinkModePreferenceController({});
+      if (pinkController) {
+        pinkModePreferenceController = pinkController;
+        processPendingControls(pinkModePreferenceController, pendingPinkModeControls);
+      }
+    }
+
+    clearAppearanceModuleUnavailableWarning();
+  }
+} catch (initError) {
+  if (typeof console !== 'undefined' && console.warn) {
+    console.warn('cineSettingsAppearance ESM initialization failed, falling back to dynamic loading.', initError);
+  }
+}
+
+// Legacy fallback: only used if ESM init failed
+const resolvedAppearanceModuleFactory = !appearanceModuleReady
+  ? (appearanceModuleValidator(appearanceModuleFactoryPlaceholder)
+    ? appearanceModuleFactoryPlaceholder
+    : resolveModuleApi('cineSettingsAppearance', appearanceModuleValidator))
+  : null;
+
+if (!appearanceModuleReady && resolvedAppearanceModuleFactory) {
+  appearanceModuleReady = attemptAppearanceModuleInitialization(resolvedAppearanceModuleFactory);
+}
 
 if (!appearanceModuleReady) {
   scheduleAppearanceModuleUnavailableWarning();
