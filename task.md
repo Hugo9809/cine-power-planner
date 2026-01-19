@@ -115,10 +115,10 @@
 
 - [ ] **Batch 14: Setups & Project Management Modularization**
     - [x] Plan Batch 14
-    - [ ] Create `project-manager.js` (Project Derivation)
-    - [ ] Create `setups-ui.js` (UI Helpers)
-    - [ ] Create `connector-summary.js` (Summary Logic)
-    - [ ] Refactor `app-setups.js` (Shim)
-    - [ ] Automated Verification (Tests)
+    - [x] Create `project-manager.js` (Project Derivation)
+    - [x] Create `setups-ui.js` (UI Helpers)
+    - [x] Create `connector-summary.js` (Summary Logic)
+    - [x] Refactor `app-setups.js` (Shim)
+    - [x] Automated Verification (Tests)
     - [ ] Manual Verification (Browser)
 
