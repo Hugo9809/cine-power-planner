@@ -19,5 +19,18 @@ All 15 module test suites pass (98 tests total):
 - `notifications.test.js`: All tests ✓
 - `sessionRuntime.test.js`: All tests ✓
 
+## Phase 3: URL Handling Migration
+- Created `src/scripts/modules/core/url-handler.js`
+- Extracted `LZString` dependency and `cleanUrlParams` logic
+- Refactored `app-session.js` to use `UrlHandler`
+- Removed ~170 lines of legacy URL handling code (`getQueryParam`, `buildSearchWithoutShared`)
+
+## Test Results
+All 16 module test suites pass (103 tests total):
+- `urlHandler.test.js`: 5 tests ✓ (Correctly mocks JSDOM history API)
+- `settingsAndAppearance.test.js`: 5 tests ✓
+- `notifications.test.js`: All tests ✓
+- `sessionRuntime.test.js`: All tests ✓
+
 ## Migration Complete
-Phase 2 of the session migration is complete. The settings and appearance module now uses direct ESM imports.
+Phase 2 (Settings) and Phase 3 (URL Handling) are complete. `app-session.js` is significantly leaner and modular.

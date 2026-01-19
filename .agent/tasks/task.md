@@ -12,3 +12,13 @@
     - [x] Refactor `settings-and-appearance.js` to ESM <!-- id: 9 -->
     - [x] Update `app-session.js` to import settings module directly <!-- id: 10 -->
     - [x] Remove dynamic appearance binding from `app-session.js` <!-- id: 11 -->
+- [x] Session Migration - Phase 3 (URL Handling) <!-- id: 12 -->
+    - [x] Create `src/scripts/modules/core/url-handler.js` <!-- id: 13 -->
+    - [x] Extract `applySharedSetupFromUrl` and URL cleanup logic <!-- id: 14 -->
+    - [x] Refactor `app-session.js` to use `UrlHandler` <!-- id: 15 -->
+    - [x] Verify Shared Setup URL loading <!-- id: 16 -->
+- [ ] Session Migration - Phase 4 (Event Binding) <!-- id: 17 -->
+    - [ ] Analyze event listener dependencies <!-- id: 18 -->
+    - [ ] Create `src/scripts/modules/core/event-binder.js` <!-- id: 19 -->
+    - [ ] Extract event setup logic <!-- id: 20 -->
+    - [ ] Refactor `app-session.js` to use `EventBinder` <!-- id: 21 -->
