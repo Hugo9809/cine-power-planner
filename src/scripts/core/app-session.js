@@ -26,7 +26,7 @@ import { generatePrintableOverview } from '../overview.js';
 // For updateTripodOptions and saveCurrentGearList, I will import.
 
 import { generateGearListHtml } from '../modules/gear-list.js';
-import { ensureZoomRemoteSetup, saveCurrentGearList, downloadSharedProject } from './app-setups.js';
+import { ensureZoomRemoteSetup, saveCurrentGearList } from './app-setups.js';
 import {
   encodeSharedSetup,
   decodeSharedSetup,
@@ -68,6 +68,11 @@ import { projectLockService } from '../modules/storage/ProjectLockService.js';
 import { createAppearanceManager, initialize as initializeAppearance } from '../modules/settings-and-appearance.js';
 import { UrlHandler } from '../modules/core/url-handler.js';
 import { EventBinder } from '../modules/core/event-binder.js';
+
+import { ProjectStorageManager } from '../modules/core/project-storage-manager.js';
+import { ProjectTransferManager } from '../modules/core/project-transfer-manager.js';
+
+const downloadSharedProject = ProjectTransferManager.downloadSharedProject;
 
 // Fallack for non-ESM globals
 const adjustGearListSelectWidths = (typeof window !== 'undefined' ? window.adjustGearListSelectWidths : null) || (() => { });
@@ -620,103 +625,20 @@ function safeGetCurrentProjectName(defaultValue = '') {
   return defaultValue;
 }
 
-const PROJECT_STORAGE_REV_KEY_FALLBACK = 'cameraPowerPlanner_project_rev';
+const PROJECT_STORAGE_REV_KEY_FALLBACK = ProjectStorageManager.getRevisionKey();
 
 
 
-function normalizeProjectStorageRevisionValue(value) {
-  if (typeof value === 'number' && Number.isFinite(value)) {
-    return Math.max(0, Math.floor(value));
-  }
-  if (typeof value === 'string') {
-    const trimmed = value.trim();
-    if (!trimmed) {
-      return null;
-    }
-    const parsed = Number(trimmed);
-    if (Number.isFinite(parsed)) {
-      return Math.max(0, Math.floor(parsed));
-    }
-  }
-  return null;
-}
-
-/**
- * DEEP DIVE: Project Storage Revision Sync
- *
- * This section implements a "Cross-Tab Synchronization" mechanism.
- *
- * Problem:
- * If a user has the app open in two tabs (Tab A and Tab B), and saves a project in Tab A,
- * Tab B's local state is now stale. If the user then edits in Tab B, they might overwrite Tab A's work.
- *
- * Solution:
- * 1. We track a `project_rev` (Revision ID) in localStorage.
- * 2. Whenever a save occurs (in any tab), this Revision ID is incremented.
- * 3. We listen to the `storage` event (triggered by other tabs).
- * 4. If the Revision ID changes, we detect that our in-memory state is stale.
- * 5. We trigger `reloadActiveProjectFromStorage` to pull the latest disk state into the current tab.
- */
 function resolveProjectStorageRevisionKeyName() {
-  const resolver = resolveSessionRuntimeFunction('getProjectStorageRevisionKeyName');
-  if (typeof resolver === 'function') {
-    try {
-      const resolved = resolver();
-      if (typeof resolved === 'string' && resolved.trim()) {
-        return resolved.trim();
-      }
-    } catch (revisionKeyError) {
-      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('Unable to resolve project storage revision key name', revisionKeyError);
-      }
-    }
-  }
-  return PROJECT_STORAGE_REV_KEY_FALLBACK;
+  return ProjectStorageManager.getRevisionKey();
 }
 
 function readProjectStorageRevisionValue() {
-  const storage =
-    typeof getSafeLocalStorage === 'function'
-      ? getSafeLocalStorage()
-      : (typeof localStorage !== 'undefined' ? localStorage : null);
-  if (!storage || typeof storage.getItem !== 'function') {
-    return null;
-  }
-  try {
-    const raw = storage.getItem(resolveProjectStorageRevisionKeyName());
-    return normalizeProjectStorageRevisionValue(raw);
-  } catch (storageReadError) {
-    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-      console.warn('Failed to read project storage revision from localStorage', storageReadError);
-    }
-    return null;
-  }
+  return ProjectStorageManager.readRevision();
 }
 
 function resolveActiveProjectStorageKey() {
-  if (typeof getCurrentProjectStorageKey === 'function') {
-    try {
-      const storageKey = getCurrentProjectStorageKey({ allowTyped: true });
-      if (typeof storageKey === 'string' && storageKey.trim()) {
-        return storageKey;
-      }
-    } catch (keyError) {
-      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('Unable to resolve active project storage key', keyError);
-      }
-    }
-  }
-
-  const typedName = safeGetCurrentProjectName('');
-  if (typedName) {
-    return typedName;
-  }
-
-  if (setupSelect && typeof setupSelect.value === 'string' && setupSelect.value.trim()) {
-    return setupSelect.value.trim();
-  }
-
-  return '';
+  return ProjectStorageManager.resolveActiveProjectStorageKey(setupSelect);
 }
 
 /**
@@ -945,54 +867,13 @@ function reloadActiveProjectFromStorage(options = {}) {
 }
 
 function scheduleProjectStorageSync(options = {}) {
-  if (projectStorageSyncInProgress) {
-    return;
-  }
-  if (projectStorageSyncTimer) {
-    clearTimeout(projectStorageSyncTimer);
-  }
-  projectStorageSyncTimer = setTimeout(() => {
-    projectStorageSyncTimer = null;
-    projectStorageSyncInProgress = true;
-    try {
-      reloadActiveProjectFromStorage({ silent: options.silent });
-    } finally {
-      projectStorageSyncInProgress = false;
-    }
-  }, 120);
+  ProjectStorageManager.scheduleSync(reloadActiveProjectFromStorage, options);
 }
 
-if (typeof window !== 'undefined' && window && typeof window.addEventListener === 'function') {
-  try {
-    lastKnownProjectStorageRevision = readProjectStorageRevisionValue();
-  } catch (revisionBootstrapError) {
-    lastKnownProjectStorageRevision = null;
-    void revisionBootstrapError;
-  }
-
-  window.addEventListener('storage', (event) => {
-    if (!event || typeof event !== 'object') {
-      return;
-    }
-    const keyName = resolveProjectStorageRevisionKeyName();
-    if (event.key !== keyName) {
-      return;
-    }
-    const nextRevision = normalizeProjectStorageRevisionValue(event.newValue);
-
-    if (isProjectAutoSaving) {
-      if (nextRevision !== null) {
-        lastKnownProjectStorageRevision = nextRevision;
-      }
-      return;
-    }
-    if (nextRevision !== null && nextRevision === lastKnownProjectStorageRevision) {
-      return;
-    }
-    lastKnownProjectStorageRevision = nextRevision;
-    scheduleProjectStorageSync({ silent: true });
-  });
-}
+ProjectStorageManager.initAutoSync(
+  reloadActiveProjectFromStorage,
+  () => isProjectAutoSaving
+);
 
 function resolveSetLanguageFn() {
   return resolveSessionRuntimeFunction('setLanguage');

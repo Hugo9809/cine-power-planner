@@ -1,7 +1,7 @@
-import { ProjectStorageManager } from '../../../../../src/scripts/modules/core/project-storage-manager.js';
-import * as ProjectManager from '../../../../../src/scripts/modules/core/project-manager.js';
+import { ProjectStorageManager } from '../../../../src/scripts/modules/core/project-storage-manager.js';
+import * as ProjectManager from '../../../../src/scripts/modules/core/project-manager.js';
 
-jest.mock('../../../../../src/scripts/modules/core/project-manager.js', () => ({
+jest.mock('../../../../src/scripts/modules/core/project-manager.js', () => ({
     safeGetCurrentProjectName: jest.fn()
 }));
 

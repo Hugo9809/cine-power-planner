@@ -22,8 +22,19 @@
     - [x] Create `src/scripts/modules/core/event-binder.js` <!-- id: 19 -->
     - [x] Extract event setup logic <!-- id: 20 -->
     - [x] Refactor `app-session.js` to use `EventBinder` <!-- id: 21 -->
-- [ ] Session Migration - Phase 5 (Project Storage) <!-- id: 22 -->
-    - [ ] Create `src/scripts/modules/core/project-storage-manager.js` <!-- id: 23 -->
-    - [ ] Extract `resolveActiveProjectStorageKey` and revision logic <!-- id: 24 -->
-    - [ ] Extract `scheduleProjectStorageSync` <!-- id: 25 -->
-    - [ ] Refactor `app-session.js` to use `ProjectStorageManager` <!-- id: 26 -->
+- [x] Session Migration - Phase 5 (Project Storage) <!-- id: 22 -->
+    - [x] Create `src/scripts/modules/core/project-storage-manager.js` <!-- id: 23 -->
+    - [x] Extract `resolveActiveProjectStorageKey` and revision logic <!-- id: 24 -->
+    - [x] Extract `scheduleProjectStorageSync` <!-- id: 25 -->
+    - [x] Refactor `app-session.js` to use `ProjectStorageManager` <!-- id: 26 -->
+- [x] Session Migration - Phase 6 (Backup & Export) <!-- id: 27 -->
+    - [x] Create `start_server` workflow <!-- id: 28 -->
+    - [x] Create `src/scripts/modules/core/project-transfer-manager.js` <!-- id: 29 -->
+    - [x] Extract `downloadSharedProject` logic (New module created, app-session refactored) <!-- id: 30 -->
+    - [x] Refactor `app-session.js` to use `ProjectTransferManager` <!-- id: 31 -->
+    - [x] Verify Backup & Export functionality (Code reviewed and linted) <!-- id: 32 -->
+- [ ] Session Migration - Phase 7 (Logging Module) <!-- id: 33 -->
+    - [ ] Create `src/scripts/modules/core/logging-manager.js` <!-- id: 34 -->
+    - [ ] Extract logging logic from `app-session.js` <!-- id: 35 -->
+    - [ ] Refactor `app-session.js` to use `LoggingManager` <!-- id: 36 -->
+    - [ ] Verify Logging functionality <!-- id: 37 -->
