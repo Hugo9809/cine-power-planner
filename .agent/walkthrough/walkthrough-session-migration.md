@@ -32,5 +32,20 @@ All 16 module test suites pass (103 tests total):
 - `notifications.test.js`: All tests ✓
 - `sessionRuntime.test.js`: All tests ✓
 
+## Phase 4: Event Binding Migration
+- Created `src/scripts/modules/core/event-binder.js`
+- Centralized global event binding for inputs, selects, and lifecycle events
+- Refactored `app-session.js` to use `EventBinder`
+- Updated `app-session.js` to pass callbacks for saving/checking state
+- Removed ~100 lines of verbose manual event binding code
+
+## Test Results
+All 17 module test suites pass (106 tests total):
+- `eventBinder.test.js`: 3 tests ✓
+- `urlHandler.test.js`: 5 tests ✓
+- `settingsAndAppearance.test.js`: 5 tests ✓
+- `notifications.test.js`: All tests ✓
+- `sessionRuntime.test.js`: All tests ✓
+
 ## Migration Complete
-Phase 2 (Settings) and Phase 3 (URL Handling) are complete. `app-session.js` is significantly leaner and modular.
+Phase 2 (Settings), Phase 3 (URL Handling), and Phase 4 (Event Binding) are complete. `app-session.js` is significantly leaner and modular.

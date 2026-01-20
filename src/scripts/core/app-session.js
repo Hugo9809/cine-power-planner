@@ -67,6 +67,7 @@ import {
 import { projectLockService } from '../modules/storage/ProjectLockService.js';
 import { createAppearanceManager, initialize as initializeAppearance } from '../modules/settings-and-appearance.js';
 import { UrlHandler } from '../modules/core/url-handler.js';
+import { EventBinder } from '../modules/core/event-binder.js';
 
 // Fallack for non-ESM globals
 const adjustGearListSelectWidths = (typeof window !== 'undefined' ? window.adjustGearListSelectWidths : null) || (() => { });
@@ -6827,46 +6828,50 @@ if (!bindPowerSessionEvents()) {
   document.addEventListener('DOMContentLoaded', bindPowerSessionEvents);
 }
 
-forEachTrackedSelect(getTrackedPowerSelectsWithSetup(), (sel) => {
-  sel.addEventListener('change', _safeSaveCurrentSession);
-});
-if (typeof motorSelects !== 'undefined') forEachTrackedSelect(motorSelects, (sel) => { if (sel) sel.addEventListener('change', _safeSaveCurrentSession); });
-if (typeof controllerSelects !== 'undefined') forEachTrackedSelect(controllerSelects, (sel) => { if (sel) sel.addEventListener('change', _safeSaveCurrentSession); });
-if (setupNameInput) {
-  let setupNameInputDebounceTimer = null;
-  const handleSetupNameInput = () => {
-    if (setupNameInputDebounceTimer) {
-      clearTimeout(setupNameInputDebounceTimer);
-    }
-    setupNameInputDebounceTimer = setTimeout(() => {
-      const typedName = setupNameInput.value ? setupNameInput.value.trim() : '';
-      const selectedName = setupSelect ? setupSelect.value : '';
-      const renameInProgress = Boolean(selectedName && typedName && typedName !== selectedName);
-      saveCurrentSession({ skipGearList: renameInProgress });
-    }, 500);
-  };
-  setupNameInput.addEventListener("input", handleSetupNameInput);
+// --- EVENT BINDING (MIGRATED TO EventBinder) ---
+
+const eventBinderContext = {
+  callbacks: {
+    onSaveSession: (options) => saveCurrentSession(options),
+
+    // Note: EventBinder might pass the event object as argument to these handlers, 
+    // but the `_safe*` wrappers ignore extra arguments or handle them gracefully.
+    onSaveGearList: _safeSaveCurrentGearList,
+    onCheckSetupChanged: _safeCheckSetupChanged,
+    onAutoSave: _safeAutoSaveCurrentSetup,
+
+    onExit: flushProjectAutoSaveOnExit
+  },
+  elements: {
+    setupNameInput: setupNameInput
+  }
+};
+
+EventBinder.bindGlobalEvents(eventBinderContext);
+
+// Common Select Listeners
+// We collect all tracked selects and bind generic change handlers via EventBinder helper
+const allTrackedSelects = [
+  ...getTrackedPowerSelects(),
+  ...(typeof motorSelects !== 'undefined' ? motorSelects : []),
+  ...(typeof controllerSelects !== 'undefined' ? controllerSelects : [])
+];
+
+// 1. Change -> Save Gear List
+EventBinder.bindChangeListeners(allTrackedSelects, _safeSaveCurrentGearList);
+
+// 2. Change -> Check Setup Changed
+EventBinder.bindChangeListeners(allTrackedSelects, _safeCheckSetupChanged);
+if (typeof setupNameInput !== 'undefined' && setupNameInput) {
+  setupNameInput.addEventListener('input', _safeCheckSetupChanged);
 }
 
-forEachTrackedSelect(getTrackedPowerSelects(), (sel) => {
-  sel.addEventListener('change', _safeSaveCurrentGearList);
-});
-if (typeof motorSelects !== 'undefined') forEachTrackedSelect(motorSelects, (sel) => { if (sel) sel.addEventListener('change', _safeSaveCurrentGearList); });
-if (typeof controllerSelects !== 'undefined') forEachTrackedSelect(controllerSelects, (sel) => { if (sel) sel.addEventListener('change', _safeSaveCurrentGearList); });
+// 3. Change -> Auto Save
+EventBinder.bindChangeListeners(allTrackedSelects, _safeAutoSaveCurrentSetup);
+if (typeof setupNameInput !== 'undefined' && setupNameInput) {
+  setupNameInput.addEventListener('change', _safeAutoSaveCurrentSetup);
+}
 
-forEachTrackedSelect(getTrackedPowerSelects(), (sel) => {
-  sel.addEventListener('change', _safeCheckSetupChanged);
-});
-if (typeof motorSelects !== 'undefined') forEachTrackedSelect(motorSelects, (sel) => { if (sel) sel.addEventListener('change', _safeCheckSetupChanged); });
-if (typeof controllerSelects !== 'undefined') forEachTrackedSelect(controllerSelects, (sel) => { if (sel) sel.addEventListener('change', _safeCheckSetupChanged); });
-if (typeof setupNameInput !== 'undefined' && setupNameInput) setupNameInput.addEventListener('input', _safeCheckSetupChanged);
-
-forEachTrackedSelect(getTrackedPowerSelects(), (sel) => {
-  sel.addEventListener('change', _safeAutoSaveCurrentSetup);
-});
-if (typeof motorSelects !== 'undefined') forEachTrackedSelect(motorSelects, (sel) => { if (sel) sel.addEventListener('change', _safeAutoSaveCurrentSetup); });
-if (typeof controllerSelects !== 'undefined') forEachTrackedSelect(controllerSelects, (sel) => { if (sel) sel.addEventListener('change', _safeAutoSaveCurrentSetup); });
-if (typeof setupNameInput !== 'undefined' && setupNameInput) setupNameInput.addEventListener('change', _safeAutoSaveCurrentSetup);
 
 function flushProjectAutoSaveOnExit(eventOrOptions) {
   if (factoryResetInProgress) return;
@@ -6927,18 +6932,6 @@ function flushProjectAutoSaveOnExit(eventOrOptions) {
     }
   }
   scheduleProjectAutoSave(true);
-}
-if (typeof document !== 'undefined') {
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') {
-      flushProjectAutoSaveOnExit({ reason: 'before-visibility-hidden' });
-    }
-  });
-}
-if (typeof window !== 'undefined') {
-  ['pagehide', 'beforeunload', 'freeze'].forEach((eventName) => {
-    window.addEventListener(eventName, flushProjectAutoSaveOnExit);
-  });
 }
 
 // Enable Save button only when a setup name is entered. Enter saves only after

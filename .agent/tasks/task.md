@@ -17,8 +17,13 @@
     - [x] Extract `applySharedSetupFromUrl` and URL cleanup logic <!-- id: 14 -->
     - [x] Refactor `app-session.js` to use `UrlHandler` <!-- id: 15 -->
     - [x] Verify Shared Setup URL loading <!-- id: 16 -->
-- [ ] Session Migration - Phase 4 (Event Binding) <!-- id: 17 -->
-    - [ ] Analyze event listener dependencies <!-- id: 18 -->
-    - [ ] Create `src/scripts/modules/core/event-binder.js` <!-- id: 19 -->
-    - [ ] Extract event setup logic <!-- id: 20 -->
-    - [ ] Refactor `app-session.js` to use `EventBinder` <!-- id: 21 -->
+- [x] Session Migration - Phase 4 (Event Binding) <!-- id: 17 -->
+    - [x] Analyze event listener dependencies <!-- id: 18 -->
+    - [x] Create `src/scripts/modules/core/event-binder.js` <!-- id: 19 -->
+    - [x] Extract event setup logic <!-- id: 20 -->
+    - [x] Refactor `app-session.js` to use `EventBinder` <!-- id: 21 -->
+- [ ] Session Migration - Phase 5 (Project Storage) <!-- id: 22 -->
+    - [ ] Create `src/scripts/modules/core/project-storage-manager.js` <!-- id: 23 -->
+    - [ ] Extract `resolveActiveProjectStorageKey` and revision logic <!-- id: 24 -->
+    - [ ] Extract `scheduleProjectStorageSync` <!-- id: 25 -->
+    - [ ] Refactor `app-session.js` to use `ProjectStorageManager` <!-- id: 26 -->
