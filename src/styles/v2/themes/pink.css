@@ -23,8 +23,8 @@ body[data-theme='pink-dark'] {
     --v2-brand-secondary-foreground: var(--v2-brand-primary-base-foreground);
 
     /* Global Accent Mapping */
-    --v2-accent-color: var(--v2-brand-blue);
-    --v2-header-color: var(--v2-brand-blue);
+    --v2-accent-color: var(--v2-brand-primary);
+    --v2-header-color: var(--v2-brand-primary);
 
     /* =====================
    * TEXT COLORS

@@ -33,8 +33,12 @@
     - [x] Extract `downloadSharedProject` logic (New module created, app-session refactored) <!-- id: 30 -->
     - [x] Refactor `app-session.js` to use `ProjectTransferManager` <!-- id: 31 -->
     - [x] Verify Backup & Export functionality (Code reviewed and linted) <!-- id: 32 -->
-- [ ] Session Migration - Phase 7 (Logging Module) <!-- id: 33 -->
-    - [ ] Create `src/scripts/modules/core/logging-manager.js` <!-- id: 34 -->
-    - [ ] Extract logging logic from `app-session.js` <!-- id: 35 -->
-    - [ ] Refactor `app-session.js` to use `LoggingManager` <!-- id: 36 -->
-    - [ ] Verify Logging functionality <!-- id: 37 -->
+- [x] Session Migration - Phase 7 (Logging Module) <!-- id: 33 -->
+    - [x] Create `src/scripts/modules/core/logging-manager.js` <!-- id: 34 -->
+    - [x] Extract logging logic from `app-session.js` <!-- id: 35 -->
+    - [x] Refactor `app-session.js` to use `LoggingManager` <!-- id: 36 -->
+- [ ] Session Migration - Phase 8 (Restore Compatibility) <!-- id: 38 -->
+    - [ ] Create `src/scripts/modules/core/restore-compatibility-manager.js` <!-- id: 39 -->
+    - [ ] Extract `verifyRestoredBackupIntegrity` and helper logic <!-- id: 40 -->
+    - [ ] Refactor `app-session.js` to use `RestoreCompatibilityManager` <!-- id: 41 -->
+    - [ ] Verify functionality <!-- id: 42 -->

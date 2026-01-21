@@ -39,12 +39,7 @@ function resolveGlobal(name) {
     return null;
 }
 
-function getLocalizedText(key, fallback) {
-    const texts = resolveGlobal('texts') || {};
-    const currentLang = resolveGlobal('currentLang') || 'en';
-    const langTexts = (texts[currentLang] || texts.en || {});
-    return langTexts[key] || fallback;
-}
+
 
 function getLoggingLangInfo() {
     const texts = resolveGlobal('texts') || {};
@@ -694,5 +689,9 @@ export const LoggingManager = {
                 sessionLoggingExportButton.setAttribute('aria-disabled', 'false');
             }
         }
+    },
+
+    log(level, message, details, meta) {
+        logSettingsEvent(level, message, details, meta);
     }
 };

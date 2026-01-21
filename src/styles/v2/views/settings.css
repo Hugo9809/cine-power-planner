@@ -371,7 +371,7 @@ body.dark-mode .v2-settings-card:hover {
    11. Pink Mode Overrides
    ========================================= */
 body.pink-mode .v2-tab-btn.active {
-    background-color: #DB2777;
+    background-color: var(--v2-accent-color);
     /* Pill back */
     color: #fff;
     border-color: transparent;
@@ -379,15 +379,15 @@ body.pink-mode .v2-tab-btn.active {
 }
 
 body.pink-mode input:checked+.v2-toggle-slider {
-    background-color: #DB2777;
+    background-color: var(--v2-accent-color);
 }
 
 body.pink-mode .v2-select:focus,
 body.pink-mode .v2-input:focus {
-    border-color: #DB2777;
-    box-shadow: 0 0 0 3px rgba(219, 39, 119, 0.15);
+    border-color: var(--v2-accent-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--v2-accent-color) 15%, transparent);
 }
 
 body.pink-mode .v2-voltage-card:hover {
-    border-color: #DB2777;
+    border-color: var(--v2-accent-color);
 }
