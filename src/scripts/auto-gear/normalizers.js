@@ -289,23 +289,23 @@ function parseAutoGearDraftNames(value) {
     var parts = hasDelimiters ? raw.split(/[;\n\r]+/) : [raw];
     return parts
         .map(function (part) {
-        var segment = part.trim();
-        if (!segment)
-            return null;
-        var signMatch = segment.match(/^([+-])\s*(.+)$/);
-        var listType = signMatch ? (signMatch[1] === '-' ? 'remove' : 'add') : null;
-        var content = signMatch ? signMatch[2].trim() : segment;
-        if (!content)
-            return null;
-        var quantityMatch = content.match(/^(\d+)\s*[x×]\s*(.+)$/i);
-        if (quantityMatch) {
-            var name_1 = quantityMatch[2].trim();
-            if (!name_1)
+            var segment = part.trim();
+            if (!segment)
                 return null;
-            return { name: name_1, quantity: normalizeAutoGearQuantity(quantityMatch[1]), listType: listType };
-        }
-        return { name: content, listType: listType };
-    })
+            var signMatch = segment.match(/^([+-])\s*(.+)$/);
+            var listType = signMatch ? (signMatch[1] === '-' ? 'remove' : 'add') : null;
+            var content = signMatch ? signMatch[2].trim() : segment;
+            if (!content)
+                return null;
+            var quantityMatch = content.match(/^(\d+)\s*[x×]\s*(.+)$/i);
+            if (quantityMatch) {
+                var name_1 = quantityMatch[2].trim();
+                if (!name_1)
+                    return null;
+                return { name: name_1, quantity: normalizeAutoGearQuantity(quantityMatch[1]), listType: listType };
+            }
+            return { name: content, listType: listType };
+        })
         .filter(Boolean);
 }
 /**
@@ -1573,9 +1573,11 @@ function snapshotAutoGearRuleForFingerprint(rule) {
     var normalized = normalizeAutoGearRule(rule);
     if (!normalized)
         return null;
-    var mapItems = function (items) { return items
-        .map(autoGearItemSnapshot)
-        .sort(function (a, b) { return autoGearItemSortKey(a).localeCompare(autoGearItemSortKey(b)); }); };
+    var mapItems = function (items) {
+        return items
+            .map(autoGearItemSnapshot)
+            .sort(function (a, b) { return autoGearItemSortKey(a).localeCompare(autoGearItemSortKey(b)); });
+    };
     return {
         label: normalized.label || '',
         always: normalized.always ? 1 : 0,
@@ -1765,7 +1767,64 @@ var AUTO_GEAR_NORMALIZER_EXPORTS = {
     normalizeAutoGearBackupEntry: normalizeAutoGearBackupEntry,
     normalizeAutoGearMonitorDefaults: normalizeAutoGearMonitorDefaults,
     AUTO_GEAR_MONITOR_DEFAULT_TYPES: AUTO_GEAR_MONITOR_DEFAULT_TYPES,
+    AUTO_GEAR_CONDITION_LOGIC_FIELDS: AUTO_GEAR_CONDITION_LOGIC_FIELDS,
 };
+
+export { AUTO_GEAR_CONDITION_LOGIC_FIELDS };
+export var generateAutoGearId = AUTO_GEAR_NORMALIZER_EXPORTS.generateAutoGearId;
+export var normalizeAutoGearQuantity = AUTO_GEAR_NORMALIZER_EXPORTS.normalizeAutoGearQuantity;
+export var parseAutoGearDraftNames = AUTO_GEAR_NORMALIZER_EXPORTS.parseAutoGearDraftNames;
+export var normalizeAutoGearText = AUTO_GEAR_NORMALIZER_EXPORTS.normalizeAutoGearText;
+export var normalizeAutoGearSelectorType = AUTO_GEAR_NORMALIZER_EXPORTS.normalizeAutoGearSelectorType;
+export var normalizeAutoGearSelectorDefault = AUTO_GEAR_NORMALIZER_EXPORTS.normalizeAutoGearSelectorDefault;
+export var resolveDevicesSnapshot = AUTO_GEAR_NORMALIZER_EXPORTS.resolveDevicesSnapshot;
+export var updateGlobalDevicesReference = AUTO_GEAR_NORMALIZER_EXPORTS.updateGlobalDevicesReference;
+export var resolveTripodPreferenceSelect = AUTO_GEAR_NORMALIZER_EXPORTS.resolveTripodPreferenceSelect;
+export var collectTripodPreferenceOptions = AUTO_GEAR_NORMALIZER_EXPORTS.collectTripodPreferenceOptions;
+export var getAutoGearSelectorOptions = AUTO_GEAR_NORMALIZER_EXPORTS.getAutoGearSelectorOptions;
+export var getAutoGearSelectorLabel = AUTO_GEAR_NORMALIZER_EXPORTS.getAutoGearSelectorLabel;
+export var getAutoGearSelectorScrollHint = AUTO_GEAR_NORMALIZER_EXPORTS.getAutoGearSelectorScrollHint;
+export var getAutoGearSelectorDefaultPlaceholder = AUTO_GEAR_NORMALIZER_EXPORTS.getAutoGearSelectorDefaultPlaceholder;
+export var getAutoGearMonitorDefaultPlaceholder = AUTO_GEAR_NORMALIZER_EXPORTS.getAutoGearMonitorDefaultPlaceholder;
+export var formatAutoGearSelectorValue = AUTO_GEAR_NORMALIZER_EXPORTS.formatAutoGearSelectorValue;
+export var populateAutoGearCategorySelect = AUTO_GEAR_NORMALIZER_EXPORTS.populateAutoGearCategorySelect;
+export var formatAutoGearOwnGearLabel = AUTO_GEAR_NORMALIZER_EXPORTS.formatAutoGearOwnGearLabel;
+export var refreshAutoGearOwnGearConditionOptions = AUTO_GEAR_NORMALIZER_EXPORTS.refreshAutoGearOwnGearConditionOptions;
+export var updateAutoGearOwnGearOptions = AUTO_GEAR_NORMALIZER_EXPORTS.updateAutoGearOwnGearOptions;
+export var isAutoGearMonitoringCategory = AUTO_GEAR_NORMALIZER_EXPORTS.isAutoGearMonitoringCategory;
+export var isMonitoringCategorySelected = AUTO_GEAR_NORMALIZER_EXPORTS.isMonitoringCategorySelected;
+export var matchesTripodCategory = AUTO_GEAR_NORMALIZER_EXPORTS.matchesTripodCategory;
+export var isTripodCategorySelected = AUTO_GEAR_NORMALIZER_EXPORTS.isTripodCategorySelected;
+export var setAutoGearFieldVisibility = AUTO_GEAR_NORMALIZER_EXPORTS.setAutoGearFieldVisibility;
+export var updateAutoGearMonitorFieldGroup = AUTO_GEAR_NORMALIZER_EXPORTS.updateAutoGearMonitorFieldGroup;
+export var extractAutoGearContextNotes = AUTO_GEAR_NORMALIZER_EXPORTS.extractAutoGearContextNotes;
+export var normalizeAutoGearItem = AUTO_GEAR_NORMALIZER_EXPORTS.normalizeAutoGearItem;
+export var normalizeAutoGearTriggerList = AUTO_GEAR_NORMALIZER_EXPORTS.normalizeAutoGearTriggerList;
+export var normalizeAutoGearScenarioLogic = AUTO_GEAR_NORMALIZER_EXPORTS.normalizeAutoGearScenarioLogic;
+export var normalizeAutoGearConditionLogic = AUTO_GEAR_NORMALIZER_EXPORTS.normalizeAutoGearConditionLogic;
+export var readAutoGearConditionLogic = AUTO_GEAR_NORMALIZER_EXPORTS.readAutoGearConditionLogic;
+export var normalizeAutoGearScenarioMultiplier = AUTO_GEAR_NORMALIZER_EXPORTS.normalizeAutoGearScenarioMultiplier;
+export var normalizeAutoGearScenarioPrimary = AUTO_GEAR_NORMALIZER_EXPORTS.normalizeAutoGearScenarioPrimary;
+export var normalizeVideoDistributionTriggerList = AUTO_GEAR_NORMALIZER_EXPORTS.normalizeVideoDistributionTriggerList;
+export var normalizeAutoGearTriggerValue = AUTO_GEAR_NORMALIZER_EXPORTS.normalizeAutoGearTriggerValue;
+export var normalizeAutoGearShootingDayMode = AUTO_GEAR_NORMALIZER_EXPORTS.normalizeAutoGearShootingDayMode;
+export var normalizeAutoGearShootingDayValue = AUTO_GEAR_NORMALIZER_EXPORTS.normalizeAutoGearShootingDayValue;
+export var normalizeAutoGearShootingDaysList = AUTO_GEAR_NORMALIZER_EXPORTS.normalizeAutoGearShootingDaysList;
+export var normalizeAutoGearShootingDaysCondition = AUTO_GEAR_NORMALIZER_EXPORTS.normalizeAutoGearShootingDaysCondition;
+export var normalizeAutoGearRule = AUTO_GEAR_NORMALIZER_EXPORTS.normalizeAutoGearRule;
+export var autoGearItemSnapshot = AUTO_GEAR_NORMALIZER_EXPORTS.autoGearItemSnapshot;
+export var autoGearItemSortKey = AUTO_GEAR_NORMALIZER_EXPORTS.autoGearItemSortKey;
+export var autoGearRuleMatteboxKey = AUTO_GEAR_NORMALIZER_EXPORTS.autoGearRuleMatteboxKey;
+export var snapshotAutoGearRuleForFingerprint = AUTO_GEAR_NORMALIZER_EXPORTS.snapshotAutoGearRuleForFingerprint;
+export var autoGearRuleSortKey = AUTO_GEAR_NORMALIZER_EXPORTS.autoGearRuleSortKey;
+export var createAutoGearRulesFingerprint = AUTO_GEAR_NORMALIZER_EXPORTS.createAutoGearRulesFingerprint;
+export var normalizeAutoGearPreset = AUTO_GEAR_NORMALIZER_EXPORTS.normalizeAutoGearPreset;
+export var normalizeAutoGearBackupEntry = AUTO_GEAR_NORMALIZER_EXPORTS.normalizeAutoGearBackupEntry;
+export var normalizeAutoGearMonitorDefaults = AUTO_GEAR_NORMALIZER_EXPORTS.normalizeAutoGearMonitorDefaults;
+export var AUTO_GEAR_MONITOR_DEFAULT_TYPES_ESM = AUTO_GEAR_NORMALIZER_EXPORTS.AUTO_GEAR_MONITOR_DEFAULT_TYPES;
+export { AUTO_GEAR_MONITOR_DEFAULT_TYPES_ESM as AUTO_GEAR_MONITOR_DEFAULT_TYPES };
+
+
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = AUTO_GEAR_NORMALIZER_EXPORTS;
 }
