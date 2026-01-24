@@ -120,5 +120,15 @@
     - [x] Create `connector-summary.js` (Summary Logic)
     - [x] Refactor `app-setups.js` (Shim)
     - [x] Automated Verification (Tests)
+    - [x] Manual Verification (Browser)
+
+- [ ] **Batch 15: Session & Project Lifecycle Modularization**
+    - [x] Plan Batch 15
+    - [ ] Create `session-state.js`
+    - [ ] Create `project-loader.js`
+    - [ ] Create `legacy-interop.js`
+    - [ ] Refactor `app-session.js`
+    - [ ] Automated Verification (Tests)
     - [ ] Manual Verification (Browser)
+
 

@@ -37,8 +37,8 @@
     - [x] Create `src/scripts/modules/core/logging-manager.js` <!-- id: 34 -->
     - [x] Extract logging logic from `app-session.js` <!-- id: 35 -->
     - [x] Refactor `app-session.js` to use `LoggingManager` <!-- id: 36 -->
-- [ ] Session Migration - Phase 8 (Restore Compatibility) <!-- id: 38 -->
-    - [ ] Create `src/scripts/modules/core/restore-compatibility-manager.js` <!-- id: 39 -->
-    - [ ] Extract `verifyRestoredBackupIntegrity` and helper logic <!-- id: 40 -->
-    - [ ] Refactor `app-session.js` to use `RestoreCompatibilityManager` <!-- id: 41 -->
-    - [ ] Verify functionality <!-- id: 42 -->
+- [x] Session Migration - Phase 8 (Restore Compatibility) <!-- id: 38 -->
+    - [x] Create `src/scripts/modules/core/restore-compatibility-manager.js` <!-- id: 39 -->
+    - [x] Extract `verifyRestoredBackupIntegrity` and helper logic <!-- id: 40 -->
+    - [x] Refactor `app-session.js` to use `RestoreCompatibilityManager` <!-- id: 41 -->
+    - [x] Verify functionality <!-- id: 42 -->

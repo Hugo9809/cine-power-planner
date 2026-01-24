@@ -74,6 +74,10 @@ import { ProjectTransferManager } from '../modules/core/project-transfer-manager
 import { LoggingManager } from '../modules/core/logging-manager.js';
 import { RestoreCompatibilityManager } from '../modules/core/restore-compatibility-manager.js';
 
+import { SessionState } from '../modules/core/session-state.js';
+import { reloadActiveProjectFromStorage as reloadActiveProject } from '../modules/core/project-loader.js';
+import * as LegacyInterop from '../modules/core/legacy-interop.js';
+
 const downloadSharedProject = ProjectTransferManager.downloadSharedProject;
 
 // Fallack for non-ESM globals
@@ -134,12 +138,8 @@ const CORE_GLOBAL_SCOPE = (typeof window !== 'undefined' && window.CORE_GLOBAL_S
 
 // Shared State Variables (Module Scope)
 
-let isProjectAutoSaving = false;
-let projectStorageSyncTimer = null;
-let projectStorageSyncInProgress = false;
-let lastKnownProjectStorageRevision = null;
-let missingMountVoltageWarnings = null;
-let currentLockController = null;
+// Shared State Variables (Module Scope)
+// Moved to SessionState.js
 
 // Restoring missing global declarations to prevent ReferenceErrors
 let currentProjectInfo = null;
@@ -179,264 +179,58 @@ const refreshTotalCurrentLabels = (typeof window !== 'undefined' && typeof windo
 const updateSetupUI = (typeof window !== 'undefined' && typeof window.updateSetupUI === 'function') ? window.updateSetupUI : (() => { });
 
 // Safe wrapper functions for event handlers that may not be defined yet
-const _safeUpdateCalculations = function (...args) {
-  const fn = typeof updateCalculations === 'function' ? updateCalculations :
-    typeof globalThis !== 'undefined' && typeof globalThis.updateCalculations === 'function' ? globalThis.updateCalculations :
-      typeof window !== 'undefined' && typeof window.updateCalculations === 'function' ? window.updateCalculations : null;
-  if (fn) return fn(...args);
-};
-const _safeCheckSetupChanged = function (...args) {
-  const fn = typeof checkSetupChanged === 'function' ? checkSetupChanged :
-    typeof globalThis !== 'undefined' && typeof globalThis.checkSetupChanged === 'function' ? globalThis.checkSetupChanged :
-      typeof window !== 'undefined' && typeof window.checkSetupChanged === 'function' ? window.checkSetupChanged : null;
-  if (fn) return fn(...args);
-};
-const _safeSaveCurrentSession = function (...args) {
-  const fn = typeof saveCurrentSession === 'function' ? saveCurrentSession :
-    typeof globalThis !== 'undefined' && typeof globalThis.saveCurrentSession === 'function' ? globalThis.saveCurrentSession :
-      typeof window !== 'undefined' && typeof window.saveCurrentSession === 'function' ? window.saveCurrentSession : null;
-  if (fn) return fn(...args);
-};
-const _safeSaveCurrentGearList = function (...args) {
-  const fn = typeof saveCurrentGearList === 'function' ? saveCurrentGearList :
-    typeof globalThis !== 'undefined' && typeof globalThis.saveCurrentGearList === 'function' ? globalThis.saveCurrentGearList :
-      typeof window !== 'undefined' && typeof window.saveCurrentGearList === 'function' ? window.saveCurrentGearList : null;
-  if (fn) return fn(...args);
-};
-const _safeAutoSaveCurrentSetup = function (...args) {
-  const fn = typeof autoSaveCurrentSetup === 'function' ? autoSaveCurrentSetup :
-    typeof globalThis !== 'undefined' && typeof globalThis.autoSaveCurrentSetup === 'function' ? globalThis.autoSaveCurrentSetup :
-      typeof window !== 'undefined' && typeof window.autoSaveCurrentSetup === 'function' ? window.autoSaveCurrentSetup : null;
-  if (fn) return fn(...args);
-};
-const _safeUpdateBatteryPlateVisibility = function (...args) {
-  const fn = typeof updateBatteryPlateVisibility === 'function' ? updateBatteryPlateVisibility :
-    typeof globalThis !== 'undefined' && typeof globalThis.updateBatteryPlateVisibility === 'function' ? globalThis.updateBatteryPlateVisibility :
-      typeof window !== 'undefined' && typeof window.updateBatteryPlateVisibility === 'function' ? window.updateBatteryPlateVisibility : null;
-  if (fn) return fn(...args);
-};
-const _safeUpdateBatteryOptions = function (...args) {
-  const fn = typeof updateBatteryOptions === 'function' ? updateBatteryOptions :
-    typeof globalThis !== 'undefined' && typeof globalThis.updateBatteryOptions === 'function' ? globalThis.updateBatteryOptions :
-      typeof window !== 'undefined' && typeof window.updateBatteryOptions === 'function' ? window.updateBatteryOptions : null;
-  if (fn) return fn(...args);
-};
 
-const _safeUpdateMonitoringConfigurationOptions = function (...args) {
-  const fn = typeof updateMonitoringConfigurationOptions === 'function' ? updateMonitoringConfigurationOptions :
-    typeof globalThis !== 'undefined' && typeof globalThis.updateMonitoringConfigurationOptions === 'function' ? globalThis.updateMonitoringConfigurationOptions :
-      typeof window !== 'undefined' && typeof window.updateMonitoringConfigurationOptions === 'function' ? window.updateMonitoringConfigurationOptions : null;
-  if (fn) return fn(...args);
-};
-const _safeUpdateViewfinderSettingsVisibility = function (...args) {
-  const fn = typeof updateViewfinderSettingsVisibility === 'function' ? updateViewfinderSettingsVisibility :
-    typeof globalThis !== 'undefined' && typeof globalThis.updateViewfinderSettingsVisibility === 'function' ? globalThis.updateViewfinderSettingsVisibility :
-      typeof window !== 'undefined' && typeof window.updateViewfinderSettingsVisibility === 'function' ? window.updateViewfinderSettingsVisibility : null;
-  if (fn) return fn(...args);
-};
-const _safePopulateRecordingResolutionDropdown = function (...args) {
-  const fn = typeof populateRecordingResolutionDropdown === 'function' ? populateRecordingResolutionDropdown :
-    typeof globalThis !== 'undefined' && typeof globalThis.populateRecordingResolutionDropdown === 'function' ? globalThis.populateRecordingResolutionDropdown :
-      typeof window !== 'undefined' && typeof window.populateRecordingResolutionDropdown === 'function' ? window.populateRecordingResolutionDropdown : null;
-  if (fn) return fn(...args);
-};
-const _safePopulateSensorModeDropdown = function (...args) {
-  const fn = typeof populateSensorModeDropdown === 'function' ? populateSensorModeDropdown :
-    typeof globalThis !== 'undefined' && typeof globalThis.populateSensorModeDropdown === 'function' ? globalThis.populateSensorModeDropdown :
-      typeof window !== 'undefined' && typeof window.populateSensorModeDropdown === 'function' ? window.populateSensorModeDropdown : null;
-  if (fn) return fn(...args);
-};
-const _safePopulateSlowMotionRecordingResolutionDropdown = function (...args) {
-  const fn = typeof populateSlowMotionRecordingResolutionDropdown === 'function' ? populateSlowMotionRecordingResolutionDropdown :
-    typeof globalThis !== 'undefined' && typeof globalThis.populateSlowMotionRecordingResolutionDropdown === 'function' ? globalThis.populateSlowMotionRecordingResolutionDropdown :
-      typeof window !== 'undefined' && typeof window.populateSlowMotionRecordingResolutionDropdown === 'function' ? window.populateSlowMotionRecordingResolutionDropdown : null;
-  if (fn) return fn(...args);
-};
-const _safePopulateSlowMotionSensorModeDropdown = function (...args) {
-  const fn = typeof populateSlowMotionSensorModeDropdown === 'function' ? populateSlowMotionSensorModeDropdown :
-    typeof globalThis !== 'undefined' && typeof globalThis.populateSlowMotionSensorModeDropdown === 'function' ? globalThis.populateSlowMotionSensorModeDropdown :
-      typeof window !== 'undefined' && typeof window.populateSlowMotionSensorModeDropdown === 'function' ? window.populateSlowMotionSensorModeDropdown : null;
-  if (fn) return fn(...args);
-};
-const _safePopulateFrameRateDropdown = function (...args) {
-  const fn = typeof populateFrameRateDropdown === 'function' ? populateFrameRateDropdown :
-    typeof globalThis !== 'undefined' && typeof globalThis.populateFrameRateDropdown === 'function' ? globalThis.populateFrameRateDropdown :
-      typeof window !== 'undefined' && typeof window.populateFrameRateDropdown === 'function' ? window.populateFrameRateDropdown : null;
-  if (fn) return fn(...args);
-};
-const _safePopulateSlowMotionFrameRateDropdown = function (...args) {
-  const fn = typeof populateSlowMotionFrameRateDropdown === 'function' ? populateSlowMotionFrameRateDropdown :
-    typeof globalThis !== 'undefined' && typeof globalThis.populateSlowMotionFrameRateDropdown === 'function' ? globalThis.populateSlowMotionFrameRateDropdown :
-      typeof window !== 'undefined' && typeof window.populateSlowMotionFrameRateDropdown === 'function' ? window.populateSlowMotionFrameRateDropdown : null;
-  if (fn) return fn(...args);
-};
+// Legacy interop wrappers are now imported from modules/core/legacy-interop.js
+// We alias them locally if needed to match the old naming convention in this file if we don't want to refactor all callsites immediately.
+// But ideally we should just use LegacyInterop.safeX
+const _safeUpdateCalculations = LegacyInterop.safeUpdateCalculations;
+const _safeCheckSetupChanged = LegacyInterop.safeCheckSetupChanged;
+const _safeSaveCurrentSession = LegacyInterop.safeSaveCurrentSession;
+const _safeSaveCurrentGearList = LegacyInterop.safeSaveCurrentGearList;
+const _safeAutoSaveCurrentSetup = LegacyInterop.safeAutoSaveCurrentSetup;
+const _safeUpdateBatteryPlateVisibility = LegacyInterop.safeUpdateBatteryPlateVisibility;
+const _safeUpdateBatteryOptions = LegacyInterop.safeUpdateBatteryOptions;
 
-const _safeHandleMountVoltageInputChange = function (...args) {
-  const fn = typeof handleMountVoltageInputChange === 'function' ? handleMountVoltageInputChange :
-    typeof globalThis !== 'undefined' && typeof globalThis.handleMountVoltageInputChange === 'function' ? globalThis.handleMountVoltageInputChange :
-      typeof window !== 'undefined' && typeof window.handleMountVoltageInputChange === 'function' ? window.handleMountVoltageInputChange : null;
-  if (fn) return fn(...args);
-};
+const _safeUpdateMonitoringConfigurationOptions = LegacyInterop.safeUpdateMonitoringConfigurationOptions;
+const _safeUpdateViewfinderSettingsVisibility = LegacyInterop.safeUpdateViewfinderSettingsVisibility;
+const _safePopulateRecordingResolutionDropdown = LegacyInterop.safePopulateRecordingResolutionDropdown;
+const _safePopulateSensorModeDropdown = LegacyInterop.safePopulateSensorModeDropdown;
+const _safePopulateSlowMotionRecordingResolutionDropdown = LegacyInterop.safePopulateSlowMotionRecordingResolutionDropdown;
+const _safePopulateSlowMotionSensorModeDropdown = LegacyInterop.safePopulateSlowMotionSensorModeDropdown;
+const _safePopulateFrameRateDropdown = LegacyInterop.safePopulateFrameRateDropdown;
+const _safePopulateSlowMotionFrameRateDropdown = LegacyInterop.safePopulateSlowMotionFrameRateDropdown;
 
-const _safeNormalizeAutoGearScenarioPrimary = function (...args) {
-  const fn = typeof normalizeAutoGearScenarioPrimary === 'function' ? normalizeAutoGearScenarioPrimary :
-    typeof globalThis !== 'undefined' && typeof globalThis.normalizeAutoGearScenarioPrimary === 'function' ? globalThis.normalizeAutoGearScenarioPrimary :
-      typeof window !== 'undefined' && typeof window.normalizeAutoGearScenarioPrimary === 'function' ? window.normalizeAutoGearScenarioPrimary : null;
-  if (fn) return fn(...args);
-};
-const _safeNormalizeAutoGearScenarioMultiplier = function (...args) {
-  const fn = typeof normalizeAutoGearScenarioMultiplier === 'function' ? normalizeAutoGearScenarioMultiplier :
-    typeof globalThis !== 'undefined' && typeof globalThis.normalizeAutoGearScenarioMultiplier === 'function' ? globalThis.normalizeAutoGearScenarioMultiplier :
-      typeof window !== 'undefined' && typeof window.normalizeAutoGearScenarioMultiplier === 'function' ? window.normalizeAutoGearScenarioMultiplier : null;
-  if (fn) return fn(...args);
-};
-const _safeRemoveAutoGearCondition = function (...args) {
-  const fn = typeof removeAutoGearCondition === 'function' ? removeAutoGearCondition :
-    typeof globalThis !== 'undefined' && typeof globalThis.removeAutoGearCondition === 'function' ? globalThis.removeAutoGearCondition :
-      typeof window !== 'undefined' && typeof window.removeAutoGearCondition === 'function' ? window.removeAutoGearCondition : null;
-  if (fn) return fn(...args);
-};
-const _safeHandleAutoGearConditionShortcut = function (...args) {
-  const fn = typeof handleAutoGearConditionShortcut === 'function' ? handleAutoGearConditionShortcut :
-    typeof globalThis !== 'undefined' && typeof globalThis.handleAutoGearConditionShortcut === 'function' ? globalThis.handleAutoGearConditionShortcut :
-      typeof window !== 'undefined' && typeof window.handleAutoGearConditionShortcut === 'function' ? window.handleAutoGearConditionShortcut : null;
-  if (fn) return fn(...args);
-};
+const _safeHandleMountVoltageInputChange = LegacyInterop.safeHandleMountVoltageInputChange;
 
-const _safeHandleAutoGearImportSelection = function (...args) {
-  const fn = typeof handleAutoGearImportSelection === 'function' ? handleAutoGearImportSelection :
-    typeof globalThis !== 'undefined' && typeof globalThis.handleAutoGearImportSelection === 'function' ? globalThis.handleAutoGearImportSelection :
-      typeof window !== 'undefined' && typeof window.handleAutoGearImportSelection === 'function' ? window.handleAutoGearImportSelection : null;
-  if (fn) return fn(...args);
-};
-const _safeSetAutoGearSearchQuery = function (...args) {
-  const fn = typeof setAutoGearSearchQuery === 'function' ? setAutoGearSearchQuery :
-    typeof globalThis !== 'undefined' && typeof globalThis.setAutoGearSearchQuery === 'function' ? globalThis.setAutoGearSearchQuery :
-      typeof window !== 'undefined' && typeof window.setAutoGearSearchQuery === 'function' ? window.setAutoGearSearchQuery : null;
-  if (fn) return fn(...args);
-};
-const _safeSetAutoGearScenarioFilter = function (...args) {
-  const fn = typeof setAutoGearScenarioFilter === 'function' ? setAutoGearScenarioFilter :
-    typeof globalThis !== 'undefined' && typeof globalThis.setAutoGearScenarioFilter === 'function' ? globalThis.setAutoGearScenarioFilter :
-      typeof window !== 'undefined' && typeof window.setAutoGearScenarioFilter === 'function' ? window.setAutoGearScenarioFilter : null;
-  if (fn) return fn(...args);
-};
-const _safeClearAutoGearFilters = function (...args) {
-  const fn = typeof clearAutoGearFilters === 'function' ? clearAutoGearFilters :
-    typeof globalThis !== 'undefined' && typeof globalThis.clearAutoGearFilters === 'function' ? globalThis.clearAutoGearFilters :
-      typeof window !== 'undefined' && typeof window.clearAutoGearFilters === 'function' ? window.clearAutoGearFilters : null;
-  if (fn) return fn(...args);
-};
-const _safeSetAutoGearSummaryFocus = function (...args) {
-  const fn = typeof setAutoGearSummaryFocus === 'function' ? setAutoGearSummaryFocus :
-    typeof globalThis !== 'undefined' && typeof globalThis.setAutoGearSummaryFocus === 'function' ? globalThis.setAutoGearSummaryFocus :
-      typeof window !== 'undefined' && typeof window.setAutoGearSummaryFocus === 'function' ? window.setAutoGearSummaryFocus : null;
-  if (fn) return fn(...args);
-};
+const _safeNormalizeAutoGearScenarioPrimary = LegacyInterop.safeNormalizeAutoGearScenarioPrimary;
+const _safeNormalizeAutoGearScenarioMultiplier = LegacyInterop.safeNormalizeAutoGearScenarioMultiplier;
+const _safeRemoveAutoGearCondition = LegacyInterop.safeRemoveAutoGearCondition;
+const _safeHandleAutoGearConditionShortcut = LegacyInterop.safeHandleAutoGearConditionShortcut;
 
-const _safeHandleAutoGearPresetSelection = function (...args) {
-  const fn = typeof handleAutoGearPresetSelection === 'function' ? handleAutoGearPresetSelection :
-    typeof globalThis !== 'undefined' && typeof globalThis.handleAutoGearPresetSelection === 'function' ? globalThis.handleAutoGearPresetSelection :
-      typeof window !== 'undefined' && typeof window.handleAutoGearPresetSelection === 'function' ? window.handleAutoGearPresetSelection : null;
-  if (fn) return fn(...args);
-};
-const _safeHandleAutoGearSavePreset = function (...args) {
-  const fn = typeof handleAutoGearSavePreset === 'function' ? handleAutoGearSavePreset :
-    typeof globalThis !== 'undefined' && typeof globalThis.handleAutoGearSavePreset === 'function' ? globalThis.handleAutoGearSavePreset :
-      typeof window !== 'undefined' && typeof window.handleAutoGearSavePreset === 'function' ? window.handleAutoGearSavePreset : null;
-  if (fn) return fn(...args);
-};
-const _safeHandleAutoGearDeletePreset = function (...args) {
-  const fn = typeof handleAutoGearDeletePreset === 'function' ? handleAutoGearDeletePreset :
-    typeof globalThis !== 'undefined' && typeof globalThis.handleAutoGearDeletePreset === 'function' ? globalThis.handleAutoGearDeletePreset :
-      typeof window !== 'undefined' && typeof window.handleAutoGearDeletePreset === 'function' ? window.handleAutoGearDeletePreset : null;
-  if (fn) return fn(...args);
-};
-const _safeAddAutoGearDraftItem = function (...args) {
-  const fn = typeof addAutoGearDraftItem === 'function' ? addAutoGearDraftItem :
-    typeof globalThis !== 'undefined' && typeof globalThis.addAutoGearDraftItem === 'function' ? globalThis.addAutoGearDraftItem :
-      typeof window !== 'undefined' && typeof window.addAutoGearDraftItem === 'function' ? window.addAutoGearDraftItem : null;
-  if (fn) return fn(...args);
-};
-const _safeSaveAutoGearRuleFromEditor = function (...args) {
-  const fn = typeof saveAutoGearRuleFromEditor === 'function' ? saveAutoGearRuleFromEditor :
-    typeof globalThis !== 'undefined' && typeof globalThis.saveAutoGearRuleFromEditor === 'function' ? globalThis.saveAutoGearRuleFromEditor :
-      typeof window !== 'undefined' && typeof window.saveAutoGearRuleFromEditor === 'function' ? window.saveAutoGearRuleFromEditor : null;
-  if (fn) return fn(...args);
-};
-const _safeCloseAutoGearEditor = function (...args) {
-  const fn = typeof closeAutoGearEditor === 'function' ? closeAutoGearEditor :
-    typeof globalThis !== 'undefined' && typeof globalThis.closeAutoGearEditor === 'function' ? globalThis.closeAutoGearEditor :
-      typeof window !== 'undefined' && typeof window.closeAutoGearEditor === 'function' ? window.closeAutoGearEditor : null;
-  if (fn) return fn(...args);
-};
-const _safeRenderAutoGearDraftLists = function (...args) {
-  const fn = typeof renderAutoGearDraftLists === 'function' ? renderAutoGearDraftLists :
-    typeof globalThis !== 'undefined' && typeof globalThis.renderAutoGearDraftLists === 'function' ? globalThis.renderAutoGearDraftLists :
-      typeof window !== 'undefined' && typeof window.renderAutoGearDraftLists === 'function' ? window.renderAutoGearDraftLists : null;
-  if (fn) return fn(...args);
-};
-const _safeDuplicateAutoGearRule = function (...args) {
-  const fn = typeof duplicateAutoGearRule === 'function' ? duplicateAutoGearRule :
-    typeof globalThis !== 'undefined' && typeof globalThis.duplicateAutoGearRule === 'function' ? globalThis.duplicateAutoGearRule :
-      typeof window !== 'undefined' && typeof window.duplicateAutoGearRule === 'function' ? window.duplicateAutoGearRule : null;
-  if (fn) return fn(...args);
-};
-const _safeInvokeSessionOpenAutoGearEditor = function (...args) {
-  const fn = typeof invokeSessionOpenAutoGearEditor === 'function' ? invokeSessionOpenAutoGearEditor :
-    typeof globalThis !== 'undefined' && typeof globalThis.invokeSessionOpenAutoGearEditor === 'function' ? globalThis.invokeSessionOpenAutoGearEditor :
-      typeof window !== 'undefined' && typeof window.invokeSessionOpenAutoGearEditor === 'function' ? window.invokeSessionOpenAutoGearEditor : null;
-  if (fn) return fn(...args);
-};
+const _safeHandleAutoGearImportSelection = LegacyInterop.safeHandleAutoGearImportSelection;
+const _safeSetAutoGearSearchQuery = LegacyInterop.safeSetAutoGearSearchQuery;
+const _safeSetAutoGearScenarioFilter = LegacyInterop.safeSetAutoGearScenarioFilter;
+const _safeClearAutoGearFilters = LegacyInterop.safeClearAutoGearFilters;
+const _safeSetAutoGearSummaryFocus = LegacyInterop.safeSetAutoGearSummaryFocus;
 
-const _safeUpdateAutoGearBackupRestoreButtonState = function (...args) {
-  const fn = typeof updateAutoGearBackupRestoreButtonState === 'function' ? updateAutoGearBackupRestoreButtonState :
-    typeof globalThis !== 'undefined' && typeof globalThis.updateAutoGearBackupRestoreButtonState === 'function' ? globalThis.updateAutoGearBackupRestoreButtonState :
-      typeof window !== 'undefined' && typeof window.updateAutoGearBackupRestoreButtonState === 'function' ? window.updateAutoGearBackupRestoreButtonState : null;
-  if (fn) return fn(...args);
-};
-const _safeHandleAutoGearShowBackupsToggle = function (...args) {
-  const fn = typeof handleAutoGearShowBackupsToggle === 'function' ? handleAutoGearShowBackupsToggle :
-    typeof globalThis !== 'undefined' && typeof globalThis.handleAutoGearShowBackupsToggle === 'function' ? globalThis.handleAutoGearShowBackupsToggle :
-      typeof window !== 'undefined' && typeof window.handleAutoGearShowBackupsToggle === 'function' ? window.handleAutoGearShowBackupsToggle : null;
-  if (fn) return fn(...args);
-};
-const _safeRestoreAutoGearBackup = function (...args) {
-  const fn = typeof restoreAutoGearBackup === 'function' ? restoreAutoGearBackup :
-    typeof globalThis !== 'undefined' && typeof globalThis.restoreAutoGearBackup === 'function' ? globalThis.restoreAutoGearBackup :
-      typeof window !== 'undefined' && typeof window.restoreAutoGearBackup === 'function' ? window.restoreAutoGearBackup : null;
-  if (fn) return fn(...args);
-};
-const _safeSyncAutoGearMonitorFieldVisibility = function (...args) {
-  const fn = typeof syncAutoGearMonitorFieldVisibility === 'function' ? syncAutoGearMonitorFieldVisibility :
-    typeof globalThis !== 'undefined' && typeof globalThis.syncAutoGearMonitorFieldVisibility === 'function' ? globalThis.syncAutoGearMonitorFieldVisibility :
-      typeof window !== 'undefined' && typeof window.syncAutoGearMonitorFieldVisibility === 'function' ? window.syncAutoGearMonitorFieldVisibility : null;
-  if (fn) return fn(...args);
-};
-const _safeUpdateAutoGearMonitorCatalogOptions = function (...args) {
-  const fn = typeof updateAutoGearMonitorCatalogOptions === 'function' ? updateAutoGearMonitorCatalogOptions :
-    typeof globalThis !== 'undefined' && typeof globalThis.updateAutoGearMonitorCatalogOptions === 'function' ? globalThis.updateAutoGearMonitorCatalogOptions :
-      typeof window !== 'undefined' && typeof window.updateAutoGearMonitorCatalogOptions === 'function' ? window.updateAutoGearMonitorCatalogOptions : null;
-  if (fn) return fn(...args);
-};
-const _safeClearAutoGearDraftItemEdit = function (...args) {
-  const fn = typeof clearAutoGearDraftItemEdit === 'function' ? clearAutoGearDraftItemEdit :
-    typeof globalThis !== 'undefined' && typeof globalThis.clearAutoGearDraftItemEdit === 'function' ? globalThis.clearAutoGearDraftItemEdit :
-      typeof window !== 'undefined' && typeof window.clearAutoGearDraftItemEdit === 'function' ? window.clearAutoGearDraftItemEdit : null;
-  if (fn) return fn(...args);
-};
-const _safeUpdateAutoGearCatalogOptions = function (...args) {
-  const fn = typeof updateAutoGearCatalogOptions === 'function' ? updateAutoGearCatalogOptions :
-    typeof globalThis !== 'undefined' && typeof globalThis.updateAutoGearCatalogOptions === 'function' ? globalThis.updateAutoGearCatalogOptions :
-      typeof window !== 'undefined' && typeof window.updateAutoGearCatalogOptions === 'function' ? window.updateAutoGearCatalogOptions : null;
-  if (fn) return fn(...args);
-};
-const _safeBeginAutoGearDraftItemEdit = function (...args) {
-  const fn = typeof beginAutoGearDraftItemEdit === 'function' ? beginAutoGearDraftItemEdit :
-    typeof globalThis !== 'undefined' && typeof globalThis.beginAutoGearDraftItemEdit === 'function' ? globalThis.beginAutoGearDraftItemEdit :
-      typeof window !== 'undefined' && typeof window.beginAutoGearDraftItemEdit === 'function' ? window.beginAutoGearDraftItemEdit : null;
-  if (fn) return fn(...args);
-};
+const _safeHandleAutoGearPresetSelection = LegacyInterop.safeHandleAutoGearPresetSelection;
+const _safeHandleAutoGearSavePreset = LegacyInterop.safeHandleAutoGearSavePreset;
+const _safeHandleAutoGearDeletePreset = LegacyInterop.safeHandleAutoGearDeletePreset;
+const _safeAddAutoGearDraftItem = LegacyInterop.safeAddAutoGearDraftItem;
+const _safeSaveAutoGearRuleFromEditor = LegacyInterop.safeSaveAutoGearRuleFromEditor;
+const _safeCloseAutoGearEditor = LegacyInterop.safeCloseAutoGearEditor;
+const _safeRenderAutoGearDraftLists = LegacyInterop.safeRenderAutoGearDraftLists;
+const _safeDuplicateAutoGearRule = LegacyInterop.safeDuplicateAutoGearRule;
+const _safeInvokeSessionOpenAutoGearEditor = LegacyInterop.safeInvokeSessionOpenAutoGearEditor;
+
+const _safeUpdateAutoGearBackupRestoreButtonState = LegacyInterop.safeUpdateAutoGearBackupRestoreButtonState;
+const _safeHandleAutoGearShowBackupsToggle = LegacyInterop.safeHandleAutoGearShowBackupsToggle;
+const _safeRestoreAutoGearBackup = LegacyInterop.safeRestoreAutoGearBackup;
+const _safeSyncAutoGearMonitorFieldVisibility = LegacyInterop.safeSyncAutoGearMonitorFieldVisibility;
+const _safeUpdateAutoGearMonitorCatalogOptions = LegacyInterop.safeUpdateAutoGearMonitorCatalogOptions;
+const _safeClearAutoGearDraftItemEdit = LegacyInterop.safeClearAutoGearDraftItemEdit;
+const _safeUpdateAutoGearCatalogOptions = LegacyInterop.safeUpdateAutoGearCatalogOptions;
+const _safeBeginAutoGearDraftItemEdit = LegacyInterop.safeBeginAutoGearDraftItemEdit;
 
 /* global shareSetupBtn, updateCageSelectOptions, updateAccentColorResetButtonState,
           normalizeAccentValue, DEFAULT_ACCENT_NORMALIZED: true,
@@ -658,215 +452,12 @@ function resolveActiveProjectStorageKey() {
  * 5. Hydration: If they differ, it strictly re-applies all sub-systems (Batteries, Diagram, Gear List).
  */
 function reloadActiveProjectFromStorage(options = {}) {
-  if (factoryResetInProgress || restoringSession) {
-    return false;
-  }
-  const wasProjectAutoSaving = isProjectAutoSaving;
-  isProjectAutoSaving = true;
-  try {
-    if (typeof isProjectPersistenceSuspended === 'function' && isProjectPersistenceSuspended()) {
-      return false;
-    }
-    if (typeof loadProject !== 'function') {
-      return false;
-    }
-
-    const storageKey = resolveActiveProjectStorageKey();
-    if (!storageKey) {
-      return false;
-    }
-
-    let storedProject = null;
-    try {
-      storedProject = loadProject(storageKey);
-    } catch (projectLoadError) {
-      if (!options.silent && typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('Failed to reload project from storage after external update', projectLoadError);
-      }
-      return false;
-    }
-
-    if (!storedProject || typeof storedProject !== 'object') {
-      // [Bug Fix] The project was deleted or renamed in another tab.
-      // Refresh the setup list and reset to "New Project" to prevent
-      // stale state from being autosaved back (causing duplication/resurrection).
-      const previousValue = setupSelect ? setupSelect.value : '';
-
-      if (typeof populateSetupSelect === 'function') {
-        try {
-          populateSetupSelect();
-        } catch (populateError) {
-          void populateError;
-        }
-      }
-
-      // Reset UI to "New Project" state
-      if (setupSelect && typeof setupSelect.value !== 'undefined') {
-        setupSelect.value = '';
-        // Dispatch change event to trigger legacy handlers, but ONLY if we actually
-        // transitioned from a specific project to "New Project" (to avoid infinite loops)
-        if (previousValue !== '') {
-          try {
-            setupSelect.dispatchEvent(new Event('change', { bubbles: true }));
-          } catch (eventError) {
-            void eventError;
-          }
-        }
-      }
-
-      // Clear project info to prevent autosave of stale data
-      currentProjectInfo = null;
-      if (projectForm && typeof populateProjectForm === 'function') {
-        try {
-          populateProjectForm({});
-        } catch (formError) {
-          void formError;
-        }
-      }
-
-      if (!options.silent && typeof console !== 'undefined' && typeof console.info === 'function') {
-        console.info('[app-session] Project no longer exists, reset to New Project state');
-      }
-      return false;
-    }
-
-    // [Bug Fix] Prevent unnecessary reloading if the stored project data is identical
-    // to the current session state. This avoids destroying DOM elements (and focus)
-    // in populateProjectForm(), which can trigger blur events that cause infinite
-    // autosave loops during typing.
-    if (
-      typeof getCurrentSetupState === 'function' &&
-      typeof stableStringify === 'function'
-    ) {
-      try {
-        const currentSetup = { ...getCurrentSetupState() };
-
-        // Mirror the logic in autoSaveCurrentSetup to ensure consistent comparison
-        const gearListHtml = typeof getCurrentGearListHtml === 'function'
-          ? getCurrentGearListHtml()
-          : '';
-
-        if (gearListHtml) {
-          currentSetup.gearList = gearListHtml;
-        }
-
-        if (typeof getDiagramManualPositions === 'function') {
-          const diagramPositions = getDiagramManualPositions();
-          if (diagramPositions && Object.keys(diagramPositions).length) {
-            currentSetup.diagramPositions = diagramPositions;
-          } else if (Object.prototype.hasOwnProperty.call(currentSetup, 'diagramPositions')) {
-            delete currentSetup.diagramPositions;
-          }
-        }
-
-        // Ensure consistent field ordering for stringification
-        const currentSig = stableStringify(currentSetup);
-        const storedSig = stableStringify(storedProject);
-
-        if (currentSig === storedSig) {
-          return true;
-        }
-      } catch (comparisonError) {
-        // If comparison fails, fall through to normal reload logic
-        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-          console.warn('Project reload optimization check failed', comparisonError);
-        }
-      }
-    }
-
-    if (storedProject.powerSelection && typeof applyStoredPowerSelection === 'function') {
-      applyStoredPowerSelection(storedProject.powerSelection, { preferExisting: false });
-    }
-    updateBatteryOptions();
-
-    currentProjectInfo = storedProject.projectInfo || null;
-    if (projectForm) {
-      if (typeof populateProjectForm === 'function') populateProjectForm(currentProjectInfo || {});
-    }
-
-    if (typeof setManualDiagramPositions === 'function') {
-      const normalizedDiagram = storedProject.diagramPositions && typeof normalizeDiagramPositionsInput === 'function'
-        ? normalizeDiagramPositionsInput(storedProject.diagramPositions)
-        : {};
-      setManualDiagramPositions(normalizedDiagram || {}, { render: false });
-    }
-
-    if (storedProject.autoGearRules && storedProject.autoGearRules.length) {
-      if (typeof useProjectAutoGearRules === 'function') {
-        useProjectAutoGearRules(storedProject.autoGearRules);
-      }
-    } else if (typeof clearProjectAutoGearRules === 'function') {
-      clearProjectAutoGearRules();
-    }
-
-    const regenerateGearList = (info) => callSessionCoreFunction(
-      'generateGearListHtml',
-      [info || {}],
-      { defaultValue: '' },
-    ) || '';
-    const storedHtml = typeof storedProject.gearList === 'string' ? storedProject.gearList : '';
-    const html = storedHtml || regenerateGearList(currentProjectInfo || {});
-
-    if (typeof displayGearAndRequirements === 'function') {
-      displayGearAndRequirements(html);
-    }
-
-    if (gearListOutput) {
-      if (html) {
-        ensureGearListActions();
-        bindGearListCageListener();
-        bindGearListEasyrigListener();
-        bindGearListSliderBowlListener();
-        bindGearListEyeLeatherListener();
-        bindGearListProGaffTapeListener();
-        bindGearListDirectorMonitorListener();
-      }
-      if (
-        typeof applyGearListSelectors === 'function'
-        && storedProject.gearSelectors
-        && Object.keys(storedProject.gearSelectors).length
-      ) {
-        applyGearListSelectors(storedProject.gearSelectors);
-      }
-      if (typeof updateGearListButtonVisibility === 'function') {
-        updateGearListButtonVisibility();
-      }
-    }
-
-    if (typeof populateSetupSelect === 'function') {
-      try {
-        populateSetupSelect();
-        // [Bug Fix] Restore the selected project in the dropdown.
-        // populateSetupSelect resets the value to "" (New Project).
-        // If we don't restore it, subsequent autosaves will treat this as a new project
-        // and create duplicates (e.g., "Project (2)").
-        if (storageKey) {
-          const setupSelect = document.getElementById('setupSelect');
-          if (setupSelect) {
-            setupSelect.value = storageKey;
-          }
-        }
-      } catch (populateError) {
-        if (!options.silent && typeof console !== 'undefined' && typeof console.warn === 'function') {
-          console.warn('Failed to refresh setup selector after external project update', populateError);
-        }
-      }
-    }
-
-    if (typeof markProjectFormDataDirty === 'function') {
-      markProjectFormDataDirty();
-    }
-    if (typeof storeLoadedSetupStateSafe === 'function' && typeof getCurrentSetupState === 'function') {
-      storeLoadedSetupStateSafe(getCurrentSetupState());
-    }
-    if (typeof checkSetupChanged === 'function') {
-      checkSetupChanged();
-    }
-    return true;
-  } finally {
-    isProjectAutoSaving = wasProjectAutoSaving;
-  }
+  // Delegate to the new ProjectLoader module
+  // Pass the SessionState to ensure flags are respected if the loader checks them internally
+  // (Note: The loader imports SessionState directly, so we just call it)
+  return reloadActiveProject(options);
 }
+
 
 function scheduleProjectStorageSync(options = {}) {
   ProjectStorageManager.scheduleSync(reloadActiveProjectFromStorage, options);
@@ -874,7 +465,7 @@ function scheduleProjectStorageSync(options = {}) {
 
 ProjectStorageManager.initAutoSync(
   reloadActiveProjectFromStorage,
-  () => isProjectAutoSaving
+  () => SessionState.isProjectAutoSaving
 );
 
 function resolveSetLanguageFn() {
@@ -1031,8 +622,8 @@ if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE
 
 
 function resolveMissingMountVoltageWarnings() {
-  if (missingMountVoltageWarnings instanceof Set) {
-    return missingMountVoltageWarnings;
+  if (SessionState.missingMountVoltageWarnings instanceof Set) {
+    return SessionState.missingMountVoltageWarnings;
   }
 
   const candidateScopes = [
@@ -1050,7 +641,7 @@ function resolveMissingMountVoltageWarnings() {
     try {
       const existing = scope.__cineMissingMountVoltageWarnings;
       if (existing instanceof Set) {
-        missingMountVoltageWarnings = existing;
+        SessionState.missingMountVoltageWarnings = existing;
         return existing;
       }
     } catch (readError) {
@@ -1069,7 +660,7 @@ function resolveMissingMountVoltageWarnings() {
     }
   }
 
-  missingMountVoltageWarnings = created;
+  SessionState.missingMountVoltageWarnings = created;
   return created;
 }
 
@@ -1970,15 +1561,8 @@ let backupDiffState = ensureSessionRuntimePlaceholder(
 
 
 
-const buildRestoreVersionCompatibilityMessage = ensureSessionRuntimePlaceholder(
-  'buildRestoreVersionCompatibilityMessage',
-  () => RestoreCompatibilityManager.buildRestoreVersionCompatibilityMessage,
-);
-
-const verifyRestoredBackupIntegrity = ensureSessionRuntimePlaceholder(
-  'verifyRestoredBackupIntegrity',
-  () => RestoreCompatibilityManager.verifyRestoredBackupIntegrity,
-);
+const buildRestoreVersionCompatibilityMessage = RestoreCompatibilityManager.buildRestoreVersionCompatibilityMessage;
+const verifyRestoredBackupIntegrity = RestoreCompatibilityManager.verifyRestoredBackupIntegrity;
 
 function invokeSessionRevertAccentColor() {
   const revertFn = getSessionRuntimeFunction('revertAccentColor');
@@ -2595,14 +2179,17 @@ if (!hasPrevAccentColor) {
   }
 }
 
-if (typeof restoringSession !== 'boolean') {
+// restoringSession migrated to SessionState
+if (typeof window !== 'undefined') {
   try {
-    restoringSession = false;
-  } catch (assignRestoringSessionError) {
-    if (SESSION_GLOBAL_SCOPE && typeof SESSION_GLOBAL_SCOPE === 'object') {
-      SESSION_GLOBAL_SCOPE.restoringSession = false;
-    }
-    void assignRestoringSessionError;
+    Object.defineProperty(window, 'restoringSession', {
+      get: () => SessionState.restoringSession,
+      set: (val) => { SessionState.restoringSession = val; },
+      configurable: true
+    });
+  } catch (e) {
+    // Fallback if property is already defined non-configurable
+    console.warn('Could not define restoringSession proxy', e);
   }
 }
 
@@ -4487,7 +4074,7 @@ function handleRestoreRehearsalAbort() {
 }
 
 function saveCurrentSession(options = {}) {
-  if (restoringSession || factoryResetInProgress) return;
+  if (SessionState.restoringSession || SessionState.factoryResetInProgress) return;
 
 
   if (typeof window !== 'undefined' && window.cineSuppressAutosave) return;
@@ -4541,7 +4128,7 @@ function saveCurrentSession(options = {}) {
 
 function autoSaveCurrentSetup() {
   console.log('DEBUG: autoSaveCurrentSetup ENTERED');
-  if (factoryResetInProgress) return;
+  if (SessionState.factoryResetInProgress) return;
 
 
 
@@ -4626,11 +4213,11 @@ const PROJECT_AUTOSAVE_MAX_RETRIES = 4;
 let projectAutoSaveTimer = null;
 let projectAutoSaveFailureCount = 0;
 let projectAutoSavePendingWhileRestoring = null;
-let factoryResetInProgress = false;
+// factoryResetInProgress migrated to SessionState
 if (typeof window !== 'undefined') {
   Object.defineProperty(window, 'factoryResetInProgress', {
-    get: () => factoryResetInProgress,
-    set: (val) => { factoryResetInProgress = val; },
+    get: () => SessionState.factoryResetInProgress,
+    set: (val) => { SessionState.factoryResetInProgress = val; },
     configurable: true
   });
 }
@@ -4715,7 +4302,7 @@ function runProjectAutoSave() {
 
   isProjectAutoSaving = true;
   try {
-    if (factoryResetInProgress) {
+    if (SessionState.factoryResetInProgress) {
       if (projectAutoSaveTimer) {
         clearTimeout(projectAutoSaveTimer);
         projectAutoSaveTimer = null;
@@ -4724,7 +4311,7 @@ function runProjectAutoSave() {
       return;
     }
 
-    if (restoringSession) {
+    if (SessionState.restoringSession) {
       projectAutoSaveTimer = null;
       if (projectAutoSavePendingWhileRestoring !== 'immediate') {
         projectAutoSavePendingWhileRestoring = projectAutoSavePendingWhileRestoring || 'queued';
@@ -4860,7 +4447,7 @@ function scheduleProjectAutoSave(immediateOrOptions = false) {
     setProjectAutoSaveOverrides(overrides);
   }
 
-  if (factoryResetInProgress) {
+  if (SessionState.factoryResetInProgress) {
 
 
     if (projectAutoSaveTimer) {
@@ -4870,7 +4457,7 @@ function scheduleProjectAutoSave(immediateOrOptions = false) {
     clearProjectAutoSaveOverrides();
     return;
   }
-  if (restoringSession) {
+  if (SessionState.restoringSession) {
     if (projectAutoSaveTimer) {
       clearTimeout(projectAutoSaveTimer);
       projectAutoSaveTimer = null;
@@ -5187,7 +4774,7 @@ const _storeSession = (typeof window !== 'undefined' && typeof window.storeSessi
   };
 
 function restoreSessionState() {
-  if (typeof restoringSession !== 'undefined') restoringSession = true;
+  SessionState.restoringSession = true;
   const loadedState = _loadSession();
   const state = (loadedState && typeof loadedState === 'object') ? { ...loadedState } : null;
   if (state) {
@@ -5442,7 +5029,7 @@ function restoreSessionState() {
     }
     setActiveProjectCompressionHold(compressionHoldKey);
   }
-  if (typeof restoringSession !== 'undefined') restoringSession = false;
+  SessionState.restoringSession = false;
   saveCurrentSession();
   const pendingAutoSaveState = projectAutoSavePendingWhileRestoring;
   projectAutoSavePendingWhileRestoring = null;
@@ -6374,7 +5961,7 @@ if (typeof setupNameInput !== 'undefined' && setupNameInput) {
 
 
 function flushProjectAutoSaveOnExit(eventOrOptions) {
-  if (factoryResetInProgress) return;
+  if (SessionState.factoryResetInProgress) return;
 
   let event = null;
   let options = null;
@@ -12802,7 +12389,7 @@ if (factoryResetButton) {
         }
 
         try {
-          factoryResetInProgress = true;
+          SessionState.factoryResetInProgress = true;
           if (typeof globalThis !== 'undefined') {
             try {
               globalThis.__cameraPowerPlannerFactoryResetting = true;
@@ -12932,7 +12519,7 @@ if (factoryResetButton) {
           }, 600);
         } catch (error) {
           console.error('Factory reset failed', error);
-          factoryResetInProgress = false;
+          SessionState.factoryResetInProgress = false;
           if (typeof globalThis !== 'undefined') {
             try {
               delete globalThis.__cameraPowerPlannerFactoryResetting;
