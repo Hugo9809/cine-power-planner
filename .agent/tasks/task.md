@@ -59,4 +59,14 @@
     - [x] Extract Frame Rate/Resolution logic (lines ~17241-17800) <!-- id: 59 -->
     - [x] Refactor `app-session.js` to use `DeviceCapabilityManager` <!-- id: 60 -->
     - [x] Verify functionality <!-- id: 61 -->
+- [x] Session Migration - Phase 12 (Contact Manager) <!-- id: 62 -->
+    - [x] Create `src/scripts/modules/features/contact-manager.js` <!-- id: 63 -->
+    - [x] Extract `mergeSharedContactsIntoCache` and related logic <!-- id: 64 -->
+    - [x] Refactor `app-session.js` to use `ContactManager` <!-- id: 65 -->
+    - [x] Verify functionality <!-- id: 66 -->
+- [ ] Session Migration - Phase 13 (AutoGear Manager) <!-- id: 67 -->
+    - [ ] Create `src/scripts/modules/features/auto-gear-manager.js` <!-- id: 68 -->
+    - [ ] Extract AutoGear state and logic <!-- id: 69 -->
+    - [ ] Refactor `app-session.js` to use `AutoGearManager` <!-- id: 70 -->
+    - [ ] Verify functionality <!-- id: 71 -->
 
