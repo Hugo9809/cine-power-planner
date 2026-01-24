@@ -77,6 +77,9 @@ import { RestoreCompatibilityManager } from '../modules/core/restore-compatibili
 import { SessionState } from '../modules/core/session-state.js';
 import { reloadActiveProjectFromStorage as reloadActiveProject } from '../modules/core/project-loader.js';
 import * as LegacyInterop from '../modules/core/legacy-interop.js';
+import { FeatureSearchManager } from '../modules/features/feature-search-manager.js';
+import { ProjectImportManager } from '../modules/core/project-import-manager.js';
+import { DeviceCapabilityManager } from '../modules/core/device-capability-manager.js';
 
 const downloadSharedProject = ProjectTransferManager.downloadSharedProject;
 
@@ -5041,136 +5044,22 @@ function restoreSessionState() {
 }
 
 function ensureImportedProjectBaseNameSession(rawName) {
-  const trimmed = typeof rawName === 'string' ? rawName.trim() : '';
-  if (!trimmed) {
-    return 'Project-imported';
-  }
-
-  const importedMatch = trimmed.match(/^(.*?)-imported(?:-(\d+))?$/i);
-  if (importedMatch) {
-    const prefix = typeof importedMatch[1] === 'string'
-      ? importedMatch[1].trim()
-      : '';
-    return prefix ? `${prefix}-imported` : 'Project-imported';
-  }
-
-  if (trimmed.toLowerCase().endsWith('-imported')) {
-    return trimmed;
-  }
-
-  return `${trimmed}-imported`;
+  return ProjectImportManager.ensureImportedProjectBaseName(rawName);
 }
 
 function resolveImportedProjectNamingContextSession(rawName) {
-  const trimmed = typeof rawName === 'string' ? rawName.trim() : '';
-  const base = ensureImportedProjectBaseNameSession(rawName);
-
-  if (!trimmed) {
-    return {
-      base,
-      initialCandidate: base,
-      suffixStart: 2,
-    };
-  }
-
-  const importedMatch = trimmed.match(/^(.*?)-imported(?:-(\d+))?$/i);
-  const parsedSuffix = importedMatch && importedMatch[2]
-    ? Number(importedMatch[2])
-    : NaN;
-  const suffixStart = Number.isFinite(parsedSuffix) ? parsedSuffix + 1 : 2;
-
-  if (importedMatch) {
-    return {
-      base,
-      initialCandidate: trimmed,
-      suffixStart,
-    };
-  }
-
-  return {
-    base,
-    initialCandidate: base,
-    suffixStart: 2,
-  };
+  return ProjectImportManager.resolveImportedProjectNamingContext(rawName);
 }
 
 function generateUniqueImportedProjectNameSession(baseName, usedNames, normalizedNames) {
-  const normalized = normalizedNames
-    || new Set(
-      [...usedNames]
-        .map((name) => (typeof name === 'string' ? name.trim().toLowerCase() : ''))
-        .filter((name) => name),
-    );
-
-  const context = resolveImportedProjectNamingContextSession(baseName);
-  let candidate = typeof context.initialCandidate === 'string'
-    ? context.initialCandidate.trim()
-    : '';
-
-  if (!candidate) {
-    candidate = context.base || 'Project-imported';
-  }
-
-  let normalizedCandidate = candidate.trim().toLowerCase();
-  let suffix = context.suffixStart;
-  while (normalizedCandidate && normalized.has(normalizedCandidate)) {
-    const base = context.base || 'Project-imported';
-    candidate = `${base}-${suffix++}`;
-    normalizedCandidate = candidate.trim().toLowerCase();
-  }
-
-  usedNames.add(candidate);
-  if (normalizedCandidate) {
-    normalized.add(normalizedCandidate);
-  }
-
-  return candidate;
+  return ProjectImportManager.generateUniqueImportedProjectName(baseName, usedNames, normalizedNames);
 }
 
 function persistImportedProjectWithFallback(payload, nameCandidates) {
-  if (!payload || typeof saveProject !== 'function') {
-    return '';
-  }
-
-  let usedNames = new Set();
-  let normalizedNames = new Set();
-
-  if (typeof loadProject === 'function') {
-    try {
-      const existingProjects = loadProject();
-      if (existingProjects && typeof existingProjects === 'object') {
-        const entries = Object.keys(existingProjects);
-        usedNames = new Set(entries);
-        normalizedNames = new Set(
-          entries
-            .map((name) => (typeof name === 'string' ? name.trim().toLowerCase() : ''))
-            .filter((name) => name),
-        );
-      }
-    } catch (projectReadError) {
-      console.warn(
-        'Unable to read existing projects while generating fallback name for imported project',
-        projectReadError,
-      );
-    }
-  }
-
-  const candidates = Array.isArray(nameCandidates) ? nameCandidates : [];
-  let baseName = '';
-  for (let index = 0; index < candidates.length; index += 1) {
-    const candidate = typeof candidates[index] === 'string' ? candidates[index].trim() : '';
-    if (candidate) {
-      baseName = candidate;
-      break;
-    }
-  }
-  if (!baseName) {
-    baseName = 'Imported project';
-  }
-
-  const storageKey = generateUniqueImportedProjectNameSession(baseName, usedNames, normalizedNames);
-  saveProject(storageKey, payload, { skipOverwriteBackup: true });
-  return storageKey;
+  return ProjectImportManager.persistImportedProjectWithFallback(payload, nameCandidates, {
+    saveProject: cineStorage ? cineStorage.saveProject : null,
+    loadProject: cineStorage ? cineStorage.loadProject : null
+  });
 }
 
 function clearOwnedGearExportArtifacts(element) {
@@ -5444,41 +5333,7 @@ function mergeSharedContactsIntoCache(sharedContacts) {
 }
 
 function resolveProjectNameCollisionForImport(baseName) {
-  const trimmed = typeof baseName === 'string' ? baseName.trim() : '';
-  if (!trimmed) {
-    return { name: trimmed, changed: false };
-  }
-  if (typeof loadProject !== 'function') {
-    return { name: trimmed, changed: false };
-  }
-  let existingProjects;
-  try {
-    existingProjects = loadProject();
-  } catch (projectReadError) {
-    console.warn('Unable to inspect existing projects during shared import', projectReadError);
-    existingProjects = null;
-  }
-  if (!existingProjects || typeof existingProjects !== 'object') {
-    return { name: trimmed, changed: false };
-  }
-  const normalizedExisting = new Set(
-    Object.keys(existingProjects)
-      .map((key) => (typeof key === 'string' ? key.trim().toLowerCase() : ''))
-      .filter((key) => key),
-  );
-  const normalizedCandidate = trimmed.toLowerCase();
-  if (!normalizedExisting.has(normalizedCandidate)) {
-    return { name: trimmed, changed: false };
-  }
-  let suffix = 2;
-  let candidate = `${trimmed} (${suffix})`;
-  let normalizedCandidateWithSuffix = candidate.trim().toLowerCase();
-  while (normalizedExisting.has(normalizedCandidateWithSuffix)) {
-    suffix += 1;
-    candidate = `${trimmed} (${suffix})`;
-    normalizedCandidateWithSuffix = candidate.trim().toLowerCase();
-  }
-  return { name: candidate, changed: true };
+  return ProjectImportManager.resolveProjectNameCollisionForImport(baseName, cineStorage ? cineStorage.loadProject : null);
 }
 
 function applySharedSetup(shared, options = {}) {
@@ -16148,56 +16003,30 @@ const setupHelpSystem = () => {
 
 
 
+
+  // Initialize Feature Search Manager
+  FeatureSearchManager.init({
+    focusHandler: (el) => {
+      if (typeof focusFeatureElement === 'function') {
+        focusFeatureElement(el);
+      } else {
+        // Fallback if local function unavailable
+        if (el && typeof el.focus === 'function') {
+          try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); }
+        }
+      }
+    }
+  });
+
   const focusFeatureSearchInput = () => {
-    if (!featureSearch) return;
-    const sideMenu = document.getElementById('sideMenu');
-    if (sideMenu?.contains(featureSearch)) {
-      openSideMenu();
-    }
-    if (typeof featureSearch.scrollIntoView === 'function') {
-      featureSearch.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-    try {
-      featureSearch.focus({ preventScroll: true });
-    } catch {
-      featureSearch.focus();
-    }
-    if (typeof featureSearch.select === 'function') {
-      featureSearch.select();
-    }
-    if (!featureSearch.hasAttribute('data-skip-native-picker')) {
-      safeShowPicker(featureSearch);
+    if (FeatureSearchManager.elements.input) {
+      FeatureSearchManager.focusFeatureElement(FeatureSearchManager.elements.input);
     }
   };
 
-  const searchKey = str => {
-    if (typeof str !== 'string' || !str) return '';
-    return str.toLowerCase().replace(/[^a-z0-9]/g, '');
-  };
+  const updateFeatureSearchValue = (label, query) => FeatureSearchManager.updateFeatureSearchValue(label, query);
 
-  const searchTokens = str => {
-    if (typeof str !== 'string' || !str) return new Set();
-    return new Set(str.toLowerCase().split(/[\s\-_]+/).filter(Boolean));
-  };
-
-  const findBestSearchMatch = (map, key, tokens) => {
-    if (!map || !key) return null;
-    // Simplified match logic to prevent crash
-    return null;
-  };
-
-  const updateFeatureSearchValue = (label, query) => {
-    if (featureSearch) featureSearch.value = label;
-  };
-
-
-
-
-
-  const normalizeSearchValue = val => {
-    if (typeof val !== 'string') return '';
-    return val.trim().toLowerCase();
-  };
+  const normalizeSearchValue = (val) => FeatureSearchManager.normalizeSearchValue(val);
 
   function normalizeGearNameForComparison(name) {
     if (typeof name !== 'string') return '';
@@ -16206,234 +16035,9 @@ const setupHelpSystem = () => {
   if (typeof window !== 'undefined') {
     window.normalizeGearNameForComparison = normalizeGearNameForComparison;
   }
-  const recordFeatureSearchUsage = (key, type, label) => {
-    // Placeholder for usage tracking
-    if (typeof console !== 'undefined' && console.debug) {
-      console.debug('Search usage:', key, type, label);
-    }
-  };
+  const recordFeatureSearchUsage = (key, type, label) => FeatureSearchManager.recordFeatureSearchUsage(key, type, label);
 
-  runFeatureSearch = query => {
-    const rawQuery = typeof query === 'string' ? query : featureSearch?.value || '';
-    const originalNormalized = normalizeSearchValue(rawQuery);
-    const value = rawQuery.trim();
-    if (!value) return;
-    const hasFilterHelper = typeof extractFeatureSearchFilter === 'function';
-    const filterData = hasFilterHelper
-      ? extractFeatureSearchFilter(value)
-      : { filterType: null, queryText: value };
-    const filterType = filterData?.filterType || null;
-    const filteredQuery = filterType ? filterData.queryText : value;
-    const normalizedFiltered = typeof filteredQuery === 'string' ? filteredQuery.trim() : '';
-    const lower = value.toLowerCase();
-    const isHelpSuggestion = lower.endsWith(' (help)');
-    const cleanSource = isHelpSuggestion
-      ? value.slice(0, -7).trim()
-      : normalizedFiltered || (typeof filteredQuery === 'string' ? filteredQuery.trim() : '');
-    if (filterType === 'help' && !isHelpSuggestion && !cleanSource) {
-      openHelp();
-      if (helpSearch) {
-        helpSearch.value = '';
-        filterHelp();
-        helpSearch.focus();
-      }
-      return;
-    }
-    const clean = cleanSource || (filterType ? '' : value);
-    const cleanKey = searchKey(clean);
-    const cleanTokens = searchTokens(clean);
-
-    const helpMatch = findBestSearchMatch(helpMap, cleanKey, cleanTokens);
-    const deviceMatch = findBestSearchMatch(deviceMap, cleanKey, cleanTokens);
-    const featureOnlyMatch = findBestSearchMatch(featureMap, cleanKey, cleanTokens);
-    const actionMatch = findBestSearchMatch(actionMap, cleanKey, cleanTokens);
-    const featureMatch = (() => {
-      if (filterType === 'feature') return featureOnlyMatch;
-      if (filterType === 'action') return actionMatch;
-      if (!actionMatch) return featureOnlyMatch;
-      if (!featureOnlyMatch) return actionMatch;
-      if (actionMatch.score > featureOnlyMatch.score) return actionMatch;
-      if (featureOnlyMatch.score > actionMatch.score) return featureOnlyMatch;
-      return actionMatch;
-    })();
-    const helpScore = helpMatch?.score || 0;
-    const deviceScore = deviceMatch?.score || 0;
-    const strongSearchMatchTypes =
-      typeof STRONG_SEARCH_MATCH_TYPES !== 'undefined' &&
-        STRONG_SEARCH_MATCH_TYPES instanceof Set
-        ? STRONG_SEARCH_MATCH_TYPES
-        : FALLBACK_STRONG_SEARCH_MATCH_TYPES;
-
-    const deviceStrong = deviceMatch ? strongSearchMatchTypes.has(deviceMatch.matchType) : false;
-    const filterTargetsDevices = filterType === 'device';
-    const filterTargetsActions = filterType === 'action';
-    const filterTargetsFeatures = filterType === 'feature';
-    const filterBlocksDevices = filterTargetsFeatures || filterTargetsActions;
-    const normalizedFeatureMatch = (() => {
-      if (!featureMatch) return null;
-      const entry = featureMatch.value;
-      if (!entry) return null;
-      const entryType = entry.entryType || 'feature';
-      if (entryType === 'device') return null;
-      if (filterTargetsDevices) return null;
-      if (filterTargetsFeatures && entryType !== 'feature') return null;
-      if (filterTargetsActions && entryType !== 'action') return null;
-      return { match: featureMatch, entryType, entry };
-    })();
-    const fallbackFeatureMatch =
-      featureMatch && featureMatch.value && featureMatch.value.entryType !== 'device'
-        ? featureMatch
-        : null;
-    const featureMatchForComparison = normalizedFeatureMatch?.match || fallbackFeatureMatch;
-    const featureScore = featureMatchForComparison?.score || 0;
-    const featureStrong = featureMatchForComparison
-      ? strongSearchMatchTypes.has(featureMatchForComparison.matchType)
-      : false;
-    const bestNonHelpScore = Math.max(deviceScore, featureScore);
-    const hasStrongNonHelp = deviceStrong || featureStrong;
-    const preferHelp =
-      !!helpMatch &&
-      (isHelpSuggestion || filterType === 'help' || (!hasStrongNonHelp && helpScore > bestNonHelpScore));
-
-    if (!isHelpSuggestion && !preferHelp) {
-      const featureMatchType = featureMatchForComparison?.matchType;
-      const shouldUseDevice =
-        (!filterBlocksDevices &&
-          (!!deviceMatch &&
-            (!featureMatchForComparison ||
-              (deviceStrong && !featureStrong) ||
-              (deviceStrong === featureStrong &&
-                (deviceScore > featureScore ||
-                  (deviceScore === featureScore && featureMatchType !== 'exactKey')))))) ||
-        (filterTargetsDevices && !!deviceMatch);
-      if (shouldUseDevice) {
-        const device = deviceMatch.value;
-        if (device && device.select) {
-          device.select.value = device.value;
-          device.select.dispatchEvent(new Event('change', { bubbles: true }));
-          if (device.label) {
-            updateFeatureSearchValue(device.label, originalNormalized);
-          }
-          if (typeof recordFeatureSearchUsage === 'function') {
-            let deviceLabel = device.label;
-            if (!deviceLabel && device.select) {
-              const selectedOption = Array.from(device.select.options || []).find(opt => opt.value === device.value);
-              if (selectedOption && selectedOption.textContent) {
-                deviceLabel = selectedOption.textContent.trim();
-              }
-            }
-            recordFeatureSearchUsage(deviceMatch.key, 'device', deviceLabel);
-          }
-          focusFeatureElement(device.select);
-          const highlightTargets = [
-            device.select,
-            ...findAssociatedLabelElements(device.select)
-          ];
-          highlightFeatureSearchTargets(highlightTargets);
-          return;
-        }
-        if (device && device.entryType === 'deviceLibrary' && (device.element || device.rawElement)) {
-          const deviceLabel = device.label || clean;
-          if (deviceLabel) {
-            updateFeatureSearchValue(deviceLabel, originalNormalized);
-          }
-          if (typeof recordFeatureSearchUsage === 'function') {
-            recordFeatureSearchUsage(deviceMatch.key, 'device', deviceLabel);
-          }
-          if (typeof device.focusLibraryEntry === 'function') {
-            device.focusLibraryEntry();
-          }
-          const focusTarget = device.element || device.rawElement;
-          if (focusTarget) {
-            focusFeatureElement(focusTarget);
-            const highlightTargets = [
-              focusTarget,
-              ...findAssociatedLabelElements(focusTarget)
-            ];
-            highlightFeatureSearchTargets(highlightTargets);
-          }
-          if (typeof device.highlightLibraryEntry === 'function') {
-            device.highlightLibraryEntry();
-          }
-          return;
-        }
-      }
-      if (normalizedFeatureMatch) {
-        const feature = normalizedFeatureMatch.entry;
-        const featureEl = feature?.element || feature;
-        if (featureEl) {
-          const label = feature?.label || featureEl.textContent?.trim();
-          if (label) {
-            updateFeatureSearchValue(label, originalNormalized);
-          }
-          if (typeof recordFeatureSearchUsage === 'function') {
-            const type = normalizedFeatureMatch.entryType || 'feature';
-            const usageKey = normalizedFeatureMatch.match?.key || featureMatch?.key;
-            recordFeatureSearchUsage(usageKey, type, label);
-          }
-          focusFeatureElement(featureEl);
-          const highlightTargets = [
-            featureEl,
-            ...findAssociatedLabelElements(featureEl)
-          ];
-          highlightFeatureSearchTargets(highlightTargets);
-          return;
-        }
-      }
-    }
-    if (helpMatch) {
-      const helpEntry = helpMatch.value || {};
-      const section = helpEntry.section;
-      if (typeof recordFeatureSearchUsage === 'function') {
-        recordFeatureSearchUsage(helpMatch.key, 'help', helpEntry.label);
-      }
-      openHelp();
-      if (helpSearch) {
-        helpSearch.value = clean;
-        filterHelp();
-      }
-      if (section) {
-        if (section.hasAttribute('hidden')) {
-          section.removeAttribute('hidden');
-          if (helpNoResults) {
-            helpNoResults.setAttribute('hidden', '');
-          }
-          if (typeof helpNoResultsSuggestions !== 'undefined' && helpNoResultsSuggestions) {
-            helpNoResultsSuggestions.setAttribute('hidden', '');
-          }
-          syncHelpQuickLinksVisibility();
-        }
-        if (typeof section.scrollIntoView === 'function') {
-          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-        highlightHelpSection(section);
-        const sectionHeading =
-          section.querySelector('h3, summary, h4, h5, h6, [role="heading"]') ||
-          section.querySelector('button, a');
-        if (sectionHeading) {
-          highlightFeatureSearchTargets([sectionHeading]);
-        } else {
-          highlightFeatureSearchTargets([section]);
-        }
-        const quickLink = section.id ? helpQuickLinkItems.get(section.id) : null;
-        if (helpQuickLinksList) {
-          helpQuickLinksList
-            .querySelectorAll('.help-quick-link.active')
-            .forEach(btn => btn.classList.remove('active'));
-        }
-        if (quickLink && quickLink.button) {
-          quickLink.button.classList.add('active');
-        }
-      }
-      return;
-    }
-    openHelp();
-    if (helpSearch) {
-      helpSearch.value = clean;
-      filterHelp();
-      highlightFeatureSearchTargets([helpSearch]);
-    }
-  };
+  runFeatureSearch = (query) => FeatureSearchManager.runFeatureSearch(query);
 
   if (featureSearch) {
     const featureSearchDropdown = document.getElementById('featureSearchDropdown');
@@ -17396,2205 +17000,1791 @@ function populateLensDropdown() {
     return;
   }
 
-  // Use local variable for safety
-  const targetSelect = resolvedLensSelect;
+  // --- LENS AND CAPABILITY LOGIC ---
 
-  const normalizeFocusScaleValue = (value) => {
-    if (typeof value !== 'string') {
-      return '';
-    }
-    const normalized = value.trim().toLowerCase();
-    return normalized === 'imperial' || normalized === 'metric' ? normalized : '';
-  };
-  const resolveFocusScaleMode = () => {
-    const scope =
-      (typeof globalThis !== 'undefined' && globalThis)
-      || (typeof window !== 'undefined' && window)
-      || (typeof self !== 'undefined' && self)
-      || (typeof global !== 'undefined' && global)
-      || null;
-    const scopePreference = scope && typeof scope.focusScalePreference === 'string'
-      ? scope.focusScalePreference
-      : null;
-    const fallbackPreference =
-      typeof sessionFocusScale !== 'undefined' && sessionFocusScale
-        ? sessionFocusScale
-        : typeof focusScalePreference === 'string'
-          ? focusScalePreference
-          : null;
-    const rawPreference = scopePreference || fallbackPreference || 'metric';
-    if (typeof normalizeFocusScale === 'function') {
-      try {
-        const normalized = normalizeFocusScale(rawPreference);
-        if (normalized === 'imperial' || normalized === 'metric') {
-          return normalized;
-        }
-      } catch (normalizeError) {
-        void normalizeError;
-      }
-    }
-    const normalized = normalizeFocusScaleValue(rawPreference);
-    return normalized || 'metric';
-  };
-  const focusScaleMode = resolveFocusScaleMode();
-  const useImperialFocusScale = focusScaleMode === 'imperial';
-  const resolveLensFocusScaleMode = (lens) => {
-    if (!lens || typeof lens !== 'object') {
-      return focusScaleMode;
-    }
-    if (typeof normalizeFocusScale === 'function') {
-      try {
-        const normalized = normalizeFocusScale(lens.focusScale);
-        if (normalized === 'imperial' || normalized === 'metric') {
-          return normalized;
-        }
-      } catch (lensNormalizeError) {
-        void lensNormalizeError;
-      }
-    }
-    const override = normalizeFocusScaleValue(lens.focusScale);
-    return override || focusScaleMode;
-  };
-  const { lang: focusScaleLang } = resolveCompatibilityTexts();
-  const formatLensNumber = (value, options = {}) => {
-    const numeric = typeof value === 'string' ? Number(value) : value;
-    if (!Number.isFinite(numeric)) {
-      return '';
-    }
-    const maximumFractionDigits = typeof options.maximumFractionDigits === 'number'
-      ? options.maximumFractionDigits
-      : 0;
-    const minimumFractionDigits = typeof options.minimumFractionDigits === 'number'
-      ? options.minimumFractionDigits
-      : Math.min(0, maximumFractionDigits);
-    if (typeof Intl !== 'undefined' && typeof Intl.NumberFormat === 'function') {
-      try {
-        return new Intl.NumberFormat(focusScaleLang, {
-          maximumFractionDigits,
-          minimumFractionDigits,
-        }).format(numeric);
-      } catch (formatError) {
-        void formatError;
-      }
-    }
-    const digits = Math.max(minimumFractionDigits, Math.min(20, maximumFractionDigits));
-    try {
-      return numeric.toFixed(digits);
-    } catch (toFixedError) {
-      void toFixedError;
-    }
-    return String(numeric);
-  };
-  const formatLensWeight = (value, mode = focusScaleMode) => {
-    const numeric = typeof value === 'string' ? Number(value) : value;
-    if (!Number.isFinite(numeric)) {
-      return '';
-    }
-    const useImperial = mode === 'imperial';
-    if (useImperial) {
-      const pounds = numeric / 453.59237;
-      const digits = pounds >= 10 ? 1 : 2;
-      const formatted = formatLensNumber(pounds, { maximumFractionDigits: digits, minimumFractionDigits: 0 });
-      return formatted ? `${formatted} lb` : '';
-    }
-    const formatted = formatLensNumber(numeric, { maximumFractionDigits: 0, minimumFractionDigits: 0 });
-    return formatted ? `${formatted} g` : '';
-  };
-  const formatLensDiameter = (value, mode = focusScaleMode) => {
-    const numeric = typeof value === 'string' ? Number(value) : value;
-    if (!Number.isFinite(numeric)) {
-      return '';
-    }
-    const useImperial = mode === 'imperial';
-    if (useImperial) {
-      const inches = numeric / 25.4;
-      const digits = inches >= 10 ? 1 : 2;
-      const formatted = formatLensNumber(inches, { maximumFractionDigits: digits, minimumFractionDigits: 0 });
-      return formatted ? `${formatted} in` : '';
-    }
-    const formatted = formatLensNumber(numeric, { maximumFractionDigits: 1, minimumFractionDigits: 0 });
-    return formatted ? `${formatted} mm` : '';
-  };
-  const formatLensMinFocus = (value, mode = focusScaleMode) => {
-    const numeric = typeof value === 'string' ? Number(value) : value;
-    if (!Number.isFinite(numeric)) {
-      return '';
-    }
-    const useImperial = mode === 'imperial';
-    if (useImperial) {
-      const feet = numeric * 3.280839895;
-      const digits = feet < 10 ? 2 : 1;
-      const formatted = formatLensNumber(feet, { maximumFractionDigits: digits, minimumFractionDigits: digits });
-      return formatted ? `${formatted} ft` : '';
-    }
-    const digits = numeric < 1 ? 2 : 1;
-    const formatted = formatLensNumber(numeric, { maximumFractionDigits: digits, minimumFractionDigits: digits });
-    return formatted ? `${formatted} m` : '';
-  };
+  function populateLensDropdown(resolvedLensSelect, detail = {}) {
+    // Use DeviceCapabilityManager to handle population
+    // detail.sessionFocusScale and detail.globalPreference might need to be resolved or passed
 
-  const devices = (typeof window !== 'undefined' && window.devices) || {};
+    // Resolve preferences locally to pass to manager or let manager resolve them (manager resolves window.* preferences)
+    // But sessionFocusScale is a local variable in original code if it was global. 
+    // Wait, sessionFocusScale was a variable in `resolveFocusScaleMode` scope?
+    // Original code: `typeof sessionFocusScale !== 'undefined' && sessionFocusScale`
+    // `sessionFocusScale` seems to be expected as a global.
 
-  const lensData =
-    (devices && devices.lenses && Object.keys(devices.lenses).length ? devices.lenses : null)
-    || (devices && devices.accessories && devices.accessories.lenses)
-    || null;
+    const options = {
+      devices: (typeof window !== 'undefined' ? window.devices : {}),
+      sessionFocusScale: (typeof sessionFocusScale !== 'undefined' ? sessionFocusScale : undefined),
+      // globalPreference derived from window inside manager
+    };
 
-  if (!lensData || Object.keys(lensData).length === 0) {
-    return;
+    DeviceCapabilityManager.populateLensDropdown(resolvedLensSelect, options);
   }
 
-  const previousSelection = new Set(Array.from(targetSelect.selectedOptions || []).map(opt => opt.value));
-
-  const fragment = document.createDocumentFragment();
-
-  if (!targetSelect.multiple) {
-    const emptyOpt = document.createElement('option');
-    emptyOpt.value = '';
-    fragment.appendChild(emptyOpt);
-  }
-
-  const lensNames = Object.keys(lensData);
-  const sortFn = typeof localeSort === 'function' ? localeSort : undefined;
-  lensNames.sort(sortFn);
-
-  for (let index = 0; index < lensNames.length; index += 1) {
-    const name = lensNames[index];
-    const opt = document.createElement('option');
-    opt.value = name;
-    const lens = lensData[name] || {};
-    const lensFocusScaleMode = resolveLensFocusScaleMode(lens);
-    const attrs = [];
-    const formattedWeight = formatLensWeight(lens.weight_g, lensFocusScaleMode);
-    if (formattedWeight) attrs.push(formattedWeight);
-    if (lens.clampOn) {
-      if (lens.frontDiameterMm) {
-        const formattedDiameter = formatLensDiameter(lens.frontDiameterMm, lensFocusScaleMode);
-        attrs.push(formattedDiameter ? `${formattedDiameter} clamp-on` : 'clamp-on');
-      }
-      else attrs.push('clamp-on');
-    } else if (lens.clampOn === false) {
-      attrs.push('no clamp-on');
-    }
-    const minFocus = lens.minFocusMeters ?? lens.minFocus ?? (lens.minFocusCm ? lens.minFocusCm / 100 : null);
-    if (Number.isFinite(minFocus) && minFocus > 0) {
-      const formattedMinFocus = formatLensMinFocus(minFocus, lensFocusScaleMode);
-      if (formattedMinFocus) {
-        attrs.push(`${formattedMinFocus} min focus`);
-      }
-    }
-    opt.textContent = attrs.length ? `${name} (${attrs.join(', ')})` : name;
-    if (previousSelection.has(name)) {
-      opt.selected = true;
-    }
-    fragment.appendChild(opt);
-  }
-
-  targetSelect.innerHTML = '';
-  targetSelect.appendChild(fragment);
-
-  if (typeof updateLensWorkflowCatalog === 'function') {
-    try {
-      updateLensWorkflowCatalog({ preserveSelections: true, skipEvent: true, skipDirty: true });
-    } catch (catalogError) {
-      void catalogError;
-    }
-  }
-}
-
-function populateCameraPropertyDropdown(selectId, property, selected = '') {
-  const populate = (dropdown) => {
-    dropdown.innerHTML = '';
-    const emptyOpt = document.createElement('option');
-    emptyOpt.value = '';
-    dropdown.appendChild(emptyOpt);
-
+  function populateCameraPropertyDropdown(selectId, property, selected = '') {
     const camKey = (typeof cameraSelect !== 'undefined' && cameraSelect) ? cameraSelect.value : '';
-    // Fix for potential ReferenceError: devices is not defined
-    const safeDevices = (typeof window !== 'undefined' && window.devices) || {};
-    const values =
-      camKey && safeDevices && safeDevices.cameras && safeDevices.cameras[camKey]
-        ? safeDevices.cameras[camKey][property]
-        : null;
-    if (Array.isArray(values)) {
-      values.forEach(v => {
-        const opt = document.createElement('option');
-        opt.value = v;
-        opt.textContent = v;
-        if (v === selected) opt.selected = true;
-        dropdown.appendChild(opt);
-      });
-    }
-  };
-
-  const dropdown = document.getElementById(selectId);
-  if (dropdown) {
-    populate(dropdown);
-  } else if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
-    cineCoreUiHelpers.whenElementAvailable(selectId, populate);
-  }
-}
-
-
-function populateRecordingResolutionDropdown(selected = '') {
-  populateCameraPropertyDropdown('recordingResolution', 'resolutions', selected);
-}
-if (typeof window !== 'undefined') {
-  window.populateRecordingResolutionDropdown = populateRecordingResolutionDropdown;
-} else if (typeof globalThis !== 'undefined') {
-  globalThis.populateRecordingResolutionDropdown = populateRecordingResolutionDropdown;
-}
-
-
-const recordingFrameRateInput =
-  typeof document !== 'undefined'
-    ? document.getElementById('recordingFrameRate')
-    : null;
-
-const recordingFrameRateHint =
-  typeof document !== 'undefined'
-    ? document.getElementById('recordingFrameRateHint')
-    : null;
-
-const recordingFrameRateOptionsList =
-  typeof document !== 'undefined'
-    ? document.getElementById('recordingFrameRateOptions')
-    : null;
-
-slowMotionRecordingFrameRateInput =
-  typeof document !== 'undefined'
-    ? document.getElementById('slowMotionRecordingFrameRate')
-    : null;
-
-slowMotionRecordingFrameRateHint =
-  typeof document !== 'undefined'
-    ? document.getElementById('slowMotionRecordingFrameRateHint')
-    : null;
-
-slowMotionRecordingFrameRateOptionsList =
-  typeof document !== 'undefined'
-    ? document.getElementById('slowMotionRecordingFrameRateOptions')
-    : null;
-
-sensorModeDropdown =
-  typeof document !== 'undefined'
-    ? document.getElementById('sensorMode')
-    : null;
-
-slowMotionSensorModeDropdown =
-  typeof document !== 'undefined'
-    ? document.getElementById('slowMotionSensorMode')
-    : null;
-
-recordingResolutionDropdown =
-  typeof document !== 'undefined'
-    ? document.getElementById('recordingResolution')
-    : null;
-
-slowMotionRecordingResolutionDropdown =
-  typeof document !== 'undefined'
-    ? document.getElementById('slowMotionRecordingResolution')
-    : null;
-
-slowMotionAspectRatioSelect =
-  typeof document !== 'undefined'
-    ? document.getElementById('slowMotionAspectRatio')
-    : null;
-
-const PREFERRED_FRAME_RATE_VALUES = Object.freeze([
-  0.75,
-  1,
-  8,
-  12,
-  12.5,
-  15,
-  23.976,
-  24,
-  25,
-  29.97,
-  30,
-  47.952,
-  48,
-  50,
-  59.94,
-  60,
-  72,
-  75,
-  90,
-  96,
-  100,
-  110,
-  112,
-  120,
-  144,
-  150,
-  160,
-  170,
-  180,
-  200,
-  240,
-]);
-
-const FALLBACK_FRAME_RATE_VALUES = Object.freeze([
-  '0.75',
-  '1',
-  '8',
-  '12',
-  '12.5',
-  '15',
-  '23.976',
-  '24',
-  '25',
-  '29.97',
-  '30',
-  '48',
-  '50',
-  '59.94',
-  '60',
-  '72',
-  '75',
-  '90',
-  '96',
-  '100',
-  '110',
-  '112',
-  '120',
-  '144',
-  '150',
-  '160',
-  '170',
-  '180',
-  '200',
-  '240',
-]);
-
-const MIN_RECORDING_FRAME_RATE = 1;
-const FRAME_RATE_RANGE_TOLERANCE = 0.0005;
-
-function formatFrameRateValue(value) {
-  const numeric = typeof value === 'number' ? value : Number.parseFloat(value);
-  if (!Number.isFinite(numeric)) return '';
-  const rounded = Math.round(numeric * 1000) / 1000;
-  if (Number.isInteger(rounded)) {
-    return String(rounded);
-  }
-  return rounded.toFixed(3).replace(/\.0+$/, '').replace(/(\.\d*?)0+$/, '$1');
-}
-
-function tokenizeFrameRateContext(value) {
-  if (typeof value !== 'string' || !value) return [];
-
-  const normalizedValue = value.toLowerCase();
-  const baseTokens = normalizedValue
-    .replace(/[\u2013\u2014]/g, '-')
-    .replace(/[()]/g, ' ')
-    .replace(/[[\]]/g, ' ')
-    .split(/[\s,/]+/)
-    .map(token => token.replace(/[^a-z0-9:.+-]/g, '').replace(/^[:.+-]+|[:.+-]+$/g, ''))
-    .filter(token => token && token !== 'fps');
-
-  const tokens = new Set(baseTokens);
-  const addAliasToken = alias => {
-    if (!alias) return;
-    const normalizedAlias = alias.replace(/[^a-z0-9]/g, '');
-    if (normalizedAlias) {
-      tokens.add(normalizedAlias);
-    }
-  };
-
-  const resolutionValue = normalizedValue.replace(/\u00d7/g, 'x');
-  const compactValue = resolutionValue.replace(/\s+/g, '');
-  const includes = text => resolutionValue.includes(text);
-  const compactIncludes = text => compactValue.includes(text);
-
-  if (
-    includes('uhd') ||
-    includes('ultra hd') ||
-    compactIncludes('ultrahd') ||
-    /3840\s*x\s*2160/.test(resolutionValue)
-  ) {
-    addAliasToken('uhd');
-    addAliasToken('4k');
+    DeviceCapabilityManager.populateCameraPropertyDropdown(selectId, property, selected, camKey);
   }
 
-  if (
-    includes('dci') ||
-    /4096\s*x\s*2160/.test(resolutionValue)
-  ) {
-    addAliasToken('dci');
-    addAliasToken('4k');
+
+  function populateRecordingResolutionDropdown(selected = '') {
+    populateCameraPropertyDropdown('recordingResolution', 'resolutions', selected);
+  }
+  if (typeof window !== 'undefined') {
+    window.populateRecordingResolutionDropdown = populateRecordingResolutionDropdown;
+  } else if (typeof globalThis !== 'undefined') {
+    globalThis.populateRecordingResolutionDropdown = populateRecordingResolutionDropdown;
   }
 
-  if (
-    compactIncludes('2048x1080') ||
-    /2048\s*x\s*1080/.test(resolutionValue) ||
-    /(?:^|[^a-z0-9])2k(?:[^a-z0-9]|$)/.test(resolutionValue)
-  ) {
-    addAliasToken('2k');
-    addAliasToken('dci');
-  }
 
-  if (
-    compactIncludes('fullhd') ||
-    includes('full hd') ||
-    includes('full-hd') ||
-    includes('fhd') ||
-    includes('1080p') ||
-    /1920\s*x\s*1080/.test(resolutionValue)
-  ) {
-    addAliasToken('hd');
-    addAliasToken('fhd');
-    addAliasToken('1080p');
-  }
-
-  if (
-    includes('720p') ||
-    /1280\s*x\s*720/.test(resolutionValue)
-  ) {
-    addAliasToken('hd');
-    addAliasToken('720p');
-  }
-
-  if (/(?:^|[^a-z0-9])6k(?:[^a-z0-9]|$)/.test(resolutionValue)) {
-    addAliasToken('6k');
-  }
-
-  if (/(?:^|[^a-z0-9])8k(?:[^a-z0-9]|$)/.test(resolutionValue)) {
-    addAliasToken('8k');
-  }
-
-  if (/(?:^|[^a-z0-9])4k(?:[^a-z0-9]|$)/.test(resolutionValue) || includes('4k')) {
-    addAliasToken('4k');
-  }
-
-  return Array.from(tokens);
-}
-
-function normalizeMatchTarget(value) {
-  if (typeof value !== 'string' || !value) {
-    return '';
-  }
-  return value.toLowerCase().replace(/[^a-z0-9]/g, '');
-}
-
-function includePreferredValuesForRange(minValue, maxValue, set) {
-  if (!Number.isFinite(minValue) || !Number.isFinite(maxValue) || !set) {
-    return;
-  }
-  const low = Math.min(minValue, maxValue);
-  const high = Math.max(minValue, maxValue);
-  PREFERRED_FRAME_RATE_VALUES.forEach(candidate => {
-    if (candidate >= low - 0.0005 && candidate <= high + 0.0005) {
-      const formatted = formatFrameRateValue(candidate);
-      if (formatted) {
-        set.add(formatted);
-      }
-    }
-  });
-}
-
-function parseFrameRateNumericValues(entry) {
-  if (typeof entry !== 'string' || !entry.trim()) {
-    return [];
-  }
-
-  const normalized = entry.replace(/[\u2013\u2014]/g, '-');
-  const parts = normalized.split(':');
-  const numericSection = parts.length > 1 ? parts.slice(1).join(':') : normalized;
-  const values = new Set();
-
-  const rangePattern = /(\d+(?:\.\d+)?)(?:\s*(?:-|to)\s*)(\d+(?:\.\d+)?)(?=\s*(?:fps|FPS))/g;
-  let match = rangePattern.exec(numericSection);
-  while (match) {
-    const minStr = match[1];
-    const maxStr = match[2];
-    const minVal = Number.parseFloat(minStr);
-    const maxVal = Number.parseFloat(maxStr);
-    const minFormatted = formatFrameRateValue(minVal);
-    const maxFormatted = formatFrameRateValue(maxVal);
-    if (minFormatted) values.add(minFormatted);
-    if (maxFormatted) values.add(maxFormatted);
-    includePreferredValuesForRange(minVal, maxVal, values);
-    match = rangePattern.exec(numericSection);
-  }
-
-  const upToPattern = /(?:up to|≤|<=|less than|max(?:imum)?(?:\s*of)?)\s*(\d+(?:\.\d+)?)(?=\s*(?:fps|FPS))/gi;
-  while ((match = upToPattern.exec(numericSection))) {
-    const formatted = formatFrameRateValue(match[1]);
-    if (formatted) {
-      values.add(formatted);
-      includePreferredValuesForRange(0, Number.parseFloat(match[1]), values);
-    }
-  }
-
-  const explicitPattern = /(\d+(?:\.\d+)?)(?=\s*(?:fps|FPS))/g;
-  while ((match = explicitPattern.exec(numericSection))) {
-    const formatted = formatFrameRateValue(match[1]);
-    if (formatted) {
-      values.add(formatted);
-    }
-  }
-
-  if (!values.size) {
-    const commaSection = numericSection.split('fps')[0] || numericSection;
-    const listPattern = /(\d+(?:\.\d+)?)/g;
-    while ((match = listPattern.exec(commaSection))) {
-      const formatted = formatFrameRateValue(match[1]);
-      if (formatted) {
-        values.add(formatted);
-      }
-    }
-  }
-
-  return Array.from(values);
-}
-
-function normalizeRecordingFrameRateValue(value) {
-  if (typeof value === 'number' && Number.isFinite(value)) {
-    return formatFrameRateValue(value);
-  }
-  if (typeof value !== 'string') return '';
-  const trimmed = value.trim();
-  if (!trimmed) return '';
-  const numericMatch = trimmed.match(/-?\d+(?:\.\d+)?/);
-  if (!numericMatch) {
-    return trimmed;
-  }
-  return formatFrameRateValue(numericMatch[0]) || trimmed;
-}
-
-function buildFrameRateSuggestions(entries, contextTokens) {
-  const suggestions = new Map();
-  const groups = contextTokens.filter(group => Array.isArray(group) && group.length);
-
-  entries.forEach((entry) => {
-    if (typeof entry !== 'string') return;
-    const cleaned = entry.trim();
-    if (!cleaned) return;
-    const [label] = cleaned.split(':');
-    const entryTokens = tokenizeFrameRateContext(label);
-    const numericValues = parseFrameRateNumericValues(cleaned);
-    const baseScore = entryTokens.length ? 1 : 0;
-    let score = baseScore;
-    if (groups.length && entryTokens.length) {
-      const tokenSet = new Set(entryTokens);
-      groups.forEach(group => {
-        let matches = 0;
-        group.forEach(token => {
-          if (tokenSet.has(token)) {
-            matches += 1;
-          }
-        });
-        if (matches) {
-          score += matches * 3;
-          if (matches === group.length) {
-            score += 2;
-          }
-        }
-      });
-    }
-
-    numericValues.forEach(rawValue => {
-      const formatted = formatFrameRateValue(rawValue);
-      if (!formatted) return;
-      const existing = suggestions.get(formatted);
-      if (!existing || score > existing.score) {
-        suggestions.set(formatted, { score, label: cleaned, tokens: entryTokens });
-      }
-    });
-  });
-
-  if (!suggestions.size) {
-    return {
-      values: Array.from(FALLBACK_FRAME_RATE_VALUES),
-      metadata: new Map(),
-    };
-  }
-
-  const sortedEntries = Array.from(suggestions.entries()).sort((a, b) => {
-    if (b[1].score !== a[1].score) {
-      return b[1].score - a[1].score;
-    }
-    const aNum = Number.parseFloat(a[0]);
-    const bNum = Number.parseFloat(b[0]);
-    if (Number.isFinite(aNum) && Number.isFinite(bNum)) {
-      return aNum - bNum;
-    }
-    return a[0].localeCompare(b[0]);
-  });
-
-  return {
-    values: sortedEntries.map(([value]) => value),
-    metadata: new Map(sortedEntries),
-  };
-}
-
-function findMaxFrameRateForSensor(entries, sensorTokens, sensorLabel = '') {
-  if (!Array.isArray(entries) || !entries.length) {
-    return null;
-  }
-  if (!Array.isArray(sensorTokens) || !sensorTokens.length) {
-    return null;
-  }
-
-  const sensorTokenSet = new Set(sensorTokens);
-  if (!sensorTokenSet.size) {
-    return null;
-  }
-
-  const normalizedSensorLabel = normalizeMatchTarget(sensorLabel);
-  const normalizedSensorTokens = new Set(
-    sensorTokens
-      .map(normalizeMatchTarget)
-      .filter(Boolean)
-  );
-
-  let bestMatchScore = 0;
-  let bestMaxValue = Number.NEGATIVE_INFINITY;
-
-  entries.forEach(entry => {
-    if (typeof entry !== 'string') return;
-    const cleaned = entry.trim();
-    if (!cleaned) return;
-
-    const [label] = cleaned.split(':');
-    const entryTokens = tokenizeFrameRateContext(label);
-    const numericValues = parseFrameRateNumericValues(cleaned)
-      .map(value => Number.parseFloat(value))
-      .filter(Number.isFinite);
-
-    if (!numericValues.length) {
-      return;
-    }
-
-    let matchScore = 0;
-    const normalizedEntryLabel = normalizeMatchTarget(label);
-    const normalizedEntryTokens = entryTokens
-      .map(normalizeMatchTarget)
-      .filter(Boolean);
-
-    entryTokens.forEach(token => {
-      if (sensorTokenSet.has(token)) {
-        matchScore += 4;
-      }
-    });
-
-    normalizedEntryTokens.forEach(entryToken => {
-      if (normalizedSensorTokens.has(entryToken)) {
-        matchScore += 2;
-        return;
-      }
-      for (const sensorToken of normalizedSensorTokens) {
-        if (sensorToken && entryToken.includes(sensorToken)) {
-          matchScore += 1;
-          break;
-        }
-      }
-    });
-
-    if (
-      normalizedSensorLabel &&
-      normalizedEntryLabel &&
-      normalizedEntryLabel.includes(normalizedSensorLabel)
-    ) {
-      matchScore += Math.max(sensorTokenSet.size * 4, 8);
-    }
-
-    if (!matchScore) {
-      return;
-    }
-
-    const entryMaxValue = Math.max(...numericValues);
-    if (
-      matchScore > bestMatchScore ||
-      (matchScore === bestMatchScore && entryMaxValue > bestMaxValue)
-    ) {
-      bestMatchScore = matchScore;
-      bestMaxValue = entryMaxValue;
-    }
-  });
-
-  if (!bestMatchScore || !Number.isFinite(bestMaxValue)) {
-    return null;
-  }
-
-  return bestMaxValue;
-}
-
-function getFrameRateInputValue(input) {
-  if (!input) return '';
-  const raw = input.value;
-  return typeof raw === 'string' ? raw.trim() : '';
-}
-
-function getCurrentFrameRateInputValue() {
-  return getFrameRateInputValue(recordingFrameRateInput);
-}
-
-function collectFrameRateContextTokens(select) {
-  if (!select) {
-    return [];
-  }
-  if (select.multiple) {
-    return Array.from(select.selectedOptions || [])
-      .map(option => tokenizeFrameRateContext(option && option.value))
-      .reduce((acc, tokens) => (tokens && tokens.length ? acc.concat(tokens) : acc), []);
-  }
-  const value = typeof select.value === 'string' ? select.value : '';
-  return tokenizeFrameRateContext(value);
-}
-
-function populateFrameRateDropdownFor(config = {}) {
-  const {
-    selected = '',
-    recordingInput,
-    optionsList,
-    sensorSelect,
-    resolutionSelect,
-    aspectSelect,
-    hintElement,
-  } = config;
-
-  if (!recordingInput || !optionsList) {
-    return;
-  }
-
-  const normalizedSelected = normalizeRecordingFrameRateValue(selected);
-  let currentValue = normalizedSelected || getFrameRateInputValue(recordingInput);
-  const camKey = cameraSelect && cameraSelect.value;
-  // Fix for potential ReferenceError: devices is not defined
-  const safeDevices = (typeof window !== 'undefined' && window.devices) || {};
-  const frameRateEntries =
-    camKey && safeDevices && safeDevices.cameras && safeDevices.cameras[camKey]
-      ? safeDevices.cameras[camKey].frameRates
+  const recordingFrameRateInput =
+    typeof document !== 'undefined'
+      ? document.getElementById('recordingFrameRate')
       : null;
 
-  const sensorValue = sensorSelect && typeof sensorSelect.value === 'string'
-    ? sensorSelect.value
-    : '';
-  const sensorTokens = tokenizeFrameRateContext(sensorValue);
-  const resolutionValue = resolutionSelect && typeof resolutionSelect.value === 'string'
-    ? resolutionSelect.value
-    : '';
-  const resolutionTokens = tokenizeFrameRateContext(resolutionValue);
-  const aspectTokens = collectFrameRateContextTokens(aspectSelect);
+  const recordingFrameRateHint =
+    typeof document !== 'undefined'
+      ? document.getElementById('recordingFrameRateHint')
+      : null;
 
-  const sensorModeMaxFrameRate = findMaxFrameRateForSensor(
-    Array.isArray(frameRateEntries) ? frameRateEntries : [],
-    sensorTokens,
-    sensorValue
-  );
-  const resolutionMaxFrameRate = findMaxFrameRateForSensor(
-    Array.isArray(frameRateEntries) ? frameRateEntries : [],
-    resolutionTokens,
-    recordingResolutionDropdown && recordingResolutionDropdown.value
-  );
+  const recordingFrameRateOptionsList =
+    typeof document !== 'undefined'
+      ? document.getElementById('recordingFrameRateOptions')
+      : null;
 
-  const { values: suggestions } = buildFrameRateSuggestions(
-    Array.isArray(frameRateEntries) ? frameRateEntries : [],
-    [
-      sensorTokens,
-      resolutionTokens,
-      aspectTokens,
-    ]
-  );
+  slowMotionRecordingFrameRateInput =
+    typeof document !== 'undefined'
+      ? document.getElementById('slowMotionRecordingFrameRate')
+      : null;
 
-  optionsList.innerHTML = '';
-  const uniqueValues = new Set();
-  const filteredSuggestions = [];
-  const numericCandidates = [];
-  const allowedMaxCandidates = [];
-  if (Number.isFinite(sensorModeMaxFrameRate)) {
-    allowedMaxCandidates.push(sensorModeMaxFrameRate);
+  slowMotionRecordingFrameRateHint =
+    typeof document !== 'undefined'
+      ? document.getElementById('slowMotionRecordingFrameRateHint')
+      : null;
+
+  slowMotionRecordingFrameRateOptionsList =
+    typeof document !== 'undefined'
+      ? document.getElementById('slowMotionRecordingFrameRateOptions')
+      : null;
+
+  sensorModeDropdown =
+    typeof document !== 'undefined'
+      ? document.getElementById('sensorMode')
+      : null;
+
+  slowMotionSensorModeDropdown =
+    typeof document !== 'undefined'
+      ? document.getElementById('slowMotionSensorMode')
+      : null;
+
+  recordingResolutionDropdown =
+    typeof document !== 'undefined'
+      ? document.getElementById('recordingResolution')
+      : null;
+
+  slowMotionRecordingResolutionDropdown =
+    typeof document !== 'undefined'
+      ? document.getElementById('slowMotionRecordingResolution')
+      : null;
+
+  slowMotionAspectRatioSelect =
+    typeof document !== 'undefined'
+      ? document.getElementById('slowMotionAspectRatio')
+      : null;
+
+  const PREFERRED_FRAME_RATE_VALUES = Object.freeze([
+    0.75,
+    1,
+    8,
+    12,
+    12.5,
+    15,
+    23.976,
+    24,
+    25,
+    29.97,
+    30,
+    47.952,
+    48,
+    50,
+    59.94,
+    60,
+    72,
+    75,
+    90,
+    96,
+    100,
+    110,
+    112,
+    120,
+    144,
+    150,
+    160,
+    170,
+    180,
+    200,
+    240,
+  ]);
+
+  const FALLBACK_FRAME_RATE_VALUES = Object.freeze([
+    '0.75',
+    '1',
+    '8',
+    '12',
+    '12.5',
+    '15',
+    '23.976',
+    '24',
+    '25',
+    '29.97',
+    '30',
+    '48',
+    '50',
+    '59.94',
+    '60',
+    '72',
+    '75',
+    '90',
+    '96',
+    '100',
+    '110',
+    '112',
+    '120',
+    '144',
+    '150',
+    '160',
+    '170',
+    '180',
+    '200',
+    '240',
+  ]);
+
+  const MIN_RECORDING_FRAME_RATE = 1;
+  const FRAME_RATE_RANGE_TOLERANCE = 0.0005;
+
+  function formatFrameRateValue(value) {
+    const numeric = typeof value === 'number' ? value : Number.parseFloat(value);
+    if (!Number.isFinite(numeric)) return '';
+    const rounded = Math.round(numeric * 1000) / 1000;
+    if (Number.isInteger(rounded)) {
+      return String(rounded);
+    }
+    return rounded.toFixed(3).replace(/\.0+$/, '').replace(/(\.\d*?)0+$/, '$1');
   }
-  if (Number.isFinite(resolutionMaxFrameRate)) {
-    allowedMaxCandidates.push(resolutionMaxFrameRate);
-  }
-  const allowedMaxFrameRate = allowedMaxCandidates.length
-    ? Math.min(...allowedMaxCandidates)
-    : null;
 
-  suggestions.forEach(originalValue => {
-    if (!originalValue) return;
-    let value = originalValue;
-    const numeric = Number.parseFloat(value);
-    if (Number.isFinite(numeric)) {
-      if (numeric + FRAME_RATE_RANGE_TOLERANCE < MIN_RECORDING_FRAME_RATE) {
-        return;
+  function tokenizeFrameRateContext(value) {
+    if (typeof value !== 'string' || !value) return [];
+
+    const normalizedValue = value.toLowerCase();
+    const baseTokens = normalizedValue
+      .replace(/[\u2013\u2014]/g, '-')
+      .replace(/[()]/g, ' ')
+      .replace(/[[\]]/g, ' ')
+      .split(/[\s,/]+/)
+      .map(token => token.replace(/[^a-z0-9:.+-]/g, '').replace(/^[:.+-]+|[:.+-]+$/g, ''))
+      .filter(token => token && token !== 'fps');
+
+    const tokens = new Set(baseTokens);
+    const addAliasToken = alias => {
+      if (!alias) return;
+      const normalizedAlias = alias.replace(/[^a-z0-9]/g, '');
+      if (normalizedAlias) {
+        tokens.add(normalizedAlias);
       }
-      if (
-        allowedMaxFrameRate !== null &&
-        numeric > allowedMaxFrameRate + FRAME_RATE_RANGE_TOLERANCE
-      ) {
-        return;
-      }
-      const formatted = formatFrameRateValue(numeric);
-      if (formatted) {
-        value = formatted;
-      }
-      numericCandidates.push({ numeric, formatted: value });
-    }
-    if (uniqueValues.has(value)) return;
-    uniqueValues.add(value);
-    filteredSuggestions.push(value);
-    const opt = document.createElement('option');
-    opt.value = value;
-    optionsList.appendChild(opt);
-  });
-
-  if (currentValue && !uniqueValues.has(currentValue)) {
-    const numericForList = Number.parseFloat(currentValue);
-    if (
-      !Number.isFinite(numericForList) ||
-      numericForList + FRAME_RATE_RANGE_TOLERANCE >= MIN_RECORDING_FRAME_RATE
-    ) {
-      const opt = document.createElement('option');
-      opt.value = currentValue;
-      optionsList.appendChild(opt);
-    }
-  }
-
-  const maxCandidate = numericCandidates.reduce(
-    (best, entry) => (entry.numeric > best.numeric ? entry : best),
-    { numeric: Number.NEGATIVE_INFINITY, formatted: '' }
-  );
-  let maxFrameRate = maxCandidate.numeric;
-  if (Number.isFinite(allowedMaxFrameRate)) {
-    maxFrameRate = Number.isFinite(maxFrameRate)
-      ? Math.min(maxFrameRate, allowedMaxFrameRate)
-      : allowedMaxFrameRate;
-  }
-  const formattedMaxFrameRate = Number.isFinite(maxFrameRate)
-    ? maxCandidate.formatted || formatFrameRateValue(maxFrameRate)
-    : '';
-  const minValue = formatFrameRateValue(MIN_RECORDING_FRAME_RATE);
-  const numericCurrent = Number.parseFloat(currentValue);
-  let adjustedValue = currentValue;
-  let valueChanged = false;
-
-  if (
-    Number.isFinite(maxFrameRate) &&
-    Number.isFinite(numericCurrent) &&
-    numericCurrent > maxFrameRate + FRAME_RATE_RANGE_TOLERANCE
-  ) {
-    const clampedValue = formattedMaxFrameRate || formatFrameRateValue(maxFrameRate);
-    if (clampedValue) {
-      adjustedValue = clampedValue;
-      if (adjustedValue !== currentValue) {
-        valueChanged = true;
-      }
-    }
-  }
-
-  if (
-    minValue &&
-    Number.isFinite(numericCurrent) &&
-    numericCurrent + FRAME_RATE_RANGE_TOLERANCE < MIN_RECORDING_FRAME_RATE
-  ) {
-    adjustedValue = minValue;
-    if (adjustedValue !== currentValue) {
-      valueChanged = true;
-    }
-  }
-
-  if (valueChanged) {
-    recordingInput.value = adjustedValue;
-    currentValue = adjustedValue;
-    recordingInput.dispatchEvent(new Event('input', { bubbles: true }));
-  } else {
-    recordingInput.value = currentValue;
-  }
-
-  const placeholderCandidate = filteredSuggestions[0];
-  if (!currentValue && placeholderCandidate) {
-    recordingInput.placeholder = placeholderCandidate;
-  } else if (recordingInput.placeholder) {
-    recordingInput.placeholder = '';
-  }
-
-  if (minValue) {
-    recordingInput.min = minValue;
-  }
-
-  if (formattedMaxFrameRate) {
-    recordingInput.setAttribute('max', formattedMaxFrameRate);
-  } else {
-    recordingInput.removeAttribute('max');
-  }
-
-  if (hintElement) {
-    let hintMessage = '';
-    if (formattedMaxFrameRate) {
-      const template = hintElement.getAttribute('data-range-template');
-      hintMessage = template
-        ? template.replace('{max}', formattedMaxFrameRate)
-        : `Enter a recording frame rate from ${minValue} to ${formattedMaxFrameRate} fps.`;
-    } else {
-      hintMessage = hintElement.getAttribute('data-default-message') || '';
-    }
-    hintElement.textContent = hintMessage;
-    hintElement.hidden = !hintMessage;
-  }
-}
-
-function populateFrameRateDropdown(selected = '') {
-  const resolve = (val, id) => val || (typeof document !== 'undefined' ? document.getElementById(id) : null);
-  const inputEl = resolve(recordingFrameRateInput, 'recordingFrameRate');
-
-  if (!inputEl && typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
-    cineCoreUiHelpers.whenElementAvailable('recordingFrameRate', () => populateFrameRateDropdown(selected));
-    return;
-  }
-
-  populateFrameRateDropdownFor({
-    selected,
-    recordingInput: inputEl,
-    optionsList: resolve(recordingFrameRateOptionsList, 'recordingFrameRateOptions'),
-    sensorSelect: resolve(sensorModeDropdown, 'sensorMode'),
-    resolutionSelect: resolve(recordingResolutionDropdown, 'recordingResolution'),
-    hintElement: resolve(recordingFrameRateHint, 'recordingFrameRateHint'),
-  });
-}
-
-function populateSlowMotionFrameRateDropdown(selected = '') {
-  const resolve = (val, id) => val || (typeof document !== 'undefined' ? document.getElementById(id) : null);
-  const inputEl = resolve(slowMotionRecordingFrameRateInput, 'slowMotionRecordingFrameRate');
-
-  if (!inputEl && typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
-    cineCoreUiHelpers.whenElementAvailable('slowMotionRecordingFrameRate', () => populateSlowMotionFrameRateDropdown(selected));
-    return;
-  }
-
-  populateFrameRateDropdownFor({
-    selected,
-    recordingInput: inputEl,
-    optionsList: resolve(slowMotionRecordingFrameRateOptionsList, 'slowMotionRecordingFrameRateOptions'),
-    sensorSelect: resolve(slowMotionSensorModeDropdown, 'slowMotionSensorMode'),
-    resolutionSelect: resolve(slowMotionRecordingResolutionDropdown, 'slowMotionRecordingResolution'),
-    aspectSelect: resolve(slowMotionAspectRatioSelect, 'slowMotionAspectRatio'),
-    hintElement: resolve(slowMotionRecordingFrameRateHint, 'slowMotionRecordingFrameRateHint'),
-  });
-}
-
-function populateSlowMotionRecordingResolutionDropdown(selected = '') {
-  populateCameraPropertyDropdown('slowMotionRecordingResolution', 'resolutions', selected);
-}
-if (typeof window !== 'undefined') window.populateSlowMotionRecordingResolutionDropdown = populateSlowMotionRecordingResolutionDropdown;
-
-function populateSlowMotionSensorModeDropdown(selected = '') {
-  populateCameraPropertyDropdown('slowMotionSensorMode', 'sensorModes', selected);
-}
-if (typeof window !== 'undefined') window.populateSlowMotionSensorModeDropdown = populateSlowMotionSensorModeDropdown;
-
-function populateSensorModeDropdown(selected = '') {
-  populateCameraPropertyDropdown('sensorMode', 'sensorModes', selected);
-}
-if (typeof window !== 'undefined') window.populateSensorModeDropdown = populateSensorModeDropdown;
-
-function populateCodecDropdown(selected = '') {
-  populateCameraPropertyDropdown('codec', 'recordingCodecs', selected);
-}
-
-function populateFilterDropdown() {
-  const populate = (select) => {
-    const devices = (typeof window !== 'undefined' && window.devices) || {};
-    if (select && devices && Array.isArray(devices.filterOptions)) {
-      const fragment = document.createDocumentFragment();
-      if (!select.multiple) {
-        const emptyOpt = document.createElement('option');
-        emptyOpt.value = '';
-        fragment.appendChild(emptyOpt);
-      }
-      for (let index = 0; index < devices.filterOptions.length; index += 1) {
-        const value = devices.filterOptions[index];
-        const opt = document.createElement('option');
-        opt.value = value;
-        opt.textContent = value;
-        fragment.appendChild(opt);
-      }
-      select.innerHTML = '';
-      select.appendChild(fragment);
-    }
-  };
-
-  const select = resolveFilterSelectElement();
-  if (select) {
-    populate(select);
-  } else if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
-    cineCoreUiHelpers.whenElementAvailable('filter', (el) => {
-      // Update the global/cached reference if possible
-      if (typeof filterSelectElem !== 'undefined' && (!filterSelectElem || typeof filterSelectElem !== 'object')) {
-        filterSelectElem = el;
-      }
-      populate(el);
-    });
-  }
-}
-
-const filterId = t => t.replace(/[^a-z0-9]/gi, '_');
-
-function getFilterValueConfig(type) {
-  switch (type) {
-    case 'IRND':
-      return { opts: ['0.3', '0.6', '0.9', '1.2', '1.5', '1.8', '2.1', '2.5'], defaults: ['0.3', '1.2'] };
-    case 'Diopter':
-      return { opts: ['+1/4', '+1/2', '+1', '+2', '+3', '+4'], defaults: ['+1/2', '+1', '+2', '+4'] };
-    case 'ND Grad HE':
-      return {
-        opts: ['0.3 HE Vertical', '0.6 HE Vertical', '0.9 HE Vertical', '1.2 HE Vertical', '0.3 HE Horizontal', '0.6 HE Horizontal', '0.9 HE Horizontal', '1.2 HE Horizontal'],
-        defaults: ['0.3 HE Horizontal', '0.6 HE Horizontal', '0.9 HE Horizontal']
-      };
-    case 'ND Grad SE':
-      return {
-        opts: ['0.3 SE Vertical', '0.6 SE Vertical', '0.9 SE Vertical', '1.2 SE Vertical', '0.3 SE Horizontal', '0.6 SE Horizontal', '0.9 SE Horizontal', '1.2 SE Horizontal'],
-        defaults: ['0.3 SE Horizontal', '0.6 SE Horizontal', '0.9 SE Horizontal']
-      };
-    default:
-      return { opts: ['1', '1/2', '1/4', '1/8', '1/16'], defaults: ['1/2', '1/4', '1/8'] };
-  }
-}
-
-const SESSION_DEFAULT_FILTER_SIZE = ensureSessionRuntimePlaceholder(
-  'DEFAULT_FILTER_SIZE',
-  () => '4x5.65'
-);
-
-function createFilterSizeSelect(type, selected = SESSION_DEFAULT_FILTER_SIZE, options = {}) {
-  const { includeId = true, idPrefix = 'filter-size-' } = options;
-  const sel = document.createElement('select');
-  if (includeId) {
-    sel.id = `${idPrefix}${filterId(type)}`;
-  }
-  let sizes = [SESSION_DEFAULT_FILTER_SIZE, '4x4', '6x6', '95mm'];
-  if (type === 'Rota-Pol') sizes = [SESSION_DEFAULT_FILTER_SIZE, '6x6', '95mm'];
-  sizes.forEach(s => {
-    const o = document.createElement('option');
-    o.value = s;
-    o.textContent = s;
-    if (s === selected) o.selected = true;
-    sel.appendChild(o);
-  });
-  return sel;
-}
-
-/* exported createFilterValueSelect */
-function createFilterValueSelect(type, selected) {
-  const sel = document.createElement('select');
-  sel.id = `filter-values-${filterId(type)}`;
-  // Allow selecting multiple strengths for a given filter
-  // Use both the property and attribute to ensure HTML serialization
-  sel.multiple = true;
-  sel.setAttribute('multiple', '');
-  const { opts, defaults = [] } = getFilterValueConfig(type);
-  const selectedVals = Array.isArray(selected)
-    ? selected.slice()
-    : defaults.slice();
-  const syncOption = (option, isSelected) => {
-    option.selected = isSelected;
-    if (isSelected) {
-      option.setAttribute('selected', '');
-    } else {
-      option.removeAttribute('selected');
-    }
-  };
-  const syncCheckbox = (checkbox, isChecked) => {
-    checkbox.checked = isChecked;
-    if (isChecked) {
-      checkbox.setAttribute('checked', '');
-    } else {
-      checkbox.removeAttribute('checked');
-    }
-  };
-  const optionsByValue = new Map();
-  const optionFragment = document.createDocumentFragment();
-  for (let index = 0; index < opts.length; index += 1) {
-    const value = opts[index];
-    const opt = document.createElement('option');
-    opt.value = value;
-    opt.textContent = value;
-    syncOption(opt, selectedVals.includes(value));
-    optionsByValue.set(value, opt);
-    optionFragment.appendChild(opt);
-  }
-  sel.appendChild(optionFragment);
-  // Hidden select holds the values; checkboxes provide the UI
-  sel.size = opts.length;
-  sel.style.display = 'none';
-  const container = document.createElement('span');
-  container.className = 'filter-values-container';
-  const checkboxName = `filterValues-${filterId(type)}`;
-  const checkboxFragment = document.createDocumentFragment();
-  const checkboxesByValue = new Map();
-  for (let index = 0; index < opts.length; index += 1) {
-    const value = opts[index];
-    const lbl = document.createElement('label');
-    lbl.className = 'filter-value-option';
-    const cb = document.createElement('input');
-    cb.type = 'checkbox';
-    cb.name = checkboxName;
-    cb.value = value;
-    syncCheckbox(cb, selectedVals.includes(value));
-    cb.addEventListener('change', () => {
-      const opt = optionsByValue.get(value);
-      if (opt) {
-        syncOption(opt, cb.checked);
-      }
-      syncCheckbox(cb, cb.checked);
-      sel.dispatchEvent(new Event('change'));
-    });
-    lbl.appendChild(cb);
-    lbl.appendChild(document.createTextNode(value));
-    checkboxesByValue.set(value, cb);
-    checkboxFragment.appendChild(lbl);
-  }
-  container.appendChild(checkboxFragment);
-  sel.addEventListener('change', () => {
-    optionsByValue.forEach((opt, value) => {
-      const selected = !!opt && opt.selected;
-      syncOption(opt, selected);
-      const checkbox = checkboxesByValue.get(value);
-      if (checkbox) {
-        syncCheckbox(checkbox, selected);
-      }
-    });
-  });
-  container.appendChild(sel);
-  return { container, select: sel };
-}
-
-function resolveFilterDisplayInfo(type, size = SESSION_DEFAULT_FILTER_SIZE) {
-  switch (type) {
-    case 'Diopter':
-      return { label: 'Schneider CF DIOPTER FULL GEN2', gearName: 'Schneider CF DIOPTER FULL GEN2' };
-    case 'Clear':
-      return { label: 'Clear Filter', gearName: 'Clear Filter' };
-    case 'IRND':
-      return { label: 'IRND Filter Set', gearName: 'IRND Filter Set', hideDetails: false };
-    case 'Pol':
-      return { label: 'Pol Filter', gearName: 'Pol Filter' };
-    case 'Rota-Pol': {
-      if (size === '6x6') {
-        return {
-          label: 'ARRI Rota Pola Filter Frame (6x6)',
-          gearName: 'ARRI Rota Pola Filter Frame (6x6)'
-        };
-      }
-      if (size === '95mm') {
-        return {
-          label: 'Tilta 95mm Polarizer Filter for Tilta Mirage',
-          gearName: 'Tilta 95mm Polarizer Filter for Tilta Mirage'
-        };
-      }
-      return {
-        label: 'ARRI Rota Pola Filter Frame',
-        gearName: 'ARRI Rota Pola Filter Frame'
-      };
-    }
-    case 'ND Grad HE':
-      return { label: 'ND Grad HE Filter Set', gearName: 'ND Grad HE Filter Set', hideDetails: false };
-    case 'ND Grad SE':
-      return { label: 'ND Grad SE Filter Set', gearName: 'ND Grad SE Filter Set', hideDetails: false };
-    default:
-      return { label: `${type} Filter Set`, gearName: `${type} Filter Set`, hideDetails: true };
-  }
-}
-
-function buildFilterGearEntries(filters = []) {
-  const entries = [];
-  filters.forEach(({ type, size = SESSION_DEFAULT_FILTER_SIZE, values }) => {
-    if (!type) return;
-    const sizeValue = size || SESSION_DEFAULT_FILTER_SIZE;
-    const idBase = `filter-${filterId(type)}`;
-    switch (type) {
-      case 'Diopter': {
-        entries.push({
-          id: `${idBase}-frame`,
-          gearName: 'ARRI Diopter Frame 138mm',
-          label: 'ARRI Diopter Frame 138mm',
-          type: '',
-          size: '',
-          values: []
-        });
-        const diopterValues = values == null
-          ? (getFilterValueConfig(type).defaults || []).slice()
-          : (Array.isArray(values) ? values.slice() : []);
-        entries.push({
-          id: `${idBase}-set`,
-          gearName: 'Schneider CF DIOPTER FULL GEN2',
-          label: 'Schneider CF DIOPTER FULL GEN2',
-          type,
-          size: '',
-          values: diopterValues
-        });
-        break;
-      }
-      case 'Clear': {
-        const { label, gearName } = resolveFilterDisplayInfo(type, sizeValue);
-        entries.push({
-          id: idBase,
-          gearName,
-          label,
-          type,
-          size: sizeValue,
-          values: []
-        });
-        break;
-      }
-      case 'Pol': {
-        const { label, gearName } = resolveFilterDisplayInfo(type, sizeValue);
-        entries.push({
-          id: idBase,
-          gearName,
-          label,
-          type,
-          size: sizeValue,
-          values: []
-        });
-        break;
-      }
-      case 'Rota-Pol': {
-        const { label, gearName } = resolveFilterDisplayInfo(type, sizeValue);
-        const displaySize = label.includes(sizeValue) ? '' : sizeValue;
-        entries.push({
-          id: idBase,
-          gearName,
-          label,
-          type,
-          size: displaySize,
-          values: []
-        });
-        break;
-      }
-      case 'ND Grad HE':
-      case 'ND Grad SE': {
-        const { label, gearName, hideDetails } = resolveFilterDisplayInfo(type, sizeValue);
-        const gradValues = values == null
-          ? (getFilterValueConfig(type).defaults || []).slice()
-          : (Array.isArray(values) ? values.slice() : []);
-        entries.push({
-          id: idBase,
-          gearName,
-          label,
-          hideDetails,
-          type,
-          size: sizeValue,
-          values: gradValues
-        });
-        break;
-      }
-      default: {
-        const { label, gearName, hideDetails } = resolveFilterDisplayInfo(type, sizeValue);
-        const filterValues = values == null
-          ? (getFilterValueConfig(type).defaults || []).slice()
-          : (Array.isArray(values) ? values.slice() : []);
-        entries.push({
-          id: idBase,
-          gearName,
-          label,
-          hideDetails,
-          type,
-          size: sizeValue,
-          values: filterValues
-        });
-      }
-    }
-  });
-  return entries;
-}
-if (typeof window !== 'undefined') window.buildFilterGearEntries = buildFilterGearEntries;
-
-function updateGearListFilterEntries(entries = []) {
-  if (!gearListOutput) return;
-  const entryMap = new Map(entries.map(entry => [entry.id, entry]));
-  gearListOutput.querySelectorAll('[data-filter-entry]').forEach(span => {
-    const entryId = span.getAttribute('data-filter-entry');
-    if (!entryId) return;
-    const entry = entryMap.get(entryId);
-    if (!entry) return;
-    const labelText = typeof entry?.label === 'string' ? entry.label : '';
-    span.textContent = labelText ? `1x ${labelText}` : '';
-    span.setAttribute('data-gear-name', entry.gearName);
-    span.setAttribute('data-filter-label', entry.label);
-    if (entry.type) {
-      span.setAttribute('data-filter-type', entry.type);
-    } else {
-      span.removeAttribute('data-filter-type');
-    }
-  });
-}
-
-function getGearListFilterDetailsContainer() {
-  return gearListOutput ? gearListOutput.querySelector('#gearListFilterDetails') : null;
-}
-
-function filterTypeNeedsValueSelect(type) {
-  return type === 'Diopter'
-    || type === 'IRND'
-    || type === 'ND Grad HE'
-    || type === 'ND Grad SE'
-    || (type !== 'Clear' && type !== 'Pol' && type !== 'Rota-Pol');
-}
-
-function createFilterStorageValueSelect(type, selected) {
-  const select = document.createElement('select');
-  select.id = `filter-values-${filterId(type)}`;
-  select.multiple = true;
-  select.setAttribute('multiple', '');
-  select.hidden = true;
-  select.setAttribute('aria-hidden', 'true');
-  const { opts, defaults = [] } = getFilterValueConfig(type);
-  const chosen = Array.isArray(selected) ? selected.slice() : defaults.slice();
-  opts.forEach(value => {
-    const opt = document.createElement('option');
-    opt.value = value;
-    opt.textContent = value;
-    if (chosen.includes(value)) {
-      opt.selected = true;
-      opt.setAttribute('selected', '');
-    }
-    select.appendChild(opt);
-  });
-  return select;
-}
-
-function resolveFilterDetailsStorageElement() {
-  if (typeof filterDetailsStorage !== 'undefined' && filterDetailsStorage) {
-    return filterDetailsStorage;
-  }
-  if (typeof document === 'undefined') return null;
-  const element = document.getElementById('filterDetails');
-  if (!element) return null;
-  try {
-    if (typeof globalThis !== 'undefined' && globalThis) {
-      globalThis.filterDetailsStorage = element;
-    } else if (typeof window !== 'undefined' && window) {
-      window.filterDetailsStorage = element;
-    }
-  } catch (ex) {
-    void ex;
-  }
-  return element;
-}
-
-function renderFilterDetailsStorage(details) {
-  const storageRoot = resolveFilterDetailsStorageElement();
-  if (!storageRoot) return;
-  storageRoot.innerHTML = '';
-  if (!details.length) {
-    storageRoot.hidden = true;
-    return;
-  }
-  storageRoot.hidden = true;
-  details.forEach(detail => {
-    const { type, size, values, needsSize, needsValues } = detail;
-    if (needsSize) {
-      const sizeSelect = createFilterSizeSelect(type, size);
-      sizeSelect.hidden = true;
-      sizeSelect.setAttribute('aria-hidden', 'true');
-      sizeSelect.addEventListener('change', handleFilterDetailChange);
-      storageRoot.appendChild(sizeSelect);
-    }
-    if (needsValues) {
-      const valuesSelect = createFilterStorageValueSelect(type, values);
-      valuesSelect.addEventListener('change', handleFilterDetailChange);
-      storageRoot.appendChild(valuesSelect);
-    }
-  });
-}
-
-function resolveGlobalScope() {
-  if (typeof globalThis !== 'undefined') return globalThis;
-  if (typeof window !== 'undefined') return window;
-  if (typeof self !== 'undefined') return self;
-  if (typeof global !== 'undefined') return global;
-  return null;
-}
-
-function ensureFilterDetailEditButton(element) {
-  if (!element) return null;
-  const existing = element.querySelector('.gear-item-edit-btn');
-  if (existing) return existing;
-
-  const doc = element.ownerDocument || (typeof document !== 'undefined' ? document : null);
-  if (!doc) return null;
-
-  const scope = resolveGlobalScope();
-  let editLabel = 'Edit item';
-  const textGetter = scope && typeof scope.getGearItemEditTexts === 'function'
-    ? scope.getGearItemEditTexts
-    : null;
-  if (textGetter) {
-    try {
-      const texts = textGetter.call(scope) || {};
-      if (texts.editButtonLabel && typeof texts.editButtonLabel === 'string') {
-        const trimmed = texts.editButtonLabel.trim();
-        if (trimmed) {
-          editLabel = trimmed;
-        }
-      }
-    } catch {
-      // Ignore localization lookup failures and use fallback label.
-    }
-  }
-
-  const button = doc.createElement('button');
-  button.type = 'button';
-  button.className = 'gear-item-edit-btn';
-  button.setAttribute('data-gear-edit', '');
-
-  if (editLabel) {
-    button.setAttribute('aria-label', editLabel);
-    button.setAttribute('title', editLabel);
-  }
-
-  const setLabelWithIcon = scope && typeof scope.setButtonLabelWithIcon === 'function'
-    ? scope.setButtonLabelWithIcon
-    : null;
-  const iconRegistry = scope && scope.ICON_GLYPHS ? scope.ICON_GLYPHS : null;
-  const editGlyph = iconRegistry
-    ? (
-      iconRegistry.sliders
-      || iconRegistry.gears
-      || iconRegistry.gearList
-      || iconRegistry.settingsGeneral
-      || iconRegistry.note
-      || null
-    )
-    : null;
-  if (setLabelWithIcon && editGlyph) {
-    setLabelWithIcon.call(scope, button, '', editGlyph);
-  } else if (editLabel) {
-    button.textContent = editLabel;
-  }
-
-  const noteSpan = element.querySelector('.gear-item-note');
-  if (noteSpan && noteSpan.parentNode === element) {
-    element.insertBefore(button, noteSpan.nextSibling);
-  } else {
-    element.appendChild(button);
-  }
-
-  return button;
-}
-
-function renderGearListFilterDetails(details) {
-  const container = getGearListFilterDetailsContainer();
-  if (!container) return;
-  container.innerHTML = '';
-  if (!details.length) {
-    container.classList.add('hidden');
-    return;
-  }
-  container.classList.remove('hidden');
-  details.forEach(detail => {
-    const {
-      type,
-      label,
-      gearName,
-      entryId,
-      size,
-      values,
-      needsSize,
-      needsValues
-    } = detail;
-    const row = document.createElement('div');
-    row.className = 'filter-detail';
-    if (gearName) {
-      row.setAttribute('data-gear-name', gearName);
-    }
-    if (type) {
-      row.setAttribute('data-filter-type', type);
-    }
-    const heading = document.createElement('div');
-    heading.className = 'filter-detail-label gear-item';
-    if (entryId) heading.setAttribute('data-filter-entry', entryId);
-    if (gearName) heading.setAttribute('data-gear-name', gearName);
-    if (label) {
-      heading.setAttribute('data-filter-label', label);
-      heading.setAttribute('data-gear-label', label);
-    }
-    if (type) heading.setAttribute('data-filter-type', type);
-    const shouldHideSize = !!needsSize;
-    if (shouldHideSize) {
-      heading.setAttribute('data-filter-hide-size', '');
-    } else {
-      heading.removeAttribute('data-filter-hide-size');
-    }
-    heading.textContent = label ? `1x ${label}` : '';
-    row.appendChild(heading);
-    if (typeof enhanceGearItemElement === 'function') {
-      enhanceGearItemElement(heading);
-    }
-    ensureFilterDetailEditButton(heading);
-    const controls = document.createElement('div');
-    controls.className = 'filter-detail-controls';
-    if (needsSize) {
-      const sizeLabel = document.createElement('label');
-      sizeLabel.className = 'filter-detail-size';
-      const sizeText = document.createElement('span');
-      sizeText.className = 'filter-detail-sublabel';
-      sizeText.textContent = 'Size';
-      const sizeWrapper = document.createElement('span');
-      sizeWrapper.className = 'select-wrapper';
-      const sizeSelect = createFilterSizeSelect(type, size, { includeId: false });
-      sizeSelect.setAttribute('data-storage-id', `filter-size-${filterId(type)}`);
-      sizeSelect.addEventListener('change', () => {
-        const storageId = sizeSelect.getAttribute('data-storage-id');
-        if (!storageId) return;
-        syncGearListFilterSize(storageId, sizeSelect.value);
-      });
-      sizeWrapper.appendChild(sizeSelect);
-      sizeLabel.append(sizeText, sizeWrapper);
-      controls.appendChild(sizeLabel);
-    }
-    if (needsValues) {
-      const valuesWrap = document.createElement('div');
-      valuesWrap.className = 'filter-detail-values';
-      const valueLabel = document.createElement('span');
-      valueLabel.className = 'filter-detail-sublabel';
-      valueLabel.textContent = 'Strengths';
-      const optionsWrap = document.createElement('span');
-      optionsWrap.className = 'filter-values-container';
-      optionsWrap.setAttribute('data-storage-values', `filter-values-${filterId(type)}`);
-      const storageValuesId = optionsWrap.getAttribute('data-storage-values');
-      const { opts, defaults = [] } = getFilterValueConfig(type);
-      const checkboxName = `filterValues-${filterId(type)}`;
-      const currentValues = values == null ? defaults : (Array.isArray(values) ? values : []);
-      opts.forEach(value => {
-        const lbl = document.createElement('label');
-        lbl.className = 'filter-value-option';
-        const cb = document.createElement('input');
-        cb.type = 'checkbox';
-        cb.name = checkboxName;
-        cb.value = value;
-        if (currentValues.includes(value)) {
-          cb.checked = true;
-          cb.setAttribute('checked', '');
-        }
-        cb.addEventListener('change', () => {
-          if (!storageValuesId) return;
-          syncGearListFilterValue(storageValuesId, value, cb.checked);
-        });
-        lbl.append(cb, document.createTextNode(value));
-        optionsWrap.appendChild(lbl);
-      });
-      valuesWrap.append(valueLabel, optionsWrap);
-      controls.appendChild(valuesWrap);
-    }
-    row.appendChild(controls);
-    container.appendChild(row);
-  });
-  adjustGearListSelectWidths(container);
-}
-
-function syncGearListFilterSize(storageId, value) {
-  const storageSelect = document.getElementById(storageId);
-  if (!storageSelect) return;
-  if (storageSelect.value !== value) {
-    storageSelect.value = value;
-  }
-  if (typeof markProjectFormDataDirty === 'function') {
-    markProjectFormDataDirty();
-  }
-  storageSelect.dispatchEvent(new Event('change'));
-}
-
-function syncGearListFilterValue(storageId, value, isSelected) {
-  const storageSelect = document.getElementById(storageId);
-  if (!storageSelect) return;
-  let changed = false;
-  Array.from(storageSelect.options).forEach(opt => {
-    if (opt.value !== value) return;
-    if (opt.selected !== isSelected) {
-      opt.selected = isSelected;
-      changed = true;
-      if (isSelected) {
-        opt.setAttribute('selected', '');
-      } else {
-        opt.removeAttribute('selected');
-      }
-    }
-  });
-  if (changed) {
-    if (typeof markProjectFormDataDirty === 'function') {
-      markProjectFormDataDirty();
-    }
-  }
-}
-
-function renderFilterDetails(providedTokens) {
-  const select = resolveFilterSelectElement();
-  if (!select) return;
-  const selected = Array.from(select.selectedOptions).map(o => o.value).filter(Boolean);
-  let existingTokens;
-  if (Array.isArray(providedTokens)) {
-    existingTokens = providedTokens
-      .filter(token => token && token.type)
-      .map(token => ({
-        type: token.type,
-        size: token.size,
-        values: token.values === undefined
-          ? undefined
-          : (Array.isArray(token.values) ? token.values.slice() : token.values)
-      }));
-  } else {
-    const existingSelections = collectFilterSelections();
-    if (existingSelections) {
-      existingTokens = parseFilterTokens(existingSelections);
-    } else {
-      // Fix for ReferenceError: currentProjectInfo is not defined
-      const safeProjectInfo = typeof currentProjectInfo !== 'undefined' ? currentProjectInfo : {};
-      if (safeProjectInfo && safeProjectInfo.filter) {
-        existingTokens = parseFilterTokens(safeProjectInfo.filter);
-      } else {
-        existingTokens = [];
-      }
-    }
-  }
-  const existingMap = new Map(existingTokens.map(token => [token.type, token]));
-  const details = selected.map(type => {
-    const prev = existingMap.get(type) || {};
-    const size = prev.size || SESSION_DEFAULT_FILTER_SIZE;
-    const needsSize = type !== 'Diopter';
-    const needsValues = filterTypeNeedsValueSelect(type);
-    const { label, gearName, hideDetails } = resolveFilterDisplayInfo(type, size);
-    let entryId = `filter - ${filterId(type)} `;
-    if (type === 'Diopter') entryId = `${entryId} -set`;
-    return {
-      type,
-      label,
-      gearName,
-      entryId,
-      size,
-      values: Array.isArray(prev.values) ? prev.values.slice() : [],
-      needsSize,
-      needsValues,
-      hideDetails
     };
-  });
-  renderFilterDetailsStorage(details);
-  renderGearListFilterDetails(details);
-  let gearEntries = buildFilterGearEntries(existingTokens);
-  if (!gearEntries.length) {
-    gearEntries = details
-      .map(detail => ({
-        id: detail.entryId,
-        gearName: detail.gearName,
-        label: detail.label,
-        type: detail.type,
-        hideDetails: detail.hideDetails
-      }))
-      .filter(entry => entry.id && entry.label);
+
+    const resolutionValue = normalizedValue.replace(/\u00d7/g, 'x');
+    const compactValue = resolutionValue.replace(/\s+/g, '');
+    const includes = text => resolutionValue.includes(text);
+    const compactIncludes = text => compactValue.includes(text);
+
+    if (
+      includes('uhd') ||
+      includes('ultra hd') ||
+      compactIncludes('ultrahd') ||
+      /3840\s*x\s*2160/.test(resolutionValue)
+    ) {
+      addAliasToken('uhd');
+      addAliasToken('4k');
+    }
+
+    if (
+      includes('dci') ||
+      /4096\s*x\s*2160/.test(resolutionValue)
+    ) {
+      addAliasToken('dci');
+      addAliasToken('4k');
+    }
+
+    if (
+      compactIncludes('2048x1080') ||
+      /2048\s*x\s*1080/.test(resolutionValue) ||
+      /(?:^|[^a-z0-9])2k(?:[^a-z0-9]|$)/.test(resolutionValue)
+    ) {
+      addAliasToken('2k');
+      addAliasToken('dci');
+    }
+
+    if (
+      compactIncludes('fullhd') ||
+      includes('full hd') ||
+      includes('full-hd') ||
+      includes('fhd') ||
+      includes('1080p') ||
+      /1920\s*x\s*1080/.test(resolutionValue)
+    ) {
+      addAliasToken('hd');
+      addAliasToken('fhd');
+      addAliasToken('1080p');
+    }
+
+    if (
+      includes('720p') ||
+      /1280\s*x\s*720/.test(resolutionValue)
+    ) {
+      addAliasToken('hd');
+      addAliasToken('720p');
+    }
+
+    if (/(?:^|[^a-z0-9])6k(?:[^a-z0-9]|$)/.test(resolutionValue)) {
+      addAliasToken('6k');
+    }
+
+    if (/(?:^|[^a-z0-9])8k(?:[^a-z0-9]|$)/.test(resolutionValue)) {
+      addAliasToken('8k');
+    }
+
+    if (/(?:^|[^a-z0-9])4k(?:[^a-z0-9]|$)/.test(resolutionValue) || includes('4k')) {
+      addAliasToken('4k');
+    }
+
+    return Array.from(tokens);
   }
-  updateGearListFilterEntries(gearEntries);
-  const matteboxTarget = typeof matteboxSelect !== 'undefined'
-    ? matteboxSelect
-    : (typeof document !== 'undefined' ? document.getElementById('mattebox') : null);
-  if (matteboxTarget) {
-    const needsSwing = selected.some(t => t === 'ND Grad HE' || t === 'ND Grad SE');
-    if (needsSwing) matteboxTarget.value = 'Swing Away';
+
+  function normalizeMatchTarget(value) {
+    if (typeof value !== 'string' || !value) {
+      return '';
+    }
+    return value.toLowerCase().replace(/[^a-z0-9]/g, '');
   }
-}
-if (typeof window !== 'undefined') window.renderFilterDetails = renderFilterDetails;
 
-function handleFilterDetailChange() {
-  if (!resolveFilterSelectElement()) return;
-  const filterStr = collectFilterSelections();
-  const entries = buildFilterGearEntries(parseFilterTokens(filterStr));
-  updateGearListFilterEntries(entries);
-  if (gearListOutput) adjustGearListSelectWidths(gearListOutput);
-  saveCurrentSession();
-  saveCurrentGearList();
-  checkSetupChanged();
-  renderFilterDetails();
-}
-
-function collectFilterSelections() {
-  const select = resolveFilterSelectElement();
-  if (!select) return '';
-
-  const selected = Array.from(select.selectedOptions)
-    .map(option => (typeof option.value === 'string' ? option.value.trim() : ''))
-    .filter(Boolean);
-
-  // Fix for ReferenceError: currentProjectInfo is not defined
-  const safeCurrentProjectInfo = typeof currentProjectInfo !== 'undefined' ? currentProjectInfo : {};
-  const existingSelectionString = safeCurrentProjectInfo && typeof safeCurrentProjectInfo.filter === 'string'
-    ? safeCurrentProjectInfo.filter
-    : '';
-  const existingTokens = existingSelectionString
-    ? parseFilterTokens(existingSelectionString)
-    : [];
-  const existingMap = Object.fromEntries(existingTokens.map(token => [token.type, token]));
-
-  const existingStringMap = {};
-  if (existingSelectionString) {
-    existingSelectionString.split(',').forEach(tokenStr => {
-      const trimmed = typeof tokenStr === 'string' ? tokenStr.trim() : '';
-      if (!trimmed) return;
-      const type = trimmed.split(':')[0]?.trim();
-      if (type) {
-        existingStringMap[type] = trimmed;
+  function includePreferredValuesForRange(minValue, maxValue, set) {
+    if (!Number.isFinite(minValue) || !Number.isFinite(maxValue) || !set) {
+      return;
+    }
+    const low = Math.min(minValue, maxValue);
+    const high = Math.max(minValue, maxValue);
+    PREFERRED_FRAME_RATE_VALUES.forEach(candidate => {
+      if (candidate >= low - 0.0005 && candidate <= high + 0.0005) {
+        const formatted = formatFrameRateValue(candidate);
+        if (formatted) {
+          set.add(formatted);
+        }
       }
     });
   }
 
-  const selectedTokens = selected.map(type => {
-    const sizeSel = document.getElementById(`filter - size - ${filterId(type)} `);
-    const valSel = document.getElementById(`filter - values - ${filterId(type)} `);
-    const prev = existingMap[type] || {};
-    const size = sizeSel ? sizeSel.value : (prev.size || SESSION_DEFAULT_FILTER_SIZE);
-    let vals;
-    const needsValues = filterTypeNeedsValueSelect(type);
-    if (valSel) {
-      vals = Array.from(valSel.selectedOptions).map(o => o.value);
-    } else if (Array.isArray(prev.values) && prev.values.length) {
-      vals = prev.values.slice();
-    } else {
-      vals = [];
+  function parseFrameRateNumericValues(entry) {
+    if (typeof entry !== 'string' || !entry.trim()) {
+      return [];
     }
-    let valueSegment = '';
-    if (needsValues) {
-      valueSegment = vals.length ? `:${vals.join('|')} ` : ':!';
-    }
-    return `${type}:${size}${valueSegment} `;
-  });
 
-  const availableTypes = new Set(
-    Array.from(select.options)
-      .map(option => (typeof option.value === 'string' ? option.value.trim() : ''))
-      .filter(Boolean),
-  );
-  const selectedTypes = new Set(selected);
+    const normalized = entry.replace(/[\u2013\u2014]/g, '-');
+    const parts = normalized.split(':');
+    const numericSection = parts.length > 1 ? parts.slice(1).join(':') : normalized;
+    const values = new Set();
 
-  existingTokens.forEach(token => {
-    if (!token || !token.type) return;
-    if (selectedTypes.has(token.type)) return;
-    if (availableTypes.has(token.type)) return;
+    const rangePattern = /(\d+(?:\.\d+)?)(?:\s*(?:-|to)\s*)(\d+(?:\.\d+)?)(?=\s*(?:fps|FPS))/g;
+    let match = rangePattern.exec(numericSection);
+    while (match) {
+      const minStr = match[1];
+      const maxStr = match[2];
+      const minVal = Number.parseFloat(minStr);
+      const maxVal = Number.parseFloat(maxStr);
+      const minFormatted = formatFrameRateValue(minVal);
+      const maxFormatted = formatFrameRateValue(maxVal);
+      // Redundant frame rate helpers removed (moved to DeviceCapabilityManager).
 
-    const preserved = existingStringMap[token.type]
-      || (() => {
-        const size = token.size || SESSION_DEFAULT_FILTER_SIZE;
-        const values = Array.isArray(token.values) ? token.values.filter(Boolean) : [];
-        let segment = '';
-        if (filterTypeNeedsValueSelect(token.type)) {
-          segment = values.length ? `:${values.join('|')} ` : ':!';
-        }
-        return `${token.type}:${size}${segment} `;
-      })();
-    selectedTokens.push(preserved);
-  });
 
-  return selectedTokens.join(',');
-}
-
-function parseFilterTokens(str) {
-  if (!str) return [];
-  return str.split(',').map(s => {
-    const parts = s.split(':').map(p => p.trim());
-    const type = parts[0];
-    const size = parts[1] || SESSION_DEFAULT_FILTER_SIZE;
-    const vals = parts.length > 2 ? parts[2] : undefined;
-    let values;
-    if (vals === undefined) {
-      values = undefined;
-    } else if (vals === '' || vals === '!') {
-      values = [];
-    } else {
-      values = vals.split('|').map(v => v.trim()).filter(Boolean);
-    }
-    return { type, size, values };
-  }).filter(t => t.type);
-}
-
-function applyFilterSelectionsToGearList(info) {
-  const projectInfo = info || (typeof currentProjectInfo !== 'undefined' ? currentProjectInfo : {});
-  if (!gearListOutput) return;
-  resolveFilterSelectElement();
-  const tokens = info && info.filter ? parseFilterTokens(info.filter) : [];
-  const entries = buildFilterGearEntries(tokens);
-  updateGearListFilterEntries(entries);
-  adjustGearListSelectWidths(gearListOutput);
-}
-
-function normalizeGearNameForComparison(name) {
-  if (!name) return '';
-  let normalized = String(name);
-  if (typeof normalized.normalize === 'function') {
-    normalized = normalized.normalize('NFD');
-  } else if (typeof String.prototype.normalize === 'function') {
-    normalized = String.prototype.normalize.call(normalized, 'NFD');
-  }
-  normalized = normalized.replace(/[\u0300-\u036f]/g, '');
-  normalized = normalized.replace(/\bfuer\b/gi, 'for');
-  normalized = normalized.replace(/\bfur\b/gi, 'for');
-  normalized = normalized.toLowerCase();
-  return normalized.replace(/[^a-z0-9]+/g, '');
-}
-if (typeof window !== 'undefined') window.applyFilterSelectionsToGearList = applyFilterSelectionsToGearList;
-
-function buildFilterSelectHtml() {
-  return '<div id="gearListFilterDetails" class="hidden" aria-live="polite"></div>';
-}
-if (typeof window !== 'undefined') window.buildFilterSelectHtml = buildFilterSelectHtml;
-
-function collectFilterAccessories(filters = []) {
-  const items = [];
-  filters.forEach(({ type }) => {
-    switch (type) {
-      case 'ND Grad HE':
-      case 'ND Grad SE':
-        break;
-      default:
-        break;
-    }
-  });
-  return items;
-}
-if (typeof window !== 'undefined') window.collectFilterAccessories = collectFilterAccessories;
-
-const USER_BUTTON_FUNCTION_ITEMS = [
-  { key: 'toggleLut', value: 'Toggle LUT' },
-  { key: 'falseColor', value: 'False Color' },
-  { key: 'peaking', value: 'Peaking' },
-  { key: 'anamorphicDesqueeze', value: 'Anamorphic Desqueeze' },
-  { key: 'surroundView', value: 'Surround View' },
-  { key: 'oneToOneZoom', value: '1:1 Zoom' },
-  { key: 'waveform', value: 'Waveform' },
-  { key: 'histogram', value: 'Histogram' },
-  { key: 'vectorscope', value: 'Vectorscope' },
-  { key: 'zebra', value: 'Zebra' },
-  { key: 'playback', value: 'Playback' },
-  { key: 'record', value: 'Record' },
-  { key: 'zoom', value: 'Zoom' },
-  { key: 'frameLines', value: 'Frame Lines' },
-  { key: 'frameGrab', value: 'Frame Grab' },
-  { key: 'wb', value: 'WB' },
-  { key: 'iso', value: 'ISO' },
-  { key: 'nd', value: 'ND' },
-  { key: 'fps', value: 'FPS' },
-  { key: 'shutter', value: 'Shutter' }
-];
-
-function populateUserButtonDropdowns() {
-  const lang = typeof currentLang === 'string' && texts[currentLang]
-    ? currentLang
-    : 'en';
-  const fallbackProjectForm = texts?.en?.projectForm || {};
-  const langProjectForm = texts?.[lang]?.projectForm || fallbackProjectForm;
-  const labels = langProjectForm.userButtonFunctions || {};
-  const fallbackLabels = fallbackProjectForm.userButtonFunctions || {};
-
-  const items = USER_BUTTON_FUNCTION_ITEMS.map(item => {
-    const label = labels[item.key] || fallbackLabels[item.key] || item.value;
-    return { ...item, label };
-  });
-
-  const knownValues = new Set(items.map(item => item.value));
-
-  ['monitorUserButtons', 'cameraUserButtons', 'viewfinderUserButtons'].forEach(id => {
-    const populate = (sel) => {
-      if (!sel) return;
-
-      const previouslySelected = new Set(
-        Array.from(sel.selectedOptions || []).map(opt => opt.value)
-      );
-
-      const fragment = document.createDocumentFragment();
-
-      for (let index = 0; index < items.length; index += 1) {
-        const { value, label } = items[index];
-        if (!value) {
-          continue;
-        }
-        const opt = document.createElement('option');
-        opt.value = value;
-        opt.textContent = label;
-        if (previouslySelected.has(value)) {
-          opt.selected = true;
-        }
-        fragment.appendChild(opt);
+      function findMaxFrameRateForSensor(entries, sensorTokens, sensorLabel = '') {
+        return DeviceCapabilityManager.findMaxFrameRateForSensor(entries, sensorTokens, sensorLabel);
       }
 
-      previouslySelected.forEach(value => {
-        if (knownValues.has(value)) {
+      function getFrameRateInputValue(input) {
+        if (!input) return '';
+        const raw = input.value;
+        return typeof raw === 'string' ? raw.trim() : '';
+      }
+
+      function getCurrentFrameRateInputValue() {
+        return getFrameRateInputValue(recordingFrameRateInput);
+      }
+
+      function collectFrameRateContextTokens(select) {
+        if (!select) {
+          return [];
+        }
+        if (select.multiple) {
+          return Array.from(select.selectedOptions || [])
+            .map(option => DeviceCapabilityManager.tokenizeFrameRateContext(option && option.value))
+            .reduce((acc, tokens) => (tokens && tokens.length ? acc.concat(tokens) : acc), []);
+        }
+        const value = typeof select.value === 'string' ? select.value : '';
+        return DeviceCapabilityManager.tokenizeFrameRateContext(value);
+      }
+
+      function populateFrameRateDropdownFor(config = {}) {
+        const {
+          selected = '',
+          recordingInput,
+          optionsList,
+          sensorSelect,
+          resolutionSelect,
+          aspectSelect,
+          hintElement,
+        } = config;
+
+        if (!recordingInput || !optionsList) {
           return;
         }
-        const opt = document.createElement('option');
-        opt.value = value;
-        opt.textContent = value;
-        opt.selected = true;
-        fragment.appendChild(opt);
-      });
 
-      sel.innerHTML = '';
-      sel.appendChild(fragment);
+        const normalizedSelected = DeviceCapabilityManager.normalizeRecordingFrameRateValue(selected);
+        let currentValue = normalizedSelected || getFrameRateInputValue(recordingInput);
+        const camKey = cameraSelect && cameraSelect.value;
+        // Fix for potential ReferenceError: devices is not defined
+        const safeDevices = (typeof window !== 'undefined' && window.devices) || {};
+        const frameRateEntries =
+          camKey && safeDevices && safeDevices.cameras && safeDevices.cameras[camKey]
+            ? safeDevices.cameras[camKey].frameRates
+            : null;
 
-      const optionCount = sel.options ? sel.options.length : 0;
-      sel.size = optionCount > 0 ? optionCount : USER_BUTTON_FUNCTION_ITEMS.length;
-    };
+        const sensorValue = sensorSelect && typeof sensorSelect.value === 'string'
+          ? sensorSelect.value
+          : '';
+        const sensorTokens = DeviceCapabilityManager.tokenizeFrameRateContext(sensorValue);
+        const resolutionValue = resolutionSelect && typeof resolutionSelect.value === 'string'
+          ? resolutionSelect.value
+          : '';
+        const resolutionTokens = DeviceCapabilityManager.tokenizeFrameRateContext(resolutionValue);
+        const aspectTokens = collectFrameRateContextTokens(aspectSelect);
 
-    if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
-      cineCoreUiHelpers.whenElementAvailable(id, populate);
-    } else {
-      populate(document.getElementById(id));
-    }
-  });
-}
+        const sensorModeMaxFrameRate = findMaxFrameRateForSensor(
+          Array.isArray(frameRateEntries) ? frameRateEntries : [],
+          sensorTokens,
+          sensorValue
+        );
+        const resolutionMaxFrameRate = findMaxFrameRateForSensor(
+          Array.isArray(frameRateEntries) ? frameRateEntries : [],
+          resolutionTokens,
+          recordingResolutionDropdown && recordingResolutionDropdown.value
+        );
 
-const runInitAppWithInitialLoadingIndicator = () => {
-  ensureInitialLoadingIndicatorVisible();
-  try {
-    initApp();
-  } finally {
-    finalizeInitialLoadingIndicator();
-  }
-};
+        const { values: suggestions } = DeviceCapabilityManager.buildFrameRateSuggestions(
+          Array.isArray(frameRateEntries) ? frameRateEntries : [],
+          [
+            sensorTokens,
+            resolutionTokens,
+            aspectTokens,
+          ]
+        );
 
-ensureInitialLoadingIndicatorVisible();
+        optionsList.innerHTML = '';
+        const uniqueValues = new Set();
+        const filteredSuggestions = [];
+        const numericCandidates = [];
+        const allowedMaxCandidates = [];
+        if (Number.isFinite(sensorModeMaxFrameRate)) {
+          allowedMaxCandidates.push(sensorModeMaxFrameRate);
+        }
+        if (Number.isFinite(resolutionMaxFrameRate)) {
+          allowedMaxCandidates.push(resolutionMaxFrameRate);
+        }
+        const allowedMaxFrameRate = allowedMaxCandidates.length
+          ? Math.min(...allowedMaxCandidates)
+          : null;
 
-if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', runInitAppWithInitialLoadingIndicator);
-  } else {
-    runInitAppWithInitialLoadingIndicator();
-  }
-} else {
-  finalizeInitialLoadingIndicator();
-}
+        suggestions.forEach(originalValue => {
+          if (!originalValue) return;
+          let value = originalValue;
+          const numeric = Number.parseFloat(value);
+          if (Number.isFinite(numeric)) {
+            if (numeric + FRAME_RATE_RANGE_TOLERANCE < MIN_RECORDING_FRAME_RATE) {
+              return;
+            }
+            if (
+              allowedMaxFrameRate !== null &&
+              numeric > allowedMaxFrameRate + FRAME_RATE_RANGE_TOLERANCE
+            ) {
+              return;
+            }
+            const formatted = formatFrameRateValue(numeric);
+            if (formatted) {
+              value = formatted;
+            }
+            numericCandidates.push({ numeric, formatted: value });
+          }
+          if (uniqueValues.has(value)) return;
+          uniqueValues.add(value);
+          filteredSuggestions.push(value);
+          const opt = document.createElement('option');
+          opt.value = value;
+          optionsList.appendChild(opt);
+        });
 
-/* Exported Session API */
-const cineCoreSession = {
-  APP_VERSION: typeof ACTIVE_APP_VERSION === 'string' ? ACTIVE_APP_VERSION : (typeof APP_VERSION !== 'undefined' ? APP_VERSION : 'unknown'),
-  closeSideMenu,
-  openSideMenu,
-  setupSideMenu,
-  setupResponsiveControls,
-  setLanguage: applySetLanguage,
-  applySetLanguage,
-  safeGetCurrentProjectName,
-  updateCalculations: function (...args) {
-    if (typeof globalThis !== 'undefined' && typeof globalThis.updateCalculations === 'function') {
-      return globalThis.updateCalculations(...args);
-    }
-    return undefined;
-  },
-  setBatteryPlates,
-  getBatteryPlates,
-  setRecordingMedia,
-  getRecordingMedia,
-  applyDarkMode,
-  applyPinkMode,
-  applyHighContrast,
-  generatePrintableOverview,
-  generateGearListHtml,
-  ensureZoomRemoteSetup,
-  encodeSharedSetup,
-  decodeSharedSetup,
-  applySharedSetupFromUrl,
-  applySharedSetup,
-  updateBatteryPlateVisibility: _safeUpdateBatteryPlateVisibility,
-  updateBatteryOptions: _safeUpdateBatteryOptions,
+        if (currentValue && !uniqueValues.has(currentValue)) {
+          const numericForList = Number.parseFloat(currentValue);
+          if (
+            !Number.isFinite(numericForList) ||
+            numericForList + FRAME_RATE_RANGE_TOLERANCE >= MIN_RECORDING_FRAME_RATE
+          ) {
+            const opt = document.createElement('option');
+            opt.value = currentValue;
+            optionsList.appendChild(opt);
+          }
+        }
 
-  cameraFizPort,
-  controllerCamPort,
-  controllerDistancePort,
-  detectBrand,
-  connectionLabel,
-  generateConnectorSummary,
-  exportDiagramSvg,
-  fixPowerInput,
-  ensureList,
-  normalizeVideoType,
-  normalizeFizConnectorType,
-  normalizeViewfinderType,
-  normalizePowerPortType,
+        const maxCandidate = numericCandidates.reduce(
+          (best, entry) => (entry.numeric > best.numeric ? entry : best),
+          { numeric: Number.NEGATIVE_INFINITY, formatted: '' }
+        );
+        let maxFrameRate = maxCandidate.numeric;
+        if (Number.isFinite(allowedMaxFrameRate)) {
+          maxFrameRate = Number.isFinite(maxFrameRate)
+            ? Math.min(maxFrameRate, allowedMaxFrameRate)
+            : allowedMaxFrameRate;
+        }
+        const formattedMaxFrameRate = Number.isFinite(maxFrameRate)
+          ? maxCandidate.formatted || formatFrameRateValue(maxFrameRate)
+          : '';
+        const minValue = formatFrameRateValue(MIN_RECORDING_FRAME_RATE);
+        const numericCurrent = Number.parseFloat(currentValue);
+        let adjustedValue = currentValue;
+        let valueChanged = false;
 
-  setSelectValue,
-  autoSaveCurrentSetup: _safeAutoSaveCurrentSetup,
-  saveCurrentSession: _safeSaveCurrentSession,
-  saveCurrentGearList: function (...args) {
-    if (typeof globalThis !== 'undefined' && typeof globalThis.saveCurrentGearList === 'function') {
-      return globalThis.saveCurrentGearList(...args);
-    }
-    return undefined;
-  },
-  crewRoles: typeof globalThis !== 'undefined' && Array.isArray(globalThis.crewRoles) ? globalThis.crewRoles : [],
-  setSliderBowlValue: function (...args) {
-    if (typeof globalThis !== 'undefined' && typeof globalThis.setSliderBowlValue === 'function') {
-      return globalThis.setSliderBowlValue(...args);
-    }
-    return undefined;
-  },
-  setEasyrigValue: function (...args) {
-    if (typeof globalThis !== 'undefined' && typeof globalThis.setEasyrigValue === 'function') {
-      return globalThis.setEasyrigValue(...args);
-    }
-    return undefined;
-  },
-  restoreSessionState,
+        if (
+          Number.isFinite(maxFrameRate) &&
+          Number.isFinite(numericCurrent) &&
+          numericCurrent > maxFrameRate + FRAME_RATE_RANGE_TOLERANCE
+        ) {
+          const clampedValue = formattedMaxFrameRate || formatFrameRateValue(maxFrameRate);
+          if (clampedValue) {
+            adjustedValue = clampedValue;
+            if (adjustedValue !== currentValue) {
+              valueChanged = true;
+            }
+          }
+        }
 
-  scenarioIcons,
+        if (
+          minValue &&
+          Number.isFinite(numericCurrent) &&
+          numericCurrent + FRAME_RATE_RANGE_TOLERANCE < MIN_RECORDING_FRAME_RATE
+        ) {
+          adjustedValue = minValue;
+          if (adjustedValue !== currentValue) {
+            valueChanged = true;
+          }
+        }
 
-  renderFilterDetails,
-  collectFilterSelections,
-  parseFilterTokens,
-  applyFilterSelectionsToGearList,
+        if (valueChanged) {
+          recordingInput.value = adjustedValue;
+          currentValue = adjustedValue;
+          recordingInput.dispatchEvent(new Event('input', { bubbles: true }));
+        } else {
+          recordingInput.value = currentValue;
+        }
 
-  createSettingsBackup,
-  buildSettingsBackupPackage,
-  captureStorageSnapshot,
-  sanitizeBackupPayload,
-  extractBackupSections,
+        const placeholderCandidate = filteredSuggestions[0];
+        if (!currentValue && placeholderCandidate) {
+          recordingInput.placeholder = placeholderCandidate;
+        } else if (recordingInput.placeholder) {
+          recordingInput.placeholder = '';
+        }
 
-  runFeatureSearch,
-  computeSetupDiff,
-  __versionCompareInternals: {
-    formatDiffPath,
-    formatDiffListIndex,
-    createKeyedDiffPathSegment,
-    parseKeyedDiffPathSegment,
-    findArrayComparisonKey,
-  },
-  __featureSearchInternals: {
-    featureMap,
-    actionMap,
-    deviceMap,
-    helpMap,
-    featureSearchEntries,
-    featureSearchDefaultOptions,
-    featureSearchInput: featureSearch,
-    featureSearchDropdownElement:
-      typeof globalThis !== 'undefined' && globalThis.featureSearchDropdown
-        ? globalThis.featureSearchDropdown
-        : null,
-  },
-  __customFontInternals: {
-    addFromData: (name, dataUrl, options) => addCustomFontFromData(name, dataUrl, options),
-    getEntries: () => Array.from(customFontEntries.values()),
-  },
-  __sharedImportInternals: {
-    getLastSharedSetupData: () => lastSharedSetupData,
-    setLastSharedSetupDataForTest: (value) => {
-      lastSharedSetupData = value;
-    },
-    getLastSharedAutoGearRules: () => lastSharedAutoGearRules,
-    setLastSharedAutoGearRulesForTest: (value) => {
-      lastSharedAutoGearRules = value;
-    },
-    isProjectPresetActive: () => sharedImportProjectPresetActive,
-    setProjectPresetActiveForTest: (value) => {
-      sharedImportProjectPresetActive = !!value;
-    },
-    getPreviousPresetId: () => sharedImportPreviousPresetId,
-    setPreviousPresetIdForTest: (value) => {
-      sharedImportPreviousPresetId = typeof value === 'string' ? value : '';
-    },
-    isPromptActive: () => sharedImportPromptActive,
-    setPromptActiveForTest: (value) => {
-      sharedImportPromptActive = !!value;
-    },
-    getPendingSharedLinkListener: () => pendingSharedLinkListener,
-    setPendingSharedLinkListenerForTest: (listener) => {
-      pendingSharedLinkListener = typeof listener === 'function' ? listener : null;
-    },
-  },
-  __mountVoltageInternals: {
-    getSessionMountVoltagePreferencesClone,
-    applySessionMountVoltagePreferences,
-    cloneMountVoltageDefaultsForSession,
-  },
+        if (minValue) {
+          recordingInput.min = minValue;
+        }
 
-  resetPlannerStateAfterFactoryReset,
-  __autoGearInternals: {
-    buildVideoDistributionAutoRules: (typeof window !== 'undefined' && window.buildVideoDistributionAutoRules) || undefined,
-  },
+        if (formattedMaxFrameRate) {
+          recordingInput.setAttribute('max', formattedMaxFrameRate);
+        } else {
+          recordingInput.removeAttribute('max');
+        }
 
-  // Explicitly added to module API for ESM access
-  populateFilterDropdown,
-  populateFrameRateDropdownFor,
-  populateSlowMotionFrameRateDropdown,
-  populateSensorModeDropdown,
-  populateCodecDropdown,
-  populateRecordingResolutionDropdown
-};
+        if (hintElement) {
+          let hintMessage = '';
+          if (formattedMaxFrameRate) {
+            const template = hintElement.getAttribute('data-range-template');
+            hintMessage = template
+              ? template.replace('{max}', formattedMaxFrameRate)
+              : `Enter a recording frame rate from ${minValue} to ${formattedMaxFrameRate} fps.`;
+          } else {
+            hintMessage = hintElement.getAttribute('data-default-message') || '';
+          }
+          hintElement.textContent = hintMessage;
+          hintElement.hidden = !hintMessage;
+        }
+      }
 
-// Expose globals for backward compatibility
-if (typeof window !== 'undefined') {
-  window.cineCoreSession = cineCoreSession;
+      function populateFrameRateDropdown(selected = '') {
+        const resolve = (val, id) => val || (typeof document !== 'undefined' ? document.getElementById(id) : null);
+        const inputEl = resolve(recordingFrameRateInput, 'recordingFrameRate');
 
-  const EXPOSE_LIST = [
-    'saveCurrentSession',
-    'autoSaveCurrentSetup',
-    'createSettingsBackup',
-    'handleRestoreRehearsalProceed',
-    'handleRestoreRehearsalAbort',
-    'downloadSharedProject',
-    'encodeSharedSetup',
-    'decodeSharedSetup',
-    'applySharedSetup',
-    'applySharedSetupFromUrl',
-    // Added during ESM conversion to ensure UI availability
-    'renderFilterDetails',
-    'populateFilterDropdown',
-    'populateFrameRateDropdownFor',
-    'populateSlowMotionFrameRateDropdown',
-    'populateSensorModeDropdown',
-    'populateCodecDropdown',
-    'populateRecordingResolutionDropdown'
-  ];
+        if (!inputEl && typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+          cineCoreUiHelpers.whenElementAvailable('recordingFrameRate', () => populateFrameRateDropdown(selected));
+          return;
+        }
 
-  EXPOSE_LIST.forEach(key => {
-    if (cineCoreSession[key]) {
-      window[key] = cineCoreSession[key];
-    }
-  });
+        populateFrameRateDropdownFor({
+          selected,
+          recordingInput: inputEl,
+          optionsList: resolve(recordingFrameRateOptionsList, 'recordingFrameRateOptions'),
+          sensorSelect: resolve(sensorModeDropdown, 'sensorMode'),
+          resolutionSelect: resolve(recordingResolutionDropdown, 'recordingResolution'),
+          hintElement: resolve(recordingFrameRateHint, 'recordingFrameRateHint'),
+        });
+      }
 
-  if (cineCoreSession.__autoGearInternals) {
-    window.__autoGearInternals = cineCoreSession.__autoGearInternals;
-  }
-}
+      function populateSlowMotionFrameRateDropdown(selected = '') {
+        const resolve = (val, id) => val || (typeof document !== 'undefined' ? document.getElementById(id) : null);
+        const inputEl = resolve(slowMotionRecordingFrameRateInput, 'slowMotionRecordingFrameRate');
 
-export default cineCoreSession;
-console.log('app-session.js: Execution complete (ESM)');
+        if (!inputEl && typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+          cineCoreUiHelpers.whenElementAvailable('slowMotionRecordingFrameRate', () => populateSlowMotionFrameRateDropdown(selected));
+          return;
+        }
 
-/* cineAppSession Shim for Persistence & Runtime Integrity */
-const cineAppSession = {
-  // Persistence Bindings
-  saveCurrentSession,
-  autoSaveCurrentSetup,
-  saveCurrentGearList,
-  restoreSessionState,
+        populateFrameRateDropdownFor({
+          selected,
+          recordingInput: inputEl,
+          optionsList: resolve(slowMotionRecordingFrameRateOptionsList, 'slowMotionRecordingFrameRateOptions'),
+          sensorSelect: resolve(slowMotionSensorModeDropdown, 'slowMotionSensorMode'),
+          resolutionSelect: resolve(slowMotionRecordingResolutionDropdown, 'slowMotionRecordingResolution'),
+          aspectSelect: resolve(slowMotionAspectRatioSelect, 'slowMotionAspectRatio'),
+          hintElement: resolve(slowMotionRecordingFrameRateHint, 'slowMotionRecordingFrameRateHint'),
+        });
+      }
 
-  // Backups
-  collectFullBackupData,
-  createSettingsBackup,
-  captureStorageSnapshot,
-  sanitizeBackupPayload,
+      function populateSlowMotionRecordingResolutionDropdown(selected = '') {
+        populateCameraPropertyDropdown('slowMotionRecordingResolution', 'resolutions', selected);
+      }
+      if (typeof window !== 'undefined') window.populateSlowMotionRecordingResolutionDropdown = populateSlowMotionRecordingResolutionDropdown;
 
-  // Sharing & Restore
-  encodeSharedSetup,
-  decodeSharedSetup,
-  applySharedSetup,
-  applySharedSetupFromUrl,
-  downloadSharedProject,
-  saveProject,
-  handleRestoreRehearsalProceed,
-  handleRestoreRehearsalAbort,
+      function populateSlowMotionSensorModeDropdown(selected = '') {
+        populateCameraPropertyDropdown('slowMotionSensorMode', 'sensorModes', selected);
+      }
+      if (typeof window !== 'undefined') window.populateSlowMotionSensorModeDropdown = populateSlowMotionSensorModeDropdown;
 
-  // Aliases for direct binding resolution if needed by name overrides
-  proceed: handleRestoreRehearsalProceed,
-  abort: handleRestoreRehearsalAbort,
-  downloadProject: downloadSharedProject
-};
+      function populateSensorModeDropdown(selected = '') {
+        populateCameraPropertyDropdown('sensorMode', 'sensorModes', selected);
+      }
+      if (typeof window !== 'undefined') window.populateSensorModeDropdown = populateSensorModeDropdown;
 
-if (typeof window !== 'undefined') {
-  window.cineAppSession = cineAppSession;
+      function populateCodecDropdown(selected = '') {
+        populateCameraPropertyDropdown('codec', 'recordingCodecs', selected);
+      }
 
-  // Ensure specific globals expected by legacy code or direct checks are present
-  // (Redundant safety for the integrity check)
-  if (!window.handleRestoreRehearsalProceed) window.handleRestoreRehearsalProceed = handleRestoreRehearsalProceed;
-  if (!window.handleRestoreRehearsalAbort) window.handleRestoreRehearsalAbort = handleRestoreRehearsalAbort;
-  if (!window.downloadSharedProject) window.downloadSharedProject = downloadSharedProject;
-}
+      function populateFilterDropdown() {
+        const populate = (select) => {
+          const devices = (typeof window !== 'undefined' && window.devices) || {};
+          if (select && devices && Array.isArray(devices.filterOptions)) {
+            const fragment = document.createDocumentFragment();
+            if (!select.multiple) {
+              const emptyOpt = document.createElement('option');
+              emptyOpt.value = '';
+              fragment.appendChild(emptyOpt);
+            }
+            for (let index = 0; index < devices.filterOptions.length; index += 1) {
+              const value = devices.filterOptions[index];
+              const opt = document.createElement('option');
+              opt.value = value;
+              opt.textContent = value;
+              fragment.appendChild(opt);
+            }
+            select.innerHTML = '';
+            select.appendChild(fragment);
+          }
+        };
 
-export { cineAppSession };
+        const select = resolveFilterSelectElement();
+        if (select) {
+          populate(select);
+        } else if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+          cineCoreUiHelpers.whenElementAvailable('filter', (el) => {
+            // Update the global/cached reference if possible
+            if (typeof filterSelectElem !== 'undefined' && (!filterSelectElem || typeof filterSelectElem !== 'object')) {
+              filterSelectElem = el;
+            }
+            populate(el);
+          });
+        }
+      }
+
+      const filterId = t => t.replace(/[^a-z0-9]/gi, '_');
+
+      function getFilterValueConfig(type) {
+        switch (type) {
+          case 'IRND':
+            return { opts: ['0.3', '0.6', '0.9', '1.2', '1.5', '1.8', '2.1', '2.5'], defaults: ['0.3', '1.2'] };
+          case 'Diopter':
+            return { opts: ['+1/4', '+1/2', '+1', '+2', '+3', '+4'], defaults: ['+1/2', '+1', '+2', '+4'] };
+          case 'ND Grad HE':
+            return {
+              opts: ['0.3 HE Vertical', '0.6 HE Vertical', '0.9 HE Vertical', '1.2 HE Vertical', '0.3 HE Horizontal', '0.6 HE Horizontal', '0.9 HE Horizontal', '1.2 HE Horizontal'],
+              defaults: ['0.3 HE Horizontal', '0.6 HE Horizontal', '0.9 HE Horizontal']
+            };
+          case 'ND Grad SE':
+            return {
+              opts: ['0.3 SE Vertical', '0.6 SE Vertical', '0.9 SE Vertical', '1.2 SE Vertical', '0.3 SE Horizontal', '0.6 SE Horizontal', '0.9 SE Horizontal', '1.2 SE Horizontal'],
+              defaults: ['0.3 SE Horizontal', '0.6 SE Horizontal', '0.9 SE Horizontal']
+            };
+          default:
+            return { opts: ['1', '1/2', '1/4', '1/8', '1/16'], defaults: ['1/2', '1/4', '1/8'] };
+        }
+      }
+
+      const SESSION_DEFAULT_FILTER_SIZE = ensureSessionRuntimePlaceholder(
+        'DEFAULT_FILTER_SIZE',
+        () => '4x5.65'
+      );
+
+      function createFilterSizeSelect(type, selected = SESSION_DEFAULT_FILTER_SIZE, options = {}) {
+        const { includeId = true, idPrefix = 'filter-size-' } = options;
+        const sel = document.createElement('select');
+        if (includeId) {
+          sel.id = `${idPrefix}${filterId(type)}`;
+        }
+        let sizes = [SESSION_DEFAULT_FILTER_SIZE, '4x4', '6x6', '95mm'];
+        if (type === 'Rota-Pol') sizes = [SESSION_DEFAULT_FILTER_SIZE, '6x6', '95mm'];
+        sizes.forEach(s => {
+          const o = document.createElement('option');
+          o.value = s;
+          o.textContent = s;
+          if (s === selected) o.selected = true;
+          sel.appendChild(o);
+        });
+        return sel;
+      }
+
+      /* exported createFilterValueSelect */
+      function createFilterValueSelect(type, selected) {
+        const sel = document.createElement('select');
+        sel.id = `filter-values-${filterId(type)}`;
+        // Allow selecting multiple strengths for a given filter
+        // Use both the property and attribute to ensure HTML serialization
+        sel.multiple = true;
+        sel.setAttribute('multiple', '');
+        const { opts, defaults = [] } = getFilterValueConfig(type);
+        const selectedVals = Array.isArray(selected)
+          ? selected.slice()
+          : defaults.slice();
+        const syncOption = (option, isSelected) => {
+          option.selected = isSelected;
+          if (isSelected) {
+            option.setAttribute('selected', '');
+          } else {
+            option.removeAttribute('selected');
+          }
+        };
+        const syncCheckbox = (checkbox, isChecked) => {
+          checkbox.checked = isChecked;
+          if (isChecked) {
+            checkbox.setAttribute('checked', '');
+          } else {
+            checkbox.removeAttribute('checked');
+          }
+        };
+        const optionsByValue = new Map();
+        const optionFragment = document.createDocumentFragment();
+        for (let index = 0; index < opts.length; index += 1) {
+          const value = opts[index];
+          const opt = document.createElement('option');
+          opt.value = value;
+          opt.textContent = value;
+          syncOption(opt, selectedVals.includes(value));
+          optionsByValue.set(value, opt);
+          optionFragment.appendChild(opt);
+        }
+        sel.appendChild(optionFragment);
+        // Hidden select holds the values; checkboxes provide the UI
+        sel.size = opts.length;
+        sel.style.display = 'none';
+        const container = document.createElement('span');
+        container.className = 'filter-values-container';
+        const checkboxName = `filterValues-${filterId(type)}`;
+        const checkboxFragment = document.createDocumentFragment();
+        const checkboxesByValue = new Map();
+        for (let index = 0; index < opts.length; index += 1) {
+          const value = opts[index];
+          const lbl = document.createElement('label');
+          lbl.className = 'filter-value-option';
+          const cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.name = checkboxName;
+          cb.value = value;
+          syncCheckbox(cb, selectedVals.includes(value));
+          cb.addEventListener('change', () => {
+            const opt = optionsByValue.get(value);
+            if (opt) {
+              syncOption(opt, cb.checked);
+            }
+            syncCheckbox(cb, cb.checked);
+            sel.dispatchEvent(new Event('change'));
+          });
+          lbl.appendChild(cb);
+          lbl.appendChild(document.createTextNode(value));
+          checkboxesByValue.set(value, cb);
+          checkboxFragment.appendChild(lbl);
+        }
+        container.appendChild(checkboxFragment);
+        sel.addEventListener('change', () => {
+          optionsByValue.forEach((opt, value) => {
+            const selected = !!opt && opt.selected;
+            syncOption(opt, selected);
+            const checkbox = checkboxesByValue.get(value);
+            if (checkbox) {
+              syncCheckbox(checkbox, selected);
+            }
+          });
+        });
+        container.appendChild(sel);
+        return { container, select: sel };
+      }
+
+      function resolveFilterDisplayInfo(type, size = SESSION_DEFAULT_FILTER_SIZE) {
+        switch (type) {
+          case 'Diopter':
+            return { label: 'Schneider CF DIOPTER FULL GEN2', gearName: 'Schneider CF DIOPTER FULL GEN2' };
+          case 'Clear':
+            return { label: 'Clear Filter', gearName: 'Clear Filter' };
+          case 'IRND':
+            return { label: 'IRND Filter Set', gearName: 'IRND Filter Set', hideDetails: false };
+          case 'Pol':
+            return { label: 'Pol Filter', gearName: 'Pol Filter' };
+          case 'Rota-Pol': {
+            if (size === '6x6') {
+              return {
+                label: 'ARRI Rota Pola Filter Frame (6x6)',
+                gearName: 'ARRI Rota Pola Filter Frame (6x6)'
+              };
+            }
+            if (size === '95mm') {
+              return {
+                label: 'Tilta 95mm Polarizer Filter for Tilta Mirage',
+                gearName: 'Tilta 95mm Polarizer Filter for Tilta Mirage'
+              };
+            }
+            return {
+              label: 'ARRI Rota Pola Filter Frame',
+              gearName: 'ARRI Rota Pola Filter Frame'
+            };
+          }
+          case 'ND Grad HE':
+            return { label: 'ND Grad HE Filter Set', gearName: 'ND Grad HE Filter Set', hideDetails: false };
+          case 'ND Grad SE':
+            return { label: 'ND Grad SE Filter Set', gearName: 'ND Grad SE Filter Set', hideDetails: false };
+          default:
+            return { label: `${type} Filter Set`, gearName: `${type} Filter Set`, hideDetails: true };
+        }
+      }
+
+      function buildFilterGearEntries(filters = []) {
+        const entries = [];
+        filters.forEach(({ type, size = SESSION_DEFAULT_FILTER_SIZE, values }) => {
+          if (!type) return;
+          const sizeValue = size || SESSION_DEFAULT_FILTER_SIZE;
+          const idBase = `filter-${filterId(type)}`;
+          switch (type) {
+            case 'Diopter': {
+              entries.push({
+                id: `${idBase}-frame`,
+                gearName: 'ARRI Diopter Frame 138mm',
+                label: 'ARRI Diopter Frame 138mm',
+                type: '',
+                size: '',
+                values: []
+              });
+              const diopterValues = values == null
+                ? (getFilterValueConfig(type).defaults || []).slice()
+                : (Array.isArray(values) ? values.slice() : []);
+              entries.push({
+                id: `${idBase}-set`,
+                gearName: 'Schneider CF DIOPTER FULL GEN2',
+                label: 'Schneider CF DIOPTER FULL GEN2',
+                type,
+                size: '',
+                values: diopterValues
+              });
+              break;
+            }
+            case 'Clear': {
+              const { label, gearName } = resolveFilterDisplayInfo(type, sizeValue);
+              entries.push({
+                id: idBase,
+                gearName,
+                label,
+                type,
+                size: sizeValue,
+                values: []
+              });
+              break;
+            }
+            case 'Pol': {
+              const { label, gearName } = resolveFilterDisplayInfo(type, sizeValue);
+              entries.push({
+                id: idBase,
+                gearName,
+                label,
+                type,
+                size: sizeValue,
+                values: []
+              });
+              break;
+            }
+            case 'Rota-Pol': {
+              const { label, gearName } = resolveFilterDisplayInfo(type, sizeValue);
+              const displaySize = label.includes(sizeValue) ? '' : sizeValue;
+              entries.push({
+                id: idBase,
+                gearName,
+                label,
+                type,
+                size: displaySize,
+                values: []
+              });
+              break;
+            }
+            case 'ND Grad HE':
+            case 'ND Grad SE': {
+              const { label, gearName, hideDetails } = resolveFilterDisplayInfo(type, sizeValue);
+              const gradValues = values == null
+                ? (getFilterValueConfig(type).defaults || []).slice()
+                : (Array.isArray(values) ? values.slice() : []);
+              entries.push({
+                id: idBase,
+                gearName,
+                label,
+                hideDetails,
+                type,
+                size: sizeValue,
+                values: gradValues
+              });
+              break;
+            }
+            default: {
+              const { label, gearName, hideDetails } = resolveFilterDisplayInfo(type, sizeValue);
+              const filterValues = values == null
+                ? (getFilterValueConfig(type).defaults || []).slice()
+                : (Array.isArray(values) ? values.slice() : []);
+              entries.push({
+                id: idBase,
+                gearName,
+                label,
+                hideDetails,
+                type,
+                size: sizeValue,
+                values: filterValues
+              });
+            }
+          }
+        });
+        return entries;
+      }
+      if (typeof window !== 'undefined') window.buildFilterGearEntries = buildFilterGearEntries;
+
+      function updateGearListFilterEntries(entries = []) {
+        if (!gearListOutput) return;
+        const entryMap = new Map(entries.map(entry => [entry.id, entry]));
+        gearListOutput.querySelectorAll('[data-filter-entry]').forEach(span => {
+          const entryId = span.getAttribute('data-filter-entry');
+          if (!entryId) return;
+          const entry = entryMap.get(entryId);
+          if (!entry) return;
+          const labelText = typeof entry?.label === 'string' ? entry.label : '';
+          span.textContent = labelText ? `1x ${labelText}` : '';
+          span.setAttribute('data-gear-name', entry.gearName);
+          span.setAttribute('data-filter-label', entry.label);
+          if (entry.type) {
+            span.setAttribute('data-filter-type', entry.type);
+          } else {
+            span.removeAttribute('data-filter-type');
+          }
+        });
+      }
+
+      function getGearListFilterDetailsContainer() {
+        return gearListOutput ? gearListOutput.querySelector('#gearListFilterDetails') : null;
+      }
+
+      function filterTypeNeedsValueSelect(type) {
+        return type === 'Diopter'
+          || type === 'IRND'
+          || type === 'ND Grad HE'
+          || type === 'ND Grad SE'
+          || (type !== 'Clear' && type !== 'Pol' && type !== 'Rota-Pol');
+      }
+
+      function createFilterStorageValueSelect(type, selected) {
+        const select = document.createElement('select');
+        select.id = `filter-values-${filterId(type)}`;
+        select.multiple = true;
+        select.setAttribute('multiple', '');
+        select.hidden = true;
+        select.setAttribute('aria-hidden', 'true');
+        const { opts, defaults = [] } = getFilterValueConfig(type);
+        const chosen = Array.isArray(selected) ? selected.slice() : defaults.slice();
+        opts.forEach(value => {
+          const opt = document.createElement('option');
+          opt.value = value;
+          opt.textContent = value;
+          if (chosen.includes(value)) {
+            opt.selected = true;
+            opt.setAttribute('selected', '');
+          }
+          select.appendChild(opt);
+        });
+        return select;
+      }
+
+      function resolveFilterDetailsStorageElement() {
+        if (typeof filterDetailsStorage !== 'undefined' && filterDetailsStorage) {
+          return filterDetailsStorage;
+        }
+        if (typeof document === 'undefined') return null;
+        const element = document.getElementById('filterDetails');
+        if (!element) return null;
+        try {
+          if (typeof globalThis !== 'undefined' && globalThis) {
+            globalThis.filterDetailsStorage = element;
+          } else if (typeof window !== 'undefined' && window) {
+            window.filterDetailsStorage = element;
+          }
+        } catch (ex) {
+          void ex;
+        }
+        return element;
+      }
+
+      function renderFilterDetailsStorage(details) {
+        const storageRoot = resolveFilterDetailsStorageElement();
+        if (!storageRoot) return;
+        storageRoot.innerHTML = '';
+        if (!details.length) {
+          storageRoot.hidden = true;
+          return;
+        }
+        storageRoot.hidden = true;
+        details.forEach(detail => {
+          const { type, size, values, needsSize, needsValues } = detail;
+          if (needsSize) {
+            const sizeSelect = createFilterSizeSelect(type, size);
+            sizeSelect.hidden = true;
+            sizeSelect.setAttribute('aria-hidden', 'true');
+            sizeSelect.addEventListener('change', handleFilterDetailChange);
+            storageRoot.appendChild(sizeSelect);
+          }
+          if (needsValues) {
+            const valuesSelect = createFilterStorageValueSelect(type, values);
+            valuesSelect.addEventListener('change', handleFilterDetailChange);
+            storageRoot.appendChild(valuesSelect);
+          }
+        });
+      }
+
+      function resolveGlobalScope() {
+        if (typeof globalThis !== 'undefined') return globalThis;
+        if (typeof window !== 'undefined') return window;
+        if (typeof self !== 'undefined') return self;
+        if (typeof global !== 'undefined') return global;
+        return null;
+      }
+
+      function ensureFilterDetailEditButton(element) {
+        if (!element) return null;
+        const existing = element.querySelector('.gear-item-edit-btn');
+        if (existing) return existing;
+
+        const doc = element.ownerDocument || (typeof document !== 'undefined' ? document : null);
+        if (!doc) return null;
+
+        const scope = resolveGlobalScope();
+        let editLabel = 'Edit item';
+        const textGetter = scope && typeof scope.getGearItemEditTexts === 'function'
+          ? scope.getGearItemEditTexts
+          : null;
+        if (textGetter) {
+          try {
+            const texts = textGetter.call(scope) || {};
+            if (texts.editButtonLabel && typeof texts.editButtonLabel === 'string') {
+              const trimmed = texts.editButtonLabel.trim();
+              if (trimmed) {
+                editLabel = trimmed;
+              }
+            }
+          } catch {
+            // Ignore localization lookup failures and use fallback label.
+          }
+        }
+
+        const button = doc.createElement('button');
+        button.type = 'button';
+        button.className = 'gear-item-edit-btn';
+        button.setAttribute('data-gear-edit', '');
+
+        if (editLabel) {
+          button.setAttribute('aria-label', editLabel);
+          button.setAttribute('title', editLabel);
+        }
+
+        const setLabelWithIcon = scope && typeof scope.setButtonLabelWithIcon === 'function'
+          ? scope.setButtonLabelWithIcon
+          : null;
+        const iconRegistry = scope && scope.ICON_GLYPHS ? scope.ICON_GLYPHS : null;
+        const editGlyph = iconRegistry
+          ? (
+            iconRegistry.sliders
+            || iconRegistry.gears
+            || iconRegistry.gearList
+            || iconRegistry.settingsGeneral
+            || iconRegistry.note
+            || null
+          )
+          : null;
+        if (setLabelWithIcon && editGlyph) {
+          setLabelWithIcon.call(scope, button, '', editGlyph);
+        } else if (editLabel) {
+          button.textContent = editLabel;
+        }
+
+        const noteSpan = element.querySelector('.gear-item-note');
+        if (noteSpan && noteSpan.parentNode === element) {
+          element.insertBefore(button, noteSpan.nextSibling);
+        } else {
+          element.appendChild(button);
+        }
+
+        return button;
+      }
+
+      function renderGearListFilterDetails(details) {
+        const container = getGearListFilterDetailsContainer();
+        if (!container) return;
+        container.innerHTML = '';
+        if (!details.length) {
+          container.classList.add('hidden');
+          return;
+        }
+        container.classList.remove('hidden');
+        details.forEach(detail => {
+          const {
+            type,
+            label,
+            gearName,
+            entryId,
+            size,
+            values,
+            needsSize,
+            needsValues
+          } = detail;
+          const row = document.createElement('div');
+          row.className = 'filter-detail';
+          if (gearName) {
+            row.setAttribute('data-gear-name', gearName);
+          }
+          if (type) {
+            row.setAttribute('data-filter-type', type);
+          }
+          const heading = document.createElement('div');
+          heading.className = 'filter-detail-label gear-item';
+          if (entryId) heading.setAttribute('data-filter-entry', entryId);
+          if (gearName) heading.setAttribute('data-gear-name', gearName);
+          if (label) {
+            heading.setAttribute('data-filter-label', label);
+            heading.setAttribute('data-gear-label', label);
+          }
+          if (type) heading.setAttribute('data-filter-type', type);
+          const shouldHideSize = !!needsSize;
+          if (shouldHideSize) {
+            heading.setAttribute('data-filter-hide-size', '');
+          } else {
+            heading.removeAttribute('data-filter-hide-size');
+          }
+          heading.textContent = label ? `1x ${label}` : '';
+          row.appendChild(heading);
+          if (typeof enhanceGearItemElement === 'function') {
+            enhanceGearItemElement(heading);
+          }
+          ensureFilterDetailEditButton(heading);
+          const controls = document.createElement('div');
+          controls.className = 'filter-detail-controls';
+          if (needsSize) {
+            const sizeLabel = document.createElement('label');
+            sizeLabel.className = 'filter-detail-size';
+            const sizeText = document.createElement('span');
+            sizeText.className = 'filter-detail-sublabel';
+            sizeText.textContent = 'Size';
+            const sizeWrapper = document.createElement('span');
+            sizeWrapper.className = 'select-wrapper';
+            const sizeSelect = createFilterSizeSelect(type, size, { includeId: false });
+            sizeSelect.setAttribute('data-storage-id', `filter-size-${filterId(type)}`);
+            sizeSelect.addEventListener('change', () => {
+              const storageId = sizeSelect.getAttribute('data-storage-id');
+              if (!storageId) return;
+              syncGearListFilterSize(storageId, sizeSelect.value);
+            });
+            sizeWrapper.appendChild(sizeSelect);
+            sizeLabel.append(sizeText, sizeWrapper);
+            controls.appendChild(sizeLabel);
+          }
+          if (needsValues) {
+            const valuesWrap = document.createElement('div');
+            valuesWrap.className = 'filter-detail-values';
+            const valueLabel = document.createElement('span');
+            valueLabel.className = 'filter-detail-sublabel';
+            valueLabel.textContent = 'Strengths';
+            const optionsWrap = document.createElement('span');
+            optionsWrap.className = 'filter-values-container';
+            optionsWrap.setAttribute('data-storage-values', `filter-values-${filterId(type)}`);
+            const storageValuesId = optionsWrap.getAttribute('data-storage-values');
+            const { opts, defaults = [] } = getFilterValueConfig(type);
+            const checkboxName = `filterValues-${filterId(type)}`;
+            const currentValues = values == null ? defaults : (Array.isArray(values) ? values : []);
+            opts.forEach(value => {
+              const lbl = document.createElement('label');
+              lbl.className = 'filter-value-option';
+              const cb = document.createElement('input');
+              cb.type = 'checkbox';
+              cb.name = checkboxName;
+              cb.value = value;
+              if (currentValues.includes(value)) {
+                cb.checked = true;
+                cb.setAttribute('checked', '');
+              }
+              cb.addEventListener('change', () => {
+                if (!storageValuesId) return;
+                syncGearListFilterValue(storageValuesId, value, cb.checked);
+              });
+              lbl.append(cb, document.createTextNode(value));
+              optionsWrap.appendChild(lbl);
+            });
+            valuesWrap.append(valueLabel, optionsWrap);
+            controls.appendChild(valuesWrap);
+          }
+          row.appendChild(controls);
+          container.appendChild(row);
+        });
+        adjustGearListSelectWidths(container);
+      }
+
+      function syncGearListFilterSize(storageId, value) {
+        const storageSelect = document.getElementById(storageId);
+        if (!storageSelect) return;
+        if (storageSelect.value !== value) {
+          storageSelect.value = value;
+        }
+        if (typeof markProjectFormDataDirty === 'function') {
+          markProjectFormDataDirty();
+        }
+        storageSelect.dispatchEvent(new Event('change'));
+      }
+
+      function syncGearListFilterValue(storageId, value, isSelected) {
+        const storageSelect = document.getElementById(storageId);
+        if (!storageSelect) return;
+        let changed = false;
+        Array.from(storageSelect.options).forEach(opt => {
+          if (opt.value !== value) return;
+          if (opt.selected !== isSelected) {
+            opt.selected = isSelected;
+            changed = true;
+            if (isSelected) {
+              opt.setAttribute('selected', '');
+            } else {
+              opt.removeAttribute('selected');
+            }
+          }
+        });
+        if (changed) {
+          if (typeof markProjectFormDataDirty === 'function') {
+            markProjectFormDataDirty();
+          }
+        }
+      }
+
+      function renderFilterDetails(providedTokens) {
+        const select = resolveFilterSelectElement();
+        if (!select) return;
+        const selected = Array.from(select.selectedOptions).map(o => o.value).filter(Boolean);
+        let existingTokens;
+        if (Array.isArray(providedTokens)) {
+          existingTokens = providedTokens
+            .filter(token => token && token.type)
+            .map(token => ({
+              type: token.type,
+              size: token.size,
+              values: token.values === undefined
+                ? undefined
+                : (Array.isArray(token.values) ? token.values.slice() : token.values)
+            }));
+        } else {
+          const existingSelections = collectFilterSelections();
+          if (existingSelections) {
+            existingTokens = parseFilterTokens(existingSelections);
+          } else {
+            // Fix for ReferenceError: currentProjectInfo is not defined
+            const safeProjectInfo = typeof currentProjectInfo !== 'undefined' ? currentProjectInfo : {};
+            if (safeProjectInfo && safeProjectInfo.filter) {
+              existingTokens = parseFilterTokens(safeProjectInfo.filter);
+            } else {
+              existingTokens = [];
+            }
+          }
+        }
+        const existingMap = new Map(existingTokens.map(token => [token.type, token]));
+        const details = selected.map(type => {
+          const prev = existingMap.get(type) || {};
+          const size = prev.size || SESSION_DEFAULT_FILTER_SIZE;
+          const needsSize = type !== 'Diopter';
+          const needsValues = filterTypeNeedsValueSelect(type);
+          const { label, gearName, hideDetails } = resolveFilterDisplayInfo(type, size);
+          let entryId = `filter - ${filterId(type)} `;
+          if (type === 'Diopter') entryId = `${entryId} -set`;
+          return {
+            type,
+            label,
+            gearName,
+            entryId,
+            size,
+            values: Array.isArray(prev.values) ? prev.values.slice() : [],
+            needsSize,
+            needsValues,
+            hideDetails
+          };
+        });
+        renderFilterDetailsStorage(details);
+        renderGearListFilterDetails(details);
+        let gearEntries = buildFilterGearEntries(existingTokens);
+        if (!gearEntries.length) {
+          gearEntries = details
+            .map(detail => ({
+              id: detail.entryId,
+              gearName: detail.gearName,
+              label: detail.label,
+              type: detail.type,
+              hideDetails: detail.hideDetails
+            }))
+            .filter(entry => entry.id && entry.label);
+        }
+        updateGearListFilterEntries(gearEntries);
+        const matteboxTarget = typeof matteboxSelect !== 'undefined'
+          ? matteboxSelect
+          : (typeof document !== 'undefined' ? document.getElementById('mattebox') : null);
+        if (matteboxTarget) {
+          const needsSwing = selected.some(t => t === 'ND Grad HE' || t === 'ND Grad SE');
+          if (needsSwing) matteboxTarget.value = 'Swing Away';
+        }
+      }
+      if (typeof window !== 'undefined') window.renderFilterDetails = renderFilterDetails;
+
+      function handleFilterDetailChange() {
+        if (!resolveFilterSelectElement()) return;
+        const filterStr = collectFilterSelections();
+        const entries = buildFilterGearEntries(parseFilterTokens(filterStr));
+        updateGearListFilterEntries(entries);
+        if (gearListOutput) adjustGearListSelectWidths(gearListOutput);
+        saveCurrentSession();
+        saveCurrentGearList();
+        checkSetupChanged();
+        renderFilterDetails();
+      }
+
+      function collectFilterSelections() {
+        const select = resolveFilterSelectElement();
+        if (!select) return '';
+
+        const selected = Array.from(select.selectedOptions)
+          .map(option => (typeof option.value === 'string' ? option.value.trim() : ''))
+          .filter(Boolean);
+
+        // Fix for ReferenceError: currentProjectInfo is not defined
+        const safeCurrentProjectInfo = typeof currentProjectInfo !== 'undefined' ? currentProjectInfo : {};
+        const existingSelectionString = safeCurrentProjectInfo && typeof safeCurrentProjectInfo.filter === 'string'
+          ? safeCurrentProjectInfo.filter
+          : '';
+        const existingTokens = existingSelectionString
+          ? parseFilterTokens(existingSelectionString)
+          : [];
+        const existingMap = Object.fromEntries(existingTokens.map(token => [token.type, token]));
+
+        const existingStringMap = {};
+        if (existingSelectionString) {
+          existingSelectionString.split(',').forEach(tokenStr => {
+            const trimmed = typeof tokenStr === 'string' ? tokenStr.trim() : '';
+            if (!trimmed) return;
+            const type = trimmed.split(':')[0]?.trim();
+            if (type) {
+              existingStringMap[type] = trimmed;
+            }
+          });
+        }
+
+        const selectedTokens = selected.map(type => {
+          const sizeSel = document.getElementById(`filter - size - ${filterId(type)} `);
+          const valSel = document.getElementById(`filter - values - ${filterId(type)} `);
+          const prev = existingMap[type] || {};
+          const size = sizeSel ? sizeSel.value : (prev.size || SESSION_DEFAULT_FILTER_SIZE);
+          let vals;
+          const needsValues = filterTypeNeedsValueSelect(type);
+          if (valSel) {
+            vals = Array.from(valSel.selectedOptions).map(o => o.value);
+          } else if (Array.isArray(prev.values) && prev.values.length) {
+            vals = prev.values.slice();
+          } else {
+            vals = [];
+          }
+          let valueSegment = '';
+          if (needsValues) {
+            valueSegment = vals.length ? `:${vals.join('|')} ` : ':!';
+          }
+          return `${type}:${size}${valueSegment} `;
+        });
+
+        const availableTypes = new Set(
+          Array.from(select.options)
+            .map(option => (typeof option.value === 'string' ? option.value.trim() : ''))
+            .filter(Boolean),
+        );
+        const selectedTypes = new Set(selected);
+
+        existingTokens.forEach(token => {
+          if (!token || !token.type) return;
+          if (selectedTypes.has(token.type)) return;
+          if (availableTypes.has(token.type)) return;
+
+          const preserved = existingStringMap[token.type]
+            || (() => {
+              const size = token.size || SESSION_DEFAULT_FILTER_SIZE;
+              const values = Array.isArray(token.values) ? token.values.filter(Boolean) : [];
+              let segment = '';
+              if (filterTypeNeedsValueSelect(token.type)) {
+                segment = values.length ? `:${values.join('|')} ` : ':!';
+              }
+              return `${token.type}:${size}${segment} `;
+            })();
+          selectedTokens.push(preserved);
+        });
+
+        return selectedTokens.join(',');
+      }
+
+      function parseFilterTokens(str) {
+        if (!str) return [];
+        return str.split(',').map(s => {
+          const parts = s.split(':').map(p => p.trim());
+          const type = parts[0];
+          const size = parts[1] || SESSION_DEFAULT_FILTER_SIZE;
+          const vals = parts.length > 2 ? parts[2] : undefined;
+          let values;
+          if (vals === undefined) {
+            values = undefined;
+          } else if (vals === '' || vals === '!') {
+            values = [];
+          } else {
+            values = vals.split('|').map(v => v.trim()).filter(Boolean);
+          }
+          return { type, size, values };
+        }).filter(t => t.type);
+      }
+
+      function applyFilterSelectionsToGearList(info) {
+        const projectInfo = info || (typeof currentProjectInfo !== 'undefined' ? currentProjectInfo : {});
+        if (!gearListOutput) return;
+        resolveFilterSelectElement();
+        const tokens = info && info.filter ? parseFilterTokens(info.filter) : [];
+        const entries = buildFilterGearEntries(tokens);
+        updateGearListFilterEntries(entries);
+        adjustGearListSelectWidths(gearListOutput);
+      }
+
+      function normalizeGearNameForComparison(name) {
+        if (!name) return '';
+        let normalized = String(name);
+        if (typeof normalized.normalize === 'function') {
+          normalized = normalized.normalize('NFD');
+        } else if (typeof String.prototype.normalize === 'function') {
+          normalized = String.prototype.normalize.call(normalized, 'NFD');
+        }
+        normalized = normalized.replace(/[\u0300-\u036f]/g, '');
+        normalized = normalized.replace(/\bfuer\b/gi, 'for');
+        normalized = normalized.replace(/\bfur\b/gi, 'for');
+        normalized = normalized.toLowerCase();
+        return normalized.replace(/[^a-z0-9]+/g, '');
+      }
+      if (typeof window !== 'undefined') window.applyFilterSelectionsToGearList = applyFilterSelectionsToGearList;
+
+      function buildFilterSelectHtml() {
+        return '<div id="gearListFilterDetails" class="hidden" aria-live="polite"></div>';
+      }
+      if (typeof window !== 'undefined') window.buildFilterSelectHtml = buildFilterSelectHtml;
+
+      function collectFilterAccessories(filters = []) {
+        const items = [];
+        filters.forEach(({ type }) => {
+          switch (type) {
+            case 'ND Grad HE':
+            case 'ND Grad SE':
+              break;
+            default:
+              break;
+          }
+        });
+        return items;
+      }
+      if (typeof window !== 'undefined') window.collectFilterAccessories = collectFilterAccessories;
+
+      const USER_BUTTON_FUNCTION_ITEMS = [
+        { key: 'toggleLut', value: 'Toggle LUT' },
+        { key: 'falseColor', value: 'False Color' },
+        { key: 'peaking', value: 'Peaking' },
+        { key: 'anamorphicDesqueeze', value: 'Anamorphic Desqueeze' },
+        { key: 'surroundView', value: 'Surround View' },
+        { key: 'oneToOneZoom', value: '1:1 Zoom' },
+        { key: 'waveform', value: 'Waveform' },
+        { key: 'histogram', value: 'Histogram' },
+        { key: 'vectorscope', value: 'Vectorscope' },
+        { key: 'zebra', value: 'Zebra' },
+        { key: 'playback', value: 'Playback' },
+        { key: 'record', value: 'Record' },
+        { key: 'zoom', value: 'Zoom' },
+        { key: 'frameLines', value: 'Frame Lines' },
+        { key: 'frameGrab', value: 'Frame Grab' },
+        { key: 'wb', value: 'WB' },
+        { key: 'iso', value: 'ISO' },
+        { key: 'nd', value: 'ND' },
+        { key: 'fps', value: 'FPS' },
+        { key: 'shutter', value: 'Shutter' }
+      ];
+
+      function populateUserButtonDropdowns() {
+        const lang = typeof currentLang === 'string' && texts[currentLang]
+          ? currentLang
+          : 'en';
+        const fallbackProjectForm = texts?.en?.projectForm || {};
+        const langProjectForm = texts?.[lang]?.projectForm || fallbackProjectForm;
+        const labels = langProjectForm.userButtonFunctions || {};
+        const fallbackLabels = fallbackProjectForm.userButtonFunctions || {};
+
+        const items = USER_BUTTON_FUNCTION_ITEMS.map(item => {
+          const label = labels[item.key] || fallbackLabels[item.key] || item.value;
+          return { ...item, label };
+        });
+
+        const knownValues = new Set(items.map(item => item.value));
+
+        ['monitorUserButtons', 'cameraUserButtons', 'viewfinderUserButtons'].forEach(id => {
+          const populate = (sel) => {
+            if (!sel) return;
+
+            const previouslySelected = new Set(
+              Array.from(sel.selectedOptions || []).map(opt => opt.value)
+            );
+
+            const fragment = document.createDocumentFragment();
+
+            for (let index = 0; index < items.length; index += 1) {
+              const { value, label } = items[index];
+              if (!value) {
+                continue;
+              }
+              const opt = document.createElement('option');
+              opt.value = value;
+              opt.textContent = label;
+              if (previouslySelected.has(value)) {
+                opt.selected = true;
+              }
+              fragment.appendChild(opt);
+            }
+
+            previouslySelected.forEach(value => {
+              if (knownValues.has(value)) {
+                return;
+              }
+              const opt = document.createElement('option');
+              opt.value = value;
+              opt.textContent = value;
+              opt.selected = true;
+              fragment.appendChild(opt);
+            });
+
+            sel.innerHTML = '';
+            sel.appendChild(fragment);
+
+            const optionCount = sel.options ? sel.options.length : 0;
+            sel.size = optionCount > 0 ? optionCount : USER_BUTTON_FUNCTION_ITEMS.length;
+          };
+
+          if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+            cineCoreUiHelpers.whenElementAvailable(id, populate);
+          } else {
+            populate(document.getElementById(id));
+          }
+        });
+      }
+
+      const runInitAppWithInitialLoadingIndicator = () => {
+        ensureInitialLoadingIndicatorVisible();
+        try {
+          initApp();
+        } finally {
+          finalizeInitialLoadingIndicator();
+        }
+      };
+
+      ensureInitialLoadingIndicatorVisible();
+
+      if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', runInitAppWithInitialLoadingIndicator);
+        } else {
+          runInitAppWithInitialLoadingIndicator();
+        }
+      } else {
+        finalizeInitialLoadingIndicator();
+      }
+
+      /* Exported Session API */
+      const cineCoreSession = {
+        APP_VERSION: typeof ACTIVE_APP_VERSION === 'string' ? ACTIVE_APP_VERSION : (typeof APP_VERSION !== 'undefined' ? APP_VERSION : 'unknown'),
+        closeSideMenu,
+        openSideMenu,
+        setupSideMenu,
+        setupResponsiveControls,
+        setLanguage: applySetLanguage,
+        applySetLanguage,
+        safeGetCurrentProjectName,
+        updateCalculations: function (...args) {
+          if (typeof globalThis !== 'undefined' && typeof globalThis.updateCalculations === 'function') {
+            return globalThis.updateCalculations(...args);
+          }
+          return undefined;
+        },
+        setBatteryPlates,
+        getBatteryPlates,
+        setRecordingMedia,
+        getRecordingMedia,
+        applyDarkMode,
+        applyPinkMode,
+        applyHighContrast,
+        generatePrintableOverview,
+        generateGearListHtml,
+        ensureZoomRemoteSetup,
+        encodeSharedSetup,
+        decodeSharedSetup,
+        applySharedSetupFromUrl,
+        applySharedSetup,
+        updateBatteryPlateVisibility: _safeUpdateBatteryPlateVisibility,
+        updateBatteryOptions: _safeUpdateBatteryOptions,
+
+        cameraFizPort,
+        controllerCamPort,
+        controllerDistancePort,
+        detectBrand,
+        connectionLabel,
+        generateConnectorSummary,
+        exportDiagramSvg,
+        fixPowerInput,
+        ensureList,
+        normalizeVideoType,
+        normalizeFizConnectorType,
+        normalizeViewfinderType,
+        normalizePowerPortType,
+
+        setSelectValue,
+        autoSaveCurrentSetup: _safeAutoSaveCurrentSetup,
+        saveCurrentSession: _safeSaveCurrentSession,
+        saveCurrentGearList: function (...args) {
+          if (typeof globalThis !== 'undefined' && typeof globalThis.saveCurrentGearList === 'function') {
+            return globalThis.saveCurrentGearList(...args);
+          }
+          return undefined;
+        },
+        crewRoles: typeof globalThis !== 'undefined' && Array.isArray(globalThis.crewRoles) ? globalThis.crewRoles : [],
+        setSliderBowlValue: function (...args) {
+          if (typeof globalThis !== 'undefined' && typeof globalThis.setSliderBowlValue === 'function') {
+            return globalThis.setSliderBowlValue(...args);
+          }
+          return undefined;
+        },
+        setEasyrigValue: function (...args) {
+          if (typeof globalThis !== 'undefined' && typeof globalThis.setEasyrigValue === 'function') {
+            return globalThis.setEasyrigValue(...args);
+          }
+          return undefined;
+        },
+        restoreSessionState,
+
+        scenarioIcons,
+
+        renderFilterDetails,
+        collectFilterSelections,
+        parseFilterTokens,
+        applyFilterSelectionsToGearList,
+
+        createSettingsBackup,
+        buildSettingsBackupPackage,
+        captureStorageSnapshot,
+        sanitizeBackupPayload,
+        extractBackupSections,
+
+        runFeatureSearch,
+        computeSetupDiff,
+        __versionCompareInternals: {
+          formatDiffPath,
+          formatDiffListIndex,
+          createKeyedDiffPathSegment,
+          parseKeyedDiffPathSegment,
+          findArrayComparisonKey,
+        },
+        __featureSearchInternals: {
+          featureMap,
+          actionMap,
+          deviceMap,
+          helpMap,
+          featureSearchEntries,
+          featureSearchDefaultOptions,
+          featureSearchInput: featureSearch,
+          featureSearchDropdownElement:
+            typeof globalThis !== 'undefined' && globalThis.featureSearchDropdown
+              ? globalThis.featureSearchDropdown
+              : null,
+        },
+        __customFontInternals: {
+          addFromData: (name, dataUrl, options) => addCustomFontFromData(name, dataUrl, options),
+          getEntries: () => Array.from(customFontEntries.values()),
+        },
+        __sharedImportInternals: {
+          getLastSharedSetupData: () => lastSharedSetupData,
+          setLastSharedSetupDataForTest: (value) => {
+            lastSharedSetupData = value;
+          },
+          getLastSharedAutoGearRules: () => lastSharedAutoGearRules,
+          setLastSharedAutoGearRulesForTest: (value) => {
+            lastSharedAutoGearRules = value;
+          },
+          isProjectPresetActive: () => sharedImportProjectPresetActive,
+          setProjectPresetActiveForTest: (value) => {
+            sharedImportProjectPresetActive = !!value;
+          },
+          getPreviousPresetId: () => sharedImportPreviousPresetId,
+          setPreviousPresetIdForTest: (value) => {
+            sharedImportPreviousPresetId = typeof value === 'string' ? value : '';
+          },
+          isPromptActive: () => sharedImportPromptActive,
+          setPromptActiveForTest: (value) => {
+            sharedImportPromptActive = !!value;
+          },
+          getPendingSharedLinkListener: () => pendingSharedLinkListener,
+          setPendingSharedLinkListenerForTest: (listener) => {
+            pendingSharedLinkListener = typeof listener === 'function' ? listener : null;
+          },
+        },
+        __mountVoltageInternals: {
+          getSessionMountVoltagePreferencesClone,
+          applySessionMountVoltagePreferences,
+          cloneMountVoltageDefaultsForSession,
+        },
+
+        resetPlannerStateAfterFactoryReset,
+        __autoGearInternals: {
+          buildVideoDistributionAutoRules: (typeof window !== 'undefined' && window.buildVideoDistributionAutoRules) || undefined,
+        },
+
+        // Explicitly added to module API for ESM access
+        populateFilterDropdown,
+        populateFrameRateDropdownFor,
+        populateSlowMotionFrameRateDropdown,
+        populateSensorModeDropdown,
+        populateCodecDropdown,
+        populateRecordingResolutionDropdown
+      };
+
+      // Expose globals for backward compatibility
+      if (typeof window !== 'undefined') {
+        window.cineCoreSession = cineCoreSession;
+
+        const EXPOSE_LIST = [
+          'saveCurrentSession',
+          'autoSaveCurrentSetup',
+          'createSettingsBackup',
+          'handleRestoreRehearsalProceed',
+          'handleRestoreRehearsalAbort',
+          'downloadSharedProject',
+          'encodeSharedSetup',
+          'decodeSharedSetup',
+          'applySharedSetup',
+          'applySharedSetupFromUrl',
+          // Added during ESM conversion to ensure UI availability
+          'renderFilterDetails',
+          'populateFilterDropdown',
+          'populateFrameRateDropdownFor',
+          'populateSlowMotionFrameRateDropdown',
+          'populateSensorModeDropdown',
+          'populateCodecDropdown',
+          'populateRecordingResolutionDropdown'
+        ];
+
+        EXPOSE_LIST.forEach(key => {
+          if (cineCoreSession[key]) {
+            window[key] = cineCoreSession[key];
+          }
+        });
+
+        if (cineCoreSession.__autoGearInternals) {
+          window.__autoGearInternals = cineCoreSession.__autoGearInternals;
+        }
+      }
+
+      export default cineCoreSession;
+      console.log('app-session.js: Execution complete (ESM)');
+
+      /* cineAppSession Shim for Persistence & Runtime Integrity */
+      const cineAppSession = {
+        // Persistence Bindings
+        saveCurrentSession,
+        autoSaveCurrentSetup,
+        saveCurrentGearList,
+        restoreSessionState,
+
+        // Backups
+        collectFullBackupData,
+        createSettingsBackup,
+        captureStorageSnapshot,
+        sanitizeBackupPayload,
+
+        // Sharing & Restore
+        encodeSharedSetup,
+        decodeSharedSetup,
+        applySharedSetup,
+        applySharedSetupFromUrl,
+        downloadSharedProject,
+        saveProject,
+        handleRestoreRehearsalProceed,
+        handleRestoreRehearsalAbort,
+
+        // Aliases for direct binding resolution if needed by name overrides
+        proceed: handleRestoreRehearsalProceed,
+        abort: handleRestoreRehearsalAbort,
+        downloadProject: downloadSharedProject
+      };
+
+      if (typeof window !== 'undefined') {
+        window.cineAppSession = cineAppSession;
+
+        // Ensure specific globals expected by legacy code or direct checks are present
+        // (Redundant safety for the integrity check)
+        if (!window.handleRestoreRehearsalProceed) window.handleRestoreRehearsalProceed = handleRestoreRehearsalProceed;
+        if (!window.handleRestoreRehearsalAbort) window.handleRestoreRehearsalAbort = handleRestoreRehearsalAbort;
+        if (!window.downloadSharedProject) window.downloadSharedProject = downloadSharedProject;
+      }
+
+      export { cineAppSession };

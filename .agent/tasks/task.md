@@ -42,3 +42,21 @@
     - [x] Extract `verifyRestoredBackupIntegrity` and helper logic <!-- id: 40 -->
     - [x] Refactor `app-session.js` to use `RestoreCompatibilityManager` <!-- id: 41 -->
     - [x] Verify functionality <!-- id: 42 -->
+- [x] Session Migration - Phase 9 (Feature Search Extraction) <!-- id: 43 -->
+    - [x] Create `src/scripts/modules/features/feature-search.js` <!-- id: 44 -->
+    - [x] Extract `featureSearchEntries`, `runFeatureSearch`, and UI logic (lines ~16000-16700) <!-- id: 45 -->
+    - [x] Refactor `app-session.js` to use `FeatureSearch` module <!-- id: 46 -->
+    - [x] Verify functionality <!-- id: 47 -->
+- [x] Session Migration - Phase 10 (Project Import Logic) <!-- id: 50 -->
+    - [x] Create `src/scripts/modules/core/project-import-manager.js` <!-- id: 51 -->
+    - [x] Extract `ensureImportedProjectBaseNameSession`, `resolveProjectNameCollisionForImport` logic <!-- id: 52 -->
+    - [x] Extract `applySharedSetup` logic (partially or fully) <!-- id: 53 -->
+    - [x] Refactor `app-session.js` to use `ProjectImportManager` <!-- id: 54 -->
+    - [x] Verify functionality <!-- id: 55 -->
+- [x] Session Migration - Phase 11 (Device Capability Extraction) <!-- id: 56 -->
+    - [x] Create `src/scripts/modules/core/device-capability-manager.js` <!-- id: 57 -->
+    - [x] Extract Lens Focus Scale logic (lines ~17000-17206) <!-- id: 58 -->
+    - [x] Extract Frame Rate/Resolution logic (lines ~17241-17800) <!-- id: 59 -->
+    - [x] Refactor `app-session.js` to use `DeviceCapabilityManager` <!-- id: 60 -->
+    - [x] Verify functionality <!-- id: 61 -->
+
