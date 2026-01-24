@@ -81,6 +81,9 @@ import { FeatureSearchManager } from '../modules/features/feature-search-manager
 import { ProjectImportManager } from '../modules/core/project-import-manager.js';
 import { DeviceCapabilityManager } from '../modules/core/device-capability-manager.js';
 import { ContactManager } from '../modules/features/contact-manager.js';
+import { AutoGearManager } from '../modules/features/auto-gear-manager.js';
+import { InitializationManager } from '../modules/core/initialization-manager.js';
+import { UiPopulationManager } from '../modules/ui/ui-population-manager.js';
 
 const downloadSharedProject = ProjectTransferManager.downloadSharedProject;
 
@@ -206,35 +209,36 @@ const _safePopulateSlowMotionFrameRateDropdown = LegacyInterop.safePopulateSlowM
 
 const _safeHandleMountVoltageInputChange = LegacyInterop.safeHandleMountVoltageInputChange;
 
-const _safeNormalizeAutoGearScenarioPrimary = LegacyInterop.safeNormalizeAutoGearScenarioPrimary;
-const _safeNormalizeAutoGearScenarioMultiplier = LegacyInterop.safeNormalizeAutoGearScenarioMultiplier;
-const _safeRemoveAutoGearCondition = LegacyInterop.safeRemoveAutoGearCondition;
-const _safeHandleAutoGearConditionShortcut = LegacyInterop.safeHandleAutoGearConditionShortcut;
+// AutoGear bindings delegated to AutoGearManager
+const _safeNormalizeAutoGearScenarioPrimary = (v) => AutoGearManager.normalizeScenarioPrimary(v);
+const _safeNormalizeAutoGearScenarioMultiplier = (v) => AutoGearManager.normalizeScenarioMultiplier(v);
+const _safeRemoveAutoGearCondition = (id) => AutoGearManager.removeCondition(id);
+const _safeHandleAutoGearConditionShortcut = (e) => AutoGearManager.handleConditionShortcut(e);
 
-const _safeHandleAutoGearImportSelection = LegacyInterop.safeHandleAutoGearImportSelection;
-const _safeSetAutoGearSearchQuery = LegacyInterop.safeSetAutoGearSearchQuery;
-const _safeSetAutoGearScenarioFilter = LegacyInterop.safeSetAutoGearScenarioFilter;
-const _safeClearAutoGearFilters = LegacyInterop.safeClearAutoGearFilters;
-const _safeSetAutoGearSummaryFocus = LegacyInterop.safeSetAutoGearSummaryFocus;
+const _safeHandleAutoGearImportSelection = (s) => AutoGearManager.handleImportSelection(s);
+const _safeSetAutoGearSearchQuery = (q) => AutoGearManager.setSearchQuery(q);
+const _safeSetAutoGearScenarioFilter = (f) => AutoGearManager.setScenarioFilter(f);
+const _safeClearAutoGearFilters = () => AutoGearManager.clearFilters();
+const _safeSetAutoGearSummaryFocus = (f) => AutoGearManager.setSummaryFocus(f);
 
-const _safeHandleAutoGearPresetSelection = LegacyInterop.safeHandleAutoGearPresetSelection;
-const _safeHandleAutoGearSavePreset = LegacyInterop.safeHandleAutoGearSavePreset;
-const _safeHandleAutoGearDeletePreset = LegacyInterop.safeHandleAutoGearDeletePreset;
-const _safeAddAutoGearDraftItem = LegacyInterop.safeAddAutoGearDraftItem;
-const _safeSaveAutoGearRuleFromEditor = LegacyInterop.safeSaveAutoGearRuleFromEditor;
-const _safeCloseAutoGearEditor = LegacyInterop.safeCloseAutoGearEditor;
-const _safeRenderAutoGearDraftLists = LegacyInterop.safeRenderAutoGearDraftLists;
-const _safeDuplicateAutoGearRule = LegacyInterop.safeDuplicateAutoGearRule;
-const _safeInvokeSessionOpenAutoGearEditor = LegacyInterop.safeInvokeSessionOpenAutoGearEditor;
+const _safeHandleAutoGearPresetSelection = (id) => AutoGearManager.handlePresetSelection(id);
+const _safeHandleAutoGearSavePreset = () => AutoGearManager.handleSavePreset();
+const _safeHandleAutoGearDeletePreset = () => AutoGearManager.handleDeletePreset();
+const _safeAddAutoGearDraftItem = (i) => AutoGearManager.addDraftItem(i);
+const _safeSaveAutoGearRuleFromEditor = () => AutoGearManager.saveRuleFromEditor();
+const _safeCloseAutoGearEditor = () => AutoGearManager.closeEditor();
+const _safeRenderAutoGearDraftLists = () => AutoGearManager.renderDraftLists();
+const _safeDuplicateAutoGearRule = (id) => AutoGearManager.duplicateRule(id);
+const _safeInvokeSessionOpenAutoGearEditor = (...args) => AutoGearManager.invokeOpenEditor(...args);
 
-const _safeUpdateAutoGearBackupRestoreButtonState = LegacyInterop.safeUpdateAutoGearBackupRestoreButtonState;
-const _safeHandleAutoGearShowBackupsToggle = LegacyInterop.safeHandleAutoGearShowBackupsToggle;
-const _safeRestoreAutoGearBackup = LegacyInterop.safeRestoreAutoGearBackup;
-const _safeSyncAutoGearMonitorFieldVisibility = LegacyInterop.safeSyncAutoGearMonitorFieldVisibility;
-const _safeUpdateAutoGearMonitorCatalogOptions = LegacyInterop.safeUpdateAutoGearMonitorCatalogOptions;
-const _safeClearAutoGearDraftItemEdit = LegacyInterop.safeClearAutoGearDraftItemEdit;
-const _safeUpdateAutoGearCatalogOptions = LegacyInterop.safeUpdateAutoGearCatalogOptions;
-const _safeBeginAutoGearDraftItemEdit = LegacyInterop.safeBeginAutoGearDraftItemEdit;
+const _safeUpdateAutoGearBackupRestoreButtonState = () => AutoGearManager.updateBackupRestoreButtonState();
+const _safeHandleAutoGearShowBackupsToggle = () => AutoGearManager.handleShowBackupsToggle();
+const _safeRestoreAutoGearBackup = (id) => AutoGearManager.restoreBackup(id);
+const _safeSyncAutoGearMonitorFieldVisibility = () => AutoGearManager.syncMonitorFieldVisibility();
+const _safeUpdateAutoGearMonitorCatalogOptions = () => AutoGearManager.updateMonitorCatalogOptions();
+const _safeClearAutoGearDraftItemEdit = () => AutoGearManager.clearDraftItemEdit();
+const _safeUpdateAutoGearCatalogOptions = () => AutoGearManager.updateCatalogOptions();
+const _safeBeginAutoGearDraftItemEdit = (id) => AutoGearManager.beginDraftItemEdit(id);
 
 /* global shareSetupBtn, updateCageSelectOptions, updateAccentColorResetButtonState,
           normalizeAccentValue, DEFAULT_ACCENT_NORMALIZED: true,
@@ -16600,122 +16604,23 @@ function updateRequiredScenariosSummary() {
 }
 
 function initApp() {
-  console.log('DEBUG: initApp ENTERED');
-  try {
-    ensureCriticalStorageBackupsFn();
-  } catch (criticalGuardError) {
-    if (typeof console !== 'undefined' && typeof console.error === 'function') {
-      console.error('Critical storage backup guard failed during initialization', criticalGuardError);
-    }
+  InitializationManager.initialize();
+} else {
+  if (requiredScenariosSelect) {
+    requiredScenariosSelect.addEventListener('change', updateRequiredScenariosSummary);
+    updateRequiredScenariosSummary();
   }
-  const resolvedFilterSelect = resolveFilterSelectElement();
-  if (sharedLinkRow) {
-    sharedLinkRow.classList.remove('hidden');
+  if (tripodHeadBrandSelect) {
+    tripodHeadBrandSelect.addEventListener('change', updateTripodOptions);
   }
-  applySetLanguage(currentLang, { skipUpdateCalculations: true });
-  populateEnvironmentDropdowns();
-  populateLensDropdown();
-  populateFilterDropdown();
-  if (resolvedFilterSelect) {
-    resolvedFilterSelect.addEventListener('change', renderFilterDetails);
-    resolvedFilterSelect.addEventListener('change', () => {
-      saveCurrentSession();
-      saveCurrentGearList();
-      checkSetupChanged();
-    });
-    renderFilterDetails();
+  if (tripodBowlSelect) {
+    tripodBowlSelect.addEventListener('change', updateTripodOptions);
   }
-  populateUserButtonDropdowns();
-  schedulePostRenderTask(() => {
-    document.querySelectorAll('#projectForm select')
-      .forEach(sel => {
-        if (typeof attachSelectSearch === 'function') attachSelectSearch(sel);
-        callSessionCoreFunction('initFavoritableSelect', [sel], { defer: true });
-      });
-  });
-  schedulePostRenderTask(() => {
-    if (
-      typeof globalThis !== 'undefined'
-      && typeof globalThis.setupInstallBanner === 'function'
-    ) {
-      try {
-        globalThis.setupInstallBanner();
-      } catch (installError) {
-        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-          console.warn('Failed to set up install banner', installError);
-        }
-      }
-    }
-    if (typeof maybeShowIosPwaHelp === 'function') {
-      try {
-        maybeShowIosPwaHelp();
-      } catch (iosHelpError) {
-        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-          console.warn('Failed to display iOS PWA help prompt', iosHelpError);
-        }
-      }
-    }
-  });
-  if (typeof resetDeviceForm === 'function') resetDeviceForm();
-  if (typeof ensureDefaultProjectInfoSnapshot === 'function') {
-    ensureDefaultProjectInfoSnapshot();
-  } else if (typeof window !== 'undefined' && typeof window.ensureDefaultProjectInfoSnapshot === 'function') {
-    window.ensureDefaultProjectInfoSnapshot();
-  }
-  restoreSessionState();
-  applySharedSetupFromUrl();
-  if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
-    cineCoreUiHelpers.whenElementAvailable('requiredScenarios', (el) => {
-      if (typeof requiredScenariosSelect === 'undefined' || !requiredScenariosSelect) {
-        try { if (typeof window !== 'undefined') window.requiredScenariosSelect = el; } catch (e) { void e; }
-      }
-      el.addEventListener('change', updateRequiredScenariosSummary);
-      updateRequiredScenariosSummary();
-    });
-
-    cineCoreUiHelpers.whenElementAvailable('tripodHeadBrand', (el) => {
-      if (typeof tripodHeadBrandSelect === 'undefined' || !tripodHeadBrandSelect) {
-        try { if (typeof window !== 'undefined') window.tripodHeadBrandSelect = el; } catch (e) { void e; }
-      }
-      el.addEventListener('change', updateTripodOptions);
-    });
-
-    cineCoreUiHelpers.whenElementAvailable('tripodBowl', (el) => {
-      if (typeof tripodBowlSelect === 'undefined' || !tripodBowlSelect) {
-        try { if (typeof window !== 'undefined') window.tripodBowlSelect = el; } catch (e) { void e; }
-      }
-      el.addEventListener('change', updateTripodOptions);
-    });
-
-    cineCoreUiHelpers.whenElementAvailable('tripodTypes', (el) => {
-      if (typeof tripodTypesSelect === 'undefined' || !tripodTypesSelect) {
-        try { if (typeof window !== 'undefined') window.tripodTypesSelect = el; } catch (e) { void e; }
-      }
-      el.addEventListener('change', updateTripodOptions);
-    });
-
-    cineCoreUiHelpers.whenElementAvailable('tripodSpreader', (el) => {
-      if (typeof tripodSpreaderSelect === 'undefined' || !tripodSpreaderSelect) {
-        try { if (typeof window !== 'undefined') window.tripodSpreaderSelect = el; } catch (e) { void e; }
-      }
-      el.addEventListener('change', updateTripodOptions);
-    });
-  } else {
-    if (requiredScenariosSelect) {
-      requiredScenariosSelect.addEventListener('change', updateRequiredScenariosSummary);
-      updateRequiredScenariosSummary();
-    }
-    if (tripodHeadBrandSelect) {
-      tripodHeadBrandSelect.addEventListener('change', updateTripodOptions);
-    }
-    if (tripodBowlSelect) {
-      tripodBowlSelect.addEventListener('change', updateTripodOptions);
-    }
-  }
-  if (typeof updateTripodOptions === 'function') updateTripodOptions();
-  if (typeof updateViewfinderExtensionVisibility === 'function') updateViewfinderExtensionVisibility();
-  if (typeof updateCalculations === 'function') updateCalculations();
-  if (typeof applyFilters === 'function') applyFilters();
+}
+if (typeof updateTripodOptions === 'function') updateTripodOptions();
+if (typeof updateViewfinderExtensionVisibility === 'function') updateViewfinderExtensionVisibility();
+if (typeof updateCalculations === 'function') updateCalculations();
+if (typeof applyFilters === 'function') applyFilters();
 }
 
 function ensureFeedbackTemperatureOptionsSafe(select) {
@@ -16777,101 +16682,19 @@ function updateFeedbackTemperatureOptionsSafe() {
 const POST_RENDER_TIMEOUT_MS = 120;
 
 function schedulePostRenderTask(task, options = {}) {
-  if (typeof task !== 'function') {
-    return;
+  // schedulePostRenderTask delegated to InitializationManager
+  function schedulePostRenderTask(task, timeout = 100) {
+    InitializationManager.schedulePostRenderTask(task, timeout);
   }
 
-  const timeout = typeof options.timeout === 'number' && options.timeout >= 0
-    ? options.timeout
-    : POST_RENDER_TIMEOUT_MS;
-
-  const runTaskSafely = (deadline) => {
-    try {
-      task(deadline);
-    } catch (taskError) {
-      if (typeof console !== 'undefined' && typeof console.error === 'function') {
-        console.error('Deferred task failed during post-render scheduling', taskError);
-      }
-    }
-  };
-
-  const scheduleIdle = () => {
-    if (typeof requestIdleCallback === 'function') {
-      requestIdleCallback(runTaskSafely, { timeout });
-      return;
-    }
-
-    setTimeout(runTaskSafely, timeout);
-  };
-
-  if (typeof requestAnimationFrame === 'function') {
-    requestAnimationFrame(scheduleIdle);
-  } else {
-    scheduleIdle();
-  }
-}
-
-function populateEnvironmentDropdowns() {
-  const populate = (tempSelect) => {
-    if (tempSelect) {
-      if (typeof ensureFeedbackTemperatureOptionsSafe === 'function') {
-        ensureFeedbackTemperatureOptionsSafe(tempSelect);
-      }
-      if (typeof updateFeedbackTemperatureOptionsSafe === 'function') {
-        updateFeedbackTemperatureOptionsSafe();
-      }
-    }
-  };
-
-  const tempSelect = document.getElementById('fbTemperature');
-  if (tempSelect) {
-    populate(tempSelect);
-  } else if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
-    cineCoreUiHelpers.whenElementAvailable('fbTemperature', populate);
-  }
-}
-
-function populateLensDropdown() {
-  const resolveLensSelect = () => {
-    if (typeof lensSelect !== 'undefined' && lensSelect) return lensSelect;
-    if (typeof document !== 'undefined') return document.getElementById('lenses');
-    return null;
-  };
-
-  const resolvedLensSelect = resolveLensSelect();
-
-  if (!resolvedLensSelect) {
-    if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
-      cineCoreUiHelpers.whenElementAvailable('lenses', (el) => {
-        if (typeof lensSelect === 'undefined' || !lensSelect) {
-          // If global isn't set, try to set it for compatibility
-          if (typeof window !== 'undefined') window.lensSelect = el;
-        }
-        populateLensDropdown();
-      });
-    }
-    return;
+  // populateEnvironmentDropdowns delegated to UiPopulationManager
+  function populateEnvironmentDropdowns() {
+    UiPopulationManager.populateEnvironmentDropdowns();
   }
 
-  // --- LENS AND CAPABILITY LOGIC ---
-
-  function populateLensDropdown(resolvedLensSelect, detail = {}) {
-    // Use DeviceCapabilityManager to handle population
-    // detail.sessionFocusScale and detail.globalPreference might need to be resolved or passed
-
-    // Resolve preferences locally to pass to manager or let manager resolve them (manager resolves window.* preferences)
-    // But sessionFocusScale is a local variable in original code if it was global. 
-    // Wait, sessionFocusScale was a variable in `resolveFocusScaleMode` scope?
-    // Original code: `typeof sessionFocusScale !== 'undefined' && sessionFocusScale`
-    // `sessionFocusScale` seems to be expected as a global.
-
-    const options = {
-      devices: (typeof window !== 'undefined' ? window.devices : {}),
-      sessionFocusScale: (typeof sessionFocusScale !== 'undefined' ? sessionFocusScale : undefined),
-      // globalPreference derived from window inside manager
-    };
-
-    DeviceCapabilityManager.populateLensDropdown(resolvedLensSelect, options);
+  // populateLensDropdown delegated to UiPopulationManager
+  function populateLensDropdown() {
+    UiPopulationManager.populateLensDropdown();
   }
 
   function populateCameraPropertyDropdown(selectId, property, selected = '') {
@@ -17438,39 +17261,7 @@ function populateLensDropdown() {
       }
 
       function populateFilterDropdown() {
-        const populate = (select) => {
-          const devices = (typeof window !== 'undefined' && window.devices) || {};
-          if (select && devices && Array.isArray(devices.filterOptions)) {
-            const fragment = document.createDocumentFragment();
-            if (!select.multiple) {
-              const emptyOpt = document.createElement('option');
-              emptyOpt.value = '';
-              fragment.appendChild(emptyOpt);
-            }
-            for (let index = 0; index < devices.filterOptions.length; index += 1) {
-              const value = devices.filterOptions[index];
-              const opt = document.createElement('option');
-              opt.value = value;
-              opt.textContent = value;
-              fragment.appendChild(opt);
-            }
-            select.innerHTML = '';
-            select.appendChild(fragment);
-          }
-        };
-
-        const select = resolveFilterSelectElement();
-        if (select) {
-          populate(select);
-        } else if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
-          cineCoreUiHelpers.whenElementAvailable('filter', (el) => {
-            // Update the global/cached reference if possible
-            if (typeof filterSelectElem !== 'undefined' && (!filterSelectElem || typeof filterSelectElem !== 'object')) {
-              filterSelectElem = el;
-            }
-            populate(el);
-          });
-        }
+        UiPopulationManager.populateFilterDropdown();
       }
 
       const filterId = t => t.replace(/[^a-z0-9]/gi, '_');
@@ -18295,95 +18086,10 @@ function populateLensDropdown() {
       }
       if (typeof window !== 'undefined') window.collectFilterAccessories = collectFilterAccessories;
 
-      const USER_BUTTON_FUNCTION_ITEMS = [
-        { key: 'toggleLut', value: 'Toggle LUT' },
-        { key: 'falseColor', value: 'False Color' },
-        { key: 'peaking', value: 'Peaking' },
-        { key: 'anamorphicDesqueeze', value: 'Anamorphic Desqueeze' },
-        { key: 'surroundView', value: 'Surround View' },
-        { key: 'oneToOneZoom', value: '1:1 Zoom' },
-        { key: 'waveform', value: 'Waveform' },
-        { key: 'histogram', value: 'Histogram' },
-        { key: 'vectorscope', value: 'Vectorscope' },
-        { key: 'zebra', value: 'Zebra' },
-        { key: 'playback', value: 'Playback' },
-        { key: 'record', value: 'Record' },
-        { key: 'zoom', value: 'Zoom' },
-        { key: 'frameLines', value: 'Frame Lines' },
-        { key: 'frameGrab', value: 'Frame Grab' },
-        { key: 'wb', value: 'WB' },
-        { key: 'iso', value: 'ISO' },
-        { key: 'nd', value: 'ND' },
-        { key: 'fps', value: 'FPS' },
-        { key: 'shutter', value: 'Shutter' }
-      ];
-
+      // populateUserButtonDropdowns delegated to UiPopulationManager
       function populateUserButtonDropdowns() {
-        const lang = typeof currentLang === 'string' && texts[currentLang]
-          ? currentLang
-          : 'en';
-        const fallbackProjectForm = texts?.en?.projectForm || {};
-        const langProjectForm = texts?.[lang]?.projectForm || fallbackProjectForm;
-        const labels = langProjectForm.userButtonFunctions || {};
-        const fallbackLabels = fallbackProjectForm.userButtonFunctions || {};
-
-        const items = USER_BUTTON_FUNCTION_ITEMS.map(item => {
-          const label = labels[item.key] || fallbackLabels[item.key] || item.value;
-          return { ...item, label };
-        });
-
-        const knownValues = new Set(items.map(item => item.value));
-
-        ['monitorUserButtons', 'cameraUserButtons', 'viewfinderUserButtons'].forEach(id => {
-          const populate = (sel) => {
-            if (!sel) return;
-
-            const previouslySelected = new Set(
-              Array.from(sel.selectedOptions || []).map(opt => opt.value)
-            );
-
-            const fragment = document.createDocumentFragment();
-
-            for (let index = 0; index < items.length; index += 1) {
-              const { value, label } = items[index];
-              if (!value) {
-                continue;
-              }
-              const opt = document.createElement('option');
-              opt.value = value;
-              opt.textContent = label;
-              if (previouslySelected.has(value)) {
-                opt.selected = true;
-              }
-              fragment.appendChild(opt);
-            }
-
-            previouslySelected.forEach(value => {
-              if (knownValues.has(value)) {
-                return;
-              }
-              const opt = document.createElement('option');
-              opt.value = value;
-              opt.textContent = value;
-              opt.selected = true;
-              fragment.appendChild(opt);
-            });
-
-            sel.innerHTML = '';
-            sel.appendChild(fragment);
-
-            const optionCount = sel.options ? sel.options.length : 0;
-            sel.size = optionCount > 0 ? optionCount : USER_BUTTON_FUNCTION_ITEMS.length;
-          };
-
-          if (typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
-            cineCoreUiHelpers.whenElementAvailable(id, populate);
-          } else {
-            populate(document.getElementById(id));
-          }
-        });
+        UiPopulationManager.populateUserButtonDropdowns();
       }
-
       const runInitAppWithInitialLoadingIndicator = () => {
         ensureInitialLoadingIndicatorVisible();
         try {

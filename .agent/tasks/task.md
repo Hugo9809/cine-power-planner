@@ -64,9 +64,19 @@
     - [x] Extract `mergeSharedContactsIntoCache` and related logic <!-- id: 64 -->
     - [x] Refactor `app-session.js` to use `ContactManager` <!-- id: 65 -->
     - [x] Verify functionality <!-- id: 66 -->
-- [ ] Session Migration - Phase 13 (AutoGear Manager) <!-- id: 67 -->
-    - [ ] Create `src/scripts/modules/features/auto-gear-manager.js` <!-- id: 68 -->
-    - [ ] Extract AutoGear state and logic <!-- id: 69 -->
-    - [ ] Refactor `app-session.js` to use `AutoGearManager` <!-- id: 70 -->
-    - [ ] Verify functionality <!-- id: 71 -->
+- [x] Session Migration - Phase 13 (AutoGear Manager) <!-- id: 67 -->
+    - [x] Create `src/scripts/modules/features/auto-gear-manager.js` <!-- id: 68 -->
+    - [x] Extract AutoGear state and logic <!-- id: 69 -->
+    - [x] Refactor `app-session.js` to use `AutoGearManager` <!-- id: 70 -->
+    - [x] Verify functionality <!-- id: 71 -->
+- [x] Session Migration - Phase 14 (Initialization Manager) <!-- id: 72 -->
+    - [x] Create `src/scripts/modules/core/initialization-manager.js` <!-- id: 73 -->
+    - [x] Extract `initApp` logic <!-- id: 74 -->
+    - [x] Refactor `app-session.js` to use `InitializationManager` <!-- id: 75 -->
+    - [x] Verify functionality <!-- id: 76 -->
+- [x] Session Migration - Phase 15 (UI Population Manager) <!-- id: 77 -->
+    - [x] Create `src/scripts/modules/ui/ui-population-manager.js` <!-- id: 78 -->
+    - [x] Extract population logic <!-- id: 79 -->
+    - [x] Refactor `app-session.js` to use `UiPopulationManager` <!-- id: 80 -->
+    - [x] Verify functionality <!-- id: 81 -->
 
