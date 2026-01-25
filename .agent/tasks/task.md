@@ -79,4 +79,16 @@
     - [x] Extract population logic <!-- id: 79 -->
     - [x] Refactor `app-session.js` to use `UiPopulationManager` <!-- id: 80 -->
     - [x] Verify functionality <!-- id: 81 -->
+- [x] Session Migration - Phase 16 (Runtime Resolution & UI Preferences) <!-- id: 82 -->
+    - [x] Update `src/scripts/modules/core/session-runtime.js` with resolution logic <!-- id: 83 -->
+    - [x] Create `src/scripts/modules/ui/ui-preferences.js` <!-- id: 84 -->
+    - [x] Extract runtime resolution and UI preference logic from `app-session.js` <!-- id: 85 -->
+    - [x] Refactor `app-session.js` to use `SessionRuntime` and `UiPreferences` <!-- id: 86 -->
+    - [x] Verify functionality <!-- id: 87 -->
+- [ ] Session Migration - Phase 17 (Restore Rehearsal Extraction) <!-- id: 88 -->
+    - [ ] Create `src/scripts/modules/features/restore-rehearsal-manager.js` <!-- id: 89 -->
+    - [ ] Extract `Restore Rehearsal` constants, state, and logic <!-- id: 90 -->
+    - [ ] Extract `Backup Diff` logic and UI rendering <!-- id: 91 -->
+    - [ ] Refactor `app-session.js` to use `RestoreRehearsalManager` <!-- id: 92 -->
+    - [ ] Verify functionality <!-- id: 93 -->
 
