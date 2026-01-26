@@ -6417,7 +6417,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js')
+        navigator.serviceWorker.register('./service-worker.js')
           .then(registration => {
             console.log('ServiceWorker registration successful with scope: ', registration.scope);
           })
@@ -6429,7 +6429,7 @@
   </script>
   <script>console.log('DEBUG: Inline script before main.js');</script>
   <!-- Main Vite Entry Point -->
-  <script type="module" src="/src/main.js?v=1"></script>
+  <script type="module" src="./src/main.js?v=1"></script>
 </body>
 
 </html>
