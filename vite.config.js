@@ -124,7 +124,7 @@ function serviceWorkerPlugin() {
 }
 
 export default defineConfig(({ command }) => ({
-    base: command === 'build' ? '/cine-power-planner/' : '/',
+    base: command === 'build' ? './' : '/',
     // Root directory is the project root (where index.html is)
     root: '.',
 
