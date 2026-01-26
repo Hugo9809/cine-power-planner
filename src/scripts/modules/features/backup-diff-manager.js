@@ -6,7 +6,6 @@
  *
  * Extracted from app-session.js.
  */
-
 import {
     detectPrimaryGlobalScope,
     formatNumberForComparison,
@@ -22,6 +21,8 @@ import cineFeatureBackup from './backup.js';
 import {
     formatFullBackupFilename
 } from '../core/project-transfer-manager.js';
+
+import { isPlainObject } from '../ui/ui-preferences.js';
 
 // --- Constants ---
 
@@ -42,16 +43,91 @@ const BACKUP_DIFF_IGNORED_KEYS = new Set([
     'fullBackupHistory'
 ]);
 
+const ARRAY_COMPARISON_KEY_CANDIDATES = [
+    'name',
+    'label',
+    'title',
+    'id',
+    'uuid',
+    'key',
+    'slug',
+];
+
+const ARRAY_COMPARISON_KEY_LABEL_OVERRIDES = {
+    id: 'ID',
+    uuid: 'UUID',
+};
+
+const ARRAY_COMPARISON_KEY_LABEL_OMIT = new Set(['name', 'label', 'title']);
+
+
 // --- State ---
 
 const backupDiffState = {
     baseline: '',
     comparison: '',
+    expanded: false,
 };
 
-let backupDiffOptionsCache = [];
+let backupDiffOptionsCache = []; // Cache options to avoid re-reading IDB too often if we were doing that
 
-// --- Helpers ---
+// --- UI Toggle ---
+
+export function toggleBackupDiffSection(elements, forceState) {
+    const { sectionEl, toggleButtonEl } = elements;
+    if (!sectionEl) return;
+
+    const newState = typeof forceState === 'boolean' ? forceState : !backupDiffState.expanded;
+    backupDiffState.expanded = newState;
+
+    if (backupDiffState.expanded) {
+        sectionEl.removeAttribute('hidden');
+        populateBackupDiffSelectors(elements);
+        if (toggleButtonEl) toggleButtonEl.setAttribute('aria-expanded', 'true');
+    } else {
+        sectionEl.setAttribute('hidden', '');
+        if (toggleButtonEl) toggleButtonEl.setAttribute('aria-expanded', 'false');
+    }
+}
+
+export function initializeBackupDiff(elements) {
+    const {
+        sectionEl,
+        toggleButtonEl,
+        closeButtonEl,
+        primarySelectEl,
+        secondarySelectEl,
+        exportButtonEl,
+        summaryEl
+    } = elements;
+
+    if (toggleButtonEl) {
+        toggleButtonEl.addEventListener('click', () => toggleBackupDiffSection(elements));
+    }
+    if (closeButtonEl) {
+        closeButtonEl.addEventListener('click', () => toggleBackupDiffSection(elements, false));
+    }
+    if (primarySelectEl) {
+        primarySelectEl.addEventListener('change', (e) => handleBackupDiffSelectionChange(e, elements));
+    }
+    if (secondarySelectEl) {
+        secondarySelectEl.addEventListener('change', (e) => handleBackupDiffSelectionChange(e, elements));
+    }
+    if (exportButtonEl) {
+        exportButtonEl.addEventListener('click', () => handleBackupDiffExport(elements));
+    }
+
+    // Initial State
+    if (summaryEl) {
+        summaryEl.textContent = getDiffText('versionCompareNoSelection', 'Choose two versions to generate a diff.');
+    }
+    if (exportButtonEl) {
+        exportButtonEl.disabled = true;
+    }
+    toggleBackupDiffSection(elements, false);
+}
+
+// --- Key/Path Formatting Helpers ---
 
 const localeSort = (a, b) => {
     if (typeof a === 'string' && typeof b === 'string') {
@@ -69,45 +145,313 @@ function getDiffText(key, fallback) {
     return langTexts[key] || (texts.en ? texts.en[key] : fallback) || fallback;
 }
 
+function fallbackHumanizeDiffKey(key) {
+    if (typeof key !== 'string') {
+        return String(key);
+    }
+    const spaced = key
+        .replace(/[_\s-]+/g, ' ')
+        .replace(/([a-z\d])([A-Z])/g, '$1 $2')
+        .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
+        .trim();
+    if (!spaced) {
+        return key;
+    }
+    return spaced
+        .split(' ')
+        .map(part => {
+            if (!part) return part;
+            if (part.length > 3 && part === part.toUpperCase()) {
+                return part;
+            }
+            if (/^\d+$/.test(part)) {
+                return formatNumberForComparison(Number(part));
+            }
+            return part.charAt(0).toUpperCase() + part.slice(1);
+        })
+        .join(' ');
+}
 
-// --- Deep Diff Engine ---
+function humanizeDiffKey(key) {
+    if (typeof key !== 'string') {
+        return String(key);
+    }
+    // Note: humanizeKey might be available globally or imported, but for now we rely on fallback
+    // If we had a shared utility for this, we'd import it.
+    return fallbackHumanizeDiffKey(key);
+}
+
+function createKeyedDiffPathSegment(keyName, keyValue) {
+    let serializedValue;
+    try {
+        serializedValue = JSON.stringify(keyValue);
+    } catch (error) {
+        console.warn('Failed to serialize keyed diff path value', error);
+        try {
+            serializedValue = JSON.stringify(String(keyValue));
+        } catch (stringError) {
+            console.warn('Failed to stringify keyed diff fallback value', stringError);
+            serializedValue = '"?"';
+        }
+    }
+    return `[${keyName}=${serializedValue}]`;
+}
+
+function parseKeyedDiffPathSegment(segment) {
+    if (typeof segment !== 'string') {
+        return null;
+    }
+    const match = segment.match(/^\[([^=[\]]+)=([\s\S]+)\]$/);
+    if (!match) {
+        return null;
+    }
+    const keyName = match[1];
+    const rawValue = match[2];
+    try {
+        return { key: keyName, value: JSON.parse(rawValue) };
+    } catch (error) {
+        console.warn('Failed to parse keyed diff path segment', segment, error);
+        return { key: keyName, value: rawValue };
+    }
+}
+
+function formatDiffListIndex(part) {
+    if (typeof part !== 'string') {
+        return null;
+    }
+    const indexMatch = part.match(/^\[(\d+)\]$/);
+    if (indexMatch) {
+        const index = Number(indexMatch[1]);
+        if (!Number.isFinite(index) || index < 0) {
+            return null;
+        }
+        const template = getDiffText('versionCompareListItemLabel', 'Item %s');
+        return template.replace('%s', formatNumberForComparison(index + 1));
+    }
+
+    const keyedSegment = parseKeyedDiffPathSegment(part);
+    if (keyedSegment) {
+        const { key, value } = keyedSegment;
+        let valueText;
+        if (typeof value === 'number' && Number.isFinite(value)) {
+            valueText = formatNumberForComparison(value);
+        } else if (typeof value === 'string') {
+            valueText = value;
+        } else if (value === null) {
+            valueText = 'null';
+        } else {
+            try {
+                valueText = JSON.stringify(value);
+            } catch (error) {
+                console.warn('Failed to stringify keyed diff value', error);
+                valueText = String(value);
+            }
+        }
+
+        const template = getDiffText('versionCompareListItemLabel', 'Item %s');
+        const baseLabel = template.replace('%s', valueText);
+
+        if (ARRAY_COMPARISON_KEY_LABEL_OMIT.has(key)) {
+            return baseLabel;
+        }
+
+        const overrideLabel = ARRAY_COMPARISON_KEY_LABEL_OVERRIDES[key];
+        const keyLabel = overrideLabel || humanizeDiffKey(key);
+        if (!keyLabel) {
+            return baseLabel;
+        }
+        return `${keyLabel} · ${baseLabel}`;
+    }
+
+    return null;
+}
+
+function formatDiffPathSegment(part) {
+    const listLabel = formatDiffListIndex(part);
+    if (listLabel) {
+        return listLabel;
+    }
+    if (typeof part !== 'string') {
+        return String(part);
+    }
+    return humanizeDiffKey(part);
+}
+
+function formatDiffPath(parts) {
+    if (!Array.isArray(parts) || !parts.length) {
+        return getDiffText('versionCompareRootPath', 'Entire setup');
+    }
+    return parts.map(formatDiffPathSegment).join(' › ');
+}
+
+// --- Deep Diff Intelligence ---
 
 function isDiffKeyIgnored(key) {
     return BACKUP_DIFF_IGNORED_KEYS.has(key);
 }
 
-function getArrayComparisonKey(item) {
-    if (!item || typeof item !== 'object') return null;
-    if (item.id) return item.id;
-    if (item.uuid) return item.uuid;
-    if (item.name) return item.name;
-    if (item.label) return item.label;
-    if (item.entryKey) return item.entryKey;
-    return null;
-}
-
-function getComparablePrimitive(val) {
-    if (val === null || val === undefined) return '';
-    if (typeof val === 'number') return val;
-    if (typeof val === 'boolean') return val;
-    return String(val).trim();
+function isDiffComparablePrimitive(value) {
+    if (value === null) {
+        return true;
+    }
+    const type = typeof value;
+    return type === 'string' || type === 'number' || type === 'boolean';
 }
 
 function valuesEqual(a, b) {
     if (a === b) return true;
-    if (typeof a !== typeof b) return false;
-    if (Array.isArray(a) && Array.isArray(b)) {
-        if (a.length !== b.length) return false;
-        return a.every((val, index) => valuesEqual(val, b[index]));
-    }
-    if (typeof a === 'object' && a !== null && b !== null) {
-        const keysA = Object.keys(a).filter(k => !isDiffKeyIgnored(k));
-        const keysB = Object.keys(b).filter(k => !isDiffKeyIgnored(k));
-        if (keysA.length !== keysB.length) return false;
-        return keysA.every(key => valuesEqual(a[key], b[key]));
-    }
-    return getComparablePrimitive(a) === getComparablePrimitive(b);
+    return Number.isNaN(a) && Number.isNaN(b);
 }
+
+function arrayHasOnlyComparablePrimitives(array) {
+    if (!Array.isArray(array)) {
+        return false;
+    }
+    for (let i = 0; i < array.length; i += 1) {
+        if (!isDiffComparablePrimitive(array[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function createPrimitiveDiffKey(value) {
+    if (value === null) {
+        return 'primitive:null';
+    }
+    if (typeof value === 'number') {
+        if (Number.isNaN(value)) {
+            return 'primitive:number:NaN';
+        }
+        if (Object.is(value, -0)) {
+            return 'primitive:number:-0';
+        }
+        return `primitive:number:${value}`;
+    }
+    if (typeof value === 'string') {
+        return `primitive:string:${value}`;
+    }
+    if (typeof value === 'boolean') {
+        return `primitive:boolean:${value}`;
+    }
+    return `primitive:other:${String(value)}`;
+}
+
+function buildPrimitiveDiffIndex(array) {
+    const counts = new Map();
+    if (!Array.isArray(array)) {
+        return counts;
+    }
+    for (let i = 0; i < array.length; i += 1) {
+        const value = array[i];
+        if (!isDiffComparablePrimitive(value)) {
+            continue;
+        }
+        const key = createPrimitiveDiffKey(value);
+        if (!counts.has(key)) {
+            counts.set(key, { value, count: 0 });
+        }
+        const entry = counts.get(key);
+        entry.count += 1;
+    }
+    return counts;
+}
+
+function formatPrimitiveDiffPathValue(value) {
+    if (typeof value === 'number') {
+        if (Number.isNaN(value)) {
+            return 'NaN';
+        }
+        if (!Number.isFinite(value)) {
+            return value > 0 ? 'Infinity' : '-Infinity';
+        }
+        if (Object.is(value, -0)) {
+            return '-0';
+        }
+    }
+    return value;
+}
+
+
+function findArrayComparisonKey(baseArray, compareArray) {
+    if (!Array.isArray(baseArray) || !Array.isArray(compareArray)) {
+        return null;
+    }
+
+    const arrays = [baseArray, compareArray];
+    for (const candidate of ARRAY_COMPARISON_KEY_CANDIDATES) {
+        let hasValues = false;
+        let valid = true;
+        const seenByArray = arrays.map(() => new Set());
+
+        for (let arrayIndex = 0; arrayIndex < arrays.length && valid; arrayIndex += 1) {
+            const currentArray = arrays[arrayIndex];
+            for (let i = 0; i < currentArray.length; i += 1) {
+                const item = currentArray[i];
+                if (!isPlainObject(item)) {
+                    valid = false;
+                    break;
+                }
+                if (!Object.prototype.hasOwnProperty.call(item, candidate)) {
+                    valid = false;
+                    break;
+                }
+                const keyValue = item[candidate];
+                if (keyValue === null || keyValue === undefined) {
+                    valid = false;
+                    break;
+                }
+                if (typeof keyValue !== 'string' && typeof keyValue !== 'number') {
+                    valid = false;
+                    break;
+                }
+                hasValues = true;
+                const serialized = String(keyValue);
+                const seen = seenByArray[arrayIndex];
+                if (seen.has(serialized)) {
+                    valid = false;
+                    break;
+                }
+                seen.add(serialized);
+            }
+        }
+
+        if (valid && hasValues) {
+            return candidate;
+        }
+    }
+
+    return null;
+}
+
+function buildArrayKeyIndex(array, keyName) {
+    const map = new Map();
+    const order = [];
+    if (!Array.isArray(array)) {
+        return { map, order };
+    }
+    array.forEach(item => {
+        if (!isPlainObject(item)) {
+            return;
+        }
+        const keyValue = item[keyName];
+        if (keyValue === null || keyValue === undefined) {
+            return;
+        }
+        if (typeof keyValue !== 'string' && typeof keyValue !== 'number') {
+            return;
+        }
+        const serialized = String(keyValue);
+        if (map.has(serialized)) {
+            return;
+        }
+        map.set(serialized, { value: item, keyValue });
+        order.push(serialized);
+    });
+    return { map, order };
+}
+
+// --- Main Comparison Logic ---
 
 function computeSetupDiff(baseline, comparison) {
     const entries = [];
@@ -117,28 +461,121 @@ function computeSetupDiff(baseline, comparison) {
             return;
         }
 
-        const baseIsObject = typeof baseValue === 'object' && baseValue !== null;
-        const compareIsObject = typeof compareValue === 'object' && compareValue !== null;
-        const baseIsArray = Array.isArray(baseValue);
-        const compareIsArray = Array.isArray(compareValue);
+        const baseIsObject = isPlainObject(baseValue);
+        const compareIsObject = isPlainObject(compareValue);
 
-        if (baseIsObject && compareIsObject && !baseIsArray && !compareIsArray) {
-            const allKeys = new Set([
+        if (baseIsObject && compareIsObject) {
+            const keys = new Set([
                 ...Object.keys(baseValue),
                 ...Object.keys(compareValue)
             ]);
-            allKeys.forEach(key => {
+            keys.forEach(key => {
                 if (isDiffKeyIgnored(key)) return;
-                walk(baseValue[key], compareValue[key], path.concat(key));
+                const hasBase = Object.prototype.hasOwnProperty.call(baseValue, key);
+                const hasCompare = Object.prototype.hasOwnProperty.call(compareValue, key);
+                if (!hasBase) {
+                    entries.push({ type: 'added', path: path.concat(key), before: undefined, after: compareValue[key] });
+                } else if (!hasCompare) {
+                    entries.push({ type: 'removed', path: path.concat(key), before: baseValue[key], after: undefined });
+                } else {
+                    walk(baseValue[key], compareValue[key], path.concat(key));
+                }
             });
             return;
         }
 
+        const baseIsArray = Array.isArray(baseValue);
+        const compareIsArray = Array.isArray(compareValue);
+
         if (baseIsArray && compareIsArray) {
-            // Attempt smart array matching
+            const comparisonKey = findArrayComparisonKey(baseValue, compareValue);
+            if (comparisonKey) {
+                const { map: baseIndex, order: baseOrder } = buildArrayKeyIndex(baseValue, comparisonKey);
+                const { map: compareIndex, order: compareOrder } = buildArrayKeyIndex(compareValue, comparisonKey);
+                const combinedOrder = [];
+                const seenKeys = new Set();
+                const appendKey = key => {
+                    if (!seenKeys.has(key)) {
+                        seenKeys.add(key);
+                        combinedOrder.push(key);
+                    }
+                };
+                baseOrder.forEach(appendKey);
+                compareOrder.forEach(appendKey);
+
+                combinedOrder.forEach(serializedKey => {
+                    const baseEntry = baseIndex.get(serializedKey) || null;
+                    const compareEntry = compareIndex.get(serializedKey) || null;
+                    const keyValue = baseEntry ? baseEntry.keyValue : compareEntry ? compareEntry.keyValue : serializedKey;
+                    const nextPath = path.concat(createKeyedDiffPathSegment(comparisonKey, keyValue));
+                    if (!baseEntry && compareEntry) {
+                        entries.push({ type: 'added', path: nextPath, before: undefined, after: compareEntry.value });
+                    } else if (baseEntry && !compareEntry) {
+                        entries.push({ type: 'removed', path: nextPath, before: baseEntry.value, after: undefined });
+                    } else if (baseEntry && compareEntry) {
+                        walk(baseEntry.value, compareEntry.value, nextPath);
+                    }
+                });
+                return;
+            }
+
+            if (arrayHasOnlyComparablePrimitives(baseValue) && arrayHasOnlyComparablePrimitives(compareValue)) {
+                const baseIndex = buildPrimitiveDiffIndex(baseValue);
+                const compareIndex = buildPrimitiveDiffIndex(compareValue);
+                const combinedOrder = [];
+                const seenKeys = new Set();
+                const appendKey = key => {
+                    if (!seenKeys.has(key)) {
+                        seenKeys.add(key);
+                        combinedOrder.push(key);
+                    }
+                };
+                for (let i = 0; i < baseValue.length; i += 1) {
+                    appendKey(createPrimitiveDiffKey(baseValue[i]));
+                }
+                for (let i = 0; i < compareValue.length; i += 1) {
+                    appendKey(createPrimitiveDiffKey(compareValue[i]));
+                }
+
+                combinedOrder.forEach(key => {
+                    const baseEntry = baseIndex.get(key) || null;
+                    const compareEntry = compareIndex.get(key) || null;
+                    const baseCount = baseEntry ? baseEntry.count : 0;
+                    const compareCount = compareEntry ? compareEntry.count : 0;
+                    if (compareCount > baseCount) {
+                        const addValue = compareEntry ? compareEntry.value : undefined;
+                        const diff = compareCount - baseCount;
+                        for (let i = 0; i < diff; i += 1) {
+                            entries.push({
+                                type: 'added',
+                                path: path.concat(
+                                    createKeyedDiffPathSegment('value', formatPrimitiveDiffPathValue(addValue)),
+                                ),
+                                before: undefined,
+                                after: addValue,
+                            });
+                        }
+                    }
+                    if (baseCount > compareCount) {
+                        const removeValue = baseEntry ? baseEntry.value : undefined;
+                        const diff = baseCount - compareCount;
+                        for (let i = 0; i < diff; i += 1) {
+                            entries.push({
+                                type: 'removed',
+                                path: path.concat(
+                                    createKeyedDiffPathSegment('value', formatPrimitiveDiffPathValue(removeValue)),
+                                ),
+                                before: removeValue,
+                                after: undefined,
+                            });
+                        }
+                    }
+                });
+                return;
+            }
+
+            // Fallback to index matching
             const maxLength = Math.max(baseValue.length, compareValue.length);
-            // Simple index matching for now (complex keyed matching is expensive/messy for general diff)
-            // TODO: Enhance with keyed matching if needed for complex lists
             for (let index = 0; index < maxLength; index += 1) {
                 const hasBase = index < baseValue.length;
                 const hasCompare = index < compareValue.length;
@@ -245,19 +682,6 @@ function createDiffStatusBadge(type) {
     return badge;
 }
 
-function formatDiffPath(path) {
-    if (!path) return '';
-    if (Array.isArray(path)) {
-        return path.join(' › ');
-    }
-    return String(path)
-        .replace(/^([^.]+)\./, '') // Remove root (e.g., 'data.')
-        .replace(/\./g, ' › ')
-        .replace(/([a-z])([A-Z])/g, '$1 $2')
-        .replace(/_/g, ' ')
-        .replace(/\b\w/g, l => l.toUpperCase());
-}
-
 function sortDiffEntries(entries) {
     if (!Array.isArray(entries)) {
         return [];
@@ -294,49 +718,61 @@ function formatDiffDetail(key, count) {
 }
 
 
-// --- Main Logic ---
+// --- Main Logic & UI Connection ---
 
-export function collectBackupDiffOptions() {
+// --- Option Collection & Formatting ---
+
+function formatTimestampForComparison(date) {
+    if (!(date instanceof Date) || Number.isNaN(date.valueOf())) return '';
+    try {
+        return new Intl.DateTimeFormat('en', {
+            year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit'
+        }).format(date);
+    } catch (e) {
+        return date.toISOString();
+    }
+}
+
+function formatComparisonOptionLabel(name, parsed) {
+    if (!parsed) return `Manual save · ${name}`;
+    const typeLabel = parsed.type === cineFeatureBackup.constants.SESSION_AUTO_BACKUP_DELETION_PREFIX
+        ? 'Auto backup before delete'
+        : 'Auto backup';
+    const ts = formatTimestampForComparison(parsed.date);
+    return `${typeLabel} · ${ts}`;
+}
+
+export function collectBackupDiffOptions(dataProvider) {
     const options = [];
-    const scope = detectPrimaryGlobalScope();
-    const currentProjectName = scope ? scope.currentProjectName : (typeof window !== 'undefined' ? window.currentProjectName : null);
+    let sourceData = {};
 
-    // 1. Current Project (Memory)
-    // We need access to currentProjectInfo... usually passed in or available globally.
-    // For now we assume we can get it from storage or session state, but here we might need to rely on what was passed.
-    // If we can't get it, we skip.
-    // However, the original code relied on `currentProjectInfo` global variable.
-    // We should probably pass current state into this function or use a getter.
-    // For now, let's omit "Current State" unless we have a way to get it cleanly, or use a placeholder.
-    // Actually, in app-session.js it access `currentProjectInfo`.
-    // We will assume the caller might want to inject "current" option.
-    // But `cineFeatureBackup.getStoredSnapshots()` usually returns everything.
+    if (typeof dataProvider === 'function') {
+        sourceData = dataProvider();
+    }
 
-    // 2. Stored Backups (IDB)
-    const snapshots = cineFeatureBackup.getStoredSnapshots(); // Assuming this is sync or we need async?
-    // cineFeatureBackup.getStoredSnapshots is likely synchronous array if it's in-memory cache
-    // Let's check backup.js if we can. But assuming it follows pattern.
-
-    if (Array.isArray(snapshots)) {
-        snapshots.forEach(snapshot => {
-            let label = snapshot.timestamp; // rough
-            if (snapshot.name) label = snapshot.name;
-            // Format nice label
+    if (isPlainObject(sourceData)) {
+        Object.keys(sourceData).forEach(name => {
+            const parsed = cineFeatureBackup.parseAutoBackupName ? cineFeatureBackup.parseAutoBackupName(name) : null;
+            const label = formatComparisonOptionLabel(name, parsed);
             options.push({
-                value: snapshot.id || snapshot.name, // ID is better
+                value: name,
                 label: label,
-                data: snapshot.data || snapshot,
-                timestamp: snapshot.timestamp
+                data: sourceData[name],
+                timestamp: parsed && parsed.date ? parsed.date.getTime() : 0
+            });
+        });
+    } else if (Array.isArray(sourceData)) {
+        sourceData.forEach(item => {
+            options.push({
+                value: item.id || item.name,
+                label: item.label || item.name || item.id,
+                data: item.data || item,
+                timestamp: item.timestamp || 0
             });
         });
     }
 
-    // Sort by date desc
-    return options.sort((a, b) => {
-        const tA = new Date(a.timestamp || 0).getTime();
-        const tB = new Date(b.timestamp || 0).getTime();
-        return tB - tA;
-    });
+    return options.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 }
 
 // Re-implementing with passed references for DOM elements
@@ -347,19 +783,14 @@ export function renderBackupDiff(elements, options = {}) {
         listContainerEl,
         exportButtonEl,
         notesEl,
-        primarySelectEl,
-        secondarySelectEl,
-        emptyStateEl
+        dataProvider // Passed from initialize or update
     } = elements;
 
     if (!summaryEl) return;
 
-
-    // Check cache
-    if (!backupDiffOptionsCache.length) {
-        // Try to collect?
-        backupDiffOptionsCache = collectBackupDiffOptions();
-    }
+    // Refresh cache if needed or if forced
+    // For now we refresh every time render is called to ensure fresh data
+    backupDiffOptionsCache = collectBackupDiffOptions(dataProvider);
 
     if (!backupDiffOptionsCache.length) {
         clearBackupDiffResults(elements);
@@ -509,10 +940,10 @@ export function clearBackupDiffResults(elements) {
 }
 
 export function populateBackupDiffSelectors(elements) {
-    const { primarySelectEl, secondarySelectEl, emptyStateEl } = elements;
+    const { primarySelectEl, secondarySelectEl, emptyStateEl, dataProvider } = elements;
 
     // Refresh options
-    backupDiffOptionsCache = collectBackupDiffOptions();
+    backupDiffOptionsCache = collectBackupDiffOptions(dataProvider);
 
     // Fill selects
     const primary = primarySelectEl;
@@ -521,13 +952,15 @@ export function populateBackupDiffSelectors(elements) {
     const fill = (select, opts, selected) => {
         if (!select) return;
         select.innerHTML = '<option value="">Select version...</option>';
+        const fragment = document.createDocumentFragment();
         opts.forEach(opt => {
             const el = document.createElement('option');
             el.value = opt.value;
             el.textContent = opt.label;
             if (opt.value === selected) el.selected = true;
-            select.appendChild(el);
+            fragment.appendChild(el);
         });
+        select.appendChild(fragment);
     };
 
     fill(primary, backupDiffOptionsCache, backupDiffState.baseline);
@@ -581,7 +1014,6 @@ export function handleBackupDiffExport(elements) {
         summaryEl,
         exportButtonEl,
         notesEl,
-        listEl // used to grab diff entries if needed, or recompute
     } = elements;
 
     if (!backupDiffOptionsCache.length) {
@@ -614,9 +1046,7 @@ export function handleBackupDiffExport(elements) {
         ? notesEl.value.trim()
         : '';
 
-    // Generate filename is tricky without proper import of formatFullBackupFilename
     const timestamp = new Date();
-    // Assuming formatFullBackupFilename is available or I replicate it
     const { iso } = formatFullBackupFilename(timestamp);
     const safeIso = iso.replace(/[:]/g, '-');
     const fileName = `cine-power-planner-version-log-${safeIso}.json`;
@@ -669,11 +1099,7 @@ export function handleBackupDiffExport(elements) {
         return;
     }
 
-    downloadBackupPayload(serialized, fileName); // Assuming global or imported helper?
-    // Actually I don't have downloadBackupPayload imported. 
-    // It's usually just a link click.
-
-    // I should create a local helper for download
+    // Download trigger
     const blob = new Blob([serialized], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
