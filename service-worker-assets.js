@@ -403,6 +403,8 @@
     "./src/styles/v2/views/rules-view.css",
     "./src/styles/v2/views/settings.css",
     "./src/vendor/lottie.min.js",
+    "./src/vendor/idb-keyval.js",
+    "./src/vendor/lz-string.js",
     "./src/vendor/lz-string.min.js",
     "./src/vendor/regenerator-runtime-fallback.js",
     "./tools/checkConsistency.js",

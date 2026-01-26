@@ -1,4 +1,4 @@
-import LZString from 'lz-string';
+import LZString from '../../../vendor/lz-string.js';
 
 /**
  * Extracts and decodes the 'shared' query parameter from a URL search string.

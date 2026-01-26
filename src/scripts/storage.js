@@ -23,7 +23,7 @@ import { gearRepo } from './modules/gear/GearRepository.js';
 import { userContext } from './modules/core/UserContext.js';
 import { dataVault } from './modules/storage/DataVault.js';
 
-import LZString from 'lz-string';
+import LZString from '../vendor/lz-string.js';
 
 // [Refactor] In-Memory Cache for Synchronous Read Capability (Hybrid IDB)
 let projectMemoryCache = {};

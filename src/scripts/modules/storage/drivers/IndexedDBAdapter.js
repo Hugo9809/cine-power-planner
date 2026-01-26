@@ -1,5 +1,5 @@
-import { get, set, del, clear, keys } from 'idb-keyval';
-import LZString from 'lz-string';
+import { get, set, del, clear, keys } from '../../../../vendor/idb-keyval.js';
+import LZString from '../../../../vendor/lz-string.js';
 import StorageInterface from '../StorageInterface.js';
 
 /**
