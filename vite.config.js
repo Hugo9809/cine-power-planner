@@ -123,7 +123,8 @@ function serviceWorkerPlugin() {
     };
 }
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+    base: command === 'build' ? '/cine-power-planner/' : '/',
     // Root directory is the project root (where index.html is)
     root: '.',
 
@@ -205,4 +206,4 @@ export default defineConfig({
             })()
         ),
     },
-});
+}));
