@@ -1,0 +1,46 @@
+(function createServiceWorkerAssetManifest(globalScope) {
+  const assets = [
+    "./",
+    "./app-version.js",
+    "./assets/EssentialIconsV2-400-normal-B5SIO-xz.woff",
+    "./assets/FilmIndustryIconsV2-400-normal-DTo4Zdf3.woff2",
+    "./assets/GadgetIconsV2-400-normal-CL5qmqWl.woff",
+    "./assets/Icon Bluenew-cgvOfjQ4.svg",
+    "./assets/Ubuntu-Italic-7i5B2jgp.ttf",
+    "./assets/Ubuntu-Light-DlXMI-yU.ttf",
+    "./assets/Ubuntu-LightItalic-CEKA6hqe.ttf",
+    "./assets/Ubuntu-Regular-bmdV8fUx.ttf",
+    "./assets/UiconsThinStraightV2-400-normal-KgBOFEf8.woff2",
+    "./assets/app-icon-C1js1k8i.png",
+    "./assets/auto-gear-rules-DS0lYD-U.js",
+    "./assets/contacts-QKDXsRfU.css",
+    "./assets/core-modules-nwKhU9-4.js",
+    "./assets/data-So-wGb1N.js",
+    "./assets/de-D4ATzMXf.js",
+    "./assets/es-Bz06fnSf.js",
+    "./assets/fr-DIroa6ai.js",
+    "./assets/it-BmXF3RXs.js",
+    "./assets/main-A_PeDQch.css",
+    "./assets/main-BAsE-KKD.js",
+    "./assets/manifest-DW5nU4oi.webmanifest",
+    "./assets/overview-print-CTihaGRx.css",
+    "./assets/own-gear-CSm93DJ1.js",
+    "./assets/owned-gear-D1_apNqb.css",
+    "./assets/rules-view-H7Qqifg_.css",
+    "./assets/settings-CeVW_oVS.css",
+    "./assets/v2-ui-ANVc2KBG.js",
+    "./assets/vendor-BnBlqqbr.js",
+    "./index.html",
+    "./service-worker.js"
+  ];
+
+  if (globalScope && typeof globalScope === 'object') {
+    globalScope.SERVICE_WORKER_ASSETS = assets;
+  }
+
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = assets;
+  }
+
+  return assets;
+})(typeof self !== 'undefined' ? self : typeof globalThis !== 'undefined' ? globalThis : undefined);
