@@ -289,23 +289,23 @@ function parseAutoGearDraftNames(value) {
     var parts = hasDelimiters ? raw.split(/[;\n\r]+/) : [raw];
     return parts
         .map(function (part) {
-            var segment = part.trim();
-            if (!segment)
+        var segment = part.trim();
+        if (!segment)
+            return null;
+        var signMatch = segment.match(/^([+-])\s*(.+)$/);
+        var listType = signMatch ? (signMatch[1] === '-' ? 'remove' : 'add') : null;
+        var content = signMatch ? signMatch[2].trim() : segment;
+        if (!content)
+            return null;
+        var quantityMatch = content.match(/^(\d+)\s*[x×]\s*(.+)$/i);
+        if (quantityMatch) {
+            var name_1 = quantityMatch[2].trim();
+            if (!name_1)
                 return null;
-            var signMatch = segment.match(/^([+-])\s*(.+)$/);
-            var listType = signMatch ? (signMatch[1] === '-' ? 'remove' : 'add') : null;
-            var content = signMatch ? signMatch[2].trim() : segment;
-            if (!content)
-                return null;
-            var quantityMatch = content.match(/^(\d+)\s*[x×]\s*(.+)$/i);
-            if (quantityMatch) {
-                var name_1 = quantityMatch[2].trim();
-                if (!name_1)
-                    return null;
-                return { name: name_1, quantity: normalizeAutoGearQuantity(quantityMatch[1]), listType: listType };
-            }
-            return { name: content, listType: listType };
-        })
+            return { name: name_1, quantity: normalizeAutoGearQuantity(quantityMatch[1]), listType: listType };
+        }
+        return { name: content, listType: listType };
+    })
         .filter(Boolean);
 }
 /**
@@ -1573,11 +1573,9 @@ function snapshotAutoGearRuleForFingerprint(rule) {
     var normalized = normalizeAutoGearRule(rule);
     if (!normalized)
         return null;
-    var mapItems = function (items) {
-        return items
-            .map(autoGearItemSnapshot)
-            .sort(function (a, b) { return autoGearItemSortKey(a).localeCompare(autoGearItemSortKey(b)); });
-    };
+    var mapItems = function (items) { return items
+        .map(autoGearItemSnapshot)
+        .sort(function (a, b) { return autoGearItemSortKey(a).localeCompare(autoGearItemSortKey(b)); }); };
     return {
         label: normalized.label || '',
         always: normalized.always ? 1 : 0,
@@ -1767,65 +1765,7 @@ var AUTO_GEAR_NORMALIZER_EXPORTS = {
     normalizeAutoGearBackupEntry: normalizeAutoGearBackupEntry,
     normalizeAutoGearMonitorDefaults: normalizeAutoGearMonitorDefaults,
     AUTO_GEAR_MONITOR_DEFAULT_TYPES: AUTO_GEAR_MONITOR_DEFAULT_TYPES,
-    AUTO_GEAR_CONDITION_LOGIC_FIELDS: AUTO_GEAR_CONDITION_LOGIC_FIELDS,
 };
-
-export { AUTO_GEAR_CONDITION_LOGIC_FIELDS };
-export {
-    generateAutoGearId,
-    normalizeAutoGearQuantity,
-    parseAutoGearDraftNames,
-    normalizeAutoGearText,
-    normalizeAutoGearSelectorType,
-    normalizeAutoGearSelectorDefault,
-    resolveDevicesSnapshot,
-    updateGlobalDevicesReference,
-    resolveTripodPreferenceSelect,
-    collectTripodPreferenceOptions,
-    getAutoGearSelectorOptions,
-    getAutoGearSelectorLabel,
-    getAutoGearSelectorScrollHint,
-    getAutoGearSelectorDefaultPlaceholder,
-    getAutoGearMonitorDefaultPlaceholder,
-    formatAutoGearSelectorValue,
-    populateAutoGearCategorySelect,
-    formatAutoGearOwnGearLabel,
-    refreshAutoGearOwnGearConditionOptions,
-    updateAutoGearOwnGearOptions,
-    isAutoGearMonitoringCategory,
-    isMonitoringCategorySelected,
-    matchesTripodCategory,
-    isTripodCategorySelected,
-    setAutoGearFieldVisibility,
-    updateAutoGearMonitorFieldGroup,
-    extractAutoGearContextNotes,
-    normalizeAutoGearItem,
-    normalizeAutoGearTriggerList,
-    normalizeAutoGearScenarioLogic,
-    normalizeAutoGearConditionLogic,
-    readAutoGearConditionLogic,
-    normalizeAutoGearScenarioMultiplier,
-    normalizeAutoGearScenarioPrimary,
-    normalizeVideoDistributionTriggerList,
-    normalizeAutoGearTriggerValue,
-    normalizeAutoGearShootingDayMode,
-    normalizeAutoGearShootingDayValue,
-    normalizeAutoGearShootingDaysList,
-    normalizeAutoGearShootingDaysCondition,
-    normalizeAutoGearRule,
-    autoGearItemSnapshot,
-    autoGearItemSortKey,
-    autoGearRuleMatteboxKey,
-    snapshotAutoGearRuleForFingerprint,
-    autoGearRuleSortKey,
-    createAutoGearRulesFingerprint,
-    normalizeAutoGearPreset,
-    normalizeAutoGearBackupEntry,
-    normalizeAutoGearMonitorDefaults,
-    AUTO_GEAR_MONITOR_DEFAULT_TYPES
-};
-
-
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = AUTO_GEAR_NORMALIZER_EXPORTS;
 }

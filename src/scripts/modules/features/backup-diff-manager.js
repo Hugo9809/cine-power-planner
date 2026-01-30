@@ -181,7 +181,7 @@ function humanizeDiffKey(key) {
     return fallbackHumanizeDiffKey(key);
 }
 
-function createKeyedDiffPathSegment(keyName, keyValue) {
+export function createKeyedDiffPathSegment(keyName, keyValue) {
     let serializedValue;
     try {
         serializedValue = JSON.stringify(keyValue);
@@ -197,7 +197,7 @@ function createKeyedDiffPathSegment(keyName, keyValue) {
     return `[${keyName}=${serializedValue}]`;
 }
 
-function parseKeyedDiffPathSegment(segment) {
+export function parseKeyedDiffPathSegment(segment) {
     if (typeof segment !== 'string') {
         return null;
     }
@@ -215,7 +215,7 @@ function parseKeyedDiffPathSegment(segment) {
     }
 }
 
-function formatDiffListIndex(part) {
+export function formatDiffListIndex(part) {
     if (typeof part !== 'string') {
         return null;
     }
@@ -277,7 +277,7 @@ function formatDiffPathSegment(part) {
     return humanizeDiffKey(part);
 }
 
-function formatDiffPath(parts) {
+export function formatDiffPath(parts) {
     if (!Array.isArray(parts) || !parts.length) {
         return getDiffText('versionCompareRootPath', 'Entire setup');
     }
@@ -373,7 +373,7 @@ function formatPrimitiveDiffPathValue(value) {
 }
 
 
-function findArrayComparisonKey(baseArray, compareArray) {
+export function findArrayComparisonKey(baseArray, compareArray) {
     if (!Array.isArray(baseArray) || !Array.isArray(compareArray)) {
         return null;
     }
@@ -453,7 +453,7 @@ function buildArrayKeyIndex(array, keyName) {
 
 // --- Main Comparison Logic ---
 
-function computeSetupDiff(baseline, comparison) {
+export function computeSetupDiff(baseline, comparison) {
     const entries = [];
 
     function walk(baseValue, compareValue, path) {

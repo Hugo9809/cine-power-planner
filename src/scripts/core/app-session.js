@@ -100,6 +100,9 @@ import { LoggingManager } from '../modules/core/logging-manager.js';
 import { RestoreCompatibilityManager } from '../modules/core/restore-compatibility-manager.js';
 import * as RestoreRehearsalManager from '../modules/features/restore-rehearsal-manager.js';
 import * as BackupDiffManager from '../modules/features/backup-diff-manager.js';
+import { HelpUiManager } from '../modules/ui/help-ui-manager.js';
+import { ScenarioUiManager } from '../modules/ui/scenario-ui-manager.js';
+import { SettingsUiManager } from '../modules/ui/settings-ui-manager.js';
 import {
   collectFullBackupData,
   buildSettingsBackupPackage,
@@ -750,93 +753,30 @@ const ACTIVE_APP_VERSION = resolveKnownAppVersion(
 
 
 
+
 function logSettingsEvent(level, message, detail, meta) {
-  const mergedMeta = { namespace: 'settings', ...meta };
-  LoggingManager.log(level, message, detail, mergedMeta);
+  SettingsUiManager.logEvent(level, message, detail, meta);
 }
 
-let pendingSettingsOpenContext = null;
-
 function prepareSettingsOpenContext(context) {
-  if (context && typeof context === 'object') {
-    pendingSettingsOpenContext = { ...context };
-  } else {
-    pendingSettingsOpenContext = null;
-  }
+  SettingsUiManager.prepareOpenContext(context);
 }
 
 function consumeSettingsOpenContext(defaultContext) {
-  const context = pendingSettingsOpenContext;
-  pendingSettingsOpenContext = null;
-  if (context && typeof context === 'object') {
-    return { ...context };
-  }
-  if (defaultContext && typeof defaultContext === 'object') {
-    return { ...defaultContext };
-  }
-  return { reason: 'settings-button' };
+  return SettingsUiManager.consumeOpenContext(defaultContext);
 }
 
 function resolveSettingsDialog() {
-  if (typeof settingsDialog !== 'undefined' && settingsDialog) {
-    return settingsDialog;
-  }
-  if (typeof document !== 'undefined' && document) {
-    try {
-      return document.getElementById('settingsDialog');
-    } catch (resolveError) {
-      void resolveError;
-    }
-  }
-  return null;
+  return SettingsUiManager.resolveDialog();
 }
 
 function resolveSettingsButton() {
-  if (typeof settingsButton !== 'undefined' && settingsButton) {
-    return settingsButton;
-  }
-  if (typeof document !== 'undefined' && document) {
-    try {
-      return document.getElementById('settingsButton');
-    } catch (resolveError) {
-      void resolveError;
-    }
-  }
-  return null;
+  return SettingsUiManager.resolveButton();
 }
 
-// ensureDeferredScriptsLoaded and ensureOnboardingTourReady delegated to session-runtime.js
-
 function requestSettingsOpen(context) {
-  const dialog = resolveSettingsDialog();
-  const trigger = resolveSettingsButton();
-  const openBefore = dialog
-    ? (typeof isDialogOpen === 'function' ? isDialogOpen(dialog) : !!(dialog && dialog.open))
-    : false;
-  const detail = context && typeof context === 'object' ? { ...context } : {};
-  if (typeof detail.openBefore !== 'boolean') {
-    detail.openBefore = openBefore;
-  }
-  ensureDeferredScriptsLoaded('settings-open');
-  if (trigger && typeof trigger.click === 'function') {
-    prepareSettingsOpenContext(detail);
-    try {
-      trigger.click();
-    } catch (clickError) {
-      prepareSettingsOpenContext(null);
-      logSettingsEvent('error', 'Settings dialog open request failed during click',
-        { ...detail, buttonAvailable: true },
-        { action: 'open-request' },
-      );
-      throw clickError;
-    }
-    return true;
-  }
-  logSettingsEvent('warn', 'Settings dialog open request unavailable',
-    { ...detail, buttonAvailable: false },
-    { action: 'open-request' },
-  );
-  return false;
+  return SettingsUiManager.requestOpen(context);
+}
 }
 
 // Compatibility texts and formatNumberForComparison delegated to session-runtime.js
@@ -8472,2484 +8412,252 @@ if (!bindGridSnapListener()) {
   document.addEventListener('DOMContentLoaded', bindGridSnapListener);
 }
 
-const setupHelpSystem = () => {
-  let helpQuickLinksNav = document.getElementById('helpQuickLinksNav');
-  let helpQuickLinksList = document.getElementById('helpQuickLinksList');
-  let helpQuickLinksHeading = document.getElementById('helpQuickLinksHeading');
-  let helpSectionsContainer = document.getElementById('helpSectionsContainer');
+const ensureFeatureSearchVisibility = element => {
+  if (!element || typeof element !== 'object' || typeof element.nodeType !== 'number') {
+    return;
+  }
 
-
-  let runFeatureSearch;
-  const btn = helpButton || document.getElementById('helpButton');
-  const dialog = helpDialog || document.getElementById('helpDialog');
-
-  if (!btn || !dialog) return false;
-  if (btn.dataset.helpInitialized) return true;
-  btn.dataset.helpInitialized = 'true';
-
-  btn.addEventListener('click', e => {
-    e.preventDefault();
-    toggleHelp();
-  });
-
-  // --- Help dialog and hover help -----------------------------------------
-  // Provides a modal help dialog with live filtering and a "hover for help"
-  // mode that exposes descriptions for interface controls. The following
-  // functions manage searching, opening/closing the dialog and tooltip-based
-  // hover help.
-  const helpContent = dialog.querySelector('.help-content');
-  const helpQuickLinkItems = new Map();
-  const helpSectionHighlightTimers = new Map();
-  const appTargetHighlightTimers = new Map();
-  const featureSearchHighlightTimers = new Map();
-
-  const ensureHelpLinksUseButtonStyle = () => {
-    if (!helpContent) return;
-    const helpLinks = helpContent.querySelectorAll('a.help-link');
-    helpLinks.forEach(link => {
-      link.classList.add('button-link');
-    });
-  };
-
-  ensureHelpLinksUseButtonStyle();
-
-  const highlightAppTarget = element => {
-    if (!element) return;
-    const target = element;
-    const existing = appTargetHighlightTimers.get(target);
-    if (existing) {
-      clearTimeout(existing);
-    }
-    target.classList.add('help-target-focus');
-    const timeout = setTimeout(() => {
-      target.classList.remove('help-target-focus');
-      appTargetHighlightTimers.delete(target);
-    }, 2000);
-    appTargetHighlightTimers.set(target, timeout);
-  };
-
-  const highlightFeatureSearchTargets = targets => {
-    if (!Array.isArray(targets) || targets.length === 0) return;
-    const seen = new Set();
-    targets.forEach(target => {
-      if (!target || typeof target.classList?.add !== 'function') return;
-      if (seen.has(target)) return;
-      seen.add(target);
-      const existing = featureSearchHighlightTimers.get(target);
-      if (existing) {
-        clearTimeout(existing);
-      }
-      target.classList.add('feature-search-focus');
-      const timeout = setTimeout(() => {
-        target.classList.remove('feature-search-focus');
-        featureSearchHighlightTimers.delete(target);
-      }, 2500);
-      featureSearchHighlightTimers.set(target, timeout);
-    });
-  };
-
-  const findAssociatedLabelElements = element => {
-    if (!element) return [];
-    const labels = new Set();
-    const doc = element.ownerDocument || (typeof document !== 'undefined' ? document : null);
-    if (element.labels && typeof element.labels === 'object') {
-      Array.from(element.labels).forEach(label => {
-        if (label) labels.add(label);
-      });
-    }
-    if (typeof element.closest === 'function') {
-      const wrappingLabel = element.closest('label');
-      if (wrappingLabel) labels.add(wrappingLabel);
-    }
-    if (doc && typeof element.getAttribute === 'function') {
-      const collectIdRefs = attrValue => {
-        if (!attrValue) return;
-        attrValue
-          .split(/\s+/)
-          .filter(Boolean)
-          .forEach(id => {
-            const ref = doc.getElementById(id);
-            if (ref) labels.add(ref);
-          });
-      };
-      collectIdRefs(element.getAttribute('aria-labelledby'));
-      collectIdRefs(element.getAttribute('aria-describedby'));
-    }
-    return Array.from(labels);
-  };
-
-  const ensureFeatureSearchVisibility = element => {
-    if (!element || typeof element !== 'object' || typeof element.nodeType !== 'number') {
-      return;
-    }
-
-    if (
-      backupDiffSectionEl &&
-      backupDiffSectionEl.contains(element) &&
-      backupDiffSectionEl.hasAttribute('hidden')
-    ) {
-      if (typeof showBackupDiffSection === 'function') {
-        try {
-          showBackupDiffSection();
-        } catch (error) {
-          console.warn('Unable to open backup diff section for feature search target', error);
-          backupDiffSectionEl.removeAttribute('hidden');
-        }
-      } else {
+  if (
+    typeof backupDiffSectionEl !== 'undefined' && backupDiffSectionEl &&
+    backupDiffSectionEl.contains(element) &&
+    backupDiffSectionEl.hasAttribute('hidden')
+  ) {
+    if (typeof showBackupDiffSection === 'function') {
+      try {
+        showBackupDiffSection();
+      } catch (error) {
+        console.warn('Unable to open backup diff section for feature search target', error);
         backupDiffSectionEl.removeAttribute('hidden');
       }
+    } else {
+      backupDiffSectionEl.removeAttribute('hidden');
     }
+  }
 
-    if (
-      restoreRehearsalSectionEl &&
-      restoreRehearsalSectionEl.contains(element) &&
-      restoreRehearsalSectionEl.hasAttribute('hidden')
-    ) {
-      if (typeof openRestoreRehearsal === 'function') {
-        try {
-          openRestoreRehearsal();
-        } catch (error) {
-          console.warn('Unable to open restore rehearsal section for feature search target', error);
-          restoreRehearsalSectionEl.removeAttribute('hidden');
-        }
-      } else {
+  if (
+    typeof restoreRehearsalSectionEl !== 'undefined' && restoreRehearsalSectionEl &&
+    restoreRehearsalSectionEl.contains(element) &&
+    restoreRehearsalSectionEl.hasAttribute('hidden')
+  ) {
+    if (typeof openRestoreRehearsal === 'function') {
+      try {
+        openRestoreRehearsal();
+      } catch (error) {
+        console.warn('Unable to open restore rehearsal section for feature search target', error);
         restoreRehearsalSectionEl.removeAttribute('hidden');
       }
-    }
-  };
-
-  const focusFeatureElement = element => {
-    if (!element) return;
-    if (typeof element.closest !== 'function') return;
-
-    ensureFeatureSearchVisibility(element);
-
-    const settingsSection = element.closest('#settingsDialog');
-    const settingsPanel = element.closest('.settings-panel');
-    if (settingsPanel) {
-      const labelledBy = settingsPanel.getAttribute('aria-labelledby') || '';
-      const tabIds = labelledBy
-        .split(/\s+/)
-        .map(id => id.trim())
-        .filter(Boolean);
-      const matchingTabId = tabIds.find(id => document.getElementById(id));
-      if (matchingTabId) {
-        activateSettingsTab(matchingTabId);
-      }
-    }
-    if (settingsSection && !isDialogOpen(settingsDialog)) {
-      const context = {
-        reason: 'feature-search',
-        targetId: typeof element.id === 'string' && element.id ? element.id : null,
-      };
-      if (typeof element.getAttribute === 'function') {
-        const label =
-          element.getAttribute('aria-label') ||
-          element.getAttribute('data-help') ||
-          element.getAttribute('data-feature-key');
-        if (label) {
-          context.targetLabel = label;
-        }
-        const role = element.getAttribute('role');
-        if (role) {
-          context.targetRole = role;
-        }
-      }
-      requestSettingsOpen(context);
-    }
-
-    const dialog = element.closest('dialog');
-    if (dialog && !isDialogOpen(dialog)) {
-      if (dialog.id === 'projectDialog') {
-        generateGearListBtn?.click?.();
-      } else if (dialog.id === 'feedbackDialog') {
-        runtimeFeedbackBtn?.click?.();
-      } else if (dialog.id === 'overviewDialog') {
-        generateOverviewBtn?.click?.();
-      } else {
-        openDialog(dialog);
-      }
-    }
-
-    const deviceManager = element.closest('#device-manager');
-    if (deviceManager) {
-      showDeviceManagerSection();
-    }
-
-    if (typeof element.scrollIntoView === 'function') {
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-
-    const hadTabIndex = element.hasAttribute('tabindex');
-    let addedTabIndex = false;
-    if (!hadTabIndex) {
-      const tabIndex = element.tabIndex;
-      if (typeof tabIndex === 'number' && tabIndex < 0) {
-        element.setAttribute('tabindex', '-1');
-        addedTabIndex = true;
-      }
-    }
-
-    if (typeof element.focus === 'function') {
-      try {
-        element.focus({ preventScroll: true });
-      } catch {
-        element.focus();
-      }
-    }
-
-    if (addedTabIndex) {
-      element.addEventListener(
-        'blur',
-        () => element.removeAttribute('tabindex'),
-        { once: true }
-      );
-    }
-  };
-
-  const focusHelpSectionHeading = section => {
-    if (!section) return;
-    const heading =
-      section.querySelector('h3, summary, h4, h5, h6') ||
-      section.querySelector('button, a');
-    if (!heading) return;
-    const hadTabIndex = heading.hasAttribute('tabindex');
-    if (!hadTabIndex) heading.setAttribute('tabindex', '-1');
-    try {
-      heading.focus({ preventScroll: true });
-    } catch {
-      heading.focus();
-    }
-    if (!hadTabIndex) {
-      heading.addEventListener(
-        'blur',
-        () => heading.removeAttribute('tabindex'),
-        { once: true }
-      );
-    }
-  };
-
-  const highlightHelpSection = section => {
-    if (!section) return;
-    const existingTimer = helpSectionHighlightTimers.get(section);
-    if (existingTimer) {
-      clearTimeout(existingTimer);
-    }
-    section.classList.add('help-section-focus');
-    const timer = setTimeout(() => {
-      section.classList.remove('help-section-focus');
-      helpSectionHighlightTimers.delete(section);
-    }, 1500);
-    helpSectionHighlightTimers.set(section, timer);
-  };
-
-  let helpQuickLinksArrangeFrame = null;
-  let helpQuickLinksResizeTimer = null;
-
-  const arrangeHelpQuickLinksByLineCount = () => {
-    if (!helpQuickLinksList || !helpQuickLinksList.childElementCount) {
-      return;
-    }
-
-    const applyGrouping = () => {
-      helpQuickLinksList
-        .querySelectorAll('li[data-quick-link-spacer="true"]')
-        .forEach(removeNode);
-      const items = Array.from(helpQuickLinksList.children);
-      if (!items.length) return;
-
-      const multiLineItems = [];
-      const singleLineItems = [];
-      const hiddenItems = [];
-
-      items.forEach((item, index) => {
-        const button = item.querySelector('.help-quick-link');
-        if (!button) {
-          hiddenItems.push({ index, node: item });
-          return;
-        }
-        if (item.hasAttribute('hidden')) {
-          hiddenItems.push({ index, node: item, button });
-          button.classList.remove('help-quick-link-multiline');
-          return;
-        }
-
-        const label = button.querySelector('.help-quick-link-label');
-        if (!label) {
-          singleLineItems.push({ index, node: item, button });
-          button.classList.remove('help-quick-link-multiline');
-          return;
-        }
-
-        const computed = window.getComputedStyle(label);
-        let lineHeight = Number.parseFloat(computed.lineHeight);
-        if (!lineHeight || Number.isNaN(lineHeight)) {
-          lineHeight = Number.parseFloat(computed.fontSize) || 0;
-        }
-        const labelHeight = label.offsetHeight || label.getBoundingClientRect().height;
-        const lineCount = lineHeight ? Math.round(labelHeight / lineHeight) : 1;
-        const isMultiLine = lineCount > 1;
-        button.classList.toggle('help-quick-link-multiline', isMultiLine);
-        if (isMultiLine) {
-          multiLineItems.push({ index, node: item, button });
-        } else {
-          singleLineItems.push({ index, node: item, button });
-        }
-      });
-
-      if (!multiLineItems.length && !singleLineItems.length) {
-        return;
-      }
-
-      const fragment = document.createDocumentFragment();
-      const sortedMulti = multiLineItems.sort((a, b) => a.index - b.index);
-      const sortedSingle = singleLineItems.sort((a, b) => a.index - b.index);
-      const totalPairs = Math.max(
-        Math.ceil(sortedMulti.length / 2),
-        Math.ceil(sortedSingle.length / 2)
-      );
-      for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
-        const multiStart = pairIndex * 2;
-        if (multiStart < sortedMulti.length) {
-          fragment.appendChild(sortedMulti[multiStart].node);
-          if (multiStart + 1 < sortedMulti.length) {
-            fragment.appendChild(sortedMulti[multiStart + 1].node);
-          } else if (sortedSingle.length) {
-            const spacer = document.createElement('li');
-            spacer.dataset.quickLinkSpacer = 'true';
-            spacer.setAttribute('aria-hidden', 'true');
-            spacer.setAttribute('role', 'presentation');
-            spacer.className = 'help-quick-link-spacer';
-            fragment.appendChild(spacer);
-          }
-        }
-        const singleStart = pairIndex * 2;
-        if (singleStart < sortedSingle.length) {
-          fragment.appendChild(sortedSingle[singleStart].node);
-          if (singleStart + 1 < sortedSingle.length) {
-            fragment.appendChild(sortedSingle[singleStart + 1].node);
-          }
-        }
-      }
-      hiddenItems
-        .sort((a, b) => a.index - b.index)
-        .forEach(({ node }) => fragment.appendChild(node));
-
-      if (fragment.childNodes.length) {
-        helpQuickLinksList.appendChild(fragment);
-      }
-    };
-
-    if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
-      if (helpQuickLinksArrangeFrame) {
-        window.cancelAnimationFrame(helpQuickLinksArrangeFrame);
-      }
-      helpQuickLinksArrangeFrame = window.requestAnimationFrame(() => {
-        helpQuickLinksArrangeFrame = null;
-        applyGrouping();
-      });
     } else {
-      applyGrouping();
+      restoreRehearsalSectionEl.removeAttribute('hidden');
     }
-  };
-
-  const scheduleHelpQuickLinksArrangement = () => {
-    if (helpQuickLinksResizeTimer) {
-      clearTimeout(helpQuickLinksResizeTimer);
-    }
-    helpQuickLinksResizeTimer = setTimeout(() => {
-      helpQuickLinksResizeTimer = null;
-      arrangeHelpQuickLinksByLineCount();
-    }, 150);
-  };
-
-  const syncHelpQuickLinksVisibility = () => {
-    if (!helpQuickLinksNav || !helpQuickLinksList || !helpQuickLinkItems.size) {
-      if (helpQuickLinksNav) helpQuickLinksNav.setAttribute('hidden', '');
-      return;
-    }
-    let hasVisible = false;
-    helpQuickLinkItems.forEach(({ section, listItem, button }) => {
-      if (section && !section.hasAttribute('hidden')) {
-        listItem.removeAttribute('hidden');
-        hasVisible = true;
-      } else {
-        listItem.setAttribute('hidden', '');
-        if (button) button.classList.remove('active');
-      }
-    });
-    if (hasVisible) {
-      helpQuickLinksNav.removeAttribute('hidden');
-      arrangeHelpQuickLinksByLineCount();
-    } else {
-      helpQuickLinksNav.setAttribute('hidden', '');
-    }
-  };
-
-  const applyQuickLinkLanguage = lang => {
-    if (!helpQuickLinksNav) return;
-    const langTexts = (texts && texts[lang]) || {};
-    const fallbackTexts = (texts && texts.en) || {};
-    const headingText =
-      langTexts.helpQuickLinksHeading || fallbackTexts.helpQuickLinksHeading;
-    if (helpQuickLinksHeading && headingText) {
-      helpQuickLinksHeading.textContent = headingText;
-    }
-    const ariaLabel =
-      langTexts.helpQuickLinksAriaLabel ||
-      headingText ||
-      fallbackTexts.helpQuickLinksAriaLabel ||
-      'Help topics quick navigation';
-    helpQuickLinksNav.setAttribute('aria-label', ariaLabel);
-    const helpDescription =
-      langTexts.helpQuickLinksHelp || fallbackTexts.helpQuickLinksHelp;
-    if (helpDescription) {
-      helpQuickLinksNav.setAttribute('data-help', helpDescription);
-    } else {
-      helpQuickLinksNav.removeAttribute('data-help');
-    }
-    const template =
-      langTexts.helpQuickLinkButtonHelp || fallbackTexts.helpQuickLinkButtonHelp;
-    helpQuickLinkItems.forEach(({ button, label }) => {
-      if (!button) return;
-      if (template) {
-        const helpText = template.replace('%s', label);
-        button.setAttribute('data-help', helpText);
-        button.setAttribute('aria-label', helpText);
-      } else {
-        button.removeAttribute('data-help');
-        button.setAttribute('aria-label', label);
-      }
-    });
-    arrangeHelpQuickLinksByLineCount();
-  };
-
-  if (typeof globalThis !== 'undefined') {
-    globalThis.updateHelpQuickLinksForLanguage = applyQuickLinkLanguage;
-  } else if (typeof window !== 'undefined') {
-    window.updateHelpQuickLinksForLanguage = applyQuickLinkLanguage;
   }
 
-  const buildHelpQuickLinks = () => {
-    if (!helpQuickLinksNav || !helpQuickLinksList || !helpSectionsContainer) {
-      helpQuickLinkItems.clear();
-      if (helpQuickLinksNav) helpQuickLinksNav.setAttribute('hidden', '');
-      return;
-    }
-    helpQuickLinkItems.clear();
-    helpQuickLinksList.textContent = '';
-    const fragment = document.createDocumentFragment();
-    const sections = Array.from(
-      helpSectionsContainer.querySelectorAll('section[data-help-section]')
-    );
-    sections.forEach(section => {
-      const id = section.id;
-      if (!id) return;
-      const heading = section.querySelector('h3');
-      if (!heading) return;
-      const headingIcon = heading.querySelector('.help-icon.icon-glyph');
-      let label = heading.textContent || '';
-      if (headingIcon) {
-        const iconText = headingIcon.textContent || '';
-        if (iconText) {
-          const iconIndex = label.indexOf(iconText);
-          if (iconIndex > -1) {
-            label =
-              label.slice(0, iconIndex) +
-              label.slice(iconIndex + iconText.length);
-          }
-        }
-      }
-      label = label.trim();
-      if (!label) return;
-      const li = document.createElement('li');
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'help-quick-link button-link';
-      button.dataset.targetId = id;
-      button.setAttribute('aria-label', label);
-
-      if (headingIcon) {
-        const icon = headingIcon.cloneNode(true);
-        icon.classList.remove('help-icon');
-        icon.classList.add('help-quick-link-icon');
-        button.appendChild(icon);
-      }
-
-      const labelSpan = document.createElement('span');
-      labelSpan.className = 'help-quick-link-label';
-      labelSpan.textContent = label;
-      button.appendChild(labelSpan);
-      button.addEventListener('click', () => {
-        if (section.hasAttribute('hidden')) return;
-        if (helpQuickLinksList) {
-          helpQuickLinksList
-            .querySelectorAll('.help-quick-link.active')
-            .forEach(btn => btn.classList.remove('active'));
-        }
-        button.classList.add('active');
-        if (typeof section.scrollIntoView === 'function') {
-          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-        highlightHelpSection(section);
-        focusHelpSectionHeading(section);
-        const quickLinkHeading =
-          section.querySelector('h3, summary, h4, h5, h6, [role="heading"]') ||
-          section.querySelector('button, a');
-        if (quickLinkHeading) {
-          highlightFeatureSearchTargets([quickLinkHeading]);
-        } else {
-          highlightFeatureSearchTargets([section]);
-        }
-      });
-      li.appendChild(button);
-      fragment.appendChild(li);
-      helpQuickLinkItems.set(id, { section, button, listItem: li, label });
-    });
-    if (!fragment.childNodes.length) {
-      helpQuickLinksNav.setAttribute('hidden', '');
-      return;
-    }
-    helpQuickLinksList.appendChild(fragment);
-    applyQuickLinkLanguage(currentLang);
-    syncHelpQuickLinksVisibility();
-  };
-
-  buildHelpQuickLinks();
-
-  if (typeof window !== 'undefined') {
-    window.addEventListener(
-      'resize',
-      () => {
-        if (!helpQuickLinksList || helpQuickLinksNav?.hasAttribute('hidden')) {
-          return;
-        }
-        scheduleHelpQuickLinksArrangement();
-      },
-      { passive: true }
-    );
+  const deviceManager = element.closest('#device-manager');
+  if (deviceManager) {
+    if (typeof showDeviceManagerSection === 'function') showDeviceManagerSection();
   }
+};
 
-  if (helpDialog) {
-    helpDialog.addEventListener('click', e => {
-      const link = e.target.closest('a[data-help-target]');
-      if (!link) return;
-      const rawSelector = link.dataset.helpTarget || link.getAttribute('href') || '';
-      const selector = rawSelector.trim();
-      if (!selector) return;
-      let focusEl;
-      try {
-        focusEl = document.querySelector(selector);
-      } catch {
-        focusEl = null;
-      }
-      if (!focusEl) return;
-      e.preventDefault();
-      const highlightSelector = link.dataset.helpHighlight || '';
-      let highlightEl = focusEl;
-      if (highlightSelector) {
-        try {
-          const candidate = document.querySelector(highlightSelector);
-          if (candidate) {
-            highlightEl = candidate;
-          }
-        } catch {
-          // ignore selector errors and fall back to the focus element
-        }
-      }
-      const targetInsideHelp = helpDialog.contains(focusEl);
-      const runFocus = () => {
-        focusFeatureElement(focusEl);
-        if (highlightEl) {
-          highlightAppTarget(highlightEl);
-        }
-        const extraTargets = findAssociatedLabelElements(highlightEl || focusEl);
-        if (extraTargets.length) {
-          highlightFeatureSearchTargets(extraTargets);
-        }
-      };
-      if (targetInsideHelp) {
-        runFocus();
-        return;
-      }
-      closeHelp(null);
-      requestAnimationFrame(() => {
-        requestAnimationFrame(runFocus);
-      });
-    });
-  }
+const focusFeatureElement = element => {
+  if (!element) return;
+  if (typeof element.closest !== 'function') return;
 
-  // Search and filtering for the help dialog. Every keystroke scans both
-  // high-level sections and individual FAQ items, restoring their original
-  // markup, highlighting matches and hiding entries that do not include the
-  // query. A message is shown if nothing matches and the clear button is
-  // toggled based on the presence of a query.
-  const HELP_SEARCH_ACCENT_VARIANTS = new Map([
-    ['a', 'àáâãäåāăąǎȁȃȧậắằẵẳấầẫẩảạæ'],
-    ['b', 'ḃɓ'],
-    ['c', 'çćĉċčƈ'],
-    ['d', 'ďđḍḑḓ'],
-    ['e', 'èéêëēĕėęěȅȇẹẻẽếềểễệ'],
-    ['f', 'ƒḟ'],
-    ['g', 'ğģĝġǵḡ'],
-    ['h', 'ĥħḣḥḧẖ'],
-    ['i', 'ìíîïĩīĭįıỉị'],
-    ['j', 'ĵǰ'],
-    ['k', 'ķƙḱḳḵ'],
-    ['l', 'ĺļľłḷḽ'],
-    ['m', 'ḿṁṃ'],
-    ['n', 'ñńņňǹṅṇṋ'],
-    ['o', 'òóôõöōŏőøǒȍȏơộớờỡởợọỏœ'],
-    ['p', 'ṕṗ'],
-    ['q', 'ʠ'],
-    ['r', 'ŕŗřȑȓṛṙ'],
-    ['s', 'śŝşšșṡṣ'],
-    ['t', 'ţťțṫṭṯ'],
-    ['u', 'ùúûüũūŭůűųǔȕȗưựứừữửụủ'],
-    ['v', 'ṽṿ'],
-    ['w', 'ŵẁẃẅẇẉ'],
-    ['x', 'ẋẍ'],
-    ['y', 'ýÿŷỳỷỹỵ'],
-    ['z', 'źżžẑẓẕ']
-  ]);
+  ensureFeatureSearchVisibility(element);
 
-  const normaliseHelpSearchText = str => {
-    if (!str) return '';
-    let normalized = String(str).toLowerCase();
-    if (typeof normalized.normalize === 'function') {
-      normalized = normalized.normalize('NFD');
-    }
-    normalized = normalized
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/ß/g, 'ss')
-      .replace(/æ/g, 'ae')
-      .replace(/œ/g, 'oe')
-      .replace(/ø/g, 'o')
-      .replace(/&/g, 'and')
-      .replace(/\+/g, 'plus')
-      .replace(/[°º˚]/g, 'deg')
-      .replace(/\bdegrees?\b/g, 'deg')
-      .replace(/[×✕✖✗✘]/g, 'x');
-    if (typeof normalizeSpellingVariants === 'function') {
-      normalized = normalizeSpellingVariants(normalized);
-    }
-    normalized = normaliseMarkVariants(normalized);
-    return normalized.replace(/[^a-z0-9]+/g, '');
-  };
-
-  const buildHelpHighlightPattern = normalized => {
-    if (!normalized) return null;
-    const escapeRegExp = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const parts = [];
-    const addLetterPattern = char => {
-      const variants = HELP_SEARCH_ACCENT_VARIANTS.get(char) || '';
-      const chars = new Set();
-      const all = `${char}${variants}`;
-      for (const ch of all) {
-        chars.add(ch);
-        const upper = ch.toUpperCase();
-        if (upper) chars.add(upper);
-      }
-      const escaped = Array.from(chars)
-        .map(escapeRegExp)
-        .join('');
-      return `[${escaped}]`;
-    };
-    const letters = Array.from(normalized);
-    letters.forEach((char, index) => {
-      if (index > 0) parts.push('\\s*');
-      if (/[a-z]/.test(char)) {
-        parts.push(addLetterPattern(char));
-      } else if (/[0-9]/.test(char)) {
-        parts.push(char);
-      } else {
-        parts.push(escapeRegExp(char));
-      }
-    });
-    return `(${parts.join('')})`;
-  };
-
-  const updateHelpResultsSummaryText = ({
-    totalCount,
-    visibleCount,
-    hasQuery,
-    queryText
-  } = {}) => {
-    const hideAssist = () => {
-      if (!helpResultsAssist) return;
-      helpResultsAssist.textContent = '';
-      helpResultsAssist.setAttribute('hidden', '');
-    };
-    if (!helpResultsSummary) {
-      hideAssist();
-      return;
-    }
-    if (typeof totalCount === 'number' && Number.isFinite(totalCount)) {
-      helpResultsSummary.dataset.totalCount = String(totalCount);
-    }
-    if (typeof visibleCount === 'number' && Number.isFinite(visibleCount)) {
-      helpResultsSummary.dataset.visibleCount = String(visibleCount);
-    }
-    if (typeof hasQuery === 'boolean') {
-      helpResultsSummary.dataset.hasQuery = hasQuery ? 'true' : 'false';
-    }
-    if (typeof queryText === 'string') {
-      helpResultsSummary.dataset.query = queryText;
-    }
-    const storedTotal = Number(helpResultsSummary.dataset.totalCount || 0);
-    if (!storedTotal) {
-      helpResultsSummary.textContent = '';
-      helpResultsSummary.setAttribute('hidden', '');
-      hideAssist();
-      return;
-    }
-    const storedVisible = Number(
-      helpResultsSummary.dataset.visibleCount || 0
-    );
-    const storedHasQuery = helpResultsSummary.dataset.hasQuery === 'true';
-    const storedQuery = helpResultsSummary.dataset.query || '';
-    const langTexts = (texts && texts[currentLang]) || {};
-    const fallbackTexts = (texts && texts.en) || {};
-    let summaryText = '';
-    if (storedHasQuery) {
-      const template =
-        langTexts.helpResultsSummaryFiltered ||
-        fallbackTexts.helpResultsSummaryFiltered;
-      if (template) {
-        summaryText = template
-          .replace('%1$s', storedVisible)
-          .replace('%2$s', storedTotal)
-          .replace('%3$s', storedQuery);
-      } else if (storedQuery) {
-        summaryText = `Showing ${storedVisible} of ${storedTotal} help topics for “${storedQuery}”.`;
-      } else {
-        summaryText = `Showing ${storedVisible} of ${storedTotal} help topics.`;
-      }
-    } else {
-      const template =
-        langTexts.helpResultsSummaryAll ||
-        fallbackTexts.helpResultsSummaryAll;
-      if (template) {
-        summaryText = template.replace('%s', storedTotal);
-      } else {
-        summaryText = `All ${storedTotal} help topics are shown.`;
-      }
-    }
-    helpResultsSummary.textContent = summaryText;
-    helpResultsSummary.removeAttribute('hidden');
-    if (helpResultsAssist) {
-      if (storedVisible > 0) {
-        const assistTemplate =
-          langTexts.helpResultsAssist || fallbackTexts.helpResultsAssist;
-        const assistText =
-          assistTemplate ||
-          'Tip: Press Tab to move into the quick links, or press Enter to open the top visible topic.';
-        helpResultsAssist.textContent = assistText;
-        helpResultsAssist.removeAttribute('hidden');
-      } else {
-        hideAssist();
-      }
-    }
-  };
-
-  if (typeof globalThis !== 'undefined') {
-    globalThis.updateHelpResultsSummaryText = updateHelpResultsSummaryText;
-  } else if (typeof window !== 'undefined') {
-    window.updateHelpResultsSummaryText = updateHelpResultsSummaryText;
-  }
-
-  const filterHelp = () => {
-    // Bail out early if the search input is missing
-    if (!helpSearch) {
-      if (helpResultsSummary) helpResultsSummary.setAttribute('hidden', '');
-      return;
-    }
-    const rawQuery = helpSearch.value.trim();
-    const normalizedQuery = normaliseHelpSearchText(rawQuery);
-    const hasQuery = normalizedQuery.length > 0;
-    // Treat sections and FAQ items uniformly so the same logic can filter both
-    const sections = Array.from(
-      helpDialog.querySelectorAll('[data-help-section]')
-    );
-    const items = Array.from(helpDialog.querySelectorAll('.faq-item'));
-    const elements = sections.concat(items);
-    const totalCount = elements.length;
-    let visibleCount = 0;
-    const highlightPattern = hasQuery
-      ? buildHelpHighlightPattern(normalizedQuery)
-      : null;
-    const highlightMatches = (root, pattern) => {
-      if (
-        !pattern ||
-        typeof document.createTreeWalker !== 'function' ||
-        typeof NodeFilter === 'undefined'
-      ) {
-        return;
-      }
-      const walker = document.createTreeWalker(
-        root,
-        NodeFilter.SHOW_TEXT,
-        null
-      );
-      const textNodes = [];
-      while (walker.nextNode()) {
-        textNodes.push(walker.currentNode);
-      }
-      textNodes.forEach(node => {
-        const text = node.textContent;
-        if (!text) return;
-        const regex = new RegExp(pattern, 'giu');
-        const firstMatch = regex.exec(text);
-        if (!firstMatch) return;
-        const frag = document.createDocumentFragment();
-        let lastIndex = 0;
-        let match = firstMatch;
-        do {
-          const start = match.index;
-          const end = start + match[0].length;
-          if (start > lastIndex) {
-            frag.appendChild(
-              document.createTextNode(text.slice(lastIndex, start))
-            );
-          }
-          const mark = document.createElement('mark');
-          mark.textContent = text.slice(start, end);
-          frag.appendChild(mark);
-          lastIndex = end;
-          if (regex.lastIndex === start) {
-            regex.lastIndex++;
-          }
-        } while ((match = regex.exec(text)) !== null);
-        if (lastIndex < text.length) {
-          frag.appendChild(document.createTextNode(text.slice(lastIndex)));
-        }
-        if (node.parentNode) {
-          node.parentNode.replaceChild(frag, node);
-        }
-      });
-    };
-    elements.forEach(el => {
-      const isFaqItem = el.classList.contains('faq-item');
-      // Save original HTML once so that repeated filtering doesn't permanently
-      // insert <mark> tags; restore it before applying a new highlight. While
-      // doing so, capture the default open state for FAQ <details> elements so
-      // the search can temporarily expand matches and restore the original
-      // collapsed/expanded configuration when cleared.
-      if (!el.dataset.origHtml) {
-        el.dataset.origHtml = el.innerHTML;
-        if (isFaqItem) {
-          el.dataset.defaultOpen = el.hasAttribute('open') ? 'true' : 'false';
-        }
-      } else {
-        el.innerHTML = el.dataset.origHtml;
-      }
-      const text = normaliseHelpSearchText(el.textContent || '');
-      const keywordText = normaliseHelpSearchText(
-        el.dataset.helpKeywords || ''
-      );
-      const matches =
-        !hasQuery ||
-        text.includes(normalizedQuery) ||
-        keywordText.includes(normalizedQuery);
-      if (matches) {
-        if (hasQuery && highlightPattern) {
-          // Highlight the matching text while preserving the rest of the content
-          highlightMatches(el, highlightPattern);
-        }
-        el.removeAttribute('hidden');
-        if (isFaqItem) {
-          if (hasQuery) {
-            el.setAttribute('open', '');
-          } else if (el.dataset.defaultOpen === 'true') {
-            el.setAttribute('open', '');
-          } else {
-            el.removeAttribute('open');
-          }
-        }
-        visibleCount += 1;
-      } else {
-        // Hide entries that do not match and collapse FAQ answers while they
-        // are filtered out so reopening the dialog starts from a clean state.
-        el.setAttribute('hidden', '');
-        if (isFaqItem) {
-          el.removeAttribute('open');
-        }
-      }
-    });
-    if (typeof updateHelpResultsSummaryText === 'function') {
-      updateHelpResultsSummaryText({
-        totalCount,
-        visibleCount,
-        hasQuery,
-        queryText: rawQuery || normalizedQuery
-      });
-    }
-    const showNoResults = hasQuery && visibleCount === 0;
-    if (helpNoResults) {
-      // Show or hide the "no results" indicator
-      if (!showNoResults) {
-        helpNoResults.setAttribute('hidden', '');
-      } else {
-        helpNoResults.removeAttribute('hidden');
-      }
-    }
-    if (typeof helpNoResultsSuggestions !== 'undefined' && helpNoResultsSuggestions) {
-      if (!showNoResults) {
-        helpNoResultsSuggestions.setAttribute('hidden', '');
-      } else {
-        helpNoResultsSuggestions.removeAttribute('hidden');
-      }
-    }
-    if (helpSearchClear) {
-      // Only show the clear button when there is text in the search box
-      if (hasQuery) {
-        helpSearchClear.removeAttribute('hidden');
-      } else {
-        helpSearchClear.setAttribute('hidden', '');
-      }
-    }
-    syncHelpQuickLinksVisibility();
-  };
-
-  // Display the help dialog. The search box is reset so stale filter state
-  // doesn't persist between openings, and focus is moved to the search field
-  // for immediate typing.
-  const openHelp = () => {
-    ensureOnboardingTourReady('help-open');
-    closeSideMenu();
-    helpDialog.removeAttribute('hidden');
-    openDialog(helpDialog);
-    if (helpSearch) {
-      helpSearch.value = '';
-      filterHelp(); // ensure all sections are visible again
-      if (helpQuickLinksList) {
-        helpQuickLinksList
-          .querySelectorAll('.help-quick-link.active')
-          .forEach(btn => btn.classList.remove('active'));
-      }
-      if (helpContent) {
-        helpContent.scrollTop = 0;
-      }
-      helpSearch.focus();
-    } else {
-      try {
-        helpDialog.focus({ preventScroll: true });
-      } catch {
-        helpDialog.focus();
-      }
-    }
-  };
-
-  // Hide the dialog and return focus to the button that opened it
-  // Hide the dialog and return focus to the button that opened it
-  const closeHelp = (returnFocusEl = helpButton) => {
-    // Force find the dialog if scope is lost
-    const dialog = helpDialog || document.getElementById('helpDialog');
-    if (dialog) {
-      closeDialog(dialog);
-      dialog.setAttribute('hidden', '');
-      dialog.style.display = 'none'; // Force hide
-    }
-
-    if (returnFocusEl && typeof returnFocusEl.focus === 'function') {
-      try {
-        returnFocusEl.focus({ preventScroll: true });
-      } catch {
-        returnFocusEl.focus();
-      }
-    }
-  };
-
-  // Convenience helper for toggling the dialog open or closed
-  const toggleHelp = () => {
-    if (!isDialogOpen(helpDialog)) {
-      openHelp();
-    } else {
-      closeHelp();
-    }
-  };
-
-
-
-  // Hover help mode displays a tooltip describing whichever element the user
-  // points at or focuses. It is triggered from a button inside the dialog and
-  // uses the same data-help/aria-* attributes that power the dialog content.
-  let hoverHelpActive = false;
-  let hoverHelpTooltip;
-  let hoverHelpCurrentTarget = null;
-  let hoverHelpHighlightedTarget = null;
-  let hoverHelpPointerClientX = null;
-  let hoverHelpPointerClientY = null;
-
-  const parseHoverHelpSelectorList = value => {
-    if (typeof value !== 'string') return [];
-    return value
-      .split(',')
-      .map(selector => selector.trim())
-      .filter(Boolean);
-  };
-
-  const parseHoverHelpIdList = value => {
-    if (typeof value !== 'string') return [];
-    return value
+  const settingsSection = element.closest('#settingsDialog');
+  const settingsPanel = element.closest('.settings-panel');
+  if (settingsPanel) {
+    const labelledBy = settingsPanel.getAttribute('aria-labelledby') || '';
+    const tabIds = labelledBy
       .split(/\s+/)
       .map(id => id.trim())
       .filter(Boolean);
-  };
-
-  const getHoverHelpReferenceElements = element => {
-    if (!element || !document?.querySelector) return [];
-
-    const references = [];
-    const seen = new Set();
-
-    const addCandidate = candidate => {
-      if (!candidate || !(candidate instanceof Element)) return;
-      if (candidate === element) return;
-      if (seen.has(candidate)) return;
-      seen.add(candidate);
-      references.push(candidate);
+    const matchingTabId = tabIds.find(id => document.getElementById(id));
+    if (matchingTabId && typeof activateSettingsTab === 'function') {
+      activateSettingsTab(matchingTabId);
+    }
+  }
+  if (settingsSection && typeof isDialogOpen === 'function' && !isDialogOpen(settingsDialog)) {
+    const context = {
+      reason: 'feature-search',
+      targetId: typeof element.id === 'string' && element.id ? element.id : null,
     };
-
-    const addFromSelectors = raw => {
-      parseHoverHelpSelectorList(raw).forEach(selector => {
-        try {
-          const match = document.querySelector(selector);
-          addCandidate(match);
-        } catch {
-          // Ignore invalid selectors – hover help should continue gracefully.
-        }
-      });
-    };
-
-    const addFromIds = raw => {
-      parseHoverHelpIdList(raw).forEach(id => {
-        const match = document.getElementById(id);
-        addCandidate(match);
-      });
-    };
-
-    addFromSelectors(element.getAttribute('data-hover-help-target'));
-    addFromSelectors(element.getAttribute('data-hover-help-source'));
-
-    if (!element.hasAttribute('data-hover-help-skip-help-target')) {
-      addFromSelectors(element.getAttribute('data-help-target'));
-    }
-
-    addFromIds(element.getAttribute('data-hover-help-targets'));
-
-    return references;
-  };
-
-  const HOVER_HELP_TARGET_SELECTOR =
-    '[data-help], [aria-label], [title], [aria-labelledby], [alt], [aria-describedby]';
-
-  const findHoverHelpTarget = start => {
-    if (!start) return null;
-    const el = start.closest(HOVER_HELP_TARGET_SELECTOR);
-    if (!el || el.tagName === 'SECTION') {
-      return null;
-    }
-    return el;
-  };
-
-  const HOVER_HELP_SHORTCUT_TOKEN_MAP = {
-    control: 'Ctrl',
-    ctrl: 'Ctrl',
-    meta: 'Cmd',
-    cmd: 'Cmd',
-    command: 'Cmd',
-    option: 'Alt',
-    alt: 'Alt',
-    shift: 'Shift',
-    enter: 'Enter',
-    return: 'Enter',
-    escape: 'Esc',
-    esc: 'Esc',
-    space: 'Space',
-    spacebar: 'Space',
-    tab: 'Tab',
-    slash: '/',
-    question: '?',
-    backslash: '\\',
-    minus: '−',
-    dash: '−',
-    plus: '+',
-    period: '.',
-    comma: ',',
-    semicolon: ';',
-    colon: ':',
-    arrowup: '↑',
-    arrowdown: '↓',
-    arrowleft: '←',
-    arrowright: '→',
-    pageup: 'Page Up',
-    pagedown: 'Page Down',
-    home: 'Home',
-    end: 'End',
-    delete: 'Delete',
-    backspace: 'Backspace',
-    insert: 'Insert'
-  };
-
-  const formatHoverHelpShortcutToken = token => {
-    if (typeof token !== 'string') return '';
-    const clean = token.trim();
-    if (!clean) return '';
-    const lower = clean.toLowerCase();
-    if (HOVER_HELP_SHORTCUT_TOKEN_MAP[lower]) {
-      return HOVER_HELP_SHORTCUT_TOKEN_MAP[lower];
-    }
-    if (/^f\d{1,2}$/i.test(clean)) {
-      return clean.toUpperCase();
-    }
-    if (/^key[a-z]$/i.test(clean)) {
-      return clean.slice(3).toUpperCase();
-    }
-    if (/^digit\d$/i.test(clean)) {
-      return clean.slice(5);
-    }
-    if (/^numpad\d$/i.test(clean)) {
-      return `Numpad ${clean.slice(6)}`;
-    }
-    if (/^numpad(add|subtract|multiply|divide)$/i.test(lower)) {
-      const op = lower.slice(6);
-      const symbolMap = { add: '+', subtract: '−', multiply: '×', divide: '÷' };
-      return `Numpad ${symbolMap[op] || op}`;
-    }
-    if (clean.length === 1) {
-      return clean.toUpperCase();
-    }
-    return clean.replace(/^[a-z]/, c => c.toUpperCase());
-  };
-
-  const formatHoverHelpShortcut = shortcut => {
-    if (typeof shortcut !== 'string') return '';
-    const parts = shortcut
-      .split('+')
-      .map(formatHoverHelpShortcutToken)
-      .filter(Boolean);
-    if (!parts.length) {
-      return '';
-    }
-    return parts.join(' + ');
-  };
-
-  const splitHoverHelpShortcutList = value => {
-    if (typeof value !== 'string') return [];
-    return value
-      .split(/[;,\n\u2022\u2027\u00b7]+/)
-      .map(part => part.trim())
-      .filter(Boolean);
-  };
-
-  const gatherHoverHelpShortcuts = element => {
-    if (!element) return [];
-    const shortcuts = [];
-    const attrValues = [
-      element.getAttribute('data-shortcut'),
-      element.getAttribute('data-shortcuts'),
-      element.getAttribute('data-help-shortcut'),
-      element.getAttribute('data-help-shortcuts')
-    ];
-    attrValues.forEach(value => {
-      splitHoverHelpShortcutList(value).forEach(item => {
-        if (item) shortcuts.push(item);
-      });
-    });
-    const ariaShortcuts = element.getAttribute('aria-keyshortcuts');
-    if (ariaShortcuts) {
-      ariaShortcuts
-        .split(/\s+/)
-        .map(formatHoverHelpShortcut)
-        .filter(Boolean)
-        .forEach(item => shortcuts.push(item));
-    }
-    return shortcuts;
-  };
-
-  const getHoverHelpLocaleValue = key => {
-    if (!texts || typeof texts !== 'object') return '';
-    const fallback = typeof texts.en === 'object' ? texts.en[key] : '';
-    if (typeof currentLang === 'string' && texts[currentLang]) {
-      const value = texts[currentLang][key];
-      if (typeof value === 'string' && value.trim()) {
-        return value;
+    if (typeof element.getAttribute === 'function') {
+      const label =
+        element.getAttribute('aria-label') ||
+        element.getAttribute('data-help') ||
+        element.getAttribute('data-feature-key');
+      if (label) {
+        context.targetLabel = label;
+      }
+      const role = element.getAttribute('role');
+      if (role) {
+        context.targetRole = role;
       }
     }
-    return typeof fallback === 'string' ? fallback : '';
-  };
+    if (typeof requestSettingsOpen === 'function') requestSettingsOpen(context);
+  }
 
-  const getHoverHelpFallbackKeys = element => {
-    if (!element) return [];
-
-    const keys = [];
-    const push = key => {
-      if (!key || keys.includes(key)) return;
-      keys.push(key);
-    };
-
-    const role = (element.getAttribute('role') || '').toLowerCase();
-    const tagName = element.tagName ? element.tagName.toLowerCase() : '';
-    const typeAttr = (element.getAttribute('type') || '').toLowerCase();
-    const elementType = typeof element.type === 'string' ? element.type.toLowerCase() : '';
-    const inputType = typeAttr || elementType;
-    const ariaHasPopup = (element.getAttribute('aria-haspopup') || '').toLowerCase();
-    const ariaPressed = (element.getAttribute('aria-pressed') || '').toLowerCase();
-
-    if (role === 'dialog' || role === 'alertdialog') {
-      push('hoverHelpFallbackDialog');
-    }
-    if (role === 'alertdialog') {
-      push('hoverHelpFallbackAlert');
-    }
-    if (role === 'tablist') {
-      push('hoverHelpFallbackTablist');
-    }
-    if (role === 'tab') {
-      push('hoverHelpFallbackTab');
-    }
-    if (role === 'menu') {
-      push('hoverHelpFallbackMenu');
-    }
-    if (role === 'menuitem') {
-      push('hoverHelpFallbackMenu');
-    }
-    if (role === 'listbox') {
-      push('hoverHelpFallbackSelect');
-    }
-    if (role === 'link') {
-      push('hoverHelpFallbackLink');
-    }
-    if (role === 'progressbar') {
-      push('hoverHelpFallbackProgress');
-    }
-    if (role === 'status') {
-      push('hoverHelpFallbackStatus');
-    }
-    if (role === 'alert') {
-      push('hoverHelpFallbackAlert');
-    }
-    if (role === 'switch') {
-      push('hoverHelpFallbackSwitch');
-    }
-    if (role === 'checkbox' || role === 'menuitemcheckbox') {
-      push('hoverHelpFallbackCheckbox');
-    }
-    if (role === 'radio' || role === 'menuitemradio') {
-      push('hoverHelpFallbackRadio');
-    }
-    if (role === 'slider') {
-      push('hoverHelpFallbackSlider');
-    }
-    if (role === 'spinbutton') {
-      push('hoverHelpFallbackNumberInput');
-    }
-    if (role === 'textbox' || role === 'searchbox') {
-      push('hoverHelpFallbackTextInput');
-    }
-    if (role === 'combobox') {
-      push('hoverHelpFallbackSelect');
-    }
-
-    if (tagName === 'button' || role === 'button' || element.matches?.("input[type='button']") || element.matches?.("input[type='submit']") || element.matches?.("input[type='reset']")) {
-      if (ariaHasPopup && ariaHasPopup !== 'false') {
-        push('hoverHelpFallbackMenuButton');
-      }
-      if (ariaPressed === 'true' || ariaPressed === 'mixed' || ariaPressed === 'false') {
-        push('hoverHelpFallbackToggleButton');
-      }
-      push('hoverHelpFallbackButton');
-    } else if (tagName === 'a' && element.hasAttribute('href')) {
-      push('hoverHelpFallbackLink');
-    } else if (tagName === 'select') {
-      push('hoverHelpFallbackSelect');
-    } else if (tagName === 'textarea') {
-      push('hoverHelpFallbackTextarea');
-    } else if (tagName === 'details') {
-      push('hoverHelpFallbackDetails');
-    } else if (tagName === 'input') {
-      switch (inputType) {
-        case 'checkbox':
-          push('hoverHelpFallbackCheckbox');
-          break;
-        case 'radio':
-          push('hoverHelpFallbackRadio');
-          break;
-        case 'range':
-          push('hoverHelpFallbackSlider');
-          break;
-        case 'number':
-          push('hoverHelpFallbackNumberInput');
-          break;
-        case 'file':
-          push('hoverHelpFallbackFileInput');
-          break;
-        case 'color':
-          push('hoverHelpFallbackColorInput');
-          break;
-        default:
-          push('hoverHelpFallbackTextInput');
-          break;
-      }
-    } else if (element.isContentEditable) {
-      push('hoverHelpFallbackTextarea');
-    }
-
-    push('hoverHelpFallbackGeneric');
-    return keys;
-  };
-
-  const collectHoverHelpContent = el => {
-    if (!el) {
-      return { label: '', details: [] };
-    }
-
-    const seen = new Set();
-    const labelParts = [];
-    const detailParts = [];
-    const shortcutParts = [];
-
-    const addUnique = (value, bucket) => {
-      if (typeof value !== 'string') return;
-      const trimmed = value.replace(/\s+/g, ' ').trim();
-      if (!trimmed || seen.has(trimmed)) return;
-      seen.add(trimmed);
-      bucket.push(trimmed);
-    };
-
-    const addLabelText = value => addUnique(value, labelParts);
-    const addDetailText = value => addUnique(value, detailParts);
-    const addShortcutText = value => addUnique(value, shortcutParts);
-
-    const addTextFromElement = (
-      element,
-      { includeTextContent = false, preferTextAsLabel = false } = {}
-    ) => {
-      if (!element) return;
-      addDetailText(element.getAttribute('data-help'));
-      addDetailText(element.getAttribute('aria-description'));
-      addDetailText(element.getAttribute('title'));
-      addDetailText(element.getAttribute('aria-placeholder'));
-      addLabelText(element.getAttribute('aria-label'));
-      addLabelText(element.getAttribute('alt'));
-      const placeholderAttr = element.getAttribute('placeholder');
-      addDetailText(placeholderAttr);
-      if (element.placeholder && element.placeholder !== placeholderAttr) {
-        addDetailText(element.placeholder);
-      }
-      const roleDescription = element.getAttribute('aria-roledescription');
-      if (roleDescription) {
-        if (preferTextAsLabel) {
-          addLabelText(roleDescription);
-        } else {
-          addDetailText(roleDescription);
-        }
-      }
-      gatherHoverHelpShortcuts(element).forEach(addShortcutText);
-      if (includeTextContent) {
-        const text = element.textContent;
-        if (preferTextAsLabel) {
-          addLabelText(text);
-        } else {
-          addDetailText(text);
-        }
-      }
-    };
-
-    const applyFromIds = (ids, { preferTextAsLabel = false } = {}) => {
-      if (!ids) return;
-      ids
-        .split(/\s+/)
-        .map(id => id.trim())
-        .filter(Boolean)
-        .forEach(id => {
-          const ref = document.getElementById(id);
-          if (!ref) return;
-          addTextFromElement(ref, {
-            includeTextContent: true,
-            preferTextAsLabel
-          });
-        });
-    };
-
-    const visitedElements = new Set();
-    const queue = [
-      { element: el, preferTextAsLabel: true, includeTextContent: false }
-    ];
-
-    while (queue.length) {
-      const {
-        element: current,
-        preferTextAsLabel,
-        includeTextContent
-      } = queue.shift();
-      if (!current || visitedElements.has(current)) {
-        continue;
-      }
-      visitedElements.add(current);
-
-      addTextFromElement(current, { includeTextContent, preferTextAsLabel });
-
-      applyFromIds(current.getAttribute('aria-labelledby'), {
-        preferTextAsLabel: true
-      });
-      applyFromIds(current.getAttribute('aria-describedby'));
-      applyFromIds(current.getAttribute('aria-details'));
-      applyFromIds(current.getAttribute('aria-errormessage'));
-      applyFromIds(current.getAttribute('aria-controls'));
-
-      findAssociatedLabelElements(current).forEach(labelEl => {
-        addTextFromElement(labelEl, {
-          includeTextContent: true,
-          preferTextAsLabel: true
-        });
-      });
-
-      getHoverHelpReferenceElements(current).forEach(proxyEl => {
-        queue.push({
-          element: proxyEl,
-          preferTextAsLabel: false,
-          includeTextContent: true
-        });
-      });
-    }
-
-    if (!labelParts.length) {
-      addLabelText(el.textContent);
-    }
-
-    if (!detailParts.length && labelParts.length > 1) {
-      labelParts.slice(1).forEach(text => addDetailText(text));
-    }
-
-    if (!detailParts.length) {
-      const fallbackKeys = getHoverHelpFallbackKeys(el);
-      let addedFallback = false;
-      fallbackKeys.forEach(key => {
-        const text = getHoverHelpLocaleValue(key);
-        if (!text) return;
-        addedFallback = true;
-        addDetailText(text);
-      });
-      if (!addedFallback) {
-        addDetailText(getHoverHelpLocaleValue('hoverHelpFallbackGeneric'));
-      }
-    }
-
-    return {
-      label: labelParts[0] || '',
-      details: detailParts,
-      shortcuts: shortcutParts
-    };
-  };
-
-  const clearHoverHelpHighlight = () => {
-    if (hoverHelpHighlightedTarget && hoverHelpHighlightedTarget.classList) {
-      hoverHelpHighlightedTarget.classList.remove('hover-help-highlight');
-    }
-    hoverHelpHighlightedTarget = null;
-  };
-
-  const setHoverHelpHighlight = target => {
-    if (hoverHelpHighlightedTarget === target) return;
-    clearHoverHelpHighlight();
-    if (target && target.classList && typeof target.classList.add === 'function') {
-      target.classList.add('hover-help-highlight');
-      hoverHelpHighlightedTarget = target;
-    }
-  };
-
-  const usingPointerAnchor = () =>
-    hoverHelpActive &&
-    hoverHelpTooltip &&
-    typeof hoverHelpPointerClientX === 'number' &&
-    typeof hoverHelpPointerClientY === 'number' &&
-    Number.isFinite(hoverHelpPointerClientX) &&
-    Number.isFinite(hoverHelpPointerClientY);
-
-  const extractPointerClientCoords = event => {
-    if (!event) return null;
-    const hasClient =
-      typeof event.clientX === 'number' &&
-      typeof event.clientY === 'number' &&
-      Number.isFinite(event.clientX) &&
-      Number.isFinite(event.clientY);
-    if (hasClient) {
-      return [event.clientX, event.clientY];
-    }
-    const hasPage =
-      typeof event.pageX === 'number' &&
-      typeof event.pageY === 'number' &&
-      Number.isFinite(event.pageX) &&
-      Number.isFinite(event.pageY);
-    if (hasPage) {
-      const scrollX = window.scrollX || window.pageXOffset || 0;
-      const scrollY = window.scrollY || window.pageYOffset || 0;
-      return [event.pageX - scrollX, event.pageY - scrollY];
-    }
-    return null;
-  };
-
-  const recordPointerFromEvent = event => {
-    if (!hoverHelpActive || !hoverHelpTooltip) return false;
-    const coords = extractPointerClientCoords(event);
-    if (!coords) return false;
-    const [clientX, clientY] = coords;
-    hoverHelpPointerClientX = clientX;
-    hoverHelpPointerClientY = clientY;
-    return true;
-  };
-
-  const positionHoverHelpTooltip = target => {
-    if (!hoverHelpTooltip || !target) return;
-    const rect = target.getBoundingClientRect();
-    const docEl = document.documentElement;
-    const viewportWidth = Math.max(docEl?.clientWidth || 0, window.innerWidth || 0);
-    const viewportHeight = Math.max(docEl?.clientHeight || 0, window.innerHeight || 0);
-    const scrollX = window.scrollX || window.pageXOffset || 0;
-    const scrollY = window.scrollY || window.pageYOffset || 0;
-    const horizontalOffset = 12;
-    const verticalOffset = 10;
-    const viewportPadding = 8;
-
-    const safeLeft = Number.isFinite(rect.left) ? rect.left : 0;
-    const safeRight = Number.isFinite(rect.right) ? rect.right : safeLeft + (rect.width || 0);
-    const safeTop = Number.isFinite(rect.top) ? rect.top : 0;
-    const safeBottom = Number.isFinite(rect.bottom) ? rect.bottom : safeTop;
-
-    const tooltipRect = hoverHelpTooltip.getBoundingClientRect();
-    const tooltipWidth = tooltipRect.width || hoverHelpTooltip.offsetWidth || 0;
-    const tooltipHeight = tooltipRect.height || hoverHelpTooltip.offsetHeight || 0;
-
-    const pointerAnchored = usingPointerAnchor();
-
-    const pointerClientX = (() => {
-      if (pointerAnchored && typeof hoverHelpPointerClientX === 'number') {
-        return hoverHelpPointerClientX;
-      }
-      if (Number.isFinite(rect.left)) {
-        return safeLeft + (rect.width || 0) / 2;
-      }
-      return viewportWidth / 2;
-    })();
-
-    const preferLeftSide = (() => {
-      if (tooltipWidth) {
-        const requiredSpace = tooltipWidth + horizontalOffset + viewportPadding;
-        const availableRight = viewportWidth - pointerClientX;
-        const availableLeft = pointerClientX;
-        if (availableRight < requiredSpace && availableLeft >= requiredSpace) {
-          return true;
-        }
-      }
-      const rightSideThreshold = viewportWidth * 0.6;
-      return pointerClientX >= rightSideThreshold;
-    })();
-
-    let top = pointerAnchored
-      ? hoverHelpPointerClientY + scrollY + verticalOffset
-      : safeBottom + scrollY + verticalOffset;
-    let left;
-
-    if (pointerAnchored) {
-      left = hoverHelpPointerClientX + scrollX + horizontalOffset;
-      if (preferLeftSide) {
-        left = hoverHelpPointerClientX + scrollX - tooltipWidth - horizontalOffset;
-      }
+  const dialog = element.closest('dialog');
+  if (dialog && typeof isDialogOpen === 'function' && !isDialogOpen(dialog)) {
+    if (dialog.id === 'projectDialog' && typeof generateGearListBtn !== 'undefined' && generateGearListBtn?.click) {
+      generateGearListBtn.click();
+    } else if (dialog.id === 'feedbackDialog' && typeof runtimeFeedbackBtn !== 'undefined' && runtimeFeedbackBtn?.click) {
+      runtimeFeedbackBtn.click();
+    } else if (dialog.id === 'overviewDialog' && typeof generateOverviewBtn !== 'undefined' && generateOverviewBtn?.click) {
+      generateOverviewBtn.click();
     } else {
-      const baseAnchor = preferLeftSide ? safeRight : safeLeft;
-      left = baseAnchor + scrollX + (preferLeftSide ? -horizontalOffset : horizontalOffset);
-      if (preferLeftSide) {
-        left -= tooltipWidth;
-      }
-    }
-
-    if (tooltipWidth) {
-      const viewportRightLimit = scrollX + viewportWidth - viewportPadding;
-      const defaultRight = left + tooltipWidth;
-      if (defaultRight > viewportRightLimit) {
-        if (pointerAnchored) {
-          left = hoverHelpPointerClientX + scrollX - tooltipWidth - horizontalOffset;
-        } else {
-          left = safeRight + scrollX - tooltipWidth - horizontalOffset;
-        }
-      } else if (left < scrollX + viewportPadding && preferLeftSide) {
-        left = Math.max(left, scrollX + viewportPadding);
-      }
-
-      const minLeft = scrollX + viewportPadding;
-      const maxLeft =
-        scrollX + Math.max(viewportWidth - tooltipWidth - viewportPadding, viewportPadding);
-      if (left < minLeft) {
-        left = minLeft;
-      } else if (left > maxLeft) {
-        left = maxLeft;
-      }
-    }
-
-    if (tooltipHeight) {
-      const minTop = scrollY + viewportPadding;
-      const maxTop = scrollY + Math.max(viewportHeight - tooltipHeight - viewportPadding, viewportPadding);
-      if (top > maxTop) {
-        const aboveTop = pointerAnchored
-          ? hoverHelpPointerClientY + scrollY - tooltipHeight - verticalOffset
-          : safeTop + scrollY - tooltipHeight - verticalOffset;
-        if (aboveTop >= minTop) {
-          top = aboveTop;
-        } else {
-          top = Math.min(Math.max(top, minTop), maxTop);
-        }
-      } else if (top < minTop) {
-        top = minTop;
-      }
-    }
-
-    hoverHelpTooltip.style.top = `${top}px`;
-    hoverHelpTooltip.style.left = `${left}px`;
-  };
-
-  const hideHoverHelpTooltip = () => {
-    if (!hoverHelpTooltip) return;
-    hoverHelpTooltip.setAttribute('hidden', '');
-    hoverHelpTooltip.style.removeProperty('visibility');
-    hoverHelpPointerClientX = null;
-    hoverHelpPointerClientY = null;
-    clearHoverHelpHighlight();
-  };
-
-  const createHoverHelpDetailsFragment = detailText => {
-    const fragment = document.createDocumentFragment();
-    if (!Array.isArray(detailText) || detailText.length === 0) {
-      return fragment;
-    }
-
-    const addParagraph = text => {
-      if (!text) return;
-      const paragraph = document.createElement('p');
-      paragraph.textContent = text;
-      fragment.appendChild(paragraph);
-    };
-
-    let listBuffer = [];
-
-    const flushList = () => {
-      if (!listBuffer.length) return;
-      const list = document.createElement('ul');
-      listBuffer.forEach(itemText => {
-        const item = document.createElement('li');
-        item.textContent = itemText;
-        list.appendChild(item);
-      });
-      fragment.appendChild(list);
-      listBuffer = [];
-    };
-
-    const addListItem = text => {
-      if (!text) return;
-      listBuffer.push(text);
-    };
-
-    detailText.forEach(part => {
-      if (typeof part !== 'string') return;
-      const normalisedPart = part
-        .replace(/\r\n/g, '\n')
-        .replace(/\s*[•‣▪◦⋅·]\s*/g, '\n• ');
-      const lines = normalisedPart
-        .split(/\n+/)
-        .map(line => line.trim())
-        .filter(Boolean);
-
-      lines.forEach(line => {
-        const bulletMatch = line.match(/^[•\-–—]\s*(.+)$/);
-        if (bulletMatch) {
-          addListItem(bulletMatch[1].trim());
-          return;
-        }
-
-        flushList();
-        addParagraph(line);
-      });
-
-      flushList();
-    });
-
-    flushList();
-
-    if (!fragment.childElementCount) {
-      addParagraph(detailText.filter(Boolean).join(' '));
-    }
-
-    return fragment;
-  };
-
-  const updateHoverHelpTooltip = target => {
-    hoverHelpCurrentTarget = target || null;
-    setHoverHelpHighlight(target || null);
-    if (!hoverHelpActive || !hoverHelpTooltip || !target) {
-      hideHoverHelpTooltip();
-      return;
-    }
-    const { label, details, shortcuts } = collectHoverHelpContent(target);
-    const hasLabel = typeof label === 'string' && label.trim().length > 0;
-    const detailText = Array.isArray(details) ? details.filter(Boolean) : [];
-    const shortcutList = Array.isArray(shortcuts)
-      ? shortcuts.filter(Boolean)
-      : [];
-    if (!hasLabel && detailText.length === 0 && shortcutList.length === 0) {
-      hideHoverHelpTooltip();
-      return;
-    }
-    // Defensive check: if we only have a label but it matches the text content (or is just a title)
-    // and there are no details or shortcuts, it might look like an empty box or just a label repetition.
-    // For now, we'll enforce that if there are no details and no shortcuts, we hide it
-    // UNLESS the label is significantly different or we want to show just a label.
-    // However, the user issue is "empty hover box", which implies it might be showing *nothing* or just a header.
-    // If detailText is empty, let's ensure we don't show a box with just a header if that header is redundant.
-    // But strictly for "empty box", we should ensure we have *something* to show.
-
-    if (detailText.length === 0 && shortcutList.length === 0) {
-      // If we have a label but no details, it might be the "empty" box the user sees if the label is empty string or just whitespace
-      // despite the check above.
-      // Let's be stricter:
-      if (!hasLabel || label.trim() === '') {
-        hideHoverHelpTooltip();
-        return;
-      }
-    }
-    hoverHelpTooltip.textContent = '';
-    if (hasLabel) {
-      const titleEl = document.createElement('div');
-      titleEl.className = 'hover-help-heading';
-      titleEl.textContent = label.trim();
-      hoverHelpTooltip.appendChild(titleEl);
-    }
-    if (detailText.length) {
-      const bodyEl = document.createElement('div');
-      bodyEl.className = 'hover-help-details';
-      bodyEl.appendChild(createHoverHelpDetailsFragment(detailText));
-      hoverHelpTooltip.appendChild(bodyEl);
-    }
-    if (shortcutList.length) {
-      const shortcutsWrapper = document.createElement('div');
-      shortcutsWrapper.className = 'hover-help-shortcuts';
-      const headingText = getHoverHelpLocaleValue('hoverHelpShortcutsHeading');
-      if (headingText) {
-        const headingEl = document.createElement('div');
-        headingEl.className = 'hover-help-shortcuts-heading';
-        headingEl.textContent = headingText;
-        shortcutsWrapper.appendChild(headingEl);
-      }
-      const listEl = document.createElement('ul');
-      listEl.className = 'hover-help-shortcuts-list';
-      shortcutList.forEach(shortcutText => {
-        if (!shortcutText) return;
-        const item = document.createElement('li');
-        item.className = 'hover-help-shortcut';
-        item.textContent = shortcutText;
-        listEl.appendChild(item);
-      });
-      if (listEl.childElementCount) {
-        shortcutsWrapper.appendChild(listEl);
-        hoverHelpTooltip.appendChild(shortcutsWrapper);
-      }
-    }
-    const exitHint = getHoverHelpLocaleValue('hoverHelpExitHint');
-    if (exitHint) {
-      const hintEl = document.createElement('div');
-      hintEl.className = 'hover-help-hint';
-      hintEl.textContent = exitHint;
-      hoverHelpTooltip.appendChild(hintEl);
-    }
-    const wasHidden = hoverHelpTooltip.hasAttribute('hidden');
-    if (wasHidden) {
-      hoverHelpTooltip.style.visibility = 'hidden';
-      hoverHelpTooltip.removeAttribute('hidden');
-    }
-    positionHoverHelpTooltip(target);
-    if (wasHidden) {
-      hoverHelpTooltip.style.removeProperty('visibility');
-    }
-    hoverHelpTooltip.removeAttribute('hidden');
-  };
-
-  const canInteractDuringHoverHelp = target => {
-    if (!hoverHelpActive || !target) return false;
-    return !!target.closest('[data-allow-hover-help], #settingsButton, #settingsDialog');
-  };
-
-  // Exit hover-help mode and clean up tooltip/cursor state
-  const stopHoverHelp = () => {
-    hoverHelpActive = false;
-    hoverHelpCurrentTarget = null;
-    if (hoverHelpTooltip) {
-      removeNode(hoverHelpTooltip);
-      hoverHelpTooltip = null;
-    }
-    clearHoverHelpHighlight();
-    document.body.style.cursor = '';
-    document.body.classList.remove('hover-help-active');
-  };
-
-  // Start hover-help mode: close the dialog, create the tooltip element and
-  // switch the cursor to the standard help cursor.
-  const startHoverHelp = () => {
-    hoverHelpActive = true;
-    closeHelp();
-    document.body.style.cursor = 'help';
-    document.body.classList.add('hover-help-active');
-    clearHoverHelpHighlight();
-    hoverHelpTooltip = document.createElement('div');
-    hoverHelpTooltip.id = 'hoverHelpTooltip';
-    hoverHelpTooltip.setAttribute('role', 'tooltip');
-    hoverHelpTooltip.setAttribute('hidden', '');
-    document.body.appendChild(hoverHelpTooltip);
-  };
-
-  const refreshTooltipPosition = () => {
-    if (hoverHelpActive && hoverHelpTooltip && hoverHelpCurrentTarget) {
-      positionHoverHelpTooltip(hoverHelpCurrentTarget);
-    }
-  };
-
-  document.addEventListener('mouseover', e => {
-    if (!hoverHelpActive || !hoverHelpTooltip) return;
-    recordPointerFromEvent(e);
-    const target = findHoverHelpTarget(e.target);
-    updateHoverHelpTooltip(target);
-  });
-
-  document.addEventListener('focusin', e => {
-    if (!hoverHelpActive || !hoverHelpTooltip) return;
-    hoverHelpPointerClientX = null;
-    hoverHelpPointerClientY = null;
-    const target = findHoverHelpTarget(e.target);
-    updateHoverHelpTooltip(target);
-  });
-
-  document.addEventListener('focusout', e => {
-    if (!hoverHelpActive || !hoverHelpTooltip) return;
-    if (!e.relatedTarget || !findHoverHelpTarget(e.relatedTarget)) {
-      hoverHelpCurrentTarget = null;
-      hideHoverHelpTooltip();
-    }
-  });
-
-  window.addEventListener('scroll', refreshTooltipPosition, true);
-  window.addEventListener('resize', refreshTooltipPosition);
-
-  const updatePointerPosition = e => {
-    if (!recordPointerFromEvent(e)) return;
-    if (hoverHelpCurrentTarget) {
-      positionHoverHelpTooltip(hoverHelpCurrentTarget);
-    }
-  };
-
-  if (typeof window !== 'undefined' && 'PointerEvent' in window) {
-    window.addEventListener('pointermove', updatePointerPosition, true);
-    window.addEventListener('pointerdown', updatePointerPosition, true);
-  } else {
-    window.addEventListener('mousemove', updatePointerPosition, true);
-    window.addEventListener('mousedown', updatePointerPosition, true);
-  }
-
-  // Prevent interacting with controls like dropdowns while hover help is active
-  document.addEventListener(
-    'mousedown',
-    e => {
-      if (hoverHelpActive && !canInteractDuringHoverHelp(e.target)) {
-        e.preventDefault();
-      }
-    },
-    true
-  );
-
-  document.addEventListener('click', e => {
-    // Any click while in hover-help mode exits the mode and removes the tooltip
-    if (!hoverHelpActive) return;
-    if (canInteractDuringHoverHelp(e.target)) {
-      return;
-    }
-    e.preventDefault();
-    stopHoverHelp();
-  });
-
-  if (hoverHelpButton) {
-    // Dedicated button inside the dialog to enable hover-help mode
-    hoverHelpButton.addEventListener('click', e => {
-      e.stopPropagation();
-      startHoverHelp(); // activate tooltip mode
-    });
-  }
-
-
-
-
-  // Initialize Feature Search Manager
-  FeatureSearchManager.init({
-    focusHandler: (el) => {
-      if (typeof focusFeatureElement === 'function') {
-        focusFeatureElement(el);
-      } else {
-        // Fallback if local function unavailable
-        if (el && typeof el.focus === 'function') {
-          try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); }
-        }
-      }
-    }
-  });
-
-  const focusFeatureSearchInput = () => {
-    if (FeatureSearchManager.elements.input) {
-      FeatureSearchManager.focusFeatureElement(FeatureSearchManager.elements.input);
-    }
-  };
-
-  const updateFeatureSearchValue = (label, query) => FeatureSearchManager.updateFeatureSearchValue(label, query);
-
-  const normalizeSearchValue = (val) => FeatureSearchManager.normalizeSearchValue(val);
-
-  function normalizeGearNameForComparison(name) {
-    if (typeof name !== 'string') return '';
-    return name.trim().toLowerCase().replace(/\s+/g, ' ');
-  }
-  if (typeof window !== 'undefined') {
-    window.normalizeGearNameForComparison = normalizeGearNameForComparison;
-  }
-  const recordFeatureSearchUsage = (key, type, label) => FeatureSearchManager.recordFeatureSearchUsage(key, type, label);
-
-  runFeatureSearch = (query) => FeatureSearchManager.runFeatureSearch(query);
-
-  if (featureSearch) {
-    const featureSearchDropdown = document.getElementById('featureSearchDropdown');
-
-    const resolveFeatureSearchOptionEntry = option => {
-      if (!option || !featureSearchDropdown) return null;
-      const dropdown = option.closest('#featureSearchDropdown') || featureSearchDropdown;
-      const map = dropdown && dropdown.__optionEntries instanceof Map
-        ? dropdown.__optionEntries
-        : null;
-      if (!map) return null;
-      if (option.id && map.has(option.id)) {
-        return map.get(option.id) || null;
-      }
-      const entryKey = option.getAttribute('data-entry-key');
-      if (entryKey) {
-        for (const value of map.values()) {
-          if (value && value.key === entryKey) {
-            return value;
-          }
-        }
-      }
-      return null;
-    };
-
-    const openFeatureSearchEntry = (entry, queryValue) => {
-      if (!entry) return false;
-      const entryType = entry.type || entry.entryType || 'feature';
-      const normalizedQuery = normalizeSearchValue(queryValue || '');
-      const label = entry.label || entry.display || entry.optionLabel || normalizedQuery || '';
-      const usageKey = entry.key || null;
-      const recordUsage = () => {
-        if (typeof recordFeatureSearchUsage === 'function' && usageKey) {
-          const type = entryType === 'deviceLibrary' ? 'device' : entryType;
-          recordFeatureSearchUsage(usageKey, type, label);
-        }
-      };
-
-      if (entryType === 'device') {
-        if (entry.select) {
-          entry.select.value = entry.value;
-          entry.select.dispatchEvent(new Event('change', { bubbles: true }));
-          if (label) {
-            updateFeatureSearchValue(label, normalizedQuery);
-          }
-          recordUsage();
-          focusFeatureElement(entry.select);
-          const highlightTargets = [entry.select, ...findAssociatedLabelElements(entry.select)];
-          highlightFeatureSearchTargets(highlightTargets);
-          return true;
-        }
-        if (entry.entryType === 'deviceLibrary' && (entry.element || entry.rawElement)) {
-          if (label) {
-            updateFeatureSearchValue(label, normalizedQuery);
-          }
-          recordUsage();
-          if (typeof entry.focusLibraryEntry === 'function') {
-            entry.focusLibraryEntry();
-          }
-          const focusTarget = entry.element || entry.rawElement;
-          if (focusTarget) {
-            focusFeatureElement(focusTarget);
-            const highlightTargets = [focusTarget, ...findAssociatedLabelElements(focusTarget)];
-            highlightFeatureSearchTargets(highlightTargets);
-          }
-          if (typeof entry.highlightLibraryEntry === 'function') {
-            entry.highlightLibraryEntry();
-          }
-          return true;
-        }
-      }
-
-      if (entryType === 'feature') {
-        const featureEl = entry.element || entry;
-        if (featureEl) {
-          if (label) {
-            updateFeatureSearchValue(label, normalizedQuery);
-          }
-          recordUsage();
-          focusFeatureElement(featureEl);
-          const highlightTargets = [featureEl, ...findAssociatedLabelElements(featureEl)];
-          highlightFeatureSearchTargets(highlightTargets);
-          return true;
-        }
-      }
-
-      if (entryType === 'help') {
-        recordUsage();
-        openHelp();
-        if (helpSearch) {
-          helpSearch.value = label || normalizedQuery;
-          filterHelp();
-        }
-        const section = entry.section;
-        if (section) {
-          if (section.hasAttribute('hidden')) {
-            section.removeAttribute('hidden');
-            if (helpNoResults) {
-              helpNoResults.setAttribute('hidden', '');
-            }
-            if (typeof helpNoResultsSuggestions !== 'undefined' && helpNoResultsSuggestions) {
-              helpNoResultsSuggestions.setAttribute('hidden', '');
-            }
-            syncHelpQuickLinksVisibility();
-          }
-          if (typeof section.scrollIntoView === 'function') {
-            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-          highlightHelpSection(section);
-          const sectionHeading =
-            section.querySelector('h3, summary, h4, h5, h6, [role="heading"]') ||
-            section.querySelector('button, a');
-          if (sectionHeading) {
-            highlightFeatureSearchTargets([sectionHeading]);
-          } else {
-            highlightFeatureSearchTargets([section]);
-          }
-          const quickLink = section.id ? helpQuickLinkItems.get(section.id) : null;
-          if (helpQuickLinksList) {
-            helpQuickLinksList
-              .querySelectorAll('.help-quick-link.active')
-              .forEach(btn => btn.classList.remove('active'));
-          }
-          if (quickLink && quickLink.button) {
-            quickLink.button.classList.add('active');
-          }
-          return true;
-        }
-      }
-
-      if (entryType === 'action') {
-        recordUsage();
-        const actionKey = entry.action;
-
-        switch (actionKey) {
-          case 'create-new-project':
-            if (typeof setupSelect !== 'undefined' && setupSelect) {
-              setupSelect.value = '';
-              setupSelect.dispatchEvent(new Event('change', { bubbles: true }));
-              if (typeof checkSetupChanged === 'function') checkSetupChanged();
-            }
-            return true;
-
-          case 'save-project':
-            if (typeof saveSetupBtn !== 'undefined' && saveSetupBtn) {
-              saveSetupBtn.click();
-            }
-            return true;
-
-          case 'export-project':
-            if (typeof shareSetupBtn !== 'undefined' && shareSetupBtn) {
-              shareSetupBtn.click();
-            }
-            return true;
-
-          case 'toggle-dark-mode':
-            if (typeof darkModeToggle !== 'undefined' && darkModeToggle) {
-              darkModeToggle.click();
-            }
-            return true;
-
-          case 'toggle-pink-mode':
-            if (typeof pinkModeToggle !== 'undefined' && pinkModeToggle) {
-              pinkModeToggle.click();
-            }
-            return true;
-
-          case 'open-settings':
-            if (typeof settingsButton !== 'undefined' && settingsButton) {
-              settingsButton.click();
-            }
-            return true;
-
-          case 'open-help':
-            if (typeof helpButton !== 'undefined' && helpButton) {
-              helpButton.click();
-            }
-            return true;
-
-          case 'force-reload':
-            if (typeof reloadButton !== 'undefined' && reloadButton) {
-              reloadButton.click();
-            }
-            return true;
-        }
-      }
-
-      return false;
-    };
-
-    const getDropdownOptions = () => {
-      if (!featureSearchDropdown) return [];
-      return Array.from(featureSearchDropdown.querySelectorAll('[role="option"]') || []);
-    };
-
-    const clearFeatureSearchActiveState = () => {
-      const options = getDropdownOptions();
-      options.forEach(option => {
-        option.setAttribute('tabindex', '-1');
-        option.setAttribute('aria-selected', 'false');
-      });
-      if (featureSearch && featureSearch.hasAttribute('aria-activedescendant')) {
-        featureSearch.removeAttribute('aria-activedescendant');
-      }
-    };
-
-    const setActiveDropdownOption = (index, { focusOption = false } = {}) => {
-      const options = getDropdownOptions();
-      if (!options.length) {
-        if (featureSearch && featureSearch.hasAttribute('aria-activedescendant')) {
-          featureSearch.removeAttribute('aria-activedescendant');
-        }
-        return null;
-      }
-      const bounded = Math.max(0, Math.min(index, options.length - 1));
-      options.forEach((option, optIndex) => {
-        const isActive = optIndex === bounded;
-        option.setAttribute('tabindex', isActive ? '0' : '-1');
-        option.setAttribute('aria-selected', isActive ? 'true' : 'false');
-        if (isActive) {
-          if (featureSearch) {
-            if (option.id) {
-              featureSearch.setAttribute('aria-activedescendant', option.id);
-            } else if (featureSearch.hasAttribute('aria-activedescendant')) {
-              featureSearch.removeAttribute('aria-activedescendant');
-            }
-          }
-          if (focusOption) {
-            option.focus();
-          }
-        }
-      });
-      if (featureSearchDropdown) {
-        featureSearchDropdown.dataset.activeIndex = String(bounded);
-      }
-      return options[bounded];
-    };
-
-    const closeFeatureSearchDropdown = () => {
-      if (!featureSearchDropdown) return;
-      clearFeatureSearchActiveState();
-      featureSearchDropdown.dataset.open = 'false';
-      featureSearchDropdown.hidden = true;
-      featureSearchDropdown.setAttribute('aria-expanded', 'false');
-      featureSearchDropdown.dataset.activeIndex = '';
-      if (featureSearch) {
-        featureSearch.setAttribute('aria-expanded', 'false');
-      }
-      const container = featureSearchDropdown.closest('.feature-search');
-      if (container) container.classList.remove('feature-search-open');
-    };
-
-    const openFeatureSearchDropdown = () => {
-      if (!featureSearchDropdown) return;
-      if (featureSearchDropdown.dataset.count === '0') {
-        closeFeatureSearchDropdown();
-        return;
-      }
-      featureSearchDropdown.dataset.open = 'true';
-      featureSearchDropdown.hidden = false;
-      featureSearchDropdown.setAttribute('aria-expanded', 'true');
-      if (featureSearch) {
-        featureSearch.setAttribute('aria-expanded', 'true');
-      }
-      const container = featureSearchDropdown.closest('.feature-search');
-      if (container) container.classList.add('feature-search-open');
-      const options = getDropdownOptions();
-      if (!options.length) {
-        if (featureSearch && featureSearch.hasAttribute('aria-activedescendant')) {
-          featureSearch.removeAttribute('aria-activedescendant');
-        }
-        return;
-      }
-      const activeIndexAttr = featureSearchDropdown.dataset.activeIndex;
-      const parsedIndex = typeof activeIndexAttr === 'string' && activeIndexAttr !== ''
-        ? Number(activeIndexAttr)
-        : NaN;
-      const shouldFocusOption = document.activeElement && document.activeElement !== featureSearch;
-      if (Number.isNaN(parsedIndex)) {
-        setActiveDropdownOption(0, { focusOption: shouldFocusOption });
-      } else {
-        setActiveDropdownOption(parsedIndex, { focusOption: shouldFocusOption });
-      }
-    };
-
-    const applyFeatureSearchSuggestion = (value, option) => {
-      if (!featureSearch || !value) return;
-      const entry = option ? resolveFeatureSearchOptionEntry(option) : null;
-      featureSearch.value = value;
-      try {
-        featureSearch.focus({ preventScroll: true });
-      } catch {
-        featureSearch.focus();
-      }
-      featureSearch.setSelectionRange?.(value.length, value.length);
-      if (entry && openFeatureSearchEntry(entry, value)) {
-        updateFeatureSearchSuggestions(value);
-        closeFeatureSearchDropdown();
-        return;
-      }
-      updateFeatureSearchSuggestions(value);
-      runFeatureSearch(value);
-      closeFeatureSearchDropdown();
-    };
-
-    const handle = () => {
-      closeFeatureSearchDropdown();
-      runFeatureSearch(featureSearch.value);
-    };
-
-    featureSearch.addEventListener('change', handle);
-    featureSearch.addEventListener('focus', () => {
-      openFeatureSearchDropdown();
-    });
-    featureSearch.addEventListener('blur', () => {
-      window.setTimeout(() => {
-        if (
-          !featureSearchDropdown ||
-          featureSearchDropdown.contains(document.activeElement)
-        ) {
-          return;
-        }
-        closeFeatureSearchDropdown();
-      }, 100);
-    });
-    featureSearch.addEventListener('input', () => {
-      updateFeatureSearchSuggestions(featureSearch.value);
-      openFeatureSearchDropdown();
-    });
-    featureSearch.addEventListener('keydown', e => {
-      if (e.key === 'Enter') {
-        handle();
-      } else if (e.key === 'Escape') {
-        if (featureSearch.value) {
-          featureSearch.value = '';
-          restoreFeatureSearchDefaults();
-        }
-        closeFeatureSearchDropdown();
-        e.preventDefault();
-      } else if (e.key === 'ArrowDown') {
-        if (!featureSearchDropdown || featureSearchDropdown.dataset.count === '0') {
-          return;
-        }
-        e.preventDefault();
-        openFeatureSearchDropdown();
-        const options = getDropdownOptions();
-        const activeIndex = featureSearchDropdown.dataset.activeIndex;
-        const nextIndex = activeIndex ? Number(activeIndex) + 1 : 0;
-        setActiveDropdownOption(nextIndex >= options.length ? 0 : nextIndex, { focusOption: false });
-      } else if (e.key === 'ArrowUp') {
-        if (!featureSearchDropdown || featureSearchDropdown.dataset.count === '0') {
-          return;
-        }
-        e.preventDefault();
-        openFeatureSearchDropdown();
-        const options = getDropdownOptions();
-        if (!options.length) return;
-        const activeIndex = featureSearchDropdown.dataset.activeIndex;
-        if (!activeIndex) {
-          setActiveDropdownOption(options.length - 1, { focusOption: false });
-        } else {
-          const prevIndex = Number(activeIndex) - 1;
-          setActiveDropdownOption(prevIndex >= 0 ? prevIndex : options.length - 1, { focusOption: false });
-        }
-      }
-    });
-
-    if (featureSearchDropdown) {
-      featureSearchDropdown.addEventListener('mousedown', e => {
-        const option = e.target.closest('[data-value]');
-        if (option) {
-          e.preventDefault();
-        }
-      });
-      featureSearchDropdown.addEventListener('click', e => {
-        const option = e.target.closest('[data-value]');
-        if (!option) return;
-        const value = option.getAttribute('data-value') || '';
-        if (!value) return;
-        applyFeatureSearchSuggestion(value, option);
-      });
-      featureSearchDropdown.addEventListener('keydown', e => {
-        const options = getDropdownOptions();
-        if (!options.length) return;
-        const activeElement = document.activeElement;
-        const currentIndex = options.indexOf(activeElement);
-        if (e.key === 'ArrowDown') {
-          e.preventDefault();
-          const nextIndex = currentIndex >= 0 ? currentIndex + 1 : 0;
-          setActiveDropdownOption(nextIndex >= options.length ? 0 : nextIndex, { focusOption: true });
-        } else if (e.key === 'ArrowUp') {
-          e.preventDefault();
-          const prevIndex = currentIndex > 0 ? currentIndex - 1 : options.length - 1;
-          setActiveDropdownOption(prevIndex, { focusOption: true });
-        } else if (e.key === 'Home') {
-          e.preventDefault();
-          setActiveDropdownOption(0, { focusOption: true });
-        } else if (e.key === 'End') {
-          e.preventDefault();
-          setActiveDropdownOption(options.length - 1, { focusOption: true });
-        } else if (e.key === 'Enter') {
-          e.preventDefault();
-          if (currentIndex >= 0 && options[currentIndex]) {
-            const value = options[currentIndex].getAttribute('data-value') || '';
-            if (value) {
-              applyFeatureSearchSuggestion(value, options[currentIndex]);
-            }
-          }
-        } else if (e.key === 'Escape') {
-          e.preventDefault();
-          closeFeatureSearchDropdown();
-          focusFeatureSearchInput();
-        } else if (e.key === 'Tab') {
-          closeFeatureSearchDropdown();
-        }
-      });
-      featureSearchDropdown.addEventListener('focusout', () => {
-        window.setTimeout(() => {
-          if (
-            document.activeElement === featureSearch ||
-            (featureSearchDropdown && featureSearchDropdown.contains(document.activeElement))
-          ) {
-            return;
-          }
-          closeFeatureSearchDropdown();
-        }, 100);
-      });
+      if (typeof openDialog === 'function') openDialog(dialog);
     }
   }
 
-  function safeShowPicker(input) {
-    if (!input || typeof input.showPicker !== 'function') {
-      return;
+  if (typeof element.scrollIntoView === 'function') {
+    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  const hadTabIndex = element.hasAttribute('tabindex');
+  let addedTabIndex = false;
+  if (!hadTabIndex) {
+    const tabIndex = element.tabIndex;
+    if (typeof tabIndex === 'number' && tabIndex < 0) {
+      element.setAttribute('tabindex', '-1');
+      addedTabIndex = true;
     }
+  }
+
+  if (typeof element.focus === 'function') {
     try {
-      input.showPicker();
-    } catch (err) {
-      if (err && err.name === 'NotAllowedError') {
-        return;
-      }
-      console.warn('Unable to show picker', err);
+      element.focus({ preventScroll: true });
+    } catch {
+      element.focus();
     }
   }
 
+  if (addedTabIndex) {
+    element.addEventListener(
+      'blur',
+      () => element.removeAttribute('tabindex'),
+      { once: true }
+    );
+  }
+};
+
+const setupHelpSystem = () => {
+  const btn = typeof helpButton !== 'undefined' ? helpButton : document.getElementById('helpButton');
+  if (!btn) return false;
+
+  // Prevent double init handled by manager
+
+  // Initialize Help UI Logic
+  const initResult = HelpUiManager.initialize({
+    helpButton: btn,
+    helpDialog: typeof helpDialog !== 'undefined' ? helpDialog : document.getElementById('helpDialog'),
+    helpSearch: typeof helpSearch !== 'undefined' ? helpSearch : document.getElementById('helpSearch'),
+    helpResultsSummary: typeof helpResultsSummary !== 'undefined' ? helpResultsSummary : document.getElementById('helpResultsSummary'),
+    helpResultsAssist: typeof helpResultsAssist !== 'undefined' ? helpResultsAssist : document.getElementById('helpResultsAssist'),
+    helpNoResults: typeof helpNoResults !== 'undefined' ? helpNoResults : document.getElementById('helpNoResults'),
+    helpNoResultsSuggestions: typeof helpNoResultsSuggestions !== 'undefined' ? helpNoResultsSuggestions : document.getElementById('helpNoResultsSuggestions'),
+    helpSearchClear: typeof helpSearchClear !== 'undefined' ? helpSearchClear : document.getElementById('helpSearchClear'),
+    helpQuickLinksNav: typeof helpQuickLinksNav !== 'undefined' ? helpQuickLinksNav : document.getElementById('helpQuickLinksNav'),
+    helpQuickLinksList: typeof helpQuickLinksList !== 'undefined' ? helpQuickLinksList : document.getElementById('helpQuickLinksList'),
+    helpSectionsContainer: typeof helpSectionsContainer !== 'undefined' ? helpSectionsContainer : document.getElementById('helpSectionsContainer'),
+    helpQuickLinksHeading: typeof helpQuickLinksHeading !== 'undefined' ? helpQuickLinksHeading : document.getElementById('helpQuickLinksHeading'),
+    hoverHelpButton: typeof hoverHelpButton !== 'undefined' ? hoverHelpButton : document.getElementById('hoverHelpEnable')
+  }, {
+    openDialog: (d) => typeof openDialog === 'function' && openDialog(d),
+    closeDialog: (d) => typeof closeDialog === 'function' && closeDialog(d),
+    requestFeatureFocus: focusFeatureElement
+  });
+
+  // Initialize Feature Search
+  FeatureSearchManager.init({
+    focusHandler: focusFeatureElement
+  });
+
+  // Keyboard Shortcuts
   document.addEventListener('keydown', e => {
     const tag = document.activeElement.tagName;
     const isTextField = tag === 'INPUT' || tag === 'TEXTAREA';
     const key = typeof e.key === 'string' ? e.key : '';
     const lowerKey = key.toLowerCase();
-    // Keyboard shortcuts controlling the help dialog and hover-help mode
-    if (hoverHelpActive && e.key === 'Escape') {
-      // Escape exits hover-help mode
-      stopHoverHelp();
-    } else if (e.key === 'Escape' && isDialogOpen(helpDialog)) {
-      // Escape closes the help dialog
+
+    // Hover Help Exit
+    if (e.key === 'Escape' && document.body.classList.contains('hover-help-active')) {
+      HelpUiManager.stopHoverHelp();
+    }
+    else if (e.key === 'Escape' && isDialogOpen(btn.closest('dialog') || document.getElementById('helpDialog'))) { // HelpUiManager handles backing out internal links but main dialog close here
       e.preventDefault();
-      closeHelp();
-    } else if (
-      e.key === 'Escape' && settingsDialog && isDialogOpen(settingsDialog)
+      HelpUiManager.closeHelp();
+    }
+    else if (
+      e.key === 'Escape' && typeof settingsDialog !== 'undefined' && settingsDialog && isDialogOpen(settingsDialog)
     ) {
       e.preventDefault();
-      revertSettingsPinkModeIfNeeded();
-      rememberSettingsPinkModeBaseline();
-      revertSettingsTemperatureUnitIfNeeded();
-      rememberSettingsTemperatureUnitBaseline();
-      revertSettingsFocusScaleIfNeeded();
-      rememberSettingsFocusScaleBaseline();
-      invokeSessionRevertAccentColor();
-      closeDialog(settingsDialog);
+      if (typeof revertSettingsPinkModeIfNeeded === 'function') revertSettingsPinkModeIfNeeded();
+      if (typeof rememberSettingsPinkModeBaseline === 'function') rememberSettingsPinkModeBaseline();
+      if (typeof revertSettingsTemperatureUnitIfNeeded === 'function') revertSettingsTemperatureUnitIfNeeded();
+      if (typeof rememberSettingsTemperatureUnitBaseline === 'function') rememberSettingsTemperatureUnitBaseline();
+      if (typeof revertSettingsFocusScaleIfNeeded === 'function') revertSettingsFocusScaleIfNeeded();
+      if (typeof rememberSettingsFocusScaleBaseline === 'function') rememberSettingsFocusScaleBaseline();
+      if (typeof invokeSessionRevertAccentColor === 'function') invokeSessionRevertAccentColor();
+      if (typeof closeDialog === 'function') closeDialog(settingsDialog);
       settingsDialog.setAttribute('hidden', '');
     } else if (
       e.key === 'F1' ||
       ((e.key === '/' || e.key === '?') && (e.ctrlKey || e.metaKey))
     ) {
-      // F1 or Ctrl+/ toggles the dialog even while typing
       e.preventDefault();
-      toggleHelp();
+      HelpUiManager.toggleHelp();
     } else if (
       e.key === '/' &&
       !isTextField &&
-      (!helpDialog || (typeof isDialogOpen === 'function' && !isDialogOpen(helpDialog)))
+      (!isDialogOpen(document.getElementById('helpDialog')))
     ) {
       e.preventDefault();
-      focusFeatureSearchInput();
+      // Open help (search focused by default in openHelp)
+      HelpUiManager.openHelp();
     } else if (
       (e.key === '?' && !isTextField) ||
       (lowerKey === 'h' && !isTextField)
     ) {
-      // Plain ? or H opens the dialog when not typing in a field
       e.preventDefault();
-      toggleHelp();
+      HelpUiManager.toggleHelp();
     } else if (
-      typeof isDialogOpen === 'function' && isDialogOpen(helpDialog) &&
+      isDialogOpen(document.getElementById('helpDialog')) &&
       ((e.key === '/' && !isTextField) || (lowerKey === 'f' && (e.ctrlKey || e.metaKey)))
     ) {
-      // When the dialog is open, / or Ctrl+F moves focus to the search box
       e.preventDefault();
-      if (helpSearch) helpSearch.focus();
+      const hs = document.getElementById('helpSearch');
+      if (hs) hs.focus();
     } else if (key === ',' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
-      requestSettingsOpen({
-        reason: 'keyboard-shortcut',
-        key,
-        ctrl: !!e.ctrlKey,
-        meta: !!e.metaKey,
-        shift: !!e.shiftKey,
-      });
+      if (typeof requestSettingsOpen === 'function') {
+        requestSettingsOpen({
+          reason: 'keyboard-shortcut',
+          key,
+          ctrl: !!e.ctrlKey,
+          meta: !!e.metaKey,
+          shift: !!e.shiftKey,
+        });
+      }
     } else if (lowerKey === 'k' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
-      focusFeatureSearchInput();
+      // Focus feature search (which is inside Help)
+      HelpUiManager.openHelp();
     } else if (lowerKey === 'd' && !isTextField) {
-      setThemePreference(!getThemePreference());
+      if (typeof getThemePreference === 'function' && typeof setThemePreference === 'function')
+        setThemePreference(!getThemePreference());
     } else if (lowerKey === 's' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
-      if (saveSetupBtn && !saveSetupBtn.disabled) {
+      if (typeof saveSetupBtn !== 'undefined' && saveSetupBtn && !saveSetupBtn.disabled) {
         saveSetupBtn.click();
       }
     } else if (lowerKey === 'p' && !isTextField) {
-      persistPinkModePreference(!document.body.classList.contains('pink-mode'));
+      if (typeof persistPinkModePreference === 'function')
+        persistPinkModePreference(!document.body.classList.contains('pink-mode'));
     }
   });
 
-  dialog.addEventListener('click', e => {
-    // Clicking the semi-transparent backdrop (not the dialog content) closes it
-    if (e.target === dialog) closeHelp();
-  });
-
-  dialog.addEventListener('cancel', e => {
-    e.preventDefault();
-    closeHelp();
-  });
+  // Dialog backdrop click handled by HelpUiManager
 
   return true;
 }
@@ -10963,188 +8671,29 @@ if (!setupHelpSystem()) {
 // injected after `DOMContentLoaded` fired). Otherwise wait for the event.
 
 
-const scenarioIcons = {
-  Indoor: iconGlyph('\uF194', ICON_FONT_KEYS.ESSENTIAL),
-  Outdoor: iconGlyph('\uF278', ICON_FONT_KEYS.ESSENTIAL),
-  Studio: iconGlyph('\uF128', ICON_FONT_KEYS.FILM),
-  Tripod: iconGlyph('\uF12C', ICON_FONT_KEYS.FILM),
-  Handheld: iconGlyph('\uE93B', ICON_FONT_KEYS.UICONS),
-  Easyrig: iconGlyph('\uE15B', ICON_FONT_KEYS.UICONS),
-  'Cine Saddle': iconGlyph('\uF01B', ICON_FONT_KEYS.UICONS),
-  Steadybag: iconGlyph('\uE925', ICON_FONT_KEYS.UICONS),
-  Dolly: iconGlyph('\uF109', ICON_FONT_KEYS.FILM),
-  Slider: iconGlyph('\uE112', ICON_FONT_KEYS.UICONS),
-  Steadicam: iconGlyph('\uEFBD', ICON_FONT_KEYS.UICONS),
-  Gimbal: iconGlyph('\uEA9C', ICON_FONT_KEYS.UICONS),
-  Trinity: iconGlyph('\uEA4E', ICON_FONT_KEYS.UICONS),
-  Rollcage: iconGlyph('\uF04C', ICON_FONT_KEYS.UICONS),
-  'Car Mount': iconGlyph('\uE35B', ICON_FONT_KEYS.UICONS),
-  Jib: iconGlyph('\uE553', ICON_FONT_KEYS.UICONS),
-  'Undersling mode': iconGlyph('\uE0D8', ICON_FONT_KEYS.UICONS),
-  Crane: iconGlyph('\uE554', ICON_FONT_KEYS.UICONS),
-  'Remote Head': ICON_GLYPHS.controller,
-  'Extreme cold (snow)': iconGlyph('\uF0FB', ICON_FONT_KEYS.UICONS),
-  'Extreme rain': iconGlyph('\uE4A6', ICON_FONT_KEYS.UICONS),
-  'Extreme heat': iconGlyph('\uE80F', ICON_FONT_KEYS.UICONS),
-  'Rain Machine': iconGlyph('\uF153', ICON_FONT_KEYS.UICONS),
-  'Slow Motion': iconGlyph('\uF373', ICON_FONT_KEYS.UICONS),
-  'Battery Belt': ICON_GLYPHS.batteryBolt
-};
-
-function registerRequiredScenarioOptionEntriesGetter(getter) {
-  if (typeof getter !== 'function') {
-    return;
-  }
-
-  const scopes = getSessionRuntimeScopes();
-  for (let index = 0; index < scopes.length; index += 1) {
-    const scope = scopes[index];
-    if (!scope || typeof scope !== 'object') {
-      continue;
-    }
-
-    try {
-      scope.getRequiredScenarioOptionEntries = getter;
-    } catch (assignError) {
-      try {
-        Object.defineProperty(scope, 'getRequiredScenarioOptionEntries', {
-          configurable: true,
-          writable: true,
-          value: getter,
-        });
-      } catch (defineError) {
-        void defineError;
-      }
-    }
-  }
-}
-
-function getRequiredScenarioOptionEntries() {
-  const options = new Map();
-
-  if (requiredScenariosSelect && requiredScenariosSelect.options) {
-    Array.from(requiredScenariosSelect.options).forEach(option => {
-      if (!option) return;
-      if (option.disabled) return;
-      const value = typeof option.value === 'string' ? option.value.trim() : '';
-      if (!value) return;
-      const label = typeof option.textContent === 'string' && option.textContent.trim()
-        ? option.textContent.trim()
-        : value;
-      if (!options.has(value)) {
-        options.set(value, label);
-      }
-    });
-  }
-
-  Object.keys(scenarioIcons).forEach(key => {
-    if (typeof key !== 'string') return;
-    const value = key.trim();
-    if (!value || options.has(value)) {
-      return;
-    }
-    options.set(value, value);
-  });
-
-  return Array.from(options.entries())
-    .map(([value, label]) => ({ value, label }))
-    .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
-}
-
-registerRequiredScenarioOptionEntriesGetter(getRequiredScenarioOptionEntries);
-
-function updateRequiredScenariosSummary() {
-  if (!requiredScenariosSelect || !requiredScenariosSummary) return;
-  requiredScenariosSummary.innerHTML = '';
-  let selected = Array.from(requiredScenariosSelect.selectedOptions).map(o => o.value);
-  const hasDolly = selected.includes('Dolly');
-  if (remoteHeadOption) {
-    if (!hasDolly) {
-      remoteHeadOption.hidden = true;
-      remoteHeadOption.selected = false;
-      selected = selected.filter(v => v !== 'Remote Head');
-    } else {
-      remoteHeadOption.hidden = false;
-    }
-  }
-  if (
-    hasDolly &&
-    monitorSelect &&
-    (!monitorSelect.value || monitorSelect.value === 'None')
-  ) {
-    const defaultMonitor = 'SmallHD Ultra 7';
-    // Fix for potential ReferenceError: devices is not defined
-    const safeDevices = (typeof window !== 'undefined' && window.devices) || {};
-    if (safeDevices?.monitors?.[defaultMonitor]) {
-      if (!Array.from(monitorSelect.options).some(o => o.value === defaultMonitor)) {
-        const opt = document.createElement('option');
-        opt.value = defaultMonitor;
-        opt.textContent = defaultMonitor;
-        monitorSelect.appendChild(opt);
-      }
-      monitorSelect.value = defaultMonitor;
-      monitorSelect.dispatchEvent(new Event('change'));
-    }
-  }
-  if (videoDistributionSelect) {
-    const ensureOption = val => {
-      let opt = Array.from(videoDistributionSelect.options).find(o => o.value === val);
-      if (!opt) {
-        opt = document.createElement('option');
-        opt.value = val;
-        opt.textContent = val;
-        videoDistributionSelect.appendChild(opt);
-      }
-    };
-    ensureOption('DoP Monitor 7" handheld');
-    ensureOption('DoP Monitor 15-21"');
-  }
-  selected.forEach(val => {
-    const box = document.createElement('span');
-    box.className = 'scenario-box';
-    const iconSpan = document.createElement('span');
-    iconSpan.className = 'scenario-icon icon-glyph';
-    applyIconGlyph(iconSpan, scenarioIcons[val] || ICON_GLYPHS.pin);
-    box.appendChild(iconSpan);
-    box.appendChild(document.createTextNode(val));
-    requiredScenariosSummary.appendChild(box);
-  });
-  if (tripodPreferencesRow) {
-    if (selected.includes('Tripod')) {
-      tripodPreferencesRow.classList.remove('hidden');
-      if (tripodPreferencesHeading) tripodPreferencesHeading.classList.remove('hidden');
-      if (tripodPreferencesSection) tripodPreferencesSection.classList.remove('hidden');
-    } else {
-      tripodPreferencesRow.classList.add('hidden');
-      if (tripodPreferencesHeading) tripodPreferencesHeading.classList.add('hidden');
-      if (tripodPreferencesSection) tripodPreferencesSection.classList.add('hidden');
-      if (tripodHeadBrandSelect) tripodHeadBrandSelect.value = '';
-      if (tripodBowlSelect) tripodBowlSelect.value = '';
-      if (tripodTypesSelect) Array.from(tripodTypesSelect.options).forEach(o => { o.selected = false; });
-      if (tripodSpreaderSelect) tripodSpreaderSelect.value = '';
-      updateTripodOptions();
-    }
-  }
-}
 
 function initApp() {
   InitializationManager.initialize();
-} else {
-  if (requiredScenariosSelect) {
-    requiredScenariosSelect.addEventListener('change', updateRequiredScenariosSummary);
-    updateRequiredScenariosSummary();
-  }
-  if (tripodHeadBrandSelect) {
-    tripodHeadBrandSelect.addEventListener('change', updateTripodOptions);
-  }
-  if (tripodBowlSelect) {
-    tripodBowlSelect.addEventListener('change', updateTripodOptions);
-  }
-}
-if (typeof updateTripodOptions === 'function') updateTripodOptions();
-if (typeof updateViewfinderExtensionVisibility === 'function') updateViewfinderExtensionVisibility();
-if (typeof updateCalculations === 'function') updateCalculations();
-if (typeof applyFilters === 'function') applyFilters();
+
+  ScenarioUiManager.initialize({
+    requiredScenariosSelect: typeof requiredScenariosSelect !== 'undefined' ? requiredScenariosSelect : document.getElementById('requiredScenariosSelect'),
+    requiredScenariosSummary: typeof requiredScenariosSummary !== 'undefined' ? requiredScenariosSummary : document.getElementById('requiredScenariosSummary'),
+    remoteHeadOption: typeof remoteHeadOption !== 'undefined' ? remoteHeadOption : document.getElementById('remoteHeadOption'),
+    monitorSelect: typeof monitorSelect !== 'undefined' ? monitorSelect : document.getElementById('monitorSelect'),
+    videoDistributionSelect: typeof videoDistributionSelect !== 'undefined' ? videoDistributionSelect : document.getElementById('videoDistributionSelect'),
+    tripodPreferencesRow: typeof tripodPreferencesRow !== 'undefined' ? tripodPreferencesRow : document.getElementById('tripodPreferencesRow'),
+    tripodPreferencesHeading: typeof tripodPreferencesHeading !== 'undefined' ? tripodPreferencesHeading : document.getElementById('tripodPreferencesHeading'),
+    tripodPreferencesSection: typeof tripodPreferencesSection !== 'undefined' ? tripodPreferencesSection : document.getElementById('tripodPreferencesSection'),
+    tripodHeadBrandSelect: typeof tripodHeadBrandSelect !== 'undefined' ? tripodHeadBrandSelect : document.getElementById('tripodHeadBrandSelect'),
+    tripodBowlSelect: typeof tripodBowlSelect !== 'undefined' ? tripodBowlSelect : document.getElementById('tripodBowlSelect'),
+    tripodTypesSelect: typeof tripodTypesSelect !== 'undefined' ? tripodTypesSelect : document.getElementById('tripodTypesSelect'),
+    tripodSpreaderSelect: typeof tripodSpreaderSelect !== 'undefined' ? tripodSpreaderSelect : document.getElementById('tripodSpreaderSelect')
+  });
+
+  if (typeof updateTripodOptions === 'function') updateTripodOptions();
+  if (typeof updateViewfinderExtensionVisibility === 'function') updateViewfinderExtensionVisibility();
+  if (typeof updateCalculations === 'function') updateCalculations();
+  if (typeof applyFilters === 'function') applyFilters();
 }
 
 function ensureFeedbackTemperatureOptionsSafe(select) {
@@ -11205,1669 +8754,1677 @@ function updateFeedbackTemperatureOptionsSafe() {
 
 const POST_RENDER_TIMEOUT_MS = 120;
 
-function schedulePostRenderTask(task, options = {}) {
-  // schedulePostRenderTask delegated to InitializationManager
-  function schedulePostRenderTask(task, timeout = 100) {
-    InitializationManager.schedulePostRenderTask(task, timeout);
+
+// schedulePostRenderTask delegated to InitializationManager
+function schedulePostRenderTask(task, timeout = 100) {
+  InitializationManager.schedulePostRenderTask(task, timeout);
+}
+
+// populateEnvironmentDropdowns delegated to UiPopulationManager
+function populateEnvironmentDropdowns() {
+  UiPopulationManager.populateEnvironmentDropdowns();
+}
+
+// populateLensDropdown delegated to UiPopulationManager
+function populateLensDropdown() {
+  UiPopulationManager.populateLensDropdown();
+}
+
+function populateCameraPropertyDropdown(selectId, property, selected = '') {
+  const camKey = (typeof cameraSelect !== 'undefined' && cameraSelect) ? cameraSelect.value : '';
+  DeviceCapabilityManager.populateCameraPropertyDropdown(selectId, property, selected, camKey);
+}
+
+
+function populateRecordingResolutionDropdown(selected = '') {
+  populateCameraPropertyDropdown('recordingResolution', 'resolutions', selected);
+}
+if (typeof window !== 'undefined') {
+  window.populateRecordingResolutionDropdown = populateRecordingResolutionDropdown;
+} else if (typeof globalThis !== 'undefined') {
+  globalThis.populateRecordingResolutionDropdown = populateRecordingResolutionDropdown;
+}
+
+
+const recordingFrameRateInput =
+  typeof document !== 'undefined'
+    ? document.getElementById('recordingFrameRate')
+    : null;
+
+const recordingFrameRateHint =
+  typeof document !== 'undefined'
+    ? document.getElementById('recordingFrameRateHint')
+    : null;
+
+const recordingFrameRateOptionsList =
+  typeof document !== 'undefined'
+    ? document.getElementById('recordingFrameRateOptions')
+    : null;
+
+slowMotionRecordingFrameRateInput =
+  typeof document !== 'undefined'
+    ? document.getElementById('slowMotionRecordingFrameRate')
+    : null;
+
+slowMotionRecordingFrameRateHint =
+  typeof document !== 'undefined'
+    ? document.getElementById('slowMotionRecordingFrameRateHint')
+    : null;
+
+slowMotionRecordingFrameRateOptionsList =
+  typeof document !== 'undefined'
+    ? document.getElementById('slowMotionRecordingFrameRateOptions')
+    : null;
+
+sensorModeDropdown =
+  typeof document !== 'undefined'
+    ? document.getElementById('sensorMode')
+    : null;
+
+slowMotionSensorModeDropdown =
+  typeof document !== 'undefined'
+    ? document.getElementById('slowMotionSensorMode')
+    : null;
+
+recordingResolutionDropdown =
+  typeof document !== 'undefined'
+    ? document.getElementById('recordingResolution')
+    : null;
+
+slowMotionRecordingResolutionDropdown =
+  typeof document !== 'undefined'
+    ? document.getElementById('slowMotionRecordingResolution')
+    : null;
+
+slowMotionAspectRatioSelect =
+  typeof document !== 'undefined'
+    ? document.getElementById('slowMotionAspectRatio')
+    : null;
+
+const PREFERRED_FRAME_RATE_VALUES = Object.freeze([
+  0.75,
+  1,
+  8,
+  12,
+  12.5,
+  15,
+  23.976,
+  24,
+  25,
+  29.97,
+  30,
+  47.952,
+  48,
+  50,
+  59.94,
+  60,
+  72,
+  75,
+  90,
+  96,
+  100,
+  110,
+  112,
+  120,
+  144,
+  150,
+  160,
+  170,
+  180,
+  200,
+  240,
+]);
+
+const FALLBACK_FRAME_RATE_VALUES = Object.freeze([
+  '0.75',
+  '1',
+  '8',
+  '12',
+  '12.5',
+  '15',
+  '23.976',
+  '24',
+  '25',
+  '29.97',
+  '30',
+  '48',
+  '50',
+  '59.94',
+  '60',
+  '72',
+  '75',
+  '90',
+  '96',
+  '100',
+  '110',
+  '112',
+  '120',
+  '144',
+  '150',
+  '160',
+  '170',
+  '180',
+  '200',
+  '240',
+]);
+
+const MIN_RECORDING_FRAME_RATE = 1;
+const FRAME_RATE_RANGE_TOLERANCE = 0.0005;
+
+function formatFrameRateValue(value) {
+  const numeric = typeof value === 'number' ? value : Number.parseFloat(value);
+  if (!Number.isFinite(numeric)) return '';
+  const rounded = Math.round(numeric * 1000) / 1000;
+  if (Number.isInteger(rounded)) {
+    return String(rounded);
   }
+  return rounded.toFixed(3).replace(/\.0+$/, '').replace(/(\.\d*?)0+$/, '$1');
+}
 
-  // populateEnvironmentDropdowns delegated to UiPopulationManager
-  function populateEnvironmentDropdowns() {
-    UiPopulationManager.populateEnvironmentDropdowns();
-  }
+function tokenizeFrameRateContext(value) {
+  if (typeof value !== 'string' || !value) return [];
 
-  // populateLensDropdown delegated to UiPopulationManager
-  function populateLensDropdown() {
-    UiPopulationManager.populateLensDropdown();
-  }
+  const normalizedValue = value.toLowerCase();
+  const baseTokens = normalizedValue
+    .replace(/[\u2013\u2014]/g, '-')
+    .replace(/[()]/g, ' ')
+    .replace(/[[\]]/g, ' ')
+    .split(/[\s,/]+/)
+    .map(token => token.replace(/[^a-z0-9:.+-]/g, '').replace(/^[:.+-]+|[:.+-]+$/g, ''))
+    .filter(token => token && token !== 'fps');
 
-  function populateCameraPropertyDropdown(selectId, property, selected = '') {
-    const camKey = (typeof cameraSelect !== 'undefined' && cameraSelect) ? cameraSelect.value : '';
-    DeviceCapabilityManager.populateCameraPropertyDropdown(selectId, property, selected, camKey);
-  }
-
-
-  function populateRecordingResolutionDropdown(selected = '') {
-    populateCameraPropertyDropdown('recordingResolution', 'resolutions', selected);
-  }
-  if (typeof window !== 'undefined') {
-    window.populateRecordingResolutionDropdown = populateRecordingResolutionDropdown;
-  } else if (typeof globalThis !== 'undefined') {
-    globalThis.populateRecordingResolutionDropdown = populateRecordingResolutionDropdown;
-  }
-
-
-  const recordingFrameRateInput =
-    typeof document !== 'undefined'
-      ? document.getElementById('recordingFrameRate')
-      : null;
-
-  const recordingFrameRateHint =
-    typeof document !== 'undefined'
-      ? document.getElementById('recordingFrameRateHint')
-      : null;
-
-  const recordingFrameRateOptionsList =
-    typeof document !== 'undefined'
-      ? document.getElementById('recordingFrameRateOptions')
-      : null;
-
-  slowMotionRecordingFrameRateInput =
-    typeof document !== 'undefined'
-      ? document.getElementById('slowMotionRecordingFrameRate')
-      : null;
-
-  slowMotionRecordingFrameRateHint =
-    typeof document !== 'undefined'
-      ? document.getElementById('slowMotionRecordingFrameRateHint')
-      : null;
-
-  slowMotionRecordingFrameRateOptionsList =
-    typeof document !== 'undefined'
-      ? document.getElementById('slowMotionRecordingFrameRateOptions')
-      : null;
-
-  sensorModeDropdown =
-    typeof document !== 'undefined'
-      ? document.getElementById('sensorMode')
-      : null;
-
-  slowMotionSensorModeDropdown =
-    typeof document !== 'undefined'
-      ? document.getElementById('slowMotionSensorMode')
-      : null;
-
-  recordingResolutionDropdown =
-    typeof document !== 'undefined'
-      ? document.getElementById('recordingResolution')
-      : null;
-
-  slowMotionRecordingResolutionDropdown =
-    typeof document !== 'undefined'
-      ? document.getElementById('slowMotionRecordingResolution')
-      : null;
-
-  slowMotionAspectRatioSelect =
-    typeof document !== 'undefined'
-      ? document.getElementById('slowMotionAspectRatio')
-      : null;
-
-  const PREFERRED_FRAME_RATE_VALUES = Object.freeze([
-    0.75,
-    1,
-    8,
-    12,
-    12.5,
-    15,
-    23.976,
-    24,
-    25,
-    29.97,
-    30,
-    47.952,
-    48,
-    50,
-    59.94,
-    60,
-    72,
-    75,
-    90,
-    96,
-    100,
-    110,
-    112,
-    120,
-    144,
-    150,
-    160,
-    170,
-    180,
-    200,
-    240,
-  ]);
-
-  const FALLBACK_FRAME_RATE_VALUES = Object.freeze([
-    '0.75',
-    '1',
-    '8',
-    '12',
-    '12.5',
-    '15',
-    '23.976',
-    '24',
-    '25',
-    '29.97',
-    '30',
-    '48',
-    '50',
-    '59.94',
-    '60',
-    '72',
-    '75',
-    '90',
-    '96',
-    '100',
-    '110',
-    '112',
-    '120',
-    '144',
-    '150',
-    '160',
-    '170',
-    '180',
-    '200',
-    '240',
-  ]);
-
-  const MIN_RECORDING_FRAME_RATE = 1;
-  const FRAME_RATE_RANGE_TOLERANCE = 0.0005;
-
-  function formatFrameRateValue(value) {
-    const numeric = typeof value === 'number' ? value : Number.parseFloat(value);
-    if (!Number.isFinite(numeric)) return '';
-    const rounded = Math.round(numeric * 1000) / 1000;
-    if (Number.isInteger(rounded)) {
-      return String(rounded);
+  const tokens = new Set(baseTokens);
+  const addAliasToken = alias => {
+    if (!alias) return;
+    const normalizedAlias = alias.replace(/[^a-z0-9]/g, '');
+    if (normalizedAlias) {
+      tokens.add(normalizedAlias);
     }
-    return rounded.toFixed(3).replace(/\.0+$/, '').replace(/(\.\d*?)0+$/, '$1');
+  };
+
+  const resolutionValue = normalizedValue.replace(/\u00d7/g, 'x');
+  const compactValue = resolutionValue.replace(/\s+/g, '');
+  const includes = text => resolutionValue.includes(text);
+  const compactIncludes = text => compactValue.includes(text);
+
+  if (
+    includes('uhd') ||
+    includes('ultra hd') ||
+    compactIncludes('ultrahd') ||
+    /3840\s*x\s*2160/.test(resolutionValue)
+  ) {
+    addAliasToken('uhd');
+    addAliasToken('4k');
   }
 
-  function tokenizeFrameRateContext(value) {
-    if (typeof value !== 'string' || !value) return [];
+  if (
+    includes('dci') ||
+    /4096\s*x\s*2160/.test(resolutionValue)
+  ) {
+    addAliasToken('dci');
+    addAliasToken('4k');
+  }
 
-    const normalizedValue = value.toLowerCase();
-    const baseTokens = normalizedValue
-      .replace(/[\u2013\u2014]/g, '-')
-      .replace(/[()]/g, ' ')
-      .replace(/[[\]]/g, ' ')
-      .split(/[\s,/]+/)
-      .map(token => token.replace(/[^a-z0-9:.+-]/g, '').replace(/^[:.+-]+|[:.+-]+$/g, ''))
-      .filter(token => token && token !== 'fps');
+  if (
+    compactIncludes('2048x1080') ||
+    /2048\s*x\s*1080/.test(resolutionValue) ||
+    /(?:^|[^a-z0-9])2k(?:[^a-z0-9]|$)/.test(resolutionValue)
+  ) {
+    addAliasToken('2k');
+    addAliasToken('dci');
+  }
 
-    const tokens = new Set(baseTokens);
-    const addAliasToken = alias => {
-      if (!alias) return;
-      const normalizedAlias = alias.replace(/[^a-z0-9]/g, '');
-      if (normalizedAlias) {
-        tokens.add(normalizedAlias);
+  if (
+    compactIncludes('fullhd') ||
+    includes('full hd') ||
+    includes('full-hd') ||
+    includes('fhd') ||
+    includes('1080p') ||
+    /1920\s*x\s*1080/.test(resolutionValue)
+  ) {
+    addAliasToken('hd');
+    addAliasToken('fhd');
+    addAliasToken('1080p');
+  }
+
+  if (
+    includes('720p') ||
+    /1280\s*x\s*720/.test(resolutionValue)
+  ) {
+    addAliasToken('hd');
+    addAliasToken('720p');
+  }
+
+  if (/(?:^|[^a-z0-9])6k(?:[^a-z0-9]|$)/.test(resolutionValue)) {
+    addAliasToken('6k');
+  }
+
+  if (/(?:^|[^a-z0-9])8k(?:[^a-z0-9]|$)/.test(resolutionValue)) {
+    addAliasToken('8k');
+  }
+
+  if (/(?:^|[^a-z0-9])4k(?:[^a-z0-9]|$)/.test(resolutionValue) || includes('4k')) {
+    addAliasToken('4k');
+  }
+
+  return Array.from(tokens);
+}
+
+function normalizeMatchTarget(value) {
+  if (typeof value !== 'string' || !value) {
+    return '';
+  }
+  return value.toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function includePreferredValuesForRange(minValue, maxValue, set) {
+  if (!Number.isFinite(minValue) || !Number.isFinite(maxValue) || !set) {
+    return;
+  }
+  const low = Math.min(minValue, maxValue);
+  const high = Math.max(minValue, maxValue);
+  PREFERRED_FRAME_RATE_VALUES.forEach(candidate => {
+    if (candidate >= low - 0.0005 && candidate <= high + 0.0005) {
+      const formatted = formatFrameRateValue(candidate);
+      if (formatted) {
+        set.add(formatted);
       }
-    };
-
-    const resolutionValue = normalizedValue.replace(/\u00d7/g, 'x');
-    const compactValue = resolutionValue.replace(/\s+/g, '');
-    const includes = text => resolutionValue.includes(text);
-    const compactIncludes = text => compactValue.includes(text);
-
-    if (
-      includes('uhd') ||
-      includes('ultra hd') ||
-      compactIncludes('ultrahd') ||
-      /3840\s*x\s*2160/.test(resolutionValue)
-    ) {
-      addAliasToken('uhd');
-      addAliasToken('4k');
     }
+  });
+}
 
-    if (
-      includes('dci') ||
-      /4096\s*x\s*2160/.test(resolutionValue)
-    ) {
-      addAliasToken('dci');
-      addAliasToken('4k');
-    }
-
-    if (
-      compactIncludes('2048x1080') ||
-      /2048\s*x\s*1080/.test(resolutionValue) ||
-      /(?:^|[^a-z0-9])2k(?:[^a-z0-9]|$)/.test(resolutionValue)
-    ) {
-      addAliasToken('2k');
-      addAliasToken('dci');
-    }
-
-    if (
-      compactIncludes('fullhd') ||
-      includes('full hd') ||
-      includes('full-hd') ||
-      includes('fhd') ||
-      includes('1080p') ||
-      /1920\s*x\s*1080/.test(resolutionValue)
-    ) {
-      addAliasToken('hd');
-      addAliasToken('fhd');
-      addAliasToken('1080p');
-    }
-
-    if (
-      includes('720p') ||
-      /1280\s*x\s*720/.test(resolutionValue)
-    ) {
-      addAliasToken('hd');
-      addAliasToken('720p');
-    }
-
-    if (/(?:^|[^a-z0-9])6k(?:[^a-z0-9]|$)/.test(resolutionValue)) {
-      addAliasToken('6k');
-    }
-
-    if (/(?:^|[^a-z0-9])8k(?:[^a-z0-9]|$)/.test(resolutionValue)) {
-      addAliasToken('8k');
-    }
-
-    if (/(?:^|[^a-z0-9])4k(?:[^a-z0-9]|$)/.test(resolutionValue) || includes('4k')) {
-      addAliasToken('4k');
-    }
-
-    return Array.from(tokens);
+function parseFrameRateNumericValues(entry) {
+  if (typeof entry !== 'string' || !entry.trim()) {
+    return [];
   }
 
-  function normalizeMatchTarget(value) {
-    if (typeof value !== 'string' || !value) {
-      return '';
-    }
-    return value.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const normalized = entry.replace(/[\u2013\u2014]/g, '-');
+  const parts = normalized.split(':');
+  const numericSection = parts.length > 1 ? parts.slice(1).join(':') : normalized;
+  const values = new Set();
+
+  const rangePattern = /(\d+(?:\.\d+)?)(?:\s*(?:-|to)\s*)(\d+(?:\.\d+)?)(?=\s*(?:fps|FPS))/g;
+  let match = rangePattern.exec(numericSection);
+  while (match) {
+    const minStr = match[1];
+    const maxStr = match[2];
+    const minVal = Number.parseFloat(minStr);
+    const maxVal = Number.parseFloat(maxStr);
+    const minFormatted = formatFrameRateValue(minVal);
+    const maxFormatted = formatFrameRateValue(maxVal);
+    // Redundant frame rate helpers removed (moved to DeviceCapabilityManager).
+
+    if (minFormatted) values.add(minFormatted);
+    if (maxFormatted) values.add(maxFormatted);
+    includePreferredValuesForRange(minVal, maxVal, values);
+
+    match = rangePattern.exec(numericSection);
   }
 
-  function includePreferredValuesForRange(minValue, maxValue, set) {
-    if (!Number.isFinite(minValue) || !Number.isFinite(maxValue) || !set) {
-      return;
+  return Array.from(values);
+}
+function findMaxFrameRateForSensor(entries, sensorTokens, sensorLabel = '') {
+  return DeviceCapabilityManager.findMaxFrameRateForSensor(entries, sensorTokens, sensorLabel);
+}
+
+function getFrameRateInputValue(input) {
+  if (!input) return '';
+  const raw = input.value;
+  return typeof raw === 'string' ? raw.trim() : '';
+}
+
+function getCurrentFrameRateInputValue() {
+  return getFrameRateInputValue(recordingFrameRateInput);
+}
+
+function collectFrameRateContextTokens(select) {
+  if (!select) {
+    return [];
+  }
+  if (select.multiple) {
+    return Array.from(select.selectedOptions || [])
+      .map(option => DeviceCapabilityManager.tokenizeFrameRateContext(option && option.value))
+      .reduce((acc, tokens) => (tokens && tokens.length ? acc.concat(tokens) : acc), []);
+  }
+  const value = typeof select.value === 'string' ? select.value : '';
+  return DeviceCapabilityManager.tokenizeFrameRateContext(value);
+}
+
+function populateFrameRateDropdownFor(config = {}) {
+  const {
+    selected = '',
+    recordingInput,
+    optionsList,
+    sensorSelect,
+    resolutionSelect,
+    aspectSelect,
+    hintElement,
+  } = config;
+
+  if (!recordingInput || !optionsList) {
+    return;
+  }
+
+  const normalizedSelected = DeviceCapabilityManager.normalizeRecordingFrameRateValue(selected);
+  let currentValue = normalizedSelected || getFrameRateInputValue(recordingInput);
+  const camKey = cameraSelect && cameraSelect.value;
+  // Fix for potential ReferenceError: devices is not defined
+  const safeDevices = (typeof window !== 'undefined' && window.devices) || {};
+  const frameRateEntries =
+    camKey && safeDevices && safeDevices.cameras && safeDevices.cameras[camKey]
+      ? safeDevices.cameras[camKey].frameRates
+      : null;
+
+  const sensorValue = sensorSelect && typeof sensorSelect.value === 'string'
+    ? sensorSelect.value
+    : '';
+  const sensorTokens = DeviceCapabilityManager.tokenizeFrameRateContext(sensorValue);
+  const resolutionValue = resolutionSelect && typeof resolutionSelect.value === 'string'
+    ? resolutionSelect.value
+    : '';
+  const resolutionTokens = DeviceCapabilityManager.tokenizeFrameRateContext(resolutionValue);
+  const aspectTokens = collectFrameRateContextTokens(aspectSelect);
+
+  const sensorModeMaxFrameRate = findMaxFrameRateForSensor(
+    Array.isArray(frameRateEntries) ? frameRateEntries : [],
+    sensorTokens,
+    sensorValue
+  );
+  const resolutionMaxFrameRate = findMaxFrameRateForSensor(
+    Array.isArray(frameRateEntries) ? frameRateEntries : [],
+    resolutionTokens,
+    recordingResolutionDropdown && recordingResolutionDropdown.value
+  );
+
+  const { values: suggestions } = DeviceCapabilityManager.buildFrameRateSuggestions(
+    Array.isArray(frameRateEntries) ? frameRateEntries : [],
+    [
+      sensorTokens,
+      resolutionTokens,
+      aspectTokens,
+    ]
+  );
+
+  optionsList.innerHTML = '';
+  const uniqueValues = new Set();
+  const filteredSuggestions = [];
+  const numericCandidates = [];
+  const allowedMaxCandidates = [];
+  if (Number.isFinite(sensorModeMaxFrameRate)) {
+    allowedMaxCandidates.push(sensorModeMaxFrameRate);
+  }
+  if (Number.isFinite(resolutionMaxFrameRate)) {
+    allowedMaxCandidates.push(resolutionMaxFrameRate);
+  }
+  const allowedMaxFrameRate = allowedMaxCandidates.length
+    ? Math.min(...allowedMaxCandidates)
+    : null;
+
+  suggestions.forEach(originalValue => {
+    if (!originalValue) return;
+    let value = originalValue;
+    const numeric = Number.parseFloat(value);
+    if (Number.isFinite(numeric)) {
+      if (numeric + FRAME_RATE_RANGE_TOLERANCE < MIN_RECORDING_FRAME_RATE) {
+        return;
+      }
+      if (
+        allowedMaxFrameRate !== null &&
+        numeric > allowedMaxFrameRate + FRAME_RATE_RANGE_TOLERANCE
+      ) {
+        return;
+      }
+      const formatted = formatFrameRateValue(numeric);
+      if (formatted) {
+        value = formatted;
+      }
+      numericCandidates.push({ numeric, formatted: value });
     }
-    const low = Math.min(minValue, maxValue);
-    const high = Math.max(minValue, maxValue);
-    PREFERRED_FRAME_RATE_VALUES.forEach(candidate => {
-      if (candidate >= low - 0.0005 && candidate <= high + 0.0005) {
-        const formatted = formatFrameRateValue(candidate);
-        if (formatted) {
-          set.add(formatted);
+    if (uniqueValues.has(value)) return;
+    uniqueValues.add(value);
+    filteredSuggestions.push(value);
+    const opt = document.createElement('option');
+    opt.value = value;
+    optionsList.appendChild(opt);
+  });
+
+  if (currentValue && !uniqueValues.has(currentValue)) {
+    const numericForList = Number.parseFloat(currentValue);
+    if (
+      !Number.isFinite(numericForList) ||
+      numericForList + FRAME_RATE_RANGE_TOLERANCE >= MIN_RECORDING_FRAME_RATE
+    ) {
+      const opt = document.createElement('option');
+      opt.value = currentValue;
+      optionsList.appendChild(opt);
+    }
+  }
+
+  const maxCandidate = numericCandidates.reduce(
+    (best, entry) => (entry.numeric > best.numeric ? entry : best),
+    { numeric: Number.NEGATIVE_INFINITY, formatted: '' }
+  );
+  let maxFrameRate = maxCandidate.numeric;
+  if (Number.isFinite(allowedMaxFrameRate)) {
+    maxFrameRate = Number.isFinite(maxFrameRate)
+      ? Math.min(maxFrameRate, allowedMaxFrameRate)
+      : allowedMaxFrameRate;
+  }
+  const formattedMaxFrameRate = Number.isFinite(maxFrameRate)
+    ? maxCandidate.formatted || formatFrameRateValue(maxFrameRate)
+    : '';
+  const minValue = formatFrameRateValue(MIN_RECORDING_FRAME_RATE);
+  const numericCurrent = Number.parseFloat(currentValue);
+  let adjustedValue = currentValue;
+  let valueChanged = false;
+
+  if (
+    Number.isFinite(maxFrameRate) &&
+    Number.isFinite(numericCurrent) &&
+    numericCurrent > maxFrameRate + FRAME_RATE_RANGE_TOLERANCE
+  ) {
+    const clampedValue = formattedMaxFrameRate || formatFrameRateValue(maxFrameRate);
+    if (clampedValue) {
+      adjustedValue = clampedValue;
+      if (adjustedValue !== currentValue) {
+        valueChanged = true;
+      }
+    }
+  }
+
+  if (
+    minValue &&
+    Number.isFinite(numericCurrent) &&
+    numericCurrent + FRAME_RATE_RANGE_TOLERANCE < MIN_RECORDING_FRAME_RATE
+  ) {
+    adjustedValue = minValue;
+    if (adjustedValue !== currentValue) {
+      valueChanged = true;
+    }
+  }
+
+  if (valueChanged) {
+    recordingInput.value = adjustedValue;
+    currentValue = adjustedValue;
+    recordingInput.dispatchEvent(new Event('input', { bubbles: true }));
+  } else {
+    recordingInput.value = currentValue;
+  }
+
+  const placeholderCandidate = filteredSuggestions[0];
+  if (!currentValue && placeholderCandidate) {
+    recordingInput.placeholder = placeholderCandidate;
+  } else if (recordingInput.placeholder) {
+    recordingInput.placeholder = '';
+  }
+
+  if (minValue) {
+    recordingInput.min = minValue;
+  }
+
+  if (formattedMaxFrameRate) {
+    recordingInput.setAttribute('max', formattedMaxFrameRate);
+  } else {
+    recordingInput.removeAttribute('max');
+  }
+
+  if (hintElement) {
+    let hintMessage = '';
+    if (formattedMaxFrameRate) {
+      const template = hintElement.getAttribute('data-range-template');
+      hintMessage = template
+        ? template.replace('{max}', formattedMaxFrameRate)
+        : `Enter a recording frame rate from ${minValue} to ${formattedMaxFrameRate} fps.`;
+    } else {
+      hintMessage = hintElement.getAttribute('data-default-message') || '';
+    }
+    hintElement.textContent = hintMessage;
+    hintElement.hidden = !hintMessage;
+  }
+}
+
+function populateFrameRateDropdown(selected = '') {
+  const resolve = (val, id) => val || (typeof document !== 'undefined' ? document.getElementById(id) : null);
+  const inputEl = resolve(recordingFrameRateInput, 'recordingFrameRate');
+
+  if (!inputEl && typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+    cineCoreUiHelpers.whenElementAvailable('recordingFrameRate', () => populateFrameRateDropdown(selected));
+    return;
+  }
+
+  populateFrameRateDropdownFor({
+    selected,
+    recordingInput: inputEl,
+    optionsList: resolve(recordingFrameRateOptionsList, 'recordingFrameRateOptions'),
+    sensorSelect: resolve(sensorModeDropdown, 'sensorMode'),
+    resolutionSelect: resolve(recordingResolutionDropdown, 'recordingResolution'),
+    hintElement: resolve(recordingFrameRateHint, 'recordingFrameRateHint'),
+  });
+}
+
+function populateSlowMotionFrameRateDropdown(selected = '') {
+  const resolve = (val, id) => val || (typeof document !== 'undefined' ? document.getElementById(id) : null);
+  const inputEl = resolve(slowMotionRecordingFrameRateInput, 'slowMotionRecordingFrameRate');
+
+  if (!inputEl && typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
+    cineCoreUiHelpers.whenElementAvailable('slowMotionRecordingFrameRate', () => populateSlowMotionFrameRateDropdown(selected));
+    return;
+  }
+
+  populateFrameRateDropdownFor({
+    selected,
+    recordingInput: inputEl,
+    optionsList: resolve(slowMotionRecordingFrameRateOptionsList, 'slowMotionRecordingFrameRateOptions'),
+    sensorSelect: resolve(slowMotionSensorModeDropdown, 'slowMotionSensorMode'),
+    resolutionSelect: resolve(slowMotionRecordingResolutionDropdown, 'slowMotionRecordingResolution'),
+    aspectSelect: resolve(slowMotionAspectRatioSelect, 'slowMotionAspectRatio'),
+    hintElement: resolve(slowMotionRecordingFrameRateHint, 'slowMotionRecordingFrameRateHint'),
+  });
+}
+
+function populateSlowMotionRecordingResolutionDropdown(selected = '') {
+  populateCameraPropertyDropdown('slowMotionRecordingResolution', 'resolutions', selected);
+}
+if (typeof window !== 'undefined') window.populateSlowMotionRecordingResolutionDropdown = populateSlowMotionRecordingResolutionDropdown;
+
+function populateSlowMotionSensorModeDropdown(selected = '') {
+  populateCameraPropertyDropdown('slowMotionSensorMode', 'sensorModes', selected);
+}
+if (typeof window !== 'undefined') window.populateSlowMotionSensorModeDropdown = populateSlowMotionSensorModeDropdown;
+
+function populateSensorModeDropdown(selected = '') {
+  populateCameraPropertyDropdown('sensorMode', 'sensorModes', selected);
+}
+if (typeof window !== 'undefined') window.populateSensorModeDropdown = populateSensorModeDropdown;
+
+function populateCodecDropdown(selected = '') {
+  populateCameraPropertyDropdown('codec', 'recordingCodecs', selected);
+}
+
+function populateFilterDropdown() {
+  UiPopulationManager.populateFilterDropdown();
+}
+
+const filterId = t => t.replace(/[^a-z0-9]/gi, '_');
+
+function getFilterValueConfig(type) {
+  switch (type) {
+    case 'IRND':
+      return { opts: ['0.3', '0.6', '0.9', '1.2', '1.5', '1.8', '2.1', '2.5'], defaults: ['0.3', '1.2'] };
+    case 'Diopter':
+      return { opts: ['+1/4', '+1/2', '+1', '+2', '+3', '+4'], defaults: ['+1/2', '+1', '+2', '+4'] };
+    case 'ND Grad HE':
+      return {
+        opts: ['0.3 HE Vertical', '0.6 HE Vertical', '0.9 HE Vertical', '1.2 HE Vertical', '0.3 HE Horizontal', '0.6 HE Horizontal', '0.9 HE Horizontal', '1.2 HE Horizontal'],
+        defaults: ['0.3 HE Horizontal', '0.6 HE Horizontal', '0.9 HE Horizontal']
+      };
+    case 'ND Grad SE':
+      return {
+        opts: ['0.3 SE Vertical', '0.6 SE Vertical', '0.9 SE Vertical', '1.2 SE Vertical', '0.3 SE Horizontal', '0.6 SE Horizontal', '0.9 SE Horizontal', '1.2 SE Horizontal'],
+        defaults: ['0.3 SE Horizontal', '0.6 SE Horizontal', '0.9 SE Horizontal']
+      };
+    default:
+      return { opts: ['1', '1/2', '1/4', '1/8', '1/16'], defaults: ['1/2', '1/4', '1/8'] };
+  }
+}
+
+const SESSION_DEFAULT_FILTER_SIZE = ensureSessionRuntimePlaceholder(
+  'DEFAULT_FILTER_SIZE',
+  () => '4x5.65'
+);
+
+function createFilterSizeSelect(type, selected = SESSION_DEFAULT_FILTER_SIZE, options = {}) {
+  const { includeId = true, idPrefix = 'filter-size-' } = options;
+  const sel = document.createElement('select');
+  if (includeId) {
+    sel.id = `${idPrefix}${filterId(type)}`;
+  }
+  let sizes = [SESSION_DEFAULT_FILTER_SIZE, '4x4', '6x6', '95mm'];
+  if (type === 'Rota-Pol') sizes = [SESSION_DEFAULT_FILTER_SIZE, '6x6', '95mm'];
+  sizes.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s;
+    o.textContent = s;
+    if (s === selected) o.selected = true;
+    sel.appendChild(o);
+  });
+  return sel;
+}
+
+/* exported createFilterValueSelect */
+function createFilterValueSelect(type, selected) {
+  const sel = document.createElement('select');
+  sel.id = `filter-values-${filterId(type)}`;
+  // Allow selecting multiple strengths for a given filter
+  // Use both the property and attribute to ensure HTML serialization
+  sel.multiple = true;
+  sel.setAttribute('multiple', '');
+  const { opts, defaults = [] } = getFilterValueConfig(type);
+  const selectedVals = Array.isArray(selected)
+    ? selected.slice()
+    : defaults.slice();
+  const syncOption = (option, isSelected) => {
+    option.selected = isSelected;
+    if (isSelected) {
+      option.setAttribute('selected', '');
+    } else {
+      option.removeAttribute('selected');
+    }
+  };
+  const syncCheckbox = (checkbox, isChecked) => {
+    checkbox.checked = isChecked;
+    if (isChecked) {
+      checkbox.setAttribute('checked', '');
+    } else {
+      checkbox.removeAttribute('checked');
+    }
+  };
+  const optionsByValue = new Map();
+  const optionFragment = document.createDocumentFragment();
+  for (let index = 0; index < opts.length; index += 1) {
+    const value = opts[index];
+    const opt = document.createElement('option');
+    opt.value = value;
+    opt.textContent = value;
+    syncOption(opt, selectedVals.includes(value));
+    optionsByValue.set(value, opt);
+    optionFragment.appendChild(opt);
+  }
+  sel.appendChild(optionFragment);
+  // Hidden select holds the values; checkboxes provide the UI
+  sel.size = opts.length;
+  sel.style.display = 'none';
+  const container = document.createElement('span');
+  container.className = 'filter-values-container';
+  const checkboxName = `filterValues-${filterId(type)}`;
+  const checkboxFragment = document.createDocumentFragment();
+  const checkboxesByValue = new Map();
+  for (let index = 0; index < opts.length; index += 1) {
+    const value = opts[index];
+    const lbl = document.createElement('label');
+    lbl.className = 'filter-value-option';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.name = checkboxName;
+    cb.value = value;
+    syncCheckbox(cb, selectedVals.includes(value));
+    cb.addEventListener('change', () => {
+      const opt = optionsByValue.get(value);
+      if (opt) {
+        syncOption(opt, cb.checked);
+      }
+      syncCheckbox(cb, cb.checked);
+      sel.dispatchEvent(new Event('change'));
+    });
+    lbl.appendChild(cb);
+    lbl.appendChild(document.createTextNode(value));
+    checkboxesByValue.set(value, cb);
+    checkboxFragment.appendChild(lbl);
+  }
+  container.appendChild(checkboxFragment);
+  sel.addEventListener('change', () => {
+    optionsByValue.forEach((opt, value) => {
+      const selected = !!opt && opt.selected;
+      syncOption(opt, selected);
+      const checkbox = checkboxesByValue.get(value);
+      if (checkbox) {
+        syncCheckbox(checkbox, selected);
+      }
+    });
+  });
+  container.appendChild(sel);
+  return { container, select: sel };
+}
+
+function resolveFilterDisplayInfo(type, size = SESSION_DEFAULT_FILTER_SIZE) {
+  switch (type) {
+    case 'Diopter':
+      return { label: 'Schneider CF DIOPTER FULL GEN2', gearName: 'Schneider CF DIOPTER FULL GEN2' };
+    case 'Clear':
+      return { label: 'Clear Filter', gearName: 'Clear Filter' };
+    case 'IRND':
+      return { label: 'IRND Filter Set', gearName: 'IRND Filter Set', hideDetails: false };
+    case 'Pol':
+      return { label: 'Pol Filter', gearName: 'Pol Filter' };
+    case 'Rota-Pol': {
+      if (size === '6x6') {
+        return {
+          label: 'ARRI Rota Pola Filter Frame (6x6)',
+          gearName: 'ARRI Rota Pola Filter Frame (6x6)'
+        };
+      }
+      if (size === '95mm') {
+        return {
+          label: 'Tilta 95mm Polarizer Filter for Tilta Mirage',
+          gearName: 'Tilta 95mm Polarizer Filter for Tilta Mirage'
+        };
+      }
+      return {
+        label: 'ARRI Rota Pola Filter Frame',
+        gearName: 'ARRI Rota Pola Filter Frame'
+      };
+    }
+    case 'ND Grad HE':
+      return { label: 'ND Grad HE Filter Set', gearName: 'ND Grad HE Filter Set', hideDetails: false };
+    case 'ND Grad SE':
+      return { label: 'ND Grad SE Filter Set', gearName: 'ND Grad SE Filter Set', hideDetails: false };
+    default:
+      return { label: `${type} Filter Set`, gearName: `${type} Filter Set`, hideDetails: true };
+  }
+}
+
+function buildFilterGearEntries(filters = []) {
+  const entries = [];
+  filters.forEach(({ type, size = SESSION_DEFAULT_FILTER_SIZE, values }) => {
+    if (!type) return;
+    const sizeValue = size || SESSION_DEFAULT_FILTER_SIZE;
+    const idBase = `filter-${filterId(type)}`;
+    switch (type) {
+      case 'Diopter': {
+        entries.push({
+          id: `${idBase}-frame`,
+          gearName: 'ARRI Diopter Frame 138mm',
+          label: 'ARRI Diopter Frame 138mm',
+          type: '',
+          size: '',
+          values: []
+        });
+        const diopterValues = values == null
+          ? (getFilterValueConfig(type).defaults || []).slice()
+          : (Array.isArray(values) ? values.slice() : []);
+        entries.push({
+          id: `${idBase}-set`,
+          gearName: 'Schneider CF DIOPTER FULL GEN2',
+          label: 'Schneider CF DIOPTER FULL GEN2',
+          type,
+          size: '',
+          values: diopterValues
+        });
+        break;
+      }
+      case 'Clear': {
+        const { label, gearName } = resolveFilterDisplayInfo(type, sizeValue);
+        entries.push({
+          id: idBase,
+          gearName,
+          label,
+          type,
+          size: sizeValue,
+          values: []
+        });
+        break;
+      }
+      case 'Pol': {
+        const { label, gearName } = resolveFilterDisplayInfo(type, sizeValue);
+        entries.push({
+          id: idBase,
+          gearName,
+          label,
+          type,
+          size: sizeValue,
+          values: []
+        });
+        break;
+      }
+      case 'Rota-Pol': {
+        const { label, gearName } = resolveFilterDisplayInfo(type, sizeValue);
+        const displaySize = label.includes(sizeValue) ? '' : sizeValue;
+        entries.push({
+          id: idBase,
+          gearName,
+          label,
+          type,
+          size: displaySize,
+          values: []
+        });
+        break;
+      }
+      case 'ND Grad HE':
+      case 'ND Grad SE': {
+        const { label, gearName, hideDetails } = resolveFilterDisplayInfo(type, sizeValue);
+        const gradValues = values == null
+          ? (getFilterValueConfig(type).defaults || []).slice()
+          : (Array.isArray(values) ? values.slice() : []);
+        entries.push({
+          id: idBase,
+          gearName,
+          label,
+          hideDetails,
+          type,
+          size: sizeValue,
+          values: gradValues
+        });
+        break;
+      }
+      default: {
+        const { label, gearName, hideDetails } = resolveFilterDisplayInfo(type, sizeValue);
+        const filterValues = values == null
+          ? (getFilterValueConfig(type).defaults || []).slice()
+          : (Array.isArray(values) ? values.slice() : []);
+        entries.push({
+          id: idBase,
+          gearName,
+          label,
+          hideDetails,
+          type,
+          size: sizeValue,
+          values: filterValues
+        });
+      }
+    }
+  });
+  return entries;
+}
+if (typeof window !== 'undefined') window.buildFilterGearEntries = buildFilterGearEntries;
+
+function updateGearListFilterEntries(entries = []) {
+  if (!gearListOutput) return;
+  const entryMap = new Map(entries.map(entry => [entry.id, entry]));
+  gearListOutput.querySelectorAll('[data-filter-entry]').forEach(span => {
+    const entryId = span.getAttribute('data-filter-entry');
+    if (!entryId) return;
+    const entry = entryMap.get(entryId);
+    if (!entry) return;
+    const labelText = typeof entry?.label === 'string' ? entry.label : '';
+    span.textContent = labelText ? `1x ${labelText}` : '';
+    span.setAttribute('data-gear-name', entry.gearName);
+    span.setAttribute('data-filter-label', entry.label);
+    if (entry.type) {
+      span.setAttribute('data-filter-type', entry.type);
+    } else {
+      span.removeAttribute('data-filter-type');
+    }
+  });
+}
+
+function getGearListFilterDetailsContainer() {
+  return gearListOutput ? gearListOutput.querySelector('#gearListFilterDetails') : null;
+}
+
+function filterTypeNeedsValueSelect(type) {
+  return type === 'Diopter'
+    || type === 'IRND'
+    || type === 'ND Grad HE'
+    || type === 'ND Grad SE'
+    || (type !== 'Clear' && type !== 'Pol' && type !== 'Rota-Pol');
+}
+
+function createFilterStorageValueSelect(type, selected) {
+  const select = document.createElement('select');
+  select.id = `filter-values-${filterId(type)}`;
+  select.multiple = true;
+  select.setAttribute('multiple', '');
+  select.hidden = true;
+  select.setAttribute('aria-hidden', 'true');
+  const { opts, defaults = [] } = getFilterValueConfig(type);
+  const chosen = Array.isArray(selected) ? selected.slice() : defaults.slice();
+  opts.forEach(value => {
+    const opt = document.createElement('option');
+    opt.value = value;
+    opt.textContent = value;
+    if (chosen.includes(value)) {
+      opt.selected = true;
+      opt.setAttribute('selected', '');
+    }
+    select.appendChild(opt);
+  });
+  return select;
+}
+
+function resolveFilterDetailsStorageElement() {
+  if (typeof filterDetailsStorage !== 'undefined' && filterDetailsStorage) {
+    return filterDetailsStorage;
+  }
+  if (typeof document === 'undefined') return null;
+  const element = document.getElementById('filterDetails');
+  if (!element) return null;
+  try {
+    if (typeof globalThis !== 'undefined' && globalThis) {
+      globalThis.filterDetailsStorage = element;
+    } else if (typeof window !== 'undefined' && window) {
+      window.filterDetailsStorage = element;
+    }
+  } catch (ex) {
+    void ex;
+  }
+  return element;
+}
+
+function renderFilterDetailsStorage(details) {
+  const storageRoot = resolveFilterDetailsStorageElement();
+  if (!storageRoot) return;
+  storageRoot.innerHTML = '';
+  if (!details.length) {
+    storageRoot.hidden = true;
+    return;
+  }
+  storageRoot.hidden = true;
+  details.forEach(detail => {
+    const { type, size, values, needsSize, needsValues } = detail;
+    if (needsSize) {
+      const sizeSelect = createFilterSizeSelect(type, size);
+      sizeSelect.hidden = true;
+      sizeSelect.setAttribute('aria-hidden', 'true');
+      sizeSelect.addEventListener('change', handleFilterDetailChange);
+      storageRoot.appendChild(sizeSelect);
+    }
+    if (needsValues) {
+      const valuesSelect = createFilterStorageValueSelect(type, values);
+      valuesSelect.addEventListener('change', handleFilterDetailChange);
+      storageRoot.appendChild(valuesSelect);
+    }
+  });
+}
+
+function resolveGlobalScope() {
+  if (typeof globalThis !== 'undefined') return globalThis;
+  if (typeof window !== 'undefined') return window;
+  if (typeof self !== 'undefined') return self;
+  if (typeof global !== 'undefined') return global;
+  return null;
+}
+
+function ensureFilterDetailEditButton(element) {
+  if (!element) return null;
+  const existing = element.querySelector('.gear-item-edit-btn');
+  if (existing) return existing;
+
+  const doc = element.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return null;
+
+  const scope = resolveGlobalScope();
+  let editLabel = 'Edit item';
+  const textGetter = scope && typeof scope.getGearItemEditTexts === 'function'
+    ? scope.getGearItemEditTexts
+    : null;
+  if (textGetter) {
+    try {
+      const texts = textGetter.call(scope) || {};
+      if (texts.editButtonLabel && typeof texts.editButtonLabel === 'string') {
+        const trimmed = texts.editButtonLabel.trim();
+        if (trimmed) {
+          editLabel = trimmed;
         }
+      }
+    } catch {
+      // Ignore localization lookup failures and use fallback label.
+    }
+  }
+
+  const button = doc.createElement('button');
+  button.type = 'button';
+  button.className = 'gear-item-edit-btn';
+  button.setAttribute('data-gear-edit', '');
+
+  if (editLabel) {
+    button.setAttribute('aria-label', editLabel);
+    button.setAttribute('title', editLabel);
+  }
+
+  const setLabelWithIcon = scope && typeof scope.setButtonLabelWithIcon === 'function'
+    ? scope.setButtonLabelWithIcon
+    : null;
+  const iconRegistry = scope && scope.ICON_GLYPHS ? scope.ICON_GLYPHS : null;
+  const editGlyph = iconRegistry
+    ? (
+      iconRegistry.sliders
+      || iconRegistry.gears
+      || iconRegistry.gearList
+      || iconRegistry.settingsGeneral
+      || iconRegistry.note
+      || null
+    )
+    : null;
+  if (setLabelWithIcon && editGlyph) {
+    setLabelWithIcon.call(scope, button, '', editGlyph);
+  } else if (editLabel) {
+    button.textContent = editLabel;
+  }
+
+  const noteSpan = element.querySelector('.gear-item-note');
+  if (noteSpan && noteSpan.parentNode === element) {
+    element.insertBefore(button, noteSpan.nextSibling);
+  } else {
+    element.appendChild(button);
+  }
+
+  return button;
+}
+
+function renderGearListFilterDetails(details) {
+  const container = getGearListFilterDetailsContainer();
+  if (!container) return;
+  container.innerHTML = '';
+  if (!details.length) {
+    container.classList.add('hidden');
+    return;
+  }
+  container.classList.remove('hidden');
+  details.forEach(detail => {
+    const {
+      type,
+      label,
+      gearName,
+      entryId,
+      size,
+      values,
+      needsSize,
+      needsValues
+    } = detail;
+    const row = document.createElement('div');
+    row.className = 'filter-detail';
+    if (gearName) {
+      row.setAttribute('data-gear-name', gearName);
+    }
+    if (type) {
+      row.setAttribute('data-filter-type', type);
+    }
+    const heading = document.createElement('div');
+    heading.className = 'filter-detail-label gear-item';
+    if (entryId) heading.setAttribute('data-filter-entry', entryId);
+    if (gearName) heading.setAttribute('data-gear-name', gearName);
+    if (label) {
+      heading.setAttribute('data-filter-label', label);
+      heading.setAttribute('data-gear-label', label);
+    }
+    if (type) heading.setAttribute('data-filter-type', type);
+    const shouldHideSize = !!needsSize;
+    if (shouldHideSize) {
+      heading.setAttribute('data-filter-hide-size', '');
+    } else {
+      heading.removeAttribute('data-filter-hide-size');
+    }
+    heading.textContent = label ? `1x ${label}` : '';
+    row.appendChild(heading);
+    if (typeof enhanceGearItemElement === 'function') {
+      enhanceGearItemElement(heading);
+    }
+    ensureFilterDetailEditButton(heading);
+    const controls = document.createElement('div');
+    controls.className = 'filter-detail-controls';
+    if (needsSize) {
+      const sizeLabel = document.createElement('label');
+      sizeLabel.className = 'filter-detail-size';
+      const sizeText = document.createElement('span');
+      sizeText.className = 'filter-detail-sublabel';
+      sizeText.textContent = 'Size';
+      const sizeWrapper = document.createElement('span');
+      sizeWrapper.className = 'select-wrapper';
+      const sizeSelect = createFilterSizeSelect(type, size, { includeId: false });
+      sizeSelect.setAttribute('data-storage-id', `filter-size-${filterId(type)}`);
+      sizeSelect.addEventListener('change', () => {
+        const storageId = sizeSelect.getAttribute('data-storage-id');
+        if (!storageId) return;
+        syncGearListFilterSize(storageId, sizeSelect.value);
+      });
+      sizeWrapper.appendChild(sizeSelect);
+      sizeLabel.append(sizeText, sizeWrapper);
+      controls.appendChild(sizeLabel);
+    }
+    if (needsValues) {
+      const valuesWrap = document.createElement('div');
+      valuesWrap.className = 'filter-detail-values';
+      const valueLabel = document.createElement('span');
+      valueLabel.className = 'filter-detail-sublabel';
+      valueLabel.textContent = 'Strengths';
+      const optionsWrap = document.createElement('span');
+      optionsWrap.className = 'filter-values-container';
+      optionsWrap.setAttribute('data-storage-values', `filter-values-${filterId(type)}`);
+      const storageValuesId = optionsWrap.getAttribute('data-storage-values');
+      const { opts, defaults = [] } = getFilterValueConfig(type);
+      const checkboxName = `filterValues-${filterId(type)}`;
+      const currentValues = values == null ? defaults : (Array.isArray(values) ? values : []);
+      opts.forEach(value => {
+        const lbl = document.createElement('label');
+        lbl.className = 'filter-value-option';
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.name = checkboxName;
+        cb.value = value;
+        if (currentValues.includes(value)) {
+          cb.checked = true;
+          cb.setAttribute('checked', '');
+        }
+        cb.addEventListener('change', () => {
+          if (!storageValuesId) return;
+          syncGearListFilterValue(storageValuesId, value, cb.checked);
+        });
+        lbl.append(cb, document.createTextNode(value));
+        optionsWrap.appendChild(lbl);
+      });
+      valuesWrap.append(valueLabel, optionsWrap);
+      controls.appendChild(valuesWrap);
+    }
+    row.appendChild(controls);
+    container.appendChild(row);
+  });
+  adjustGearListSelectWidths(container);
+}
+
+function syncGearListFilterSize(storageId, value) {
+  const storageSelect = document.getElementById(storageId);
+  if (!storageSelect) return;
+  if (storageSelect.value !== value) {
+    storageSelect.value = value;
+  }
+  if (typeof markProjectFormDataDirty === 'function') {
+    markProjectFormDataDirty();
+  }
+  storageSelect.dispatchEvent(new Event('change'));
+}
+
+function syncGearListFilterValue(storageId, value, isSelected) {
+  const storageSelect = document.getElementById(storageId);
+  if (!storageSelect) return;
+  let changed = false;
+  Array.from(storageSelect.options).forEach(opt => {
+    if (opt.value !== value) return;
+    if (opt.selected !== isSelected) {
+      opt.selected = isSelected;
+      changed = true;
+      if (isSelected) {
+        opt.setAttribute('selected', '');
+      } else {
+        opt.removeAttribute('selected');
+      }
+    }
+  });
+  if (changed) {
+    if (typeof markProjectFormDataDirty === 'function') {
+      markProjectFormDataDirty();
+    }
+  }
+}
+
+function renderFilterDetails(providedTokens) {
+  const select = resolveFilterSelectElement();
+  if (!select) return;
+  const selected = Array.from(select.selectedOptions).map(o => o.value).filter(Boolean);
+  let existingTokens;
+  if (Array.isArray(providedTokens)) {
+    existingTokens = providedTokens
+      .filter(token => token && token.type)
+      .map(token => ({
+        type: token.type,
+        size: token.size,
+        values: token.values === undefined
+          ? undefined
+          : (Array.isArray(token.values) ? token.values.slice() : token.values)
+      }));
+  } else {
+    const existingSelections = collectFilterSelections();
+    if (existingSelections) {
+      existingTokens = parseFilterTokens(existingSelections);
+    } else {
+      // Fix for ReferenceError: currentProjectInfo is not defined
+      const safeProjectInfo = typeof currentProjectInfo !== 'undefined' ? currentProjectInfo : {};
+      if (safeProjectInfo && safeProjectInfo.filter) {
+        existingTokens = parseFilterTokens(safeProjectInfo.filter);
+      } else {
+        existingTokens = [];
+      }
+    }
+  }
+  const existingMap = new Map(existingTokens.map(token => [token.type, token]));
+  const details = selected.map(type => {
+    const prev = existingMap.get(type) || {};
+    const size = prev.size || SESSION_DEFAULT_FILTER_SIZE;
+    const needsSize = type !== 'Diopter';
+    const needsValues = filterTypeNeedsValueSelect(type);
+    const { label, gearName, hideDetails } = resolveFilterDisplayInfo(type, size);
+    let entryId = `filter - ${filterId(type)} `;
+    if (type === 'Diopter') entryId = `${entryId} -set`;
+    return {
+      type,
+      label,
+      gearName,
+      entryId,
+      size,
+      values: Array.isArray(prev.values) ? prev.values.slice() : [],
+      needsSize,
+      needsValues,
+      hideDetails
+    };
+  });
+  renderFilterDetailsStorage(details);
+  renderGearListFilterDetails(details);
+  let gearEntries = buildFilterGearEntries(existingTokens);
+  if (!gearEntries.length) {
+    gearEntries = details
+      .map(detail => ({
+        id: detail.entryId,
+        gearName: detail.gearName,
+        label: detail.label,
+        type: detail.type,
+        hideDetails: detail.hideDetails
+      }))
+      .filter(entry => entry.id && entry.label);
+  }
+  updateGearListFilterEntries(gearEntries);
+  const matteboxTarget = typeof matteboxSelect !== 'undefined'
+    ? matteboxSelect
+    : (typeof document !== 'undefined' ? document.getElementById('mattebox') : null);
+  if (matteboxTarget) {
+    const needsSwing = selected.some(t => t === 'ND Grad HE' || t === 'ND Grad SE');
+    if (needsSwing) matteboxTarget.value = 'Swing Away';
+  }
+}
+if (typeof window !== 'undefined') window.renderFilterDetails = renderFilterDetails;
+
+function handleFilterDetailChange() {
+  if (!resolveFilterSelectElement()) return;
+  const filterStr = collectFilterSelections();
+  const entries = buildFilterGearEntries(parseFilterTokens(filterStr));
+  updateGearListFilterEntries(entries);
+  if (gearListOutput) adjustGearListSelectWidths(gearListOutput);
+  saveCurrentSession();
+  saveCurrentGearList();
+  checkSetupChanged();
+  renderFilterDetails();
+}
+
+function collectFilterSelections() {
+  const select = resolveFilterSelectElement();
+  if (!select) return '';
+
+  const selected = Array.from(select.selectedOptions)
+    .map(option => (typeof option.value === 'string' ? option.value.trim() : ''))
+    .filter(Boolean);
+
+  // Fix for ReferenceError: currentProjectInfo is not defined
+  const safeCurrentProjectInfo = typeof currentProjectInfo !== 'undefined' ? currentProjectInfo : {};
+  const existingSelectionString = safeCurrentProjectInfo && typeof safeCurrentProjectInfo.filter === 'string'
+    ? safeCurrentProjectInfo.filter
+    : '';
+  const existingTokens = existingSelectionString
+    ? parseFilterTokens(existingSelectionString)
+    : [];
+  const existingMap = Object.fromEntries(existingTokens.map(token => [token.type, token]));
+
+  const existingStringMap = {};
+  if (existingSelectionString) {
+    existingSelectionString.split(',').forEach(tokenStr => {
+      const trimmed = typeof tokenStr === 'string' ? tokenStr.trim() : '';
+      if (!trimmed) return;
+      const type = trimmed.split(':')[0]?.trim();
+      if (type) {
+        existingStringMap[type] = trimmed;
       }
     });
   }
 
-  function parseFrameRateNumericValues(entry) {
-    if (typeof entry !== 'string' || !entry.trim()) {
-      return [];
+  const selectedTokens = selected.map(type => {
+    const sizeSel = document.getElementById(`filter - size - ${filterId(type)} `);
+    const valSel = document.getElementById(`filter - values - ${filterId(type)} `);
+    const prev = existingMap[type] || {};
+    const size = sizeSel ? sizeSel.value : (prev.size || SESSION_DEFAULT_FILTER_SIZE);
+    let vals;
+    const needsValues = filterTypeNeedsValueSelect(type);
+    if (valSel) {
+      vals = Array.from(valSel.selectedOptions).map(o => o.value);
+    } else if (Array.isArray(prev.values) && prev.values.length) {
+      vals = prev.values.slice();
+    } else {
+      vals = [];
     }
+    let valueSegment = '';
+    if (needsValues) {
+      valueSegment = vals.length ? `:${vals.join('|')} ` : ':!';
+    }
+    return `${type}:${size}${valueSegment} `;
+  });
 
-    const normalized = entry.replace(/[\u2013\u2014]/g, '-');
-    const parts = normalized.split(':');
-    const numericSection = parts.length > 1 ? parts.slice(1).join(':') : normalized;
-    const values = new Set();
+  const availableTypes = new Set(
+    Array.from(select.options)
+      .map(option => (typeof option.value === 'string' ? option.value.trim() : ''))
+      .filter(Boolean),
+  );
+  const selectedTypes = new Set(selected);
 
-    const rangePattern = /(\d+(?:\.\d+)?)(?:\s*(?:-|to)\s*)(\d+(?:\.\d+)?)(?=\s*(?:fps|FPS))/g;
-    let match = rangePattern.exec(numericSection);
-    while (match) {
-      const minStr = match[1];
-      const maxStr = match[2];
-      const minVal = Number.parseFloat(minStr);
-      const maxVal = Number.parseFloat(maxStr);
-      const minFormatted = formatFrameRateValue(minVal);
-      const maxFormatted = formatFrameRateValue(maxVal);
-      // Redundant frame rate helpers removed (moved to DeviceCapabilityManager).
+  existingTokens.forEach(token => {
+    if (!token || !token.type) return;
+    if (selectedTypes.has(token.type)) return;
+    if (availableTypes.has(token.type)) return;
 
-
-      function findMaxFrameRateForSensor(entries, sensorTokens, sensorLabel = '') {
-        return DeviceCapabilityManager.findMaxFrameRateForSensor(entries, sensorTokens, sensorLabel);
-      }
-
-      function getFrameRateInputValue(input) {
-        if (!input) return '';
-        const raw = input.value;
-        return typeof raw === 'string' ? raw.trim() : '';
-      }
-
-      function getCurrentFrameRateInputValue() {
-        return getFrameRateInputValue(recordingFrameRateInput);
-      }
-
-      function collectFrameRateContextTokens(select) {
-        if (!select) {
-          return [];
+    const preserved = existingStringMap[token.type]
+      || (() => {
+        const size = token.size || SESSION_DEFAULT_FILTER_SIZE;
+        const values = Array.isArray(token.values) ? token.values.filter(Boolean) : [];
+        let segment = '';
+        if (filterTypeNeedsValueSelect(token.type)) {
+          segment = values.length ? `:${values.join('|')} ` : ':!';
         }
-        if (select.multiple) {
-          return Array.from(select.selectedOptions || [])
-            .map(option => DeviceCapabilityManager.tokenizeFrameRateContext(option && option.value))
-            .reduce((acc, tokens) => (tokens && tokens.length ? acc.concat(tokens) : acc), []);
-        }
-        const value = typeof select.value === 'string' ? select.value : '';
-        return DeviceCapabilityManager.tokenizeFrameRateContext(value);
-      }
-
-      function populateFrameRateDropdownFor(config = {}) {
-        const {
-          selected = '',
-          recordingInput,
-          optionsList,
-          sensorSelect,
-          resolutionSelect,
-          aspectSelect,
-          hintElement,
-        } = config;
-
-        if (!recordingInput || !optionsList) {
-          return;
-        }
-
-        const normalizedSelected = DeviceCapabilityManager.normalizeRecordingFrameRateValue(selected);
-        let currentValue = normalizedSelected || getFrameRateInputValue(recordingInput);
-        const camKey = cameraSelect && cameraSelect.value;
-        // Fix for potential ReferenceError: devices is not defined
-        const safeDevices = (typeof window !== 'undefined' && window.devices) || {};
-        const frameRateEntries =
-          camKey && safeDevices && safeDevices.cameras && safeDevices.cameras[camKey]
-            ? safeDevices.cameras[camKey].frameRates
-            : null;
-
-        const sensorValue = sensorSelect && typeof sensorSelect.value === 'string'
-          ? sensorSelect.value
-          : '';
-        const sensorTokens = DeviceCapabilityManager.tokenizeFrameRateContext(sensorValue);
-        const resolutionValue = resolutionSelect && typeof resolutionSelect.value === 'string'
-          ? resolutionSelect.value
-          : '';
-        const resolutionTokens = DeviceCapabilityManager.tokenizeFrameRateContext(resolutionValue);
-        const aspectTokens = collectFrameRateContextTokens(aspectSelect);
-
-        const sensorModeMaxFrameRate = findMaxFrameRateForSensor(
-          Array.isArray(frameRateEntries) ? frameRateEntries : [],
-          sensorTokens,
-          sensorValue
-        );
-        const resolutionMaxFrameRate = findMaxFrameRateForSensor(
-          Array.isArray(frameRateEntries) ? frameRateEntries : [],
-          resolutionTokens,
-          recordingResolutionDropdown && recordingResolutionDropdown.value
-        );
-
-        const { values: suggestions } = DeviceCapabilityManager.buildFrameRateSuggestions(
-          Array.isArray(frameRateEntries) ? frameRateEntries : [],
-          [
-            sensorTokens,
-            resolutionTokens,
-            aspectTokens,
-          ]
-        );
-
-        optionsList.innerHTML = '';
-        const uniqueValues = new Set();
-        const filteredSuggestions = [];
-        const numericCandidates = [];
-        const allowedMaxCandidates = [];
-        if (Number.isFinite(sensorModeMaxFrameRate)) {
-          allowedMaxCandidates.push(sensorModeMaxFrameRate);
-        }
-        if (Number.isFinite(resolutionMaxFrameRate)) {
-          allowedMaxCandidates.push(resolutionMaxFrameRate);
-        }
-        const allowedMaxFrameRate = allowedMaxCandidates.length
-          ? Math.min(...allowedMaxCandidates)
-          : null;
-
-        suggestions.forEach(originalValue => {
-          if (!originalValue) return;
-          let value = originalValue;
-          const numeric = Number.parseFloat(value);
-          if (Number.isFinite(numeric)) {
-            if (numeric + FRAME_RATE_RANGE_TOLERANCE < MIN_RECORDING_FRAME_RATE) {
-              return;
-            }
-            if (
-              allowedMaxFrameRate !== null &&
-              numeric > allowedMaxFrameRate + FRAME_RATE_RANGE_TOLERANCE
-            ) {
-              return;
-            }
-            const formatted = formatFrameRateValue(numeric);
-            if (formatted) {
-              value = formatted;
-            }
-            numericCandidates.push({ numeric, formatted: value });
-          }
-          if (uniqueValues.has(value)) return;
-          uniqueValues.add(value);
-          filteredSuggestions.push(value);
-          const opt = document.createElement('option');
-          opt.value = value;
-          optionsList.appendChild(opt);
-        });
-
-        if (currentValue && !uniqueValues.has(currentValue)) {
-          const numericForList = Number.parseFloat(currentValue);
-          if (
-            !Number.isFinite(numericForList) ||
-            numericForList + FRAME_RATE_RANGE_TOLERANCE >= MIN_RECORDING_FRAME_RATE
-          ) {
-            const opt = document.createElement('option');
-            opt.value = currentValue;
-            optionsList.appendChild(opt);
-          }
-        }
-
-        const maxCandidate = numericCandidates.reduce(
-          (best, entry) => (entry.numeric > best.numeric ? entry : best),
-          { numeric: Number.NEGATIVE_INFINITY, formatted: '' }
-        );
-        let maxFrameRate = maxCandidate.numeric;
-        if (Number.isFinite(allowedMaxFrameRate)) {
-          maxFrameRate = Number.isFinite(maxFrameRate)
-            ? Math.min(maxFrameRate, allowedMaxFrameRate)
-            : allowedMaxFrameRate;
-        }
-        const formattedMaxFrameRate = Number.isFinite(maxFrameRate)
-          ? maxCandidate.formatted || formatFrameRateValue(maxFrameRate)
-          : '';
-        const minValue = formatFrameRateValue(MIN_RECORDING_FRAME_RATE);
-        const numericCurrent = Number.parseFloat(currentValue);
-        let adjustedValue = currentValue;
-        let valueChanged = false;
-
-        if (
-          Number.isFinite(maxFrameRate) &&
-          Number.isFinite(numericCurrent) &&
-          numericCurrent > maxFrameRate + FRAME_RATE_RANGE_TOLERANCE
-        ) {
-          const clampedValue = formattedMaxFrameRate || formatFrameRateValue(maxFrameRate);
-          if (clampedValue) {
-            adjustedValue = clampedValue;
-            if (adjustedValue !== currentValue) {
-              valueChanged = true;
-            }
-          }
-        }
-
-        if (
-          minValue &&
-          Number.isFinite(numericCurrent) &&
-          numericCurrent + FRAME_RATE_RANGE_TOLERANCE < MIN_RECORDING_FRAME_RATE
-        ) {
-          adjustedValue = minValue;
-          if (adjustedValue !== currentValue) {
-            valueChanged = true;
-          }
-        }
-
-        if (valueChanged) {
-          recordingInput.value = adjustedValue;
-          currentValue = adjustedValue;
-          recordingInput.dispatchEvent(new Event('input', { bubbles: true }));
-        } else {
-          recordingInput.value = currentValue;
-        }
-
-        const placeholderCandidate = filteredSuggestions[0];
-        if (!currentValue && placeholderCandidate) {
-          recordingInput.placeholder = placeholderCandidate;
-        } else if (recordingInput.placeholder) {
-          recordingInput.placeholder = '';
-        }
-
-        if (minValue) {
-          recordingInput.min = minValue;
-        }
-
-        if (formattedMaxFrameRate) {
-          recordingInput.setAttribute('max', formattedMaxFrameRate);
-        } else {
-          recordingInput.removeAttribute('max');
-        }
-
-        if (hintElement) {
-          let hintMessage = '';
-          if (formattedMaxFrameRate) {
-            const template = hintElement.getAttribute('data-range-template');
-            hintMessage = template
-              ? template.replace('{max}', formattedMaxFrameRate)
-              : `Enter a recording frame rate from ${minValue} to ${formattedMaxFrameRate} fps.`;
-          } else {
-            hintMessage = hintElement.getAttribute('data-default-message') || '';
-          }
-          hintElement.textContent = hintMessage;
-          hintElement.hidden = !hintMessage;
-        }
-      }
-
-      function populateFrameRateDropdown(selected = '') {
-        const resolve = (val, id) => val || (typeof document !== 'undefined' ? document.getElementById(id) : null);
-        const inputEl = resolve(recordingFrameRateInput, 'recordingFrameRate');
-
-        if (!inputEl && typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
-          cineCoreUiHelpers.whenElementAvailable('recordingFrameRate', () => populateFrameRateDropdown(selected));
-          return;
-        }
-
-        populateFrameRateDropdownFor({
-          selected,
-          recordingInput: inputEl,
-          optionsList: resolve(recordingFrameRateOptionsList, 'recordingFrameRateOptions'),
-          sensorSelect: resolve(sensorModeDropdown, 'sensorMode'),
-          resolutionSelect: resolve(recordingResolutionDropdown, 'recordingResolution'),
-          hintElement: resolve(recordingFrameRateHint, 'recordingFrameRateHint'),
-        });
-      }
-
-      function populateSlowMotionFrameRateDropdown(selected = '') {
-        const resolve = (val, id) => val || (typeof document !== 'undefined' ? document.getElementById(id) : null);
-        const inputEl = resolve(slowMotionRecordingFrameRateInput, 'slowMotionRecordingFrameRate');
-
-        if (!inputEl && typeof cineCoreUiHelpers !== 'undefined' && typeof cineCoreUiHelpers.whenElementAvailable === 'function') {
-          cineCoreUiHelpers.whenElementAvailable('slowMotionRecordingFrameRate', () => populateSlowMotionFrameRateDropdown(selected));
-          return;
-        }
-
-        populateFrameRateDropdownFor({
-          selected,
-          recordingInput: inputEl,
-          optionsList: resolve(slowMotionRecordingFrameRateOptionsList, 'slowMotionRecordingFrameRateOptions'),
-          sensorSelect: resolve(slowMotionSensorModeDropdown, 'slowMotionSensorMode'),
-          resolutionSelect: resolve(slowMotionRecordingResolutionDropdown, 'slowMotionRecordingResolution'),
-          aspectSelect: resolve(slowMotionAspectRatioSelect, 'slowMotionAspectRatio'),
-          hintElement: resolve(slowMotionRecordingFrameRateHint, 'slowMotionRecordingFrameRateHint'),
-        });
-      }
-
-      function populateSlowMotionRecordingResolutionDropdown(selected = '') {
-        populateCameraPropertyDropdown('slowMotionRecordingResolution', 'resolutions', selected);
-      }
-      if (typeof window !== 'undefined') window.populateSlowMotionRecordingResolutionDropdown = populateSlowMotionRecordingResolutionDropdown;
-
-      function populateSlowMotionSensorModeDropdown(selected = '') {
-        populateCameraPropertyDropdown('slowMotionSensorMode', 'sensorModes', selected);
-      }
-      if (typeof window !== 'undefined') window.populateSlowMotionSensorModeDropdown = populateSlowMotionSensorModeDropdown;
-
-      function populateSensorModeDropdown(selected = '') {
-        populateCameraPropertyDropdown('sensorMode', 'sensorModes', selected);
-      }
-      if (typeof window !== 'undefined') window.populateSensorModeDropdown = populateSensorModeDropdown;
-
-      function populateCodecDropdown(selected = '') {
-        populateCameraPropertyDropdown('codec', 'recordingCodecs', selected);
-      }
-
-      function populateFilterDropdown() {
-        UiPopulationManager.populateFilterDropdown();
-      }
-
-      const filterId = t => t.replace(/[^a-z0-9]/gi, '_');
-
-      function getFilterValueConfig(type) {
-        switch (type) {
-          case 'IRND':
-            return { opts: ['0.3', '0.6', '0.9', '1.2', '1.5', '1.8', '2.1', '2.5'], defaults: ['0.3', '1.2'] };
-          case 'Diopter':
-            return { opts: ['+1/4', '+1/2', '+1', '+2', '+3', '+4'], defaults: ['+1/2', '+1', '+2', '+4'] };
-          case 'ND Grad HE':
-            return {
-              opts: ['0.3 HE Vertical', '0.6 HE Vertical', '0.9 HE Vertical', '1.2 HE Vertical', '0.3 HE Horizontal', '0.6 HE Horizontal', '0.9 HE Horizontal', '1.2 HE Horizontal'],
-              defaults: ['0.3 HE Horizontal', '0.6 HE Horizontal', '0.9 HE Horizontal']
-            };
-          case 'ND Grad SE':
-            return {
-              opts: ['0.3 SE Vertical', '0.6 SE Vertical', '0.9 SE Vertical', '1.2 SE Vertical', '0.3 SE Horizontal', '0.6 SE Horizontal', '0.9 SE Horizontal', '1.2 SE Horizontal'],
-              defaults: ['0.3 SE Horizontal', '0.6 SE Horizontal', '0.9 SE Horizontal']
-            };
-          default:
-            return { opts: ['1', '1/2', '1/4', '1/8', '1/16'], defaults: ['1/2', '1/4', '1/8'] };
-        }
-      }
-
-      const SESSION_DEFAULT_FILTER_SIZE = ensureSessionRuntimePlaceholder(
-        'DEFAULT_FILTER_SIZE',
-        () => '4x5.65'
-      );
-
-      function createFilterSizeSelect(type, selected = SESSION_DEFAULT_FILTER_SIZE, options = {}) {
-        const { includeId = true, idPrefix = 'filter-size-' } = options;
-        const sel = document.createElement('select');
-        if (includeId) {
-          sel.id = `${idPrefix}${filterId(type)}`;
-        }
-        let sizes = [SESSION_DEFAULT_FILTER_SIZE, '4x4', '6x6', '95mm'];
-        if (type === 'Rota-Pol') sizes = [SESSION_DEFAULT_FILTER_SIZE, '6x6', '95mm'];
-        sizes.forEach(s => {
-          const o = document.createElement('option');
-          o.value = s;
-          o.textContent = s;
-          if (s === selected) o.selected = true;
-          sel.appendChild(o);
-        });
-        return sel;
-      }
-
-      /* exported createFilterValueSelect */
-      function createFilterValueSelect(type, selected) {
-        const sel = document.createElement('select');
-        sel.id = `filter-values-${filterId(type)}`;
-        // Allow selecting multiple strengths for a given filter
-        // Use both the property and attribute to ensure HTML serialization
-        sel.multiple = true;
-        sel.setAttribute('multiple', '');
-        const { opts, defaults = [] } = getFilterValueConfig(type);
-        const selectedVals = Array.isArray(selected)
-          ? selected.slice()
-          : defaults.slice();
-        const syncOption = (option, isSelected) => {
-          option.selected = isSelected;
-          if (isSelected) {
-            option.setAttribute('selected', '');
-          } else {
-            option.removeAttribute('selected');
-          }
-        };
-        const syncCheckbox = (checkbox, isChecked) => {
-          checkbox.checked = isChecked;
-          if (isChecked) {
-            checkbox.setAttribute('checked', '');
-          } else {
-            checkbox.removeAttribute('checked');
-          }
-        };
-        const optionsByValue = new Map();
-        const optionFragment = document.createDocumentFragment();
-        for (let index = 0; index < opts.length; index += 1) {
-          const value = opts[index];
-          const opt = document.createElement('option');
-          opt.value = value;
-          opt.textContent = value;
-          syncOption(opt, selectedVals.includes(value));
-          optionsByValue.set(value, opt);
-          optionFragment.appendChild(opt);
-        }
-        sel.appendChild(optionFragment);
-        // Hidden select holds the values; checkboxes provide the UI
-        sel.size = opts.length;
-        sel.style.display = 'none';
-        const container = document.createElement('span');
-        container.className = 'filter-values-container';
-        const checkboxName = `filterValues-${filterId(type)}`;
-        const checkboxFragment = document.createDocumentFragment();
-        const checkboxesByValue = new Map();
-        for (let index = 0; index < opts.length; index += 1) {
-          const value = opts[index];
-          const lbl = document.createElement('label');
-          lbl.className = 'filter-value-option';
-          const cb = document.createElement('input');
-          cb.type = 'checkbox';
-          cb.name = checkboxName;
-          cb.value = value;
-          syncCheckbox(cb, selectedVals.includes(value));
-          cb.addEventListener('change', () => {
-            const opt = optionsByValue.get(value);
-            if (opt) {
-              syncOption(opt, cb.checked);
-            }
-            syncCheckbox(cb, cb.checked);
-            sel.dispatchEvent(new Event('change'));
-          });
-          lbl.appendChild(cb);
-          lbl.appendChild(document.createTextNode(value));
-          checkboxesByValue.set(value, cb);
-          checkboxFragment.appendChild(lbl);
-        }
-        container.appendChild(checkboxFragment);
-        sel.addEventListener('change', () => {
-          optionsByValue.forEach((opt, value) => {
-            const selected = !!opt && opt.selected;
-            syncOption(opt, selected);
-            const checkbox = checkboxesByValue.get(value);
-            if (checkbox) {
-              syncCheckbox(checkbox, selected);
-            }
-          });
-        });
-        container.appendChild(sel);
-        return { container, select: sel };
-      }
-
-      function resolveFilterDisplayInfo(type, size = SESSION_DEFAULT_FILTER_SIZE) {
-        switch (type) {
-          case 'Diopter':
-            return { label: 'Schneider CF DIOPTER FULL GEN2', gearName: 'Schneider CF DIOPTER FULL GEN2' };
-          case 'Clear':
-            return { label: 'Clear Filter', gearName: 'Clear Filter' };
-          case 'IRND':
-            return { label: 'IRND Filter Set', gearName: 'IRND Filter Set', hideDetails: false };
-          case 'Pol':
-            return { label: 'Pol Filter', gearName: 'Pol Filter' };
-          case 'Rota-Pol': {
-            if (size === '6x6') {
-              return {
-                label: 'ARRI Rota Pola Filter Frame (6x6)',
-                gearName: 'ARRI Rota Pola Filter Frame (6x6)'
-              };
-            }
-            if (size === '95mm') {
-              return {
-                label: 'Tilta 95mm Polarizer Filter for Tilta Mirage',
-                gearName: 'Tilta 95mm Polarizer Filter for Tilta Mirage'
-              };
-            }
-            return {
-              label: 'ARRI Rota Pola Filter Frame',
-              gearName: 'ARRI Rota Pola Filter Frame'
-            };
-          }
-          case 'ND Grad HE':
-            return { label: 'ND Grad HE Filter Set', gearName: 'ND Grad HE Filter Set', hideDetails: false };
-          case 'ND Grad SE':
-            return { label: 'ND Grad SE Filter Set', gearName: 'ND Grad SE Filter Set', hideDetails: false };
-          default:
-            return { label: `${type} Filter Set`, gearName: `${type} Filter Set`, hideDetails: true };
-        }
-      }
-
-      function buildFilterGearEntries(filters = []) {
-        const entries = [];
-        filters.forEach(({ type, size = SESSION_DEFAULT_FILTER_SIZE, values }) => {
-          if (!type) return;
-          const sizeValue = size || SESSION_DEFAULT_FILTER_SIZE;
-          const idBase = `filter-${filterId(type)}`;
-          switch (type) {
-            case 'Diopter': {
-              entries.push({
-                id: `${idBase}-frame`,
-                gearName: 'ARRI Diopter Frame 138mm',
-                label: 'ARRI Diopter Frame 138mm',
-                type: '',
-                size: '',
-                values: []
-              });
-              const diopterValues = values == null
-                ? (getFilterValueConfig(type).defaults || []).slice()
-                : (Array.isArray(values) ? values.slice() : []);
-              entries.push({
-                id: `${idBase}-set`,
-                gearName: 'Schneider CF DIOPTER FULL GEN2',
-                label: 'Schneider CF DIOPTER FULL GEN2',
-                type,
-                size: '',
-                values: diopterValues
-              });
-              break;
-            }
-            case 'Clear': {
-              const { label, gearName } = resolveFilterDisplayInfo(type, sizeValue);
-              entries.push({
-                id: idBase,
-                gearName,
-                label,
-                type,
-                size: sizeValue,
-                values: []
-              });
-              break;
-            }
-            case 'Pol': {
-              const { label, gearName } = resolveFilterDisplayInfo(type, sizeValue);
-              entries.push({
-                id: idBase,
-                gearName,
-                label,
-                type,
-                size: sizeValue,
-                values: []
-              });
-              break;
-            }
-            case 'Rota-Pol': {
-              const { label, gearName } = resolveFilterDisplayInfo(type, sizeValue);
-              const displaySize = label.includes(sizeValue) ? '' : sizeValue;
-              entries.push({
-                id: idBase,
-                gearName,
-                label,
-                type,
-                size: displaySize,
-                values: []
-              });
-              break;
-            }
-            case 'ND Grad HE':
-            case 'ND Grad SE': {
-              const { label, gearName, hideDetails } = resolveFilterDisplayInfo(type, sizeValue);
-              const gradValues = values == null
-                ? (getFilterValueConfig(type).defaults || []).slice()
-                : (Array.isArray(values) ? values.slice() : []);
-              entries.push({
-                id: idBase,
-                gearName,
-                label,
-                hideDetails,
-                type,
-                size: sizeValue,
-                values: gradValues
-              });
-              break;
-            }
-            default: {
-              const { label, gearName, hideDetails } = resolveFilterDisplayInfo(type, sizeValue);
-              const filterValues = values == null
-                ? (getFilterValueConfig(type).defaults || []).slice()
-                : (Array.isArray(values) ? values.slice() : []);
-              entries.push({
-                id: idBase,
-                gearName,
-                label,
-                hideDetails,
-                type,
-                size: sizeValue,
-                values: filterValues
-              });
-            }
-          }
-        });
-        return entries;
-      }
-      if (typeof window !== 'undefined') window.buildFilterGearEntries = buildFilterGearEntries;
-
-      function updateGearListFilterEntries(entries = []) {
-        if (!gearListOutput) return;
-        const entryMap = new Map(entries.map(entry => [entry.id, entry]));
-        gearListOutput.querySelectorAll('[data-filter-entry]').forEach(span => {
-          const entryId = span.getAttribute('data-filter-entry');
-          if (!entryId) return;
-          const entry = entryMap.get(entryId);
-          if (!entry) return;
-          const labelText = typeof entry?.label === 'string' ? entry.label : '';
-          span.textContent = labelText ? `1x ${labelText}` : '';
-          span.setAttribute('data-gear-name', entry.gearName);
-          span.setAttribute('data-filter-label', entry.label);
-          if (entry.type) {
-            span.setAttribute('data-filter-type', entry.type);
-          } else {
-            span.removeAttribute('data-filter-type');
-          }
-        });
-      }
-
-      function getGearListFilterDetailsContainer() {
-        return gearListOutput ? gearListOutput.querySelector('#gearListFilterDetails') : null;
-      }
-
-      function filterTypeNeedsValueSelect(type) {
-        return type === 'Diopter'
-          || type === 'IRND'
-          || type === 'ND Grad HE'
-          || type === 'ND Grad SE'
-          || (type !== 'Clear' && type !== 'Pol' && type !== 'Rota-Pol');
-      }
-
-      function createFilterStorageValueSelect(type, selected) {
-        const select = document.createElement('select');
-        select.id = `filter-values-${filterId(type)}`;
-        select.multiple = true;
-        select.setAttribute('multiple', '');
-        select.hidden = true;
-        select.setAttribute('aria-hidden', 'true');
-        const { opts, defaults = [] } = getFilterValueConfig(type);
-        const chosen = Array.isArray(selected) ? selected.slice() : defaults.slice();
-        opts.forEach(value => {
-          const opt = document.createElement('option');
-          opt.value = value;
-          opt.textContent = value;
-          if (chosen.includes(value)) {
-            opt.selected = true;
-            opt.setAttribute('selected', '');
-          }
-          select.appendChild(opt);
-        });
-        return select;
-      }
-
-      function resolveFilterDetailsStorageElement() {
-        if (typeof filterDetailsStorage !== 'undefined' && filterDetailsStorage) {
-          return filterDetailsStorage;
-        }
-        if (typeof document === 'undefined') return null;
-        const element = document.getElementById('filterDetails');
-        if (!element) return null;
-        try {
-          if (typeof globalThis !== 'undefined' && globalThis) {
-            globalThis.filterDetailsStorage = element;
-          } else if (typeof window !== 'undefined' && window) {
-            window.filterDetailsStorage = element;
-          }
-        } catch (ex) {
-          void ex;
-        }
-        return element;
-      }
-
-      function renderFilterDetailsStorage(details) {
-        const storageRoot = resolveFilterDetailsStorageElement();
-        if (!storageRoot) return;
-        storageRoot.innerHTML = '';
-        if (!details.length) {
-          storageRoot.hidden = true;
-          return;
-        }
-        storageRoot.hidden = true;
-        details.forEach(detail => {
-          const { type, size, values, needsSize, needsValues } = detail;
-          if (needsSize) {
-            const sizeSelect = createFilterSizeSelect(type, size);
-            sizeSelect.hidden = true;
-            sizeSelect.setAttribute('aria-hidden', 'true');
-            sizeSelect.addEventListener('change', handleFilterDetailChange);
-            storageRoot.appendChild(sizeSelect);
-          }
-          if (needsValues) {
-            const valuesSelect = createFilterStorageValueSelect(type, values);
-            valuesSelect.addEventListener('change', handleFilterDetailChange);
-            storageRoot.appendChild(valuesSelect);
-          }
-        });
-      }
-
-      function resolveGlobalScope() {
-        if (typeof globalThis !== 'undefined') return globalThis;
-        if (typeof window !== 'undefined') return window;
-        if (typeof self !== 'undefined') return self;
-        if (typeof global !== 'undefined') return global;
-        return null;
-      }
-
-      function ensureFilterDetailEditButton(element) {
-        if (!element) return null;
-        const existing = element.querySelector('.gear-item-edit-btn');
-        if (existing) return existing;
-
-        const doc = element.ownerDocument || (typeof document !== 'undefined' ? document : null);
-        if (!doc) return null;
-
-        const scope = resolveGlobalScope();
-        let editLabel = 'Edit item';
-        const textGetter = scope && typeof scope.getGearItemEditTexts === 'function'
-          ? scope.getGearItemEditTexts
-          : null;
-        if (textGetter) {
-          try {
-            const texts = textGetter.call(scope) || {};
-            if (texts.editButtonLabel && typeof texts.editButtonLabel === 'string') {
-              const trimmed = texts.editButtonLabel.trim();
-              if (trimmed) {
-                editLabel = trimmed;
-              }
-            }
-          } catch {
-            // Ignore localization lookup failures and use fallback label.
-          }
-        }
-
-        const button = doc.createElement('button');
-        button.type = 'button';
-        button.className = 'gear-item-edit-btn';
-        button.setAttribute('data-gear-edit', '');
-
-        if (editLabel) {
-          button.setAttribute('aria-label', editLabel);
-          button.setAttribute('title', editLabel);
-        }
-
-        const setLabelWithIcon = scope && typeof scope.setButtonLabelWithIcon === 'function'
-          ? scope.setButtonLabelWithIcon
-          : null;
-        const iconRegistry = scope && scope.ICON_GLYPHS ? scope.ICON_GLYPHS : null;
-        const editGlyph = iconRegistry
-          ? (
-            iconRegistry.sliders
-            || iconRegistry.gears
-            || iconRegistry.gearList
-            || iconRegistry.settingsGeneral
-            || iconRegistry.note
-            || null
-          )
-          : null;
-        if (setLabelWithIcon && editGlyph) {
-          setLabelWithIcon.call(scope, button, '', editGlyph);
-        } else if (editLabel) {
-          button.textContent = editLabel;
-        }
-
-        const noteSpan = element.querySelector('.gear-item-note');
-        if (noteSpan && noteSpan.parentNode === element) {
-          element.insertBefore(button, noteSpan.nextSibling);
-        } else {
-          element.appendChild(button);
-        }
-
-        return button;
-      }
-
-      function renderGearListFilterDetails(details) {
-        const container = getGearListFilterDetailsContainer();
-        if (!container) return;
-        container.innerHTML = '';
-        if (!details.length) {
-          container.classList.add('hidden');
-          return;
-        }
-        container.classList.remove('hidden');
-        details.forEach(detail => {
-          const {
-            type,
-            label,
-            gearName,
-            entryId,
-            size,
-            values,
-            needsSize,
-            needsValues
-          } = detail;
-          const row = document.createElement('div');
-          row.className = 'filter-detail';
-          if (gearName) {
-            row.setAttribute('data-gear-name', gearName);
-          }
-          if (type) {
-            row.setAttribute('data-filter-type', type);
-          }
-          const heading = document.createElement('div');
-          heading.className = 'filter-detail-label gear-item';
-          if (entryId) heading.setAttribute('data-filter-entry', entryId);
-          if (gearName) heading.setAttribute('data-gear-name', gearName);
-          if (label) {
-            heading.setAttribute('data-filter-label', label);
-            heading.setAttribute('data-gear-label', label);
-          }
-          if (type) heading.setAttribute('data-filter-type', type);
-          const shouldHideSize = !!needsSize;
-          if (shouldHideSize) {
-            heading.setAttribute('data-filter-hide-size', '');
-          } else {
-            heading.removeAttribute('data-filter-hide-size');
-          }
-          heading.textContent = label ? `1x ${label}` : '';
-          row.appendChild(heading);
-          if (typeof enhanceGearItemElement === 'function') {
-            enhanceGearItemElement(heading);
-          }
-          ensureFilterDetailEditButton(heading);
-          const controls = document.createElement('div');
-          controls.className = 'filter-detail-controls';
-          if (needsSize) {
-            const sizeLabel = document.createElement('label');
-            sizeLabel.className = 'filter-detail-size';
-            const sizeText = document.createElement('span');
-            sizeText.className = 'filter-detail-sublabel';
-            sizeText.textContent = 'Size';
-            const sizeWrapper = document.createElement('span');
-            sizeWrapper.className = 'select-wrapper';
-            const sizeSelect = createFilterSizeSelect(type, size, { includeId: false });
-            sizeSelect.setAttribute('data-storage-id', `filter-size-${filterId(type)}`);
-            sizeSelect.addEventListener('change', () => {
-              const storageId = sizeSelect.getAttribute('data-storage-id');
-              if (!storageId) return;
-              syncGearListFilterSize(storageId, sizeSelect.value);
-            });
-            sizeWrapper.appendChild(sizeSelect);
-            sizeLabel.append(sizeText, sizeWrapper);
-            controls.appendChild(sizeLabel);
-          }
-          if (needsValues) {
-            const valuesWrap = document.createElement('div');
-            valuesWrap.className = 'filter-detail-values';
-            const valueLabel = document.createElement('span');
-            valueLabel.className = 'filter-detail-sublabel';
-            valueLabel.textContent = 'Strengths';
-            const optionsWrap = document.createElement('span');
-            optionsWrap.className = 'filter-values-container';
-            optionsWrap.setAttribute('data-storage-values', `filter-values-${filterId(type)}`);
-            const storageValuesId = optionsWrap.getAttribute('data-storage-values');
-            const { opts, defaults = [] } = getFilterValueConfig(type);
-            const checkboxName = `filterValues-${filterId(type)}`;
-            const currentValues = values == null ? defaults : (Array.isArray(values) ? values : []);
-            opts.forEach(value => {
-              const lbl = document.createElement('label');
-              lbl.className = 'filter-value-option';
-              const cb = document.createElement('input');
-              cb.type = 'checkbox';
-              cb.name = checkboxName;
-              cb.value = value;
-              if (currentValues.includes(value)) {
-                cb.checked = true;
-                cb.setAttribute('checked', '');
-              }
-              cb.addEventListener('change', () => {
-                if (!storageValuesId) return;
-                syncGearListFilterValue(storageValuesId, value, cb.checked);
-              });
-              lbl.append(cb, document.createTextNode(value));
-              optionsWrap.appendChild(lbl);
-            });
-            valuesWrap.append(valueLabel, optionsWrap);
-            controls.appendChild(valuesWrap);
-          }
-          row.appendChild(controls);
-          container.appendChild(row);
-        });
-        adjustGearListSelectWidths(container);
-      }
-
-      function syncGearListFilterSize(storageId, value) {
-        const storageSelect = document.getElementById(storageId);
-        if (!storageSelect) return;
-        if (storageSelect.value !== value) {
-          storageSelect.value = value;
-        }
-        if (typeof markProjectFormDataDirty === 'function') {
-          markProjectFormDataDirty();
-        }
-        storageSelect.dispatchEvent(new Event('change'));
-      }
-
-      function syncGearListFilterValue(storageId, value, isSelected) {
-        const storageSelect = document.getElementById(storageId);
-        if (!storageSelect) return;
-        let changed = false;
-        Array.from(storageSelect.options).forEach(opt => {
-          if (opt.value !== value) return;
-          if (opt.selected !== isSelected) {
-            opt.selected = isSelected;
-            changed = true;
-            if (isSelected) {
-              opt.setAttribute('selected', '');
-            } else {
-              opt.removeAttribute('selected');
-            }
-          }
-        });
-        if (changed) {
-          if (typeof markProjectFormDataDirty === 'function') {
-            markProjectFormDataDirty();
-          }
-        }
-      }
-
-      function renderFilterDetails(providedTokens) {
-        const select = resolveFilterSelectElement();
-        if (!select) return;
-        const selected = Array.from(select.selectedOptions).map(o => o.value).filter(Boolean);
-        let existingTokens;
-        if (Array.isArray(providedTokens)) {
-          existingTokens = providedTokens
-            .filter(token => token && token.type)
-            .map(token => ({
-              type: token.type,
-              size: token.size,
-              values: token.values === undefined
-                ? undefined
-                : (Array.isArray(token.values) ? token.values.slice() : token.values)
-            }));
-        } else {
-          const existingSelections = collectFilterSelections();
-          if (existingSelections) {
-            existingTokens = parseFilterTokens(existingSelections);
-          } else {
-            // Fix for ReferenceError: currentProjectInfo is not defined
-            const safeProjectInfo = typeof currentProjectInfo !== 'undefined' ? currentProjectInfo : {};
-            if (safeProjectInfo && safeProjectInfo.filter) {
-              existingTokens = parseFilterTokens(safeProjectInfo.filter);
-            } else {
-              existingTokens = [];
-            }
-          }
-        }
-        const existingMap = new Map(existingTokens.map(token => [token.type, token]));
-        const details = selected.map(type => {
-          const prev = existingMap.get(type) || {};
-          const size = prev.size || SESSION_DEFAULT_FILTER_SIZE;
-          const needsSize = type !== 'Diopter';
-          const needsValues = filterTypeNeedsValueSelect(type);
-          const { label, gearName, hideDetails } = resolveFilterDisplayInfo(type, size);
-          let entryId = `filter - ${filterId(type)} `;
-          if (type === 'Diopter') entryId = `${entryId} -set`;
-          return {
-            type,
-            label,
-            gearName,
-            entryId,
-            size,
-            values: Array.isArray(prev.values) ? prev.values.slice() : [],
-            needsSize,
-            needsValues,
-            hideDetails
-          };
-        });
-        renderFilterDetailsStorage(details);
-        renderGearListFilterDetails(details);
-        let gearEntries = buildFilterGearEntries(existingTokens);
-        if (!gearEntries.length) {
-          gearEntries = details
-            .map(detail => ({
-              id: detail.entryId,
-              gearName: detail.gearName,
-              label: detail.label,
-              type: detail.type,
-              hideDetails: detail.hideDetails
-            }))
-            .filter(entry => entry.id && entry.label);
-        }
-        updateGearListFilterEntries(gearEntries);
-        const matteboxTarget = typeof matteboxSelect !== 'undefined'
-          ? matteboxSelect
-          : (typeof document !== 'undefined' ? document.getElementById('mattebox') : null);
-        if (matteboxTarget) {
-          const needsSwing = selected.some(t => t === 'ND Grad HE' || t === 'ND Grad SE');
-          if (needsSwing) matteboxTarget.value = 'Swing Away';
-        }
-      }
-      if (typeof window !== 'undefined') window.renderFilterDetails = renderFilterDetails;
-
-      function handleFilterDetailChange() {
-        if (!resolveFilterSelectElement()) return;
-        const filterStr = collectFilterSelections();
-        const entries = buildFilterGearEntries(parseFilterTokens(filterStr));
-        updateGearListFilterEntries(entries);
-        if (gearListOutput) adjustGearListSelectWidths(gearListOutput);
-        saveCurrentSession();
-        saveCurrentGearList();
-        checkSetupChanged();
-        renderFilterDetails();
-      }
-
-      function collectFilterSelections() {
-        const select = resolveFilterSelectElement();
-        if (!select) return '';
-
-        const selected = Array.from(select.selectedOptions)
-          .map(option => (typeof option.value === 'string' ? option.value.trim() : ''))
-          .filter(Boolean);
-
-        // Fix for ReferenceError: currentProjectInfo is not defined
-        const safeCurrentProjectInfo = typeof currentProjectInfo !== 'undefined' ? currentProjectInfo : {};
-        const existingSelectionString = safeCurrentProjectInfo && typeof safeCurrentProjectInfo.filter === 'string'
-          ? safeCurrentProjectInfo.filter
-          : '';
-        const existingTokens = existingSelectionString
-          ? parseFilterTokens(existingSelectionString)
-          : [];
-        const existingMap = Object.fromEntries(existingTokens.map(token => [token.type, token]));
-
-        const existingStringMap = {};
-        if (existingSelectionString) {
-          existingSelectionString.split(',').forEach(tokenStr => {
-            const trimmed = typeof tokenStr === 'string' ? tokenStr.trim() : '';
-            if (!trimmed) return;
-            const type = trimmed.split(':')[0]?.trim();
-            if (type) {
-              existingStringMap[type] = trimmed;
-            }
-          });
-        }
-
-        const selectedTokens = selected.map(type => {
-          const sizeSel = document.getElementById(`filter - size - ${filterId(type)} `);
-          const valSel = document.getElementById(`filter - values - ${filterId(type)} `);
-          const prev = existingMap[type] || {};
-          const size = sizeSel ? sizeSel.value : (prev.size || SESSION_DEFAULT_FILTER_SIZE);
-          let vals;
-          const needsValues = filterTypeNeedsValueSelect(type);
-          if (valSel) {
-            vals = Array.from(valSel.selectedOptions).map(o => o.value);
-          } else if (Array.isArray(prev.values) && prev.values.length) {
-            vals = prev.values.slice();
-          } else {
-            vals = [];
-          }
-          let valueSegment = '';
-          if (needsValues) {
-            valueSegment = vals.length ? `:${vals.join('|')} ` : ':!';
-          }
-          return `${type}:${size}${valueSegment} `;
-        });
-
-        const availableTypes = new Set(
-          Array.from(select.options)
-            .map(option => (typeof option.value === 'string' ? option.value.trim() : ''))
-            .filter(Boolean),
-        );
-        const selectedTypes = new Set(selected);
-
-        existingTokens.forEach(token => {
-          if (!token || !token.type) return;
-          if (selectedTypes.has(token.type)) return;
-          if (availableTypes.has(token.type)) return;
-
-          const preserved = existingStringMap[token.type]
-            || (() => {
-              const size = token.size || SESSION_DEFAULT_FILTER_SIZE;
-              const values = Array.isArray(token.values) ? token.values.filter(Boolean) : [];
-              let segment = '';
-              if (filterTypeNeedsValueSelect(token.type)) {
-                segment = values.length ? `:${values.join('|')} ` : ':!';
-              }
-              return `${token.type}:${size}${segment} `;
-            })();
-          selectedTokens.push(preserved);
-        });
-
-        return selectedTokens.join(',');
-      }
-
-      function parseFilterTokens(str) {
-        if (!str) return [];
-        return str.split(',').map(s => {
-          const parts = s.split(':').map(p => p.trim());
-          const type = parts[0];
-          const size = parts[1] || SESSION_DEFAULT_FILTER_SIZE;
-          const vals = parts.length > 2 ? parts[2] : undefined;
-          let values;
-          if (vals === undefined) {
-            values = undefined;
-          } else if (vals === '' || vals === '!') {
-            values = [];
-          } else {
-            values = vals.split('|').map(v => v.trim()).filter(Boolean);
-          }
-          return { type, size, values };
-        }).filter(t => t.type);
-      }
-
-      function applyFilterSelectionsToGearList(info) {
-        const projectInfo = info || (typeof currentProjectInfo !== 'undefined' ? currentProjectInfo : {});
-        if (!gearListOutput) return;
-        resolveFilterSelectElement();
-        const tokens = info && info.filter ? parseFilterTokens(info.filter) : [];
-        const entries = buildFilterGearEntries(tokens);
-        updateGearListFilterEntries(entries);
-        adjustGearListSelectWidths(gearListOutput);
-      }
-
-      function normalizeGearNameForComparison(name) {
-        if (!name) return '';
-        let normalized = String(name);
-        if (typeof normalized.normalize === 'function') {
-          normalized = normalized.normalize('NFD');
-        } else if (typeof String.prototype.normalize === 'function') {
-          normalized = String.prototype.normalize.call(normalized, 'NFD');
-        }
-        normalized = normalized.replace(/[\u0300-\u036f]/g, '');
-        normalized = normalized.replace(/\bfuer\b/gi, 'for');
-        normalized = normalized.replace(/\bfur\b/gi, 'for');
-        normalized = normalized.toLowerCase();
-        return normalized.replace(/[^a-z0-9]+/g, '');
-      }
-      if (typeof window !== 'undefined') window.applyFilterSelectionsToGearList = applyFilterSelectionsToGearList;
-
-      function buildFilterSelectHtml() {
-        return '<div id="gearListFilterDetails" class="hidden" aria-live="polite"></div>';
-      }
-      if (typeof window !== 'undefined') window.buildFilterSelectHtml = buildFilterSelectHtml;
-
-      function collectFilterAccessories(filters = []) {
-        const items = [];
-        filters.forEach(({ type }) => {
-          switch (type) {
-            case 'ND Grad HE':
-            case 'ND Grad SE':
-              break;
-            default:
-              break;
-          }
-        });
-        return items;
-      }
-      if (typeof window !== 'undefined') window.collectFilterAccessories = collectFilterAccessories;
-
-      // populateUserButtonDropdowns delegated to UiPopulationManager
-      function populateUserButtonDropdowns() {
-        UiPopulationManager.populateUserButtonDropdowns();
-      }
-      const runInitAppWithInitialLoadingIndicator = () => {
-        ensureInitialLoadingIndicatorVisible();
-        try {
-          initApp();
-        } finally {
-          finalizeInitialLoadingIndicator();
-        }
-      };
-
-      ensureInitialLoadingIndicatorVisible();
-
-      if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', runInitAppWithInitialLoadingIndicator);
-        } else {
-          runInitAppWithInitialLoadingIndicator();
-        }
-      } else {
-        finalizeInitialLoadingIndicator();
-      }
-
-      /* Exported Session API */
-      const cineCoreSession = {
-        APP_VERSION: typeof ACTIVE_APP_VERSION === 'string' ? ACTIVE_APP_VERSION : (typeof APP_VERSION !== 'undefined' ? APP_VERSION : 'unknown'),
-        closeSideMenu,
-        openSideMenu,
-        setupSideMenu,
-        setupResponsiveControls,
-        setLanguage: applySetLanguage,
-        applySetLanguage,
-        safeGetCurrentProjectName,
-        updateCalculations: function (...args) {
-          if (typeof globalThis !== 'undefined' && typeof globalThis.updateCalculations === 'function') {
-            return globalThis.updateCalculations(...args);
-          }
-          return undefined;
-        },
-        setBatteryPlates,
-        getBatteryPlates,
-        setRecordingMedia,
-        getRecordingMedia,
-        applyDarkMode,
-        applyPinkMode,
-        applyHighContrast,
-        generatePrintableOverview,
-        generateGearListHtml,
-        ensureZoomRemoteSetup,
-        encodeSharedSetup,
-        decodeSharedSetup,
-        applySharedSetupFromUrl,
-        applySharedSetup,
-        updateBatteryPlateVisibility: _safeUpdateBatteryPlateVisibility,
-        updateBatteryOptions: _safeUpdateBatteryOptions,
-
-        cameraFizPort,
-        controllerCamPort,
-        controllerDistancePort,
-        detectBrand,
-        connectionLabel,
-        generateConnectorSummary,
-        exportDiagramSvg,
-        fixPowerInput,
-        ensureList,
-        normalizeVideoType,
-        normalizeFizConnectorType,
-        normalizeViewfinderType,
-        normalizePowerPortType,
-
-        setSelectValue,
-        autoSaveCurrentSetup: _safeAutoSaveCurrentSetup,
-        saveCurrentSession: _safeSaveCurrentSession,
-        saveCurrentGearList: function (...args) {
-          if (typeof globalThis !== 'undefined' && typeof globalThis.saveCurrentGearList === 'function') {
-            return globalThis.saveCurrentGearList(...args);
-          }
-          return undefined;
-        },
-        crewRoles: typeof globalThis !== 'undefined' && Array.isArray(globalThis.crewRoles) ? globalThis.crewRoles : [],
-        setSliderBowlValue: function (...args) {
-          if (typeof globalThis !== 'undefined' && typeof globalThis.setSliderBowlValue === 'function') {
-            return globalThis.setSliderBowlValue(...args);
-          }
-          return undefined;
-        },
-        setEasyrigValue: function (...args) {
-          if (typeof globalThis !== 'undefined' && typeof globalThis.setEasyrigValue === 'function') {
-            return globalThis.setEasyrigValue(...args);
-          }
-          return undefined;
-        },
-        restoreSessionState,
-
-        scenarioIcons,
-
-        renderFilterDetails,
-        collectFilterSelections,
-        parseFilterTokens,
-        applyFilterSelectionsToGearList,
-
-        createSettingsBackup,
-        buildSettingsBackupPackage,
-        captureStorageSnapshot,
-        sanitizeBackupPayload,
-        extractBackupSections,
-
-        runFeatureSearch,
-        computeSetupDiff,
-        __versionCompareInternals: {
-          formatDiffPath,
-          formatDiffListIndex,
-          createKeyedDiffPathSegment,
-          parseKeyedDiffPathSegment,
-          findArrayComparisonKey,
-        },
-        __featureSearchInternals: {
-          featureMap,
-          actionMap,
-          deviceMap,
-          helpMap,
-          featureSearchEntries,
-          featureSearchDefaultOptions,
-          featureSearchInput: featureSearch,
-          featureSearchDropdownElement:
-            typeof globalThis !== 'undefined' && globalThis.featureSearchDropdown
-              ? globalThis.featureSearchDropdown
-              : null,
-        },
-        __customFontInternals: {
-          addFromData: (name, dataUrl, options) => addCustomFontFromData(name, dataUrl, options),
-          getEntries: () => Array.from(customFontEntries.values()),
-        },
-        __sharedImportInternals: {
-          getLastSharedSetupData: () => lastSharedSetupData,
-          setLastSharedSetupDataForTest: (value) => {
-            lastSharedSetupData = value;
-          },
-          getLastSharedAutoGearRules: () => lastSharedAutoGearRules,
-          setLastSharedAutoGearRulesForTest: (value) => {
-            lastSharedAutoGearRules = value;
-          },
-          isProjectPresetActive: () => sharedImportProjectPresetActive,
-          setProjectPresetActiveForTest: (value) => {
-            sharedImportProjectPresetActive = !!value;
-          },
-          getPreviousPresetId: () => sharedImportPreviousPresetId,
-          setPreviousPresetIdForTest: (value) => {
-            sharedImportPreviousPresetId = typeof value === 'string' ? value : '';
-          },
-          isPromptActive: () => sharedImportPromptActive,
-          setPromptActiveForTest: (value) => {
-            sharedImportPromptActive = !!value;
-          },
-          getPendingSharedLinkListener: () => pendingSharedLinkListener,
-          setPendingSharedLinkListenerForTest: (listener) => {
-            pendingSharedLinkListener = typeof listener === 'function' ? listener : null;
-          },
-        },
-        __mountVoltageInternals: {
-          getSessionMountVoltagePreferencesClone,
-          applySessionMountVoltagePreferences,
-          cloneMountVoltageDefaultsForSession,
-        },
-
-        resetPlannerStateAfterFactoryReset,
-        __autoGearInternals: {
-          buildVideoDistributionAutoRules: (typeof window !== 'undefined' && window.buildVideoDistributionAutoRules) || undefined,
-        },
-
-        // Explicitly added to module API for ESM access
-        populateFilterDropdown,
-        populateFrameRateDropdownFor,
-        populateSlowMotionFrameRateDropdown,
-        populateSensorModeDropdown,
-        populateCodecDropdown,
-        populateRecordingResolutionDropdown
-      };
-
-      // Expose globals for backward compatibility
-      if (typeof window !== 'undefined') {
-        window.cineCoreSession = cineCoreSession;
-
-        const EXPOSE_LIST = [
-          'saveCurrentSession',
-          'autoSaveCurrentSetup',
-          'createSettingsBackup',
-          'handleRestoreRehearsalProceed',
-          'handleRestoreRehearsalAbort',
-          'downloadSharedProject',
-          'encodeSharedSetup',
-          'decodeSharedSetup',
-          'applySharedSetup',
-          'applySharedSetupFromUrl',
-          // Added during ESM conversion to ensure UI availability
-          'renderFilterDetails',
-          'populateFilterDropdown',
-          'populateFrameRateDropdownFor',
-          'populateSlowMotionFrameRateDropdown',
-          'populateSensorModeDropdown',
-          'populateCodecDropdown',
-          'populateRecordingResolutionDropdown'
-        ];
-
-        EXPOSE_LIST.forEach(key => {
-          if (cineCoreSession[key]) {
-            window[key] = cineCoreSession[key];
-          }
-        });
-
-        if (cineCoreSession.__autoGearInternals) {
-          window.__autoGearInternals = cineCoreSession.__autoGearInternals;
-        }
-      }
-
-      export default cineCoreSession;
-      console.log('app-session.js: Execution complete (ESM)');
-
-      /* cineAppSession Shim for Persistence & Runtime Integrity */
-      const cineAppSession = {
-        // Persistence Bindings
-        saveCurrentSession,
-        autoSaveCurrentSetup,
-        saveCurrentGearList,
-        restoreSessionState,
-
-        // Backups
-        collectFullBackupData,
-        createSettingsBackup,
-        captureStorageSnapshot,
-        sanitizeBackupPayload,
-
-        // Sharing & Restore
-        encodeSharedSetup,
-        decodeSharedSetup,
-        applySharedSetup,
-        applySharedSetupFromUrl,
-        downloadSharedProject,
-        saveProject,
-        handleRestoreRehearsalProceed,
-        handleRestoreRehearsalAbort,
-
-        // Aliases for direct binding resolution if needed by name overrides
-        proceed: handleRestoreRehearsalProceed,
-        abort: handleRestoreRehearsalAbort,
-        downloadProject: downloadSharedProject
-      };
-
-      if (typeof window !== 'undefined') {
-        window.cineAppSession = cineAppSession;
-
-        // Ensure specific globals expected by legacy code or direct checks are present
-        // (Redundant safety for the integrity check)
-        if (!window.handleRestoreRehearsalProceed) window.handleRestoreRehearsalProceed = handleRestoreRehearsalProceed;
-        if (!window.handleRestoreRehearsalAbort) window.handleRestoreRehearsalAbort = handleRestoreRehearsalAbort;
-        if (!window.downloadSharedProject) window.downloadSharedProject = downloadSharedProject;
-      }
-
-      export { cineAppSession };
+        return `${token.type}:${size}${segment} `;
+      })();
+    selectedTokens.push(preserved);
+  });
+
+  return selectedTokens.join(',');
+}
+
+function parseFilterTokens(str) {
+  if (!str) return [];
+  return str.split(',').map(s => {
+    const parts = s.split(':').map(p => p.trim());
+    const type = parts[0];
+    const size = parts[1] || SESSION_DEFAULT_FILTER_SIZE;
+    const vals = parts.length > 2 ? parts[2] : undefined;
+    let values;
+    if (vals === undefined) {
+      values = undefined;
+    } else if (vals === '' || vals === '!') {
+      values = [];
+    } else {
+      values = vals.split('|').map(v => v.trim()).filter(Boolean);
+    }
+    return { type, size, values };
+  }).filter(t => t.type);
+}
+
+function applyFilterSelectionsToGearList(info) {
+  const projectInfo = info || (typeof currentProjectInfo !== 'undefined' ? currentProjectInfo : {});
+  if (!gearListOutput) return;
+  resolveFilterSelectElement();
+  const tokens = info && info.filter ? parseFilterTokens(info.filter) : [];
+  const entries = buildFilterGearEntries(tokens);
+  updateGearListFilterEntries(entries);
+  adjustGearListSelectWidths(gearListOutput);
+}
+
+function normalizeGearNameForComparison(name) {
+  if (!name) return '';
+  let normalized = String(name);
+  if (typeof normalized.normalize === 'function') {
+    normalized = normalized.normalize('NFD');
+  } else if (typeof String.prototype.normalize === 'function') {
+    normalized = String.prototype.normalize.call(normalized, 'NFD');
+  }
+  normalized = normalized.replace(/[\u0300-\u036f]/g, '');
+  normalized = normalized.replace(/\bfuer\b/gi, 'for');
+  normalized = normalized.replace(/\bfur\b/gi, 'for');
+  normalized = normalized.toLowerCase();
+  return normalized.replace(/[^a-z0-9]+/g, '');
+}
+if (typeof window !== 'undefined') window.applyFilterSelectionsToGearList = applyFilterSelectionsToGearList;
+
+function buildFilterSelectHtml() {
+  return '<div id="gearListFilterDetails" class="hidden" aria-live="polite"></div>';
+}
+if (typeof window !== 'undefined') window.buildFilterSelectHtml = buildFilterSelectHtml;
+
+function collectFilterAccessories(filters = []) {
+  const items = [];
+  filters.forEach(({ type }) => {
+    switch (type) {
+      case 'ND Grad HE':
+      case 'ND Grad SE':
+        break;
+      default:
+        break;
+    }
+  });
+  return items;
+}
+if (typeof window !== 'undefined') window.collectFilterAccessories = collectFilterAccessories;
+
+// populateUserButtonDropdowns delegated to UiPopulationManager
+function populateUserButtonDropdowns() {
+  UiPopulationManager.populateUserButtonDropdowns();
+}
+const runInitAppWithInitialLoadingIndicator = () => {
+  ensureInitialLoadingIndicatorVisible();
+  try {
+    initApp();
+  } finally {
+    finalizeInitialLoadingIndicator();
+  }
+};
+
+ensureInitialLoadingIndicatorVisible();
+
+if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runInitAppWithInitialLoadingIndicator);
+  } else {
+    runInitAppWithInitialLoadingIndicator();
+  }
+} else {
+  finalizeInitialLoadingIndicator();
+}
+
+/* Exported Session API */
+const cineCoreSession = {
+  APP_VERSION: typeof ACTIVE_APP_VERSION === 'string' ? ACTIVE_APP_VERSION : (typeof APP_VERSION !== 'undefined' ? APP_VERSION : 'unknown'),
+  closeSideMenu,
+  openSideMenu,
+  setupSideMenu,
+  setupResponsiveControls,
+  setLanguage: applySetLanguage,
+  applySetLanguage,
+  safeGetCurrentProjectName,
+  updateCalculations: function (...args) {
+    if (typeof globalThis !== 'undefined' && typeof globalThis.updateCalculations === 'function') {
+      return globalThis.updateCalculations(...args);
+    }
+    return undefined;
+  },
+  setBatteryPlates,
+  getBatteryPlates,
+  setRecordingMedia,
+  getRecordingMedia,
+  applyDarkMode,
+  applyPinkMode,
+  applyHighContrast,
+  generatePrintableOverview,
+  generateGearListHtml,
+  ensureZoomRemoteSetup,
+  encodeSharedSetup,
+  decodeSharedSetup,
+  applySharedSetupFromUrl,
+  applySharedSetup,
+  updateBatteryPlateVisibility: _safeUpdateBatteryPlateVisibility,
+  updateBatteryOptions: _safeUpdateBatteryOptions,
+
+  cameraFizPort,
+  controllerCamPort,
+  controllerDistancePort,
+  detectBrand,
+  connectionLabel,
+  generateConnectorSummary,
+  exportDiagramSvg,
+  fixPowerInput,
+  ensureList,
+  normalizeVideoType,
+  normalizeFizConnectorType,
+  normalizeViewfinderType,
+  normalizePowerPortType,
+
+  setSelectValue,
+  autoSaveCurrentSetup: _safeAutoSaveCurrentSetup,
+  saveCurrentSession: _safeSaveCurrentSession,
+  saveCurrentGearList: function (...args) {
+    if (typeof globalThis !== 'undefined' && typeof globalThis.saveCurrentGearList === 'function') {
+      return globalThis.saveCurrentGearList(...args);
+    }
+    return undefined;
+  },
+  crewRoles: typeof globalThis !== 'undefined' && Array.isArray(globalThis.crewRoles) ? globalThis.crewRoles : [],
+  setSliderBowlValue: function (...args) {
+    if (typeof globalThis !== 'undefined' && typeof globalThis.setSliderBowlValue === 'function') {
+      return globalThis.setSliderBowlValue(...args);
+    }
+    return undefined;
+  },
+  setEasyrigValue: function (...args) {
+    if (typeof globalThis !== 'undefined' && typeof globalThis.setEasyrigValue === 'function') {
+      return globalThis.setEasyrigValue(...args);
+    }
+    return undefined;
+  },
+  restoreSessionState,
+
+  scenarioIcons,
+
+  renderFilterDetails,
+  collectFilterSelections,
+  parseFilterTokens,
+  applyFilterSelectionsToGearList,
+
+  createSettingsBackup,
+  buildSettingsBackupPackage,
+  captureStorageSnapshot,
+  sanitizeBackupPayload,
+  extractBackupSections,
+
+  runFeatureSearch,
+  computeSetupDiff: BackupDiffManager.computeSetupDiff,
+  __versionCompareInternals: {
+    formatDiffPath: BackupDiffManager.formatDiffPath,
+    formatDiffListIndex: BackupDiffManager.formatDiffListIndex,
+    createKeyedDiffPathSegment: BackupDiffManager.createKeyedDiffPathSegment,
+    parseKeyedDiffPathSegment: BackupDiffManager.parseKeyedDiffPathSegment,
+    findArrayComparisonKey: BackupDiffManager.findArrayComparisonKey,
+  },
+  __featureSearchInternals: {
+    featureMap,
+    actionMap,
+    deviceMap,
+    helpMap,
+    featureSearchEntries,
+    featureSearchDefaultOptions,
+    featureSearchInput: featureSearch,
+    featureSearchDropdownElement:
+      typeof globalThis !== 'undefined' && globalThis.featureSearchDropdown
+        ? globalThis.featureSearchDropdown
+        : null,
+  },
+  __customFontInternals: {
+    addFromData: (name, dataUrl, options) => addCustomFontFromData(name, dataUrl, options),
+    getEntries: () => Array.from(customFontEntries.values()),
+  },
+  __sharedImportInternals: {
+    getLastSharedSetupData: () => lastSharedSetupData,
+    setLastSharedSetupDataForTest: (value) => {
+      lastSharedSetupData = value;
+    },
+    getLastSharedAutoGearRules: () => lastSharedAutoGearRules,
+    setLastSharedAutoGearRulesForTest: (value) => {
+      lastSharedAutoGearRules = value;
+    },
+    isProjectPresetActive: () => sharedImportProjectPresetActive,
+    setProjectPresetActiveForTest: (value) => {
+      sharedImportProjectPresetActive = !!value;
+    },
+    getPreviousPresetId: () => sharedImportPreviousPresetId,
+    setPreviousPresetIdForTest: (value) => {
+      sharedImportPreviousPresetId = typeof value === 'string' ? value : '';
+    },
+    isPromptActive: () => sharedImportPromptActive,
+    setPromptActiveForTest: (value) => {
+      sharedImportPromptActive = !!value;
+    },
+    getPendingSharedLinkListener: () => pendingSharedLinkListener,
+    setPendingSharedLinkListenerForTest: (listener) => {
+      pendingSharedLinkListener = typeof listener === 'function' ? listener : null;
+    },
+  },
+  __mountVoltageInternals: {
+    getSessionMountVoltagePreferencesClone,
+    applySessionMountVoltagePreferences,
+    cloneMountVoltageDefaultsForSession,
+  },
+
+  resetPlannerStateAfterFactoryReset,
+  __autoGearInternals: {
+    buildVideoDistributionAutoRules: (typeof window !== 'undefined' && window.buildVideoDistributionAutoRules) || undefined,
+  },
+
+  // Explicitly added to module API for ESM access
+  populateFilterDropdown,
+  populateFrameRateDropdownFor,
+  populateSlowMotionFrameRateDropdown,
+  populateSensorModeDropdown,
+  populateCodecDropdown,
+  populateRecordingResolutionDropdown
+};
+
+// Expose globals for backward compatibility
+if (typeof window !== 'undefined') {
+  window.cineCoreSession = cineCoreSession;
+
+  const EXPOSE_LIST = [
+    'saveCurrentSession',
+    'autoSaveCurrentSetup',
+    'createSettingsBackup',
+    'handleRestoreRehearsalProceed',
+    'handleRestoreRehearsalAbort',
+    'downloadSharedProject',
+    'encodeSharedSetup',
+    'decodeSharedSetup',
+    'applySharedSetup',
+    'applySharedSetupFromUrl',
+    // Added during ESM conversion to ensure UI availability
+    'renderFilterDetails',
+    'populateFilterDropdown',
+    'populateFrameRateDropdownFor',
+    'populateSlowMotionFrameRateDropdown',
+    'populateSensorModeDropdown',
+    'populateCodecDropdown',
+    'populateRecordingResolutionDropdown'
+  ];
+
+  EXPOSE_LIST.forEach(key => {
+    if (cineCoreSession[key]) {
+      window[key] = cineCoreSession[key];
+    }
+  });
+
+  if (cineCoreSession.__autoGearInternals) {
+    window.__autoGearInternals = cineCoreSession.__autoGearInternals;
+  }
+}
+
+export default cineCoreSession;
+console.log('app-session.js: Execution complete (ESM)');
+
+/* cineAppSession Shim for Persistence & Runtime Integrity */
+const cineAppSession = {
+  // Persistence Bindings
+  saveCurrentSession,
+  autoSaveCurrentSetup,
+  saveCurrentGearList,
+  restoreSessionState,
+
+  // Backups
+  collectFullBackupData,
+  createSettingsBackup,
+  captureStorageSnapshot,
+  sanitizeBackupPayload,
+
+  // Sharing & Restore
+  encodeSharedSetup,
+  decodeSharedSetup,
+  applySharedSetup,
+  applySharedSetupFromUrl,
+  downloadSharedProject,
+  saveProject,
+  handleRestoreRehearsalProceed,
+  handleRestoreRehearsalAbort,
+
+  // Aliases for direct binding resolution if needed by name overrides
+  proceed: handleRestoreRehearsalProceed,
+  abort: handleRestoreRehearsalAbort,
+  downloadProject: downloadSharedProject
+};
+
+if (typeof window !== 'undefined') {
+  window.cineAppSession = cineAppSession;
+
+  // Ensure specific globals expected by legacy code or direct checks are present
+  // (Redundant safety for the integrity check)
+  if (!window.handleRestoreRehearsalProceed) window.handleRestoreRehearsalProceed = handleRestoreRehearsalProceed;
+  if (!window.handleRestoreRehearsalAbort) window.handleRestoreRehearsalAbort = handleRestoreRehearsalAbort;
+  if (!window.downloadSharedProject) window.downloadSharedProject = downloadSharedProject;
+}
+
+export { cineAppSession };
