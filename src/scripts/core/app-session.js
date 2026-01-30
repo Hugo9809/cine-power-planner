@@ -103,6 +103,15 @@ import * as BackupDiffManager from '../modules/features/backup-diff-manager.js';
 import { HelpUiManager } from '../modules/ui/help-ui-manager.js';
 import { ScenarioUiManager } from '../modules/ui/scenario-ui-manager.js';
 import { SettingsUiManager } from '../modules/ui/settings-ui-manager.js';
+import { ThemeManager } from '../modules/ui/theme-ui-manager.js';
+import { NavigationManager } from '../modules/core/navigation-manager.js';
+import { StorageCacheManager } from '../modules/core/storage-cache-manager.js';
+import { LoadingIndicatorManager } from '../modules/ui/loading-indicator-manager.js';
+import { AutoBackupIndicatorManager } from '../modules/ui/auto-backup-indicator-manager.js';
+import { DiagramExportManager } from '../modules/features/diagram-export-manager.js';
+import { PreferencesManager } from '../modules/core/preferences-manager.js';
+import { FactoryResetManager } from '../modules/core/factory-reset-manager.js';
+import { DialogManager } from '../modules/ui/dialog-manager.js';
 import {
   collectFullBackupData,
   buildSettingsBackupPackage,
@@ -776,7 +785,6 @@ function resolveSettingsButton() {
 
 function requestSettingsOpen(context) {
   return SettingsUiManager.requestOpen(context);
-}
 }
 
 // Compatibility texts and formatNumberForComparison delegated to session-runtime.js
@@ -2992,60 +3000,16 @@ const getPinkModePreference = () => {
 let unregisterHeaderThemeControl = () => { };
 let unregisterSettingsThemeControl = () => { };
 
-const registerThemeControl = (element, config) => {
-  if (themePreferenceController && typeof themePreferenceController.registerControl === 'function') {
-    return themePreferenceController.registerControl(element, config);
-  }
-  let unregister = () => { };
-  pendingThemeControls.push({
-    element,
-    config,
-    callback: (fn) => { unregister = fn; }
-  });
-  return () => unregister();
-};
+const registerThemeControl = (element, config) => ThemeManager.registerThemeControl(element, config);
 
-const registerPinkModeControl = (element, config) => {
-  if (pinkModePreferenceController && typeof pinkModePreferenceController.registerControl === 'function') {
-    return pinkModePreferenceController.registerControl(element, config);
-  }
-  let unregister = () => { };
-  pendingPinkModeControls.push({
-    element,
-    options: config,
-    callback: (fn) => { unregister = fn; }
-  });
-  return () => unregister();
-};
+const registerPinkModeControl = (element, config) => ThemeManager.registerPinkModeControl(element, config);
 
-const resolveThemeVariant = (darkEnabled, pinkEnabled) => {
-  if (pinkEnabled) {
-    return darkEnabled ? 'pink-dark' : 'pink-light';
-  }
-  return darkEnabled ? 'dark' : 'light';
-};
+const resolveThemeVariant = (darkEnabled, pinkEnabled) => ThemeManager.resolveThemeVariant(darkEnabled, pinkEnabled);
 
-const applyThemeVariantSelection = (variant) => {
-  const normalized = typeof variant === 'string' ? variant : 'light';
-  switch (normalized) {
-    case 'dark':
-      setThemePreference(true, { source: 'theme-variant' });
-      setPinkModePreference(false, { source: 'theme-variant' });
-      return;
-    case 'pink-light':
-      setThemePreference(false, { source: 'theme-variant' });
-      setPinkModePreference(true, { source: 'theme-variant' });
-      return;
-    case 'pink-dark':
-      setThemePreference(true, { source: 'theme-variant' });
-      setPinkModePreference(true, { source: 'theme-variant' });
-      return;
-    case 'light':
-    default:
-      setThemePreference(false, { source: 'theme-variant' });
-      setPinkModePreference(false, { source: 'theme-variant' });
-  }
-};
+const applyThemeVariantSelection = (variant) => ThemeManager.applyThemeVariantSelection(variant, {
+  setThemePreference,
+  setPinkModePreference
+});
 
 if (darkModeToggle || (typeof document !== 'undefined' && document.getElementById('darkModeToggle'))) {
   unregisterHeaderThemeControl = registerThemeControl(darkModeToggle || document.getElementById('darkModeToggle'), { type: 'button' });
@@ -3086,65 +3050,42 @@ if (!themePreferenceController) {
   applyDarkMode(fallbackDarkMode);
 }
 
-if (themePreferenceGlobalScope) {
-  try {
-    themePreferenceGlobalScope.cineThemePreference = {
-      registerControl: (element, options) => {
-        if (themePreferenceController && typeof themePreferenceController.registerControl === 'function') {
-          return themePreferenceController.registerControl(element, options);
-        }
-        let unregister = () => { };
-        pendingThemeControls.push({
-          element,
-          options,
-          callback: (fn) => { unregister = fn; }
-        });
-        return () => unregister();
-      },
-      setValue: (value, options) => setThemePreference(value, options),
-      getValue: () => getThemePreference(),
-      reloadFromStorage: options => (
-        themePreferenceController && typeof themePreferenceController.reloadFromStorage === 'function'
-          ? themePreferenceController.reloadFromStorage(options)
-          : getThemePreference()
-      ),
-    };
 
-    themePreferenceGlobalScope.cinePinkModePreference = {
-      registerControl: (element, options) => {
-        if (pinkModePreferenceController && typeof pinkModePreferenceController.registerControl === 'function') {
-          return pinkModePreferenceController.registerControl(element, options);
-        }
-        let unregister = () => { };
-        pendingPinkModeControls.push({
-          element,
-          options,
-          callback: (fn) => { unregister = fn; }
-        });
-        return () => unregister();
-      },
-      setValue: (value, options) => {
-        if (pinkModePreferenceController && typeof pinkModePreferenceController.setValue === 'function') {
-          return pinkModePreferenceController.setValue(value, options);
-        }
-        return false;
-      },
-      getValue: () => {
-        if (pinkModePreferenceController && typeof pinkModePreferenceController.getValue === 'function') {
-          return pinkModePreferenceController.getValue();
-        }
-        return isPinkModeActive();
-      },
-      reloadFromStorage: options => {
-        if (pinkModePreferenceController && typeof pinkModePreferenceController.reloadFromStorage === 'function') {
-          return pinkModePreferenceController.reloadFromStorage(options);
-        }
-        return isPinkModeActive();
-      },
-    };
-  } catch (exposeError) {
-    console.warn('Unable to expose theme preference bridge', exposeError);
-  }
+try {
+  themePreferenceGlobalScope.cineThemePreference = {
+    registerControl: (element, options) => ThemeManager.registerThemeControl(element, options),
+    setValue: (value, options) => setThemePreference(value, options),
+    getValue: () => getThemePreference(),
+    reloadFromStorage: options => (
+      themePreferenceController && typeof themePreferenceController.reloadFromStorage === 'function'
+        ? themePreferenceController.reloadFromStorage(options)
+        : getThemePreference()
+    ),
+  };
+
+  themePreferenceGlobalScope.cinePinkModePreference = {
+    registerControl: (element, options) => ThemeManager.registerPinkModeControl(element, options),
+    setValue: (value, options) => {
+      if (pinkModePreferenceController && typeof pinkModePreferenceController.setValue === 'function') {
+        return pinkModePreferenceController.setValue(value, options);
+      }
+      return false;
+    },
+    getValue: () => {
+      if (pinkModePreferenceController && typeof pinkModePreferenceController.getValue === 'function') {
+        return pinkModePreferenceController.getValue();
+      }
+      return isPinkModeActive();
+    },
+    reloadFromStorage: options => {
+      if (pinkModePreferenceController && typeof pinkModePreferenceController.reloadFromStorage === 'function') {
+        return pinkModePreferenceController.reloadFromStorage(options);
+      }
+      return isPinkModeActive();
+    },
+  };
+} catch (exposeError) {
+  console.warn('Unable to expose theme preference bridge', exposeError);
 }
 
 const PINK_MODE_STORAGE_KEY = 'cameraPowerPlanner_pinkMode';
@@ -4240,392 +4181,25 @@ function showNotification(type, message) {
   return importedShowNotification(type, message);
 }
 
-const AUTO_BACKUP_INDICATOR_ID = 'cineAutoBackupIndicator';
-const AUTO_BACKUP_INDICATOR_SPINNER_STYLE_ID = 'cineAutoBackupSpinnerStyles';
-let autoBackupIndicatorRefCount = 0;
 
-const ensureAutoBackupSpinnerStyles = () => {
-  if (typeof document === 'undefined') return;
-  if (document.getElementById(AUTO_BACKUP_INDICATOR_SPINNER_STYLE_ID)) {
-    return;
-  }
-  const style = document.createElement('style');
-  style.id = AUTO_BACKUP_INDICATOR_SPINNER_STYLE_ID;
-  style.textContent = `@keyframes cineAutoBackupSpinnerRotate {\n    0% { transform: rotate(0deg); }\n    100% { transform: rotate(360deg); }\n  }`;
-  document.head.appendChild(style);
-};
+// Delegate Auto Backup Indicator to AutoBackupIndicatorManager
+const AUTO_BACKUP_INDICATOR_ID = AutoBackupIndicatorManager.AUTO_BACKUP_INDICATOR_ID;
+const AUTO_BACKUP_INDICATOR_SPINNER_STYLE_ID = AutoBackupIndicatorManager.AUTO_BACKUP_INDICATOR_SPINNER_STYLE_ID;
+const ensureAutoBackupSpinnerStyles = AutoBackupIndicatorManager.ensureAutoBackupSpinnerStyles;
+const showAutoBackupActivityIndicator = AutoBackupIndicatorManager.showAutoBackupActivityIndicator;
 
-const showAutoBackupActivityIndicator = (message) => {
-  if (typeof document === 'undefined') {
-    return () => { };
-  }
-  const container = ensureNotificationContainer();
-  if (!container) {
-    return () => { };
-  }
-  ensureAutoBackupSpinnerStyles();
 
-  let indicator = document.getElementById(AUTO_BACKUP_INDICATOR_ID);
-  if (!indicator) {
-    indicator = document.createElement('div');
-    indicator.id = AUTO_BACKUP_INDICATOR_ID;
-    indicator.style.display = 'flex';
-    indicator.style.alignItems = 'center';
-    indicator.style.gap = '0.75rem';
-    indicator.style.padding = '0.75rem 1.25rem';
-    indicator.style.marginTop = '0.5rem';
-    indicator.style.borderRadius = '0.75rem';
-    indicator.style.border = 'none';
-    indicator.style.boxShadow = '0 0.75rem 2.5rem rgba(0, 0, 0, 0.14)';
-    indicator.style.background = 'rgba(32, 40, 62, 0.92)';
-    indicator.style.color = '#ffffff';
-    indicator.setAttribute('role', 'status');
-    indicator.setAttribute('aria-live', 'polite');
-
-    const spinner = document.createElement('span');
-    spinner.style.display = 'inline-block';
-    spinner.style.width = '1.5rem';
-    spinner.style.height = '1.5rem';
-    spinner.style.borderRadius = '50%';
-    spinner.style.border = '0.2rem solid rgba(255, 255, 255, 0.3)';
-    spinner.style.borderTopColor = '#ffffff';
-    spinner.style.animation = 'cineAutoBackupSpinnerRotate 1s linear infinite';
-    spinner.setAttribute('aria-hidden', 'true');
-    indicator.appendChild(spinner);
-
-    const textNode = document.createElement('span');
-    textNode.className = 'auto-backup-indicator-text';
-    indicator.appendChild(textNode);
-
-    container.appendChild(indicator);
-  }
-
-  const textTarget = indicator.querySelector('.auto-backup-indicator-text');
-  if (textTarget) {
-    textTarget.textContent = message;
-  }
-
-  autoBackupIndicatorRefCount += 1;
-  indicator.dataset.count = String(autoBackupIndicatorRefCount);
-  indicator.style.display = 'flex';
-
-  return () => {
-    autoBackupIndicatorRefCount = Math.max(0, autoBackupIndicatorRefCount - 1);
-    if (autoBackupIndicatorRefCount === 0) {
-      removeNode(indicator);
-      if (!container.children.length) {
-        removeNode(container);
-      }
-    }
-  };
-};
-
-const GLOBAL_LOADING_INDICATOR_ID = 'cineGlobalLoadingIndicator';
-let globalLoadingIndicatorRefCount = 0;
-const GLOBAL_LOADING_INDICATOR_MESSAGE_KEYS = {
-  default: 'globalLoadingIndicator',
-  preparing: 'globalLoadingIndicatorPreparing',
-  modules: 'globalLoadingIndicatorModules',
-  data: 'globalLoadingIndicatorData',
-  almost: 'globalLoadingIndicatorAlmostReady',
-};
-
-const resolveGlobalLoadingIndicatorMessage = (fallbackMessage) => {
-  if (typeof fallbackMessage === 'string' && fallbackMessage.trim()) {
-    return fallbackMessage.trim();
-  }
-  const langTexts = texts && typeof currentLang === 'string' && currentLang && texts[currentLang]
-    ? texts[currentLang]
-    : null;
-  const fallbackTexts = texts && typeof texts.en === 'object' && texts.en ? texts.en : null;
-  const localized = langTexts && typeof langTexts.globalLoadingIndicator === 'string'
-    ? langTexts.globalLoadingIndicator.trim()
-    : '';
-  if (localized) {
-    return localized;
-  }
-  const fallback = fallbackTexts && typeof fallbackTexts.globalLoadingIndicator === 'string'
-    ? fallbackTexts.globalLoadingIndicator.trim()
-    : '';
-  if (fallback) {
-    return fallback;
-  }
-  return 'Loading…';
-};
-
-const resolveGlobalLoadingIndicatorMessageByKey = (key, fallbackMessage) => {
-  const normalizedKey = typeof key === 'string' && key.trim() ? key.trim() : '';
-  const translationKey = normalizedKey && GLOBAL_LOADING_INDICATOR_MESSAGE_KEYS[normalizedKey]
-    ? GLOBAL_LOADING_INDICATOR_MESSAGE_KEYS[normalizedKey]
-    : GLOBAL_LOADING_INDICATOR_MESSAGE_KEYS.default;
-
-  const langTexts = texts && typeof currentLang === 'string' && currentLang && texts[currentLang]
-    ? texts[currentLang]
-    : null;
-  const fallbackTexts = texts && typeof texts.en === 'object' && texts.en ? texts.en : null;
-
-  let localized = '';
-  if (translationKey && langTexts && typeof langTexts[translationKey] === 'string') {
-    localized = langTexts[translationKey].trim();
-  }
-  if (!localized && translationKey && fallbackTexts && typeof fallbackTexts[translationKey] === 'string') {
-    localized = fallbackTexts[translationKey].trim();
-  }
-
-  const fallback = typeof fallbackMessage === 'string' && fallbackMessage.trim()
-    ? fallbackMessage.trim()
-    : '';
-  if (!localized && fallback) {
-    localized = fallback;
-  }
-
-  if (!localized) {
-    localized = resolveGlobalLoadingIndicatorMessage(fallback);
-  }
-
-  return localized || 'Loading…';
-};
-
-const syncBootstrapLoadingNoticeLocalization = () => {
-  if (typeof window === 'undefined') {
-    return;
-  }
-  const notice = window.__cineLoadingNotice;
-  if (!notice || typeof notice.applyLocalization !== 'function') {
-    return;
-  }
-  const fallback = typeof notice.getFallbackMessages === 'function'
-    ? notice.getFallbackMessages()
-    : {};
-
-  notice.applyLocalization({
-    preparing: resolveGlobalLoadingIndicatorMessageByKey('preparing', fallback.preparing || ''),
-    modules: resolveGlobalLoadingIndicatorMessageByKey('modules', fallback.modules || ''),
-    data: resolveGlobalLoadingIndicatorMessageByKey('data', fallback.data || ''),
-    almost: resolveGlobalLoadingIndicatorMessageByKey('almost', fallback.almost || ''),
-  });
-};
-
-const refreshGlobalLoadingIndicatorText = () => {
-  if (typeof document === 'undefined') {
-    return;
-  }
-  const indicator = document.getElementById(GLOBAL_LOADING_INDICATOR_ID);
-  if (!indicator) {
-    return;
-  }
-  const textTarget = indicator.querySelector('.global-loading-indicator-text');
-  if (!textTarget) {
-    return;
-  }
-  syncBootstrapLoadingNoticeLocalization();
-  const mode = indicator.dataset.messageMode || 'auto';
-  if (mode === 'custom') {
-    const customMessage = indicator.dataset.customMessage || '';
-    if (customMessage) {
-      textTarget.textContent = customMessage;
-    }
-    return;
-  }
-  if (mode === 'key') {
-    const messageKey = indicator.dataset.messageKey || 'default';
-    const fallback = indicator.dataset.fallbackMessage || '';
-    const message = resolveGlobalLoadingIndicatorMessageByKey(messageKey, fallback);
-    if (message) {
-      textTarget.textContent = message;
-      indicator.dataset.currentMessage = message;
-    }
-    return;
-  }
-  const message = resolveGlobalLoadingIndicatorMessage();
-  textTarget.textContent = message;
-  indicator.dataset.currentMessage = message;
-};
-
-const GLOBAL_LOADING_INDICATOR_MIN_DISPLAY_MS = 260;
-
-const setGlobalLoadingIndicatorMessageByKey = (key, fallbackMessage) => {
-  if (typeof document === 'undefined') {
-    return;
-  }
-  const indicator = document.getElementById(GLOBAL_LOADING_INDICATOR_ID);
-  if (!indicator) {
-    return;
-  }
-  const normalizedKey = typeof key === 'string' && key.trim() ? key.trim() : 'default';
-  const resolvedMessage = resolveGlobalLoadingIndicatorMessageByKey(normalizedKey, fallbackMessage || '');
-  const textTarget = indicator.querySelector('.global-loading-indicator-text');
-  indicator.dataset.messageMode = 'key';
-  indicator.dataset.messageKey = normalizedKey;
-  if (typeof fallbackMessage === 'string' && fallbackMessage.trim()) {
-    indicator.dataset.fallbackMessage = fallbackMessage.trim();
-  } else {
-    delete indicator.dataset.fallbackMessage;
-  }
-  indicator.dataset.currentMessage = resolvedMessage;
-  if (textTarget) {
-    textTarget.textContent = resolvedMessage;
-  }
-  syncBootstrapLoadingNoticeLocalization();
-};
-
-const getHighResolutionTimestamp = () => {
-  if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
-    return performance.now();
-  }
-  return Date.now();
-};
-
-const showGlobalLoadingIndicator = (message) => {
-  if (typeof document === 'undefined') {
-    return () => { };
-  }
-  const container = ensureNotificationContainer();
-  if (!container) {
-    return () => { };
-  }
-  ensureAutoBackupSpinnerStyles();
-
-  const bootstrapNotice = typeof window !== 'undefined' ? window.__cineLoadingNotice : null;
-  let indicator = document.getElementById(GLOBAL_LOADING_INDICATOR_ID);
-  if (!indicator && bootstrapNotice && typeof bootstrapNotice.ensureIndicator === 'function') {
-    try {
-      indicator = bootstrapNotice.ensureIndicator();
-    } catch (bootstrapIndicatorError) {
-      console.warn('Failed to adopt bootstrap loading indicator', bootstrapIndicatorError);
-      indicator = null;
-    }
-  }
-  if (!indicator) {
-    indicator = document.createElement('div');
-    indicator.id = GLOBAL_LOADING_INDICATOR_ID;
-  }
-
-  indicator.setAttribute('role', 'status');
-  indicator.setAttribute('aria-live', 'polite');
-  indicator.setAttribute('aria-busy', 'true');
-  if (indicator.dataset && indicator.dataset.bootstrap) {
-    delete indicator.dataset.bootstrap;
-  }
-
-  if (indicator.classList) {
-    indicator.classList.add('cine-notification', 'cine-notification--loading');
-  } else {
-    indicator.className = [
-      indicator.className || '',
-      'cine-notification',
-      'cine-notification--loading',
-    ]
-      .join(' ')
-      .trim();
-  }
-
-  let spinner = indicator.querySelector('.cine-notification__spinner');
-  if (!spinner) {
-    spinner = document.createElement('span');
-    spinner.className = 'cine-notification__spinner';
-    spinner.setAttribute('aria-hidden', 'true');
-    indicator.insertBefore(spinner, indicator.firstChild);
-  }
-
-  let textTarget = indicator.querySelector('.global-loading-indicator-text');
-  if (!textTarget) {
-    textTarget = document.createElement('span');
-    textTarget.className = 'global-loading-indicator-text';
-    indicator.appendChild(textTarget);
-  }
-
-  if (indicator.parentNode !== container) {
-    container.appendChild(indicator);
-  }
-
-  if (bootstrapNotice && typeof bootstrapNotice.setBusy === 'function') {
-    try {
-      bootstrapNotice.setBusy(true);
-    } catch (bootstrapBusyError) {
-      console.warn('Failed to mark bootstrap loading indicator busy', bootstrapBusyError);
-    }
-  }
-
-  syncBootstrapLoadingNoticeLocalization();
-
-  const isCustomMessage = Boolean(message && typeof message === 'string' && message.trim());
-  let resolvedMessage;
-  if (isCustomMessage) {
-    resolvedMessage = resolveGlobalLoadingIndicatorMessage(message);
-    indicator.dataset.messageMode = 'custom';
-    indicator.dataset.customMessage = resolvedMessage;
-  } else if (indicator.dataset.messageMode === 'key' && indicator.dataset.messageKey) {
-    resolvedMessage = resolveGlobalLoadingIndicatorMessageByKey(
-      indicator.dataset.messageKey,
-      indicator.dataset.fallbackMessage || '',
-    );
-    indicator.dataset.currentMessage = resolvedMessage;
-    indicator.dataset.customMessage = '';
-  } else {
-    resolvedMessage = resolveGlobalLoadingIndicatorMessage();
-    indicator.dataset.messageMode = 'auto';
-    indicator.dataset.customMessage = '';
-    indicator.dataset.currentMessage = resolvedMessage;
-  }
-
-  if (textTarget) {
-    textTarget.textContent = resolvedMessage;
-  }
-
-  if (bootstrapNotice && typeof bootstrapNotice.ensureIndicator === 'function') {
-    bootstrapNotice.indicator = indicator;
-  }
-
-  globalLoadingIndicatorRefCount = Math.max(0, globalLoadingIndicatorRefCount);
-  globalLoadingIndicatorRefCount += 1;
-  indicator.dataset.count = String(globalLoadingIndicatorRefCount);
-  indicator.style.display = 'flex';
-
-  const displayedAt = getHighResolutionTimestamp();
-  let finalized = false;
-
-  const finalizeHide = () => {
-    if (finalized) {
-      return;
-    }
-    finalized = true;
-    globalLoadingIndicatorRefCount = Math.max(0, globalLoadingIndicatorRefCount - 1);
-    indicator.dataset.count = String(globalLoadingIndicatorRefCount);
-    if (globalLoadingIndicatorRefCount === 0) {
-      indicator.setAttribute('aria-busy', 'false');
-      if (bootstrapNotice && typeof bootstrapNotice.setBusy === 'function') {
-        try {
-          bootstrapNotice.setBusy(false);
-        } catch (bootstrapBusyResetError) {
-          console.warn('Failed to clear bootstrap loading indicator busy state', bootstrapBusyResetError);
-        }
-      }
-      removeNode(indicator);
-      if (!container.children.length) {
-        removeNode(container);
-      }
-      if (bootstrapNotice && typeof bootstrapNotice === 'object') {
-        bootstrapNotice.indicator = null;
-      }
-    }
-  };
-
-  return () => {
-    if (finalized) {
-      return;
-    }
-    const elapsed = getHighResolutionTimestamp() - displayedAt;
-    if (elapsed < GLOBAL_LOADING_INDICATOR_MIN_DISPLAY_MS) {
-      const remaining = GLOBAL_LOADING_INDICATOR_MIN_DISPLAY_MS - elapsed;
-      if (typeof setTimeout === 'function') {
-        setTimeout(finalizeHide, Math.max(16, remaining));
-        return;
-      }
-    }
-    finalizeHide();
-  };
-};
+// Delegate Loading Indicator management to LoadingIndicatorManager
+const GLOBAL_LOADING_INDICATOR_ID = LoadingIndicatorManager.GLOBAL_LOADING_INDICATOR_ID;
+const GLOBAL_LOADING_INDICATOR_MESSAGE_KEYS = LoadingIndicatorManager.GLOBAL_LOADING_INDICATOR_MESSAGE_KEYS;
+const GLOBAL_LOADING_INDICATOR_MIN_DISPLAY_MS = LoadingIndicatorManager.GLOBAL_LOADING_INDICATOR_MIN_DISPLAY_MS;
+const resolveGlobalLoadingIndicatorMessage = LoadingIndicatorManager.resolveGlobalLoadingIndicatorMessage;
+const resolveGlobalLoadingIndicatorMessageByKey = LoadingIndicatorManager.resolveGlobalLoadingIndicatorMessageByKey;
+const syncBootstrapLoadingNoticeLocalization = LoadingIndicatorManager.syncBootstrapLoadingNoticeLocalization;
+const refreshGlobalLoadingIndicatorText = LoadingIndicatorManager.refreshGlobalLoadingIndicatorText;
+const setGlobalLoadingIndicatorMessageByKey = LoadingIndicatorManager.setGlobalLoadingIndicatorMessageByKey;
+const getHighResolutionTimestamp = LoadingIndicatorManager.getHighResolutionTimestamp;
+const showGlobalLoadingIndicator = LoadingIndicatorManager.showGlobalLoadingIndicator;
 
 try {
   const scope = typeof globalThis !== 'undefined'
@@ -4640,73 +4214,8 @@ try {
   console.warn('Failed to expose auto backup indicator helper', indicatorExposeError);
 }
 
-const installGlobalFetchLoadingIndicator = () => {
-  const scope = typeof globalThis !== 'undefined'
-    ? globalThis
-    : (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null));
-  if (!scope || typeof scope.fetch !== 'function') {
-    return;
-  }
-  if (scope.__cineFetchWithLoadingIndicatorInstalled) {
-    return;
-  }
-  const originalFetch = scope.fetch;
-  const getMessage = () => resolveGlobalLoadingIndicatorMessage();
-  const showIndicator =
-    typeof scope.__cineShowGlobalLoadingIndicator === 'function'
-      ? scope.__cineShowGlobalLoadingIndicator
-      : showGlobalLoadingIndicator;
-
-  const finalizeHide = (hide) => {
-    if (typeof hide === 'function') {
-      try {
-        hide();
-      } catch (hideError) {
-        console.warn('Failed to hide global loading indicator after fetch', hideError);
-      }
-    }
-  };
-
-  scope.fetch = function fetchWithLoadingIndicator(input, init) {
-    let hide = null;
-    try {
-      hide = showIndicator(getMessage());
-    } catch (indicatorError) {
-      console.warn('Failed to show global loading indicator before fetch', indicatorError);
-      hide = null;
-    }
-    let response;
-    try {
-      response = originalFetch.apply(this, arguments);
-    } catch (syncError) {
-      finalizeHide(hide);
-      throw syncError;
-    }
-    if (!response || typeof response.then !== 'function') {
-      finalizeHide(hide);
-      return response;
-    }
-    if (typeof response.finally === 'function') {
-      return response.finally(() => {
-        finalizeHide(hide);
-      });
-    }
-    return response.then(
-      (value) => {
-        finalizeHide(hide);
-        return value;
-      },
-      (error) => {
-        finalizeHide(hide);
-        throw error;
-      },
-    );
-  };
-  scope.__cineFetchWithLoadingIndicatorInstalled = true;
-};
-
 try {
-  installGlobalFetchLoadingIndicator();
+  LoadingIndicatorManager.installGlobalFetchLoadingIndicator();
 } catch (loadingInstallError) {
   console.warn('Failed to install global loading indicator for fetch', loadingInstallError);
 }
@@ -4796,224 +4305,46 @@ const finalizeInitialLoadingIndicator = () => {
   }
 };
 
+
+// Delegate Preferences Management to PreferencesManager
 function applyPreferencesFromStorage(safeGetItem) {
-  if (typeof safeGetItem !== 'function') {
-    return { showAutoBackups: false, accentColor: null, language: null };
-  }
-
-  const restoredTemperatureUnit = safeGetItem(temperaturePreferenceStorageKey);
-  if (restoredTemperatureUnit) {
-    try {
-      applyTemperatureUnitPreferenceWithFallback(restoredTemperatureUnit, { persist: false });
-    } catch (error) {
-      console.warn('Failed to apply restored temperature unit preference', error);
-    }
-  }
-
-  const focusScaleStorageKey =
-    (typeof FOCUS_SCALE_STORAGE_KEY_NAME === 'string' && FOCUS_SCALE_STORAGE_KEY_NAME)
-    || (typeof globalThis !== 'undefined'
-      && globalThis
-      && typeof globalThis.FOCUS_SCALE_STORAGE_KEY_NAME === 'string'
-      && globalThis.FOCUS_SCALE_STORAGE_KEY_NAME)
-    || 'cameraPowerPlanner_focusScale';
-
-  const storedFocusScale = safeGetItem(focusScaleStorageKey);
-  let restoredFocusScale = null;
-  if (storedFocusScale) {
-    let normalizedFocusScale = null;
-    if (typeof normalizeFocusScale === 'function') {
-      try {
-        normalizedFocusScale = normalizeFocusScale(storedFocusScale);
-      } catch (error) {
-        console.warn('Failed to normalize restored focus scale preference', error);
-      }
-    }
-    if (typeof normalizedFocusScale !== 'string' || !normalizedFocusScale) {
-      normalizedFocusScale =
-        typeof storedFocusScale === 'string' ? storedFocusScale.trim().toLowerCase() : '';
-    }
-
-    if (normalizedFocusScale === 'metric' || normalizedFocusScale === 'imperial') {
-      restoredFocusScale = normalizedFocusScale;
-      try {
-        if (typeof applyFocusScalePreference === 'function') {
-          applyFocusScalePreference(normalizedFocusScale, { persist: false, forceUpdate: true });
-        }
-      } catch (error) {
-        console.warn('Failed to apply restored focus scale preference', error);
-      }
-
-      sessionFocusScale = normalizedFocusScale;
-
-      try {
-        if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
-          settingsFocusScale.value = normalizedFocusScale;
-        }
-      } catch (error) {
-        console.warn('Failed to sync restored focus scale selection', error);
-      }
-
-      if (typeof rememberSettingsFocusScaleBaseline === 'function') {
-        try {
-          rememberSettingsFocusScaleBaseline();
-        } catch (error) {
-          console.warn('Failed to update focus scale baseline after restore', error);
-        }
-      }
-
-      if (typeof globalThis !== 'undefined' && globalThis) {
-        try {
-          globalThis.focusScalePreference = normalizedFocusScale;
-        } catch (error) {
-          console.warn('Failed to update global focus scale preference', error);
-        }
-      }
-
-      if (typeof focusScalePreference !== 'undefined') {
-        try {
-          focusScalePreference = normalizedFocusScale;
-        } catch (error) {
-          console.warn('Failed to update scoped focus scale preference', error);
-        }
-      }
-    }
-  }
-
-  try {
-    setThemePreference(safeGetItem('darkMode') === 'true', { persist: true });
-  } catch (error) {
-    console.warn('Failed to apply restored dark mode preference', error);
-  }
-  try {
-    let storedPinkMode = safeGetItem(PINK_MODE_STORAGE_KEY);
-    if (storedPinkMode === null || storedPinkMode === undefined || storedPinkMode === '') {
-      storedPinkMode = safeGetItem(LEGACY_PINK_MODE_STORAGE_KEY);
-    }
-    applyPinkMode(storedPinkMode === 'true');
-  } catch (error) {
-    console.warn('Failed to apply restored pink mode preference', error);
-  }
-  try {
-    applyHighContrast(safeGetItem('highContrast') === 'true');
-  } catch (error) {
-    console.warn('Failed to apply restored high contrast preference', error);
-  }
-  try {
-    applyReduceMotion(safeGetItem('reduceMotion') === 'true');
-  } catch (error) {
-    console.warn('Failed to apply restored reduce motion preference', error);
-  }
-  try {
-    applyRelaxedSpacing(safeGetItem('relaxedSpacing') === 'true');
-  } catch (error) {
-    console.warn('Failed to apply restored relaxed spacing preference', error);
-  }
-
-  const showBackups = safeGetItem('showAutoBackups') === 'true';
-  const color = safeGetItem('accentColor');
-  if (color) {
-    try {
-      document.documentElement.style.setProperty('--accent-color', color);
-      document.documentElement.style.setProperty('--link-color', color);
-    } catch (error) {
-      console.warn('Failed to apply restored accent color', error);
-    }
-    accentColor = color;
-    prevAccentColor = color;
-    if (accentColorInput) {
-      accentColorInput.value = color;
-    }
-    if (typeof updateAccentColorResetButtonState === 'function') {
-      updateAccentColorResetButtonState();
-    }
-  }
-
-  const language = safeGetItem('language');
-
-  try {
-    const mountVoltageKeyName =
-      typeof getMountVoltageStorageKeyName === 'function'
-        ? getMountVoltageStorageKeyName()
-        : 'cameraPowerPlanner_mountVoltages';
-    const storedVoltages = safeGetItem(mountVoltageKeyName);
-    let parsedVoltages = parseStoredMountVoltages(storedVoltages);
-    let shouldPersistVoltages = false;
-
-    if (!parsedVoltages) {
-      const backupKey =
-        typeof getMountVoltageStorageBackupKeyName === 'function'
-          ? getMountVoltageStorageBackupKeyName()
-          : `${mountVoltageKeyName}__backup`;
-      const backupVoltages = safeGetItem(backupKey);
-      if (backupVoltages !== undefined && backupVoltages !== null) {
-        const parsedBackupVoltages = parseStoredMountVoltages(backupVoltages);
-        if (parsedBackupVoltages) {
-          parsedVoltages = parsedBackupVoltages;
-          shouldPersistVoltages = true;
-        }
-      }
-    }
-
-    if (parsedVoltages) {
-      applySessionMountVoltagePreferences(parsedVoltages, { persist: shouldPersistVoltages, triggerUpdate: true });
-      const updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
-      if (updateMountVoltageInputsFromStateFn) {
-        try {
-          updateMountVoltageInputsFromStateFn();
-        } catch (updateError) {
-          warnMissingMountVoltageHelper('updateMountVoltageInputsFromState', updateError);
-        }
-      } else {
-        warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
-      }
-      rememberSettingsMountVoltagesBaseline();
-    }
-  } catch (voltageError) {
-    console.warn('Failed to apply restored mount voltage preferences', voltageError);
-  }
-
-  return {
-    showAutoBackups: showBackups,
-    accentColor: color || null,
-    language: language || null,
-    focusScale: restoredFocusScale,
-  };
+  return PreferencesManager.applyPreferencesFromStorage(safeGetItem, {
+    temperaturePreferenceStorageKey,
+    applyTemperatureUnitPreferenceWithFallback,
+    FOCUS_SCALE_STORAGE_KEY_NAME,
+    normalizeFocusScale,
+    applyFocusScalePreference,
+    settingsFocusScale,
+    rememberSettingsFocusScaleBaseline,
+    sessionFocusScale,
+    focusScalePreference,
+    setThemePreference,
+    PINK_MODE_STORAGE_KEY,
+    LEGACY_PINK_MODE_STORAGE_KEY,
+    applyPinkMode,
+    applyHighContrast,
+    applyReduceMotion,
+    applyRelaxedSpacing,
+    accentColor,
+    prevAccentColor,
+    accentColorInput,
+    updateAccentColorResetButtonState,
+    getMountVoltageStorageKeyName,
+    getMountVoltageStorageBackupKeyName,
+    parseStoredMountVoltages,
+    applySessionMountVoltagePreferences,
+    getSessionRuntimeFunction,
+    warnMissingMountVoltageHelper,
+    rememberSettingsMountVoltagesBaseline,
+  });
 }
 
 function captureSetupSelection() {
-  return {
-    value: setupSelect ? setupSelect.value : '',
-    name: setupNameInput ? setupNameInput.value : '',
-  };
+  return PreferencesManager.captureSetupSelection({ setupSelect, setupNameInput });
 }
 
 function restoreSetupSelection(previousSelection, shouldShowAutoBackups) {
-  if (!previousSelection || typeof previousSelection !== 'object') {
-    return;
-  }
-
-  const { value = '', name = '' } = previousSelection;
-
-  if (setupSelect) {
-    try {
-      if (shouldShowAutoBackups || !value || !value.startsWith('auto-backup-')) {
-        setupSelect.value = value;
-      } else {
-        setupSelect.value = '';
-      }
-    } catch (error) {
-      console.warn('Failed to restore setup selection after restore', error);
-    }
-  }
-
-  if (setupNameInput) {
-    try {
-      setupNameInput.value = name || '';
-    } catch (error) {
-      console.warn('Failed to restore setup name after restore', error);
-    }
-  }
+  return PreferencesManager.restoreSetupSelection(previousSelection, shouldShowAutoBackups, { setupSelect, setupNameInput });
 }
 
 
@@ -6094,363 +5425,57 @@ if (typeof globalThis !== 'undefined') {
   globalThis.applySharedSetupFromUrl = applySharedSetupFromUrl;
 }
 
+
+// Delegate Factory Reset to FactoryResetManager
 function resetPlannerStateAfterFactoryReset() {
-  const suspendable =
-    typeof suspendProjectPersistence === 'function'
-    && typeof resumeProjectPersistence === 'function';
-  if (suspendable) {
-    try {
-      suspendProjectPersistence();
-    } catch (error) {
-      console.warn('Failed to suspend project persistence during factory reset cleanup', error);
-    }
-  }
-
-  try {
-    try {
-      if (typeof storeLoadedSetupState === 'function') {
-        storeLoadedSetupState(null);
-      }
-    } catch (error) {
-      console.warn('Failed to reset loaded setup state during factory reset', error);
-    }
-
-    try {
-      currentProjectInfo = null;
-    } catch (error) {
-      console.warn('Failed to clear in-memory project info during factory reset', error);
-    }
-
-    try {
-      if (typeof populateProjectForm === 'function') {
-        populateProjectForm({});
-      } else if (projectForm && typeof projectForm.reset === 'function') {
-        projectForm.reset();
-      }
-    } catch (error) {
-      console.warn('Failed to reset project form during factory reset', error);
-    }
-
-    try {
-      displayGearAndRequirements('');
-    } catch (error) {
-      console.warn('Failed to reset gear displays during factory reset', error);
-      if (gearListOutput) {
-        gearListOutput.innerHTML = '';
-        gearListOutput.classList.add('hidden');
-      }
-      if (projectRequirementsOutput) {
-        projectRequirementsOutput.innerHTML = '';
-        projectRequirementsOutput.classList.add('hidden');
-      }
-    }
-
-    const primarySelects = [
-      cameraSelect,
-      monitorSelect,
-      videoSelect,
-      cageSelect,
-      distanceSelect,
-      batterySelect,
-      hotswapSelect,
-      batteryPlateSelect,
-    ];
-    primarySelects.forEach(select => {
-      if (!select) return;
-      try {
-        const options = Array.from(select.options || []);
-        const noneOption = options.find(opt => opt.value === 'None');
-        if (noneOption) {
-          select.value = 'None';
-        } else if (options.length) {
-          select.selectedIndex = 0;
-        } else {
-          select.value = '';
-        }
-      } catch (selectError) {
-        console.warn('Failed to reset selector during factory reset', selectError);
-      }
-    });
-
-    try {
-      resetSelectsToNone(motorSelects);
-    } catch (error) {
-      console.warn('Failed to reset motor selections during factory reset', error);
-    }
-
-    try {
-      resetSelectsToNone(controllerSelects);
-    } catch (error) {
-      console.warn('Failed to reset controller selections during factory reset', error);
-    }
-
-    try {
-      if (typeof getSliderBowlSelect === 'function') {
-        const sliderSelect = getSliderBowlSelect();
-        if (sliderSelect) sliderSelect.value = '';
-      } else {
-        console.warn(
-          'Skipping slider bowl selection reset during factory reset because helper is unavailable'
-        );
-      }
-    } catch (error) {
-      console.warn('Failed to reset slider bowl selection during factory reset', error);
-    }
-
-    try {
-      if (typeof getEasyrigSelect === 'function') {
-        const easyrigSelect = getEasyrigSelect();
-        if (easyrigSelect) easyrigSelect.value = '';
-      } else {
-        console.warn(
-          'Skipping Easyrig selection reset during factory reset because helper is unavailable'
-        );
-      }
-    } catch (error) {
-      console.warn('Failed to reset Easyrig selection during factory reset', error);
-    }
-
-    try {
-      if (setupNameInput) {
-        setupNameInput.value = '';
-      }
-    } catch (error) {
-      console.warn('Failed to clear setup name during factory reset', error);
-    }
-
-    try {
-      if (setupSelect) {
-        populateSetupSelect();
-        setupSelect.value = '';
-      }
-    } catch (error) {
-      console.warn('Failed to reset setup selector options during factory reset', error);
-    }
-
-    try {
-      syncAutoGearRulesFromStorage();
-    } catch (error) {
-      console.warn('Failed to sync automatic gear rules during factory reset', error);
-      try {
-        clearProjectAutoGearRules();
-      } catch (fallbackError) {
-        console.warn('Failed to clear project automatic gear rules during factory reset', fallbackError);
-      }
-    }
-
-    try {
-      renderAutoGearRulesList();
-    } catch (error) {
-      console.warn('Failed to render automatic gear rules during factory reset', error);
-    }
-
-    try {
-      resetSharedImportStateForFactoryReset();
-    } catch (error) {
-      console.warn('Failed to reset shared import state during factory reset', error);
-    }
-
-    try {
-      updateAutoGearCatalogOptions();
-    } catch (error) {
-      console.warn('Failed to refresh automatic gear catalog during factory reset', error);
-    }
-
-    try {
-      updateBatteryPlateVisibility();
-    } catch (error) {
-      console.warn('Failed to reset battery plate visibility during factory reset', error);
-    }
-
-    try {
-      updateBatteryOptions();
-    } catch (error) {
-      console.warn('Failed to reset battery options during factory reset', error);
-    }
-
-    try {
-      safeLoadStoredLogoPreview();
-    } catch (error) {
-      console.warn('Failed to reset custom logo preview during factory reset', error);
-    }
-
-    try {
-      if (typeof resetCustomFontsForFactoryReset === 'function') {
-        resetCustomFontsForFactoryReset();
-      } else {
-        console.warn(
-          'Skipping custom font reset during factory reset because helper is unavailable'
-        );
-      }
-    } catch (error) {
-      console.warn('Failed to reset custom fonts during factory reset', error);
-    }
-
-    try {
-      updateStorageSummary();
-    } catch (error) {
-      console.warn('Failed to update storage summary during factory reset', error);
-    }
-
-    try {
-      ensureGearListActions();
-    } catch (error) {
-      console.warn('Failed to ensure gear list actions during factory reset', error);
-    }
-
-    try {
-      checkSetupChanged();
-    } catch (error) {
-      console.warn('Failed to refresh setup state during factory reset', error);
-    }
-
-    try {
-      updateCalculations();
-    } catch (error) {
-      console.warn('Failed to update calculations during factory reset', error);
-    }
-  } finally {
-    if (suspendable) {
-      try {
-        resumeProjectPersistence();
-      } catch (error) {
-        console.warn('Failed to resume project persistence after factory reset cleanup', error);
-      }
-    }
-  }
+  return FactoryResetManager.resetPlannerStateAfterFactoryReset({
+    suspendProjectPersistence,
+    resumeProjectPersistence,
+    storeLoadedSetupState,
+    currentProjectInfo,
+    setCurrentProjectInfo: (val) => { currentProjectInfo = val; },
+    populateProjectForm,
+    projectForm,
+    displayGearAndRequirements,
+    gearListOutput,
+    projectRequirementsOutput,
+    cameraSelect,
+    monitorSelect,
+    videoSelect,
+    cageSelect,
+    distanceSelect,
+    batterySelect,
+    hotswapSelect,
+    batteryPlateSelect,
+    motorSelects,
+    controllerSelects,
+    resetSelectsToNone,
+    getSliderBowlSelect,
+    getEasyrigSelect,
+    setupNameInput,
+    setupSelect,
+    populateSetupSelect,
+    syncAutoGearRulesFromStorage,
+    clearProjectAutoGearRules,
+    renderAutoGearRulesList,
+    resetSharedImportStateForFactoryReset,
+    updateAutoGearCatalogOptions,
+    updateBatteryPlateVisibility,
+    updateBatteryOptions,
+    safeLoadStoredLogoPreview,
+    resetCustomFontsForFactoryReset,
+    updateStorageSummary,
+    ensureGearListActions,
+    checkSetupChanged,
+    updateCalculations,
+  });
 }
 
-// Generic Confirmation Dialog Helper
-window.cineShowConfirmDialog = (options) => {
-  const {
-    title,
-    message,
-    confirmLabel,
-    cancelLabel,
-    onConfirm,
-    onCancel,
-    danger = false,
-  } = options || {};
 
-  const dialog = document.getElementById('appConfirmDialog');
-  const titleEl = document.getElementById('appConfirmTitle');
-  const messageEl = document.getElementById('appConfirmMessage');
-  const confirmBtn = document.getElementById('appConfirmBtn');
-  const cancelBtn = document.getElementById('appConfirmCancelBtn');
+// Delegate Dialog Management to DialogManager
+window.cineShowConfirmDialog = DialogManager.showConfirmDialog;
+window.cineShowAlertDialog = DialogManager.showAlertDialog;
 
-  if (!dialog || !confirmBtn || !cancelBtn) {
-    console.warn('Confirmation dialog elements missing');
-    return;
-  }
-
-  if (titleEl) titleEl.textContent = title || 'Confirm';
-  if (messageEl) {
-    if (typeof message === 'string' && message.includes('\n')) {
-      messageEl.innerHTML = message.replace(/\n/g, '<br>');
-    } else {
-      messageEl.textContent = message || 'Are you sure?';
-    }
-  }
-
-  confirmBtn.textContent = confirmLabel || 'Confirm';
-  cancelBtn.textContent = cancelLabel || 'Cancel';
-  cancelBtn.style.display = 'inline-block';
-
-  if (danger) {
-    confirmBtn.classList.add('danger');
-  } else {
-    confirmBtn.classList.remove('danger');
-  }
-
-  // Clone buttons to remove old listeners
-  const newConfirmBtn = confirmBtn.cloneNode(true);
-  const newCancelBtn = cancelBtn.cloneNode(true);
-  confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
-  cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
-
-  const close = () => {
-    if (typeof dialog.close === 'function') {
-      dialog.close();
-    }
-    dialog.setAttribute('hidden', '');
-  };
-
-  newConfirmBtn.addEventListener('click', () => {
-    close();
-    if (typeof onConfirm === 'function') {
-      onConfirm();
-    }
-  });
-
-  newCancelBtn.addEventListener('click', () => {
-    close();
-    if (typeof onCancel === 'function') {
-      onCancel();
-    }
-  });
-
-  dialog.removeAttribute('hidden');
-  if (typeof dialog.showModal === 'function') {
-    dialog.showModal();
-  }
-};
-
-window.cineShowAlertDialog = (options) => {
-  const config = typeof options === 'string' ? { message: options } : (options || {});
-  const {
-    title,
-    message,
-    confirmLabel,
-    onConfirm,
-  } = config;
-
-  const dialog = document.getElementById('appConfirmDialog');
-  const titleEl = document.getElementById('appConfirmTitle');
-  const messageEl = document.getElementById('appConfirmMessage');
-  const confirmBtn = document.getElementById('appConfirmBtn');
-  const cancelBtn = document.getElementById('appConfirmCancelBtn');
-
-  if (!dialog || !confirmBtn || !cancelBtn) {
-    console.warn('Alert dialog elements missing');
-    if (typeof alert === 'function') alert(message);
-    return;
-  }
-
-  if (titleEl) titleEl.textContent = title || 'Notification';
-  if (messageEl) {
-    if (typeof message === 'string' && message.includes('\n')) {
-      messageEl.innerHTML = message.replace(/\n/g, '<br>');
-    } else {
-      messageEl.textContent = message || '';
-    }
-  }
-
-  confirmBtn.textContent = confirmLabel || 'OK';
-  confirmBtn.classList.remove('danger');
-  cancelBtn.style.display = 'none';
-
-  const newConfirmBtn = confirmBtn.cloneNode(true);
-  confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
-
-  const close = () => {
-    if (typeof dialog.close === 'function') {
-      dialog.close();
-    }
-    dialog.setAttribute('hidden', '');
-  };
-
-  newConfirmBtn.addEventListener('click', () => {
-    close();
-    if (typeof onConfirm === 'function') {
-      onConfirm();
-    }
-  });
-
-  dialog.removeAttribute('hidden');
-  if (typeof dialog.showModal === 'function') {
-    dialog.showModal();
-  }
-};
 
 if (factoryResetButton) {
   factoryResetButton.addEventListener('click', (e) => {
@@ -6712,1282 +5737,28 @@ if (factoryResetButton) {
   });
 }
 
-const UI_CACHE_STORAGE_KEYS_FOR_RELOAD = [
-  'cameraPowerPlanner_schemaCache',
-  'cinePowerPlanner_schemaCache',
-];
-const UI_CACHE_STORAGE_SUFFIXES_FOR_RELOAD = [
-  '',
-  '__backup',
-  '__legacyMigrationBackup',
-];
 
-const uiCacheFallbackWarningKeys = new Set();
+// Delegate UI Cache Storage management to StorageCacheManager
+const UI_CACHE_STORAGE_KEYS_FOR_RELOAD = StorageCacheManager.UI_CACHE_STORAGE_KEYS_FOR_RELOAD;
+const UI_CACHE_STORAGE_SUFFIXES_FOR_RELOAD = StorageCacheManager.UI_CACHE_STORAGE_SUFFIXES_FOR_RELOAD;
+const collectFallbackUiCacheStorages = StorageCacheManager.collectFallbackUiCacheStorages;
 
-function collectFallbackUiCacheStorages() {
-  const storages = new Set();
+const clearUiCacheEntriesFallback = StorageCacheManager.clearUiCacheEntriesFallback;
 
-  const registerStorage = (candidate, label) => {
-    if (!candidate || (typeof candidate !== 'object' && typeof candidate !== 'function')) {
-      return;
-    }
-    const hasRemove = typeof candidate.removeItem === 'function';
-    const hasDelete = typeof candidate.delete === 'function';
-    if (!hasRemove && !hasDelete) {
-      return;
-    }
-    storages.add(candidate);
-  };
-
-  const inspectScope = (scope, label) => {
-    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
-      return;
-    }
-
-    try {
-      registerStorage(scope.SAFE_LOCAL_STORAGE, `${label}.SAFE_LOCAL_STORAGE`);
-    } catch (error) {
-      if (!uiCacheFallbackWarningKeys.has(`${label}.SAFE_LOCAL_STORAGE`)) {
-        uiCacheFallbackWarningKeys.add(`${label}.SAFE_LOCAL_STORAGE`);
-        console.warn(`Unable to inspect ${label}.SAFE_LOCAL_STORAGE while clearing UI caches`, error);
-      }
-    }
-
-    try {
-      registerStorage(scope.localStorage, `${label}.localStorage`);
-    } catch (error) {
-      if (!uiCacheFallbackWarningKeys.has(`${label}.localStorage`)) {
-        uiCacheFallbackWarningKeys.add(`${label}.localStorage`);
-        console.warn(`Unable to inspect ${label}.localStorage while clearing UI caches`, error);
-      }
-    }
-
-    try {
-      registerStorage(scope.sessionStorage, `${label}.sessionStorage`);
-    } catch (error) {
-      if (!uiCacheFallbackWarningKeys.has(`${label}.sessionStorage`)) {
-        uiCacheFallbackWarningKeys.add(`${label}.sessionStorage`);
-        console.warn(`Unable to inspect ${label}.sessionStorage while clearing UI caches`, error);
-      }
-    }
-
-    let nested = null;
-    try {
-      nested = scope.__cineGlobal;
-    } catch (error) {
-      if (!uiCacheFallbackWarningKeys.has(`${label}.__cineGlobal`)) {
-        uiCacheFallbackWarningKeys.add(`${label}.__cineGlobal`);
-        console.warn(`Unable to inspect ${label}.__cineGlobal while clearing UI caches`, error);
-      }
-    }
-
-    if (nested && nested !== scope) {
-      inspectScope(nested, `${label}.__cineGlobal`);
-    }
-  };
-
-  registerStorage(resolveSafeLocalStorage(), 'safeLocalStorage');
-
-  if (typeof SAFE_LOCAL_STORAGE !== 'undefined') {
-    try {
-      registerStorage(SAFE_LOCAL_STORAGE, 'SAFE_LOCAL_STORAGE');
-    } catch (error) {
-      if (!uiCacheFallbackWarningKeys.has('SAFE_LOCAL_STORAGE')) {
-        uiCacheFallbackWarningKeys.add('SAFE_LOCAL_STORAGE');
-        console.warn('Unable to inspect SAFE_LOCAL_STORAGE while clearing UI caches', error);
-      }
-    }
-  }
-
-  const scopeCandidates = [
-    { scope: typeof globalThis !== 'undefined' ? globalThis : null, label: 'globalThis' },
-    { scope: typeof window !== 'undefined' ? window : null, label: 'window' },
-    { scope: typeof self !== 'undefined' ? self : null, label: 'self' },
-    { scope: typeof global !== 'undefined' ? global : null, label: 'global' },
-  ];
-
-  if (typeof __cineGlobal !== 'undefined') {
-    scopeCandidates.push({ scope: __cineGlobal, label: '__cineGlobal' });
-  }
-
-  scopeCandidates.forEach(({ scope, label }) => {
-    inspectScope(scope, label);
-  });
-
-  if (typeof localStorage !== 'undefined') {
-    registerStorage(localStorage, 'localStorage');
-  }
-
-  if (typeof sessionStorage !== 'undefined') {
-    registerStorage(sessionStorage, 'sessionStorage');
-  }
-
-  return storages;
-}
-
-function clearUiCacheEntriesFallback() {
-  const storages = collectFallbackUiCacheStorages();
-  if (!storages || !storages.size) {
-    return;
-  }
-
-  storages.forEach((storage) => {
-    UI_CACHE_STORAGE_KEYS_FOR_RELOAD.forEach((baseKey) => {
-      if (typeof baseKey !== 'string' || !baseKey) {
-        return;
-      }
-
-      UI_CACHE_STORAGE_SUFFIXES_FOR_RELOAD.forEach((suffix) => {
-        const entryKey = suffix ? `${baseKey}${suffix}` : baseKey;
-        try {
-          if (typeof storage.removeItem === 'function') {
-            storage.removeItem(entryKey);
-          } else if (typeof storage.delete === 'function') {
-            storage.delete(entryKey);
-          }
-        } catch (error) {
-          console.warn('Failed to remove UI cache entry', entryKey, error);
-        }
-      });
-    });
-  });
-}
-
-const CACHE_KEY_TOKENS_FOR_RELOAD = ['cine-power-planner', 'cinepowerplanner'];
-
-function resolveCineCacheNameForReload() {
-  const scopes = [
-    typeof globalThis !== 'undefined' ? globalThis : null,
-    typeof window !== 'undefined' ? window : null,
-    typeof self !== 'undefined' ? self : null,
-    typeof global !== 'undefined' ? global : null,
-  ];
-
-  for (let index = 0; index < scopes.length; index += 1) {
-    const scope = scopes[index];
-    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
-      continue;
-    }
-
-    try {
-      const name = scope.CINE_CACHE_NAME;
-      if (typeof name === 'string' && name) {
-        return name;
-      }
-    } catch (error) {
-      void error;
-    }
-  }
-
-  return '';
-}
-
-function isRelevantCacheKeyForReload(key, explicitName, lowerExplicit) {
-  if (typeof key !== 'string' || !key) {
-    return false;
-  }
-
-  if (explicitName && (key === explicitName || key.toLowerCase() === lowerExplicit)) {
-    return true;
-  }
-
-  const lowerKey = key.toLowerCase();
-  for (let index = 0; index < CACHE_KEY_TOKENS_FOR_RELOAD.length; index += 1) {
-    if (lowerKey.includes(CACHE_KEY_TOKENS_FOR_RELOAD[index])) {
-      return true;
-    }
-  }
-
-  return false;
-}
+const resolveCineCacheNameForReload = NavigationManager.resolveCineCacheNameForReload;
+const isRelevantCacheKeyForReload = NavigationManager.isRelevantCacheKeyForReload;
 
 function readLocationHrefSafe(locationLike) {
-  if (!locationLike || typeof locationLike !== 'object') {
-    return '';
-  }
-
-  try {
-    const href = locationLike.href;
-    return typeof href === 'string' ? href : '';
-  } catch (error) {
-    void error;
-    return '';
-  }
+  return NavigationManager.readLocationHrefSafe(locationLike);
 }
 
-function readLocationPathnameSafe(locationLike) {
-  if (!locationLike || typeof locationLike !== 'object') {
-    return '';
-  }
-
-  try {
-    const pathname = locationLike.pathname;
-    return typeof pathname === 'string' ? pathname : '';
-  } catch (error) {
-    void error;
-    return '';
-  }
-}
-
-function readLocationOriginSafe(locationLike) {
-  if (!locationLike || typeof locationLike !== 'object') {
-    return '';
-  }
-
-  try {
-    const origin = locationLike.origin;
-    if (typeof origin === 'string' && origin) {
-      return origin;
-    }
-  } catch (error) {
-    void error;
-  }
-
-  const href = readLocationHrefSafe(locationLike);
-  if (!href) {
-    return '';
-  }
-
-  if (typeof URL === 'function') {
-    try {
-      return new URL(href).origin;
-    } catch (originError) {
-      void originError;
-    }
-  }
-
-  const originMatch = href.match(/^([a-zA-Z][a-zA-Z\d+.-]*:\/\/[^/]+)/);
-  return originMatch && originMatch[1] ? originMatch[1] : '';
-}
-
-function getForceReloadBaseCandidates(locationLike, originalHref) {
-  const candidates = [];
-  const unique = new Set();
-
-  const addCandidate = value => {
-    if (typeof value !== 'string') {
-      return;
-    }
-
-    const trimmed = value.trim();
-    if (!trimmed || unique.has(trimmed)) {
-      return;
-    }
-
-    unique.add(trimmed);
-    candidates.push(trimmed);
-  };
-
-  const safeHref = readLocationHrefSafe(locationLike);
-  if (safeHref) {
-    addCandidate(safeHref);
-  }
-
-  if (typeof originalHref === 'string' && originalHref) {
-    addCandidate(originalHref);
-  }
-
-  const origin = readLocationOriginSafe(locationLike);
-  const pathname = readLocationPathnameSafe(locationLike);
-
-  if (origin) {
-    if (pathname) {
-      addCandidate(`${origin}${pathname}`);
-    }
-    addCandidate(`${origin}/`);
-  }
-
-  if (typeof window !== 'undefined' && window && window.location) {
-    const windowHref = readLocationHrefSafe(window.location);
-    if (windowHref) {
-      addCandidate(windowHref);
-    }
-  }
-
-  return candidates;
-}
-
-function normaliseForceReloadHref(value, baseHref) {
-  if (typeof value !== 'string') {
-    return '';
-  }
-
-  const trimmed = value.trim();
-  if (!trimmed) {
-    return '';
-  }
-
-  if (typeof URL === 'function') {
-    try {
-      return new URL(trimmed).toString();
-    } catch (primaryError) {
-      void primaryError;
-
-      if (typeof baseHref === 'string' && baseHref) {
-        try {
-          return new URL(trimmed, baseHref).toString();
-        } catch (secondaryError) {
-          void secondaryError;
-        }
-      }
-    }
-  }
-
-  return trimmed;
-}
-
-function buildForceReloadHref(locationLike, paramName) {
-  const param = typeof paramName === 'string' && paramName ? paramName : 'forceReload';
-  const timestamp = Date.now().toString(36);
-  const originalHref = readLocationHrefSafe(locationLike);
-  const baseCandidates = getForceReloadBaseCandidates(locationLike, originalHref);
-
-  if (!originalHref) {
-    return {
-      originalHref,
-      nextHref: originalHref,
-      param,
-      timestamp,
-    };
-  }
-
-  if (typeof URL === 'function') {
-    const urlCandidates = [originalHref, ...baseCandidates];
-
-    for (let index = 0; index < urlCandidates.length; index += 1) {
-      const candidate = urlCandidates[index];
-
-      try {
-        const url = index === 0 ? new URL(candidate) : new URL(originalHref, candidate);
-        url.searchParams.set(param, timestamp);
-        return {
-          originalHref,
-          nextHref: url.toString(),
-          param,
-          timestamp,
-        };
-      } catch (candidateError) {
-        void candidateError;
-      }
-    }
-  }
-
-  let href = originalHref;
-  let hash = '';
-  const hashIndex = href.indexOf('#');
-  if (hashIndex !== -1) {
-    hash = href.slice(hashIndex);
-    href = href.slice(0, hashIndex);
-  }
-
-  const pattern = new RegExp(`([?&])${param}=[^&]*`);
-  const replacement = `$1${param}=${timestamp}`;
-
-  if (pattern.test(href)) {
-    href = href.replace(pattern, replacement);
-  } else if (href.indexOf('?') !== -1) {
-    href += `&${param}=${timestamp}`;
-  } else if (href) {
-    href += `?${param}=${timestamp}`;
-  }
-
-  if (typeof URL === 'function') {
-    for (let index = 0; index < baseCandidates.length; index += 1) {
-      const candidate = baseCandidates[index];
-
-      try {
-        const absolute = new URL(href + hash, candidate).toString();
-        return {
-          originalHref,
-          nextHref: absolute,
-          param,
-          timestamp,
-        };
-      } catch (absoluteError) {
-        void absoluteError;
-      }
-    }
-  }
-
-  return {
-    originalHref,
-    nextHref: href ? href + hash : originalHref,
-    param,
-    timestamp,
-  };
-}
-
-function waitForReloadNavigation(beforeHref, options = {}) {
-  if (typeof window === 'undefined' || !window) {
-    return Promise.resolve(false);
-  }
-
-  const win = window;
-  const startHref = typeof beforeHref === 'string' ? beforeHref : '';
-  const timeout =
-    options && typeof options.timeout === 'number' && options.timeout > 0
-      ? options.timeout
-      : 1500;
-  const pollInterval =
-    options && typeof options.interval === 'number' && options.interval > 0
-      ? options.interval
-      : 60;
-  const schedule =
-    typeof win.setTimeout === 'function' ? win.setTimeout.bind(win) : setTimeout;
-  const cancel =
-    typeof win.clearTimeout === 'function' ? win.clearTimeout.bind(win) : clearTimeout;
-
-  return new Promise(resolve => {
-    let resolved = false;
-    let pollTimer = null;
-    let timeoutTimer = null;
-
-    const cleanup = () => {
-      if (pollTimer) {
-        try {
-          cancel(pollTimer);
-        } catch (cancelError) {
-          void cancelError;
-        }
-        pollTimer = null;
-      }
-      if (timeoutTimer) {
-        try {
-          cancel(timeoutTimer);
-        } catch (timeoutCancelError) {
-          void timeoutCancelError;
-        }
-        timeoutTimer = null;
-      }
-
-      if (typeof win.removeEventListener === 'function') {
-        try {
-          win.removeEventListener('beforeunload', handleUnload, true);
-        } catch (removeBeforeUnloadError) {
-          void removeBeforeUnloadError;
-        }
-        try {
-          win.removeEventListener('pagehide', handleUnload, true);
-        } catch (removePagehideError) {
-          void removePagehideError;
-        }
-        try {
-          win.removeEventListener('unload', handleUnload, true);
-        } catch (removeUnloadError) {
-          void removeUnloadError;
-        }
-      }
-    };
-
-    const finish = value => {
-      if (resolved) {
-        return;
-      }
-      resolved = true;
-      cleanup();
-      resolve(value);
-    };
-
-    const handleUnload = () => {
-      finish(true);
-    };
-
-    const evaluate = () => {
-      if (resolved) {
-        return;
-      }
-
-      try {
-        const currentHref = readLocationHrefSafe(win.location);
-        if (startHref && currentHref && currentHref !== startHref) {
-          finish(true);
-          return;
-        }
-      } catch (readError) {
-        void readError;
-      }
-
-      pollTimer = schedule(evaluate, pollInterval);
-    };
-
-    if (typeof win.addEventListener === 'function') {
-      try {
-        win.addEventListener('beforeunload', handleUnload, true);
-      } catch (beforeUnloadError) {
-        void beforeUnloadError;
-      }
-      try {
-        win.addEventListener('pagehide', handleUnload, true);
-      } catch (pageHideError) {
-        void pageHideError;
-      }
-      try {
-        win.addEventListener('unload', handleUnload, true);
-      } catch (unloadError) {
-        void unloadError;
-      }
-    }
-
-    evaluate();
-    timeoutTimer = schedule(() => {
-      finish(false);
-    }, timeout);
-  });
-}
-
-function scheduleForceReloadNavigationWarning(
-  locationLike,
-  baseHref,
-  description,
-  before,
-  expected,
-  initialAfter,
-) {
-  let schedule = null;
-
-  try {
-    if (typeof window !== 'undefined' && window && typeof window.setTimeout === 'function') {
-      schedule = window.setTimeout.bind(window);
-    }
-  } catch (error) {
-    void error;
-  }
-
-  if (!schedule) {
-    if (typeof setTimeout === 'function') {
-      schedule = setTimeout;
-    } else {
-      console.warn('Forced reload navigation attempt did not update location', {
-        description,
-        before,
-        after: initialAfter,
-        expected,
-      });
-      return;
-    }
-  }
-
-  let resolved = false;
-
-  const evaluate = () => {
-    const currentRaw = readLocationHrefSafe(locationLike);
-    const current = normaliseForceReloadHref(currentRaw, baseHref);
-
-    if (
-      (expected && (current === expected || current === `${expected}#`))
-      || (before !== current && current && (!expected || current === expected))
-    ) {
-      resolved = true;
-      return { matched: true, value: current };
-    }
-
-    return { matched: false, value: current };
-  };
-
-  const verifyDelays = [90, 240, 480];
-
-  verifyDelays.forEach((delay, index) => {
-    const isFinalCheck = index === verifyDelays.length - 1;
-
-    const runCheck = () => {
-      if (resolved) {
-        return;
-      }
-
-      const result = evaluate();
-
-      if (result.matched) {
-        return;
-      }
-
-      if (isFinalCheck) {
-        resolved = true;
-        console.warn('Forced reload navigation attempt did not update location', {
-          description,
-          before,
-          after: result.value,
-          expected,
-        });
-      }
-    };
-
-    try {
-      schedule(runCheck, delay);
-    } catch (scheduleError) {
-      void scheduleError;
-      if (isFinalCheck) {
-        runCheck();
-      }
-    }
-  });
-}
-
-function attemptForceReloadNavigation(locationLike, nextHref, baseHref, applyFn, description) {
-  if (!locationLike || typeof applyFn !== 'function' || typeof nextHref !== 'string' || !nextHref) {
-    return false;
-  }
-
-  const beforeRaw = readLocationHrefSafe(locationLike);
-  const before = normaliseForceReloadHref(beforeRaw, baseHref);
-
-  try {
-    applyFn(nextHref);
-  } catch (error) {
-    console.warn('Forced reload navigation helper failed', { description, error });
-    return false;
-  }
-
-  const afterRaw = readLocationHrefSafe(locationLike);
-  const after = normaliseForceReloadHref(afterRaw, baseHref);
-  const expected = normaliseForceReloadHref(nextHref, baseHref);
-
-  if (
-    (expected && (after === expected || after === `${expected}#`))
-    || (before !== after && after && (!expected || after === expected))
-  ) {
-    return true;
-  }
-
-  scheduleForceReloadNavigationWarning(locationLike, baseHref, description, before, expected, after);
-
-  return false;
-}
-
-function attemptForceReloadHistoryFallback(win, locationLike, nextHref, baseHref) {
-  if (!win || !locationLike || typeof nextHref !== 'string' || !nextHref) {
-    return false;
-  }
-
-  let historyLike = null;
-  try {
-    historyLike = win.history || null;
-  } catch (error) {
-    console.warn('Forced reload history access failed', error);
-    historyLike = null;
-  }
-
-  if (!historyLike || typeof historyLike.replaceState !== 'function') {
-    return false;
-  }
-
-  const beforeRaw = readLocationHrefSafe(locationLike);
-  const before = normaliseForceReloadHref(beforeRaw, baseHref);
-  const expected = normaliseForceReloadHref(nextHref, baseHref);
-
-  let replaceUrl = nextHref;
-  try {
-    const reference = beforeRaw || baseHref || undefined;
-    const parsed = typeof URL === 'function' ? new URL(nextHref, reference) : null;
-    if (parsed) {
-      replaceUrl = `${parsed.pathname || ''}${parsed.search || ''}${parsed.hash || ''}` || parsed.toString();
-    }
-  } catch (error) {
-    console.warn('Forced reload history fallback URL parse failed', error);
-    replaceUrl = nextHref;
-  }
-
-  let stateSnapshot = null;
-  let hasStateSnapshot = false;
-
-  try {
-    stateSnapshot = historyLike.state;
-    hasStateSnapshot = true;
-  } catch (stateError) {
-    console.warn('Forced reload history state snapshot failed', stateError);
-  }
-
-  try {
-    historyLike.replaceState(hasStateSnapshot ? stateSnapshot : null, '', replaceUrl);
-  } catch (replaceError) {
-    console.warn('Forced reload history replaceState failed', replaceError);
-    return false;
-  }
-
-  const afterRaw = readLocationHrefSafe(locationLike);
-  const after = normaliseForceReloadHref(afterRaw, baseHref);
-
-  const updated =
-    (expected && (after === expected || after === `${expected}#`))
-    || (before !== after && after && (!expected || after === expected));
-
-  if (!updated) {
-    scheduleForceReloadNavigationWarning(
-      locationLike,
-      baseHref,
-      'history.replaceState',
-      before,
-      expected,
-      after,
-    );
-    return false;
-  }
-
-  if (typeof locationLike.reload === 'function') {
-    try {
-      locationLike.reload();
-      return true;
-    } catch (reloadError) {
-      console.warn('Forced reload via history replaceState reload failed', reloadError);
-    }
-  }
-
-  return true;
-}
-
-function scheduleForceReloadFallbacks(win, locationLike, options = {}) {
-  if (!win || !locationLike) {
-    return;
-  }
-
-  let schedule = null;
-  try {
-    if (typeof win.setTimeout === 'function') {
-      schedule = win.setTimeout.bind(win);
-    }
-  } catch (error) {
-    void error;
-  }
-
-  if (!schedule) {
-    if (typeof setTimeout === 'function') {
-      schedule = setTimeout;
-    } else {
-      return;
-    }
-  }
-
-  const hasReload = options.hasReload === true && typeof locationLike.reload === 'function';
-  const baseHref = typeof options.baseHref === 'string' ? options.baseHref : '';
-  const nextHref = typeof options.nextHref === 'string' ? options.nextHref : '';
-  const originalHref = typeof options.originalHref === 'string' ? options.originalHref : '';
-
-  const fallbackHref = nextHref || baseHref || originalHref || '';
-  const hashBase = fallbackHref ? fallbackHref.split('#')[0] : baseHref || originalHref || '';
-  const fallbackToken =
-    typeof options.timestamp === 'string' && options.timestamp
-      ? options.timestamp
-      : Date.now().toString(36);
-  const hashFallback = hashBase ? `${hashBase}#forceReload-${fallbackToken}` : '';
-
-  const steps = [];
-
-  let nextDelay = 120;
-  const delayIncrement = 120;
-
-  const queueStep = run => {
-    steps.push({
-      delay: nextDelay,
-      run,
-    });
-    nextDelay += delayIncrement;
-  };
-
-  if (fallbackHref) {
-    if (typeof locationLike.assign === 'function') {
-      queueStep(() => {
-        try {
-          locationLike.assign(fallbackHref);
-        } catch (error) {
-          console.warn('Forced reload fallback via location.assign failed', error);
-        }
-      });
-    }
-
-    if (typeof locationLike.replace === 'function') {
-      queueStep(() => {
-        try {
-          locationLike.replace(fallbackHref);
-        } catch (error) {
-          console.warn('Forced reload fallback via location.replace failed', error);
-        }
-      });
-    }
-
-    queueStep(() => {
-      try {
-        locationLike.href = fallbackHref;
-      } catch (error) {
-        console.warn('Forced reload fallback via href assignment failed', error);
-      }
-    });
-  }
-
-  if (hashFallback && hashFallback !== fallbackHref) {
-    queueStep(() => {
-      try {
-        locationLike.href = hashFallback;
-      } catch (error) {
-        console.warn('Forced reload fallback via hash injection failed', error);
-      }
-    });
-  }
-
-  if (hasReload) {
-    const reloadDelay = steps.length ? Math.max(nextDelay, 280) : 280;
-    steps.push({
-      delay: reloadDelay,
-      run() {
-        try {
-          locationLike.reload();
-        } catch (error) {
-          console.warn('Timed force reload fallback failed', error);
-        }
-      },
-    });
-  }
-
-  if (!steps.length) {
-    return;
-  }
-
-  steps.forEach(step => {
-    try {
-      schedule(step.run, step.delay);
-    } catch (scheduleError) {
-      console.warn('Unable to schedule forced reload fallback', scheduleError);
-    }
-  });
-}
-
-function prepareForceReloadContext(win) {
-  if (!win || !win.location) {
-    return null;
-  }
-
-  const { location } = win;
-  const hasReplace = typeof location.replace === 'function';
-  const hasAssign = typeof location.assign === 'function';
-  const hasReload = typeof location.reload === 'function';
-  const forceReloadUrl = buildForceReloadHref(location, 'forceReload');
-  const { originalHref, nextHref, timestamp } = forceReloadUrl;
-  const baseHref = normaliseForceReloadHref(originalHref, originalHref) || originalHref;
-
-  return {
-    win,
-    location,
-    hasReplace,
-    hasAssign,
-    hasReload,
-    originalHref,
-    nextHref,
-    timestamp,
-    baseHref,
-  };
-}
-
-function executeForceReloadContext(context) {
-  if (!context || !context.location) {
-    return false;
-  }
-
-  const {
-    win,
-    location,
-    hasReplace,
-    hasAssign,
-    hasReload,
-    originalHref,
-    nextHref,
-    timestamp,
-    baseHref,
-  } = context;
-
-  let navigationTriggered = false;
-
-  if (hasReplace && nextHref) {
-    navigationTriggered = attemptForceReloadNavigation(
-      location,
-      nextHref,
-      baseHref,
-      url => location.replace(url),
-      'location.replace',
-    );
-  }
-
-  if (!navigationTriggered && hasAssign && nextHref) {
-    navigationTriggered = attemptForceReloadNavigation(
-      location,
-      nextHref,
-      baseHref,
-      url => location.assign(url),
-      'location.assign',
-    );
-  }
-
-  if (!navigationTriggered && nextHref && nextHref !== originalHref) {
-    navigationTriggered = attemptForceReloadNavigation(
-      location,
-      nextHref,
-      baseHref,
-      url => {
-        location.href = url;
-      },
-      'location.href assignment',
-    );
-  }
-
-  if (!navigationTriggered && win && nextHref) {
-    navigationTriggered = attemptForceReloadHistoryFallback(win, location, nextHref, baseHref);
-  }
-
-  const canOnlyReload = !nextHref || nextHref === originalHref;
-
-  if (!navigationTriggered && canOnlyReload && hasReload) {
-    try {
-      location.reload();
-      navigationTriggered = true;
-    } catch (reloadError) {
-      console.warn('Forced reload via location.reload failed', reloadError);
-    }
-  }
-
-  if (!navigationTriggered) {
-    scheduleForceReloadFallbacks(win, location, {
-      originalHref,
-      baseHref,
-      nextHref,
-      hasReload,
-      timestamp,
-    });
-  }
-
-  return navigationTriggered;
-}
-
-function tryForceReload(win) {
-  const context = prepareForceReloadContext(win);
-  if (!context) {
-    return false;
-  }
-  return executeForceReloadContext(context);
-}
-
-function createReloadFallback(win, delayMs = 4500) {
-  if (!win) {
-    return null;
-  }
-
-  let schedule = null;
-  let cancel = null;
-
-  try {
-    if (typeof win.setTimeout === 'function') {
-      schedule = win.setTimeout.bind(win);
-    }
-  } catch (scheduleError) {
-    void scheduleError;
-  }
-
-  try {
-    if (typeof win.clearTimeout === 'function') {
-      cancel = win.clearTimeout.bind(win);
-    }
-  } catch (cancelError) {
-    void cancelError;
-  }
-
-  if (!schedule) {
-    if (typeof setTimeout === 'function') {
-      schedule = setTimeout;
-    } else {
-      return {
-        triggerNow() {
-          tryForceReload(win);
-        },
-      };
-    }
-  }
-
-  if (!cancel) {
-    cancel = typeof clearTimeout === 'function' ? clearTimeout : null;
-  }
-
-  let executed = false;
-  let timerId = null;
-
-  const run = () => {
-    if (executed) {
-      return;
-    }
-    executed = true;
-    timerId = null;
-
-    try {
-      if (!tryForceReload(win) && win && win.location && typeof win.location.reload === 'function') {
-        win.location.reload();
-      }
-    } catch (error) {
-      console.warn('Force reload fallback execution failed', error);
-      try {
-        if (win && win.location && typeof win.location.reload === 'function') {
-          win.location.reload();
-        }
-      } catch (reloadError) {
-        console.warn('Ultimate force reload fallback failed', reloadError);
-      }
-    }
-  };
-
-
-
-
-  try {
-    timerId = schedule(run, delayMs);
-  } catch (scheduleError) {
-    console.warn('Unable to schedule reload fallback timer', scheduleError);
-    run();
-  }
-
-  return {
-    triggerNow() {
-      if (executed) {
-        return;
-      }
-
-      if (timerId != null && typeof cancel === 'function') {
-        try {
-          cancel(timerId);
-        } catch (cancelError) {
-          void cancelError;
-        }
-      }
-
-      run();
-    },
-  };
-}
-
-// Slower machines routinely need ~4s to finish the offline module's reload gate.
-// Give it extra headroom so we do not fall back to the manual cache purge unless
-// the service worker truly stalled.
-const OFFLINE_RELOAD_TIMEOUT_MS = 5000;
-const FORCE_RELOAD_CLEANUP_TIMEOUT_MS = 700;
-
-function awaitPromiseWithSoftTimeout(promise, timeoutMs, onTimeout, onLateRejection) {
-  if (!promise || typeof promise.then !== 'function') {
-    return Promise.resolve({ timedOut: false, result: promise });
-  }
-
-  const ms = typeof timeoutMs === 'number' && timeoutMs >= 0 ? timeoutMs : null;
-  const schedule = typeof setTimeout === 'function' ? setTimeout : null;
-  const cancel = typeof clearTimeout === 'function' ? clearTimeout : null;
-
-  if (ms === null || !schedule) {
-    return promise.then(result => ({ timedOut: false, result }));
-  }
-
-  let finished = false;
-  let timerId = null;
-
-  return new Promise((resolve, reject) => {
-    promise.then(
-      value => {
-        if (finished) {
-          return value;
-        }
-
-        finished = true;
-        if (timerId != null && cancel) {
-          try {
-            cancel(timerId);
-          } catch (cancelError) {
-            void cancelError;
-          }
-        }
-
-        resolve({ timedOut: false, result: value });
-        return value;
-      },
-      error => {
-        if (finished) {
-          if (typeof onLateRejection === 'function') {
-            try {
-              onLateRejection(error);
-            } catch (lateError) {
-              void lateError;
-            }
-          }
-          return null;
-        }
-
-        finished = true;
-        if (timerId != null && cancel) {
-          try {
-            cancel(timerId);
-          } catch (cancelError) {
-            void cancelError;
-          }
-        }
-
-        reject(error);
-        return null;
-      },
-    );
-
-    timerId = schedule(() => {
-      if (finished) {
-        return;
-      }
-
-      finished = true;
-
-      if (typeof onTimeout === 'function') {
-        try {
-          onTimeout();
-        } catch (timeoutError) {
-          void timeoutError;
-        }
-      }
-
-      resolve({ timedOut: true, result: undefined });
-    }, ms);
-  });
-}
-
-function observeServiceWorkerControllerChangeForSession(navigatorLike) {
-  const nav = navigatorLike && typeof navigatorLike === 'object' ? navigatorLike : null;
-  if (!nav || !nav.serviceWorker) {
-    return null;
-  }
-
-  const { serviceWorker } = nav;
-  if (!serviceWorker) {
-    return null;
-  }
-
-  let resolved = false;
-  let detach = null;
-  let resolver = null;
-  let attached = false;
-
-  const finalize = (value) => {
-    if (resolved) {
-      return;
-    }
-
-    resolved = true;
-
-    const currentResolver = resolver;
-    resolver = null;
-
-    if (typeof detach === 'function') {
-      try {
-        detach();
-      } catch (error) {
-        void error;
-      }
-      detach = null;
-    }
-
-    if (typeof currentResolver === 'function') {
-      try {
-        currentResolver(value);
-      } catch (resolveError) {
-        void resolveError;
-      }
-    }
-  };
-
-  const promise = new Promise((resolve) => {
-    resolver = resolve;
-
-    if (serviceWorker.controller) {
-      finalize(true);
-      return;
-    }
-
-    const handler = () => {
-      finalize(true);
-    };
-
-    try {
-      if (typeof serviceWorker.addEventListener === 'function') {
-        serviceWorker.addEventListener('controllerchange', handler);
-        detach = () => {
-          try {
-            serviceWorker.removeEventListener('controllerchange', handler);
-          } catch (removeError) {
-            void removeError;
-          }
-        };
-        attached = true;
-      } else if ('oncontrollerchange' in serviceWorker) {
-        const previous = serviceWorker.oncontrollerchange;
-        serviceWorker.oncontrollerchange = function controllerchangeProxy(event) {
-          if (typeof previous === 'function') {
-            try {
-              previous.call(this, event);
-            } catch (previousError) {
-              console.warn('Existing service worker controllerchange handler failed', previousError);
-            }
-          }
-          handler(event);
-        };
-        detach = () => {
-          try {
-            serviceWorker.oncontrollerchange = previous;
-          } catch (restoreError) {
-            void restoreError;
-          }
-        };
-        attached = true;
-      } else {
-        finalize(false);
-      }
-    } catch (error) {
-      console.warn('Failed to observe service worker controllerchange', error);
-      finalize(false);
-    }
-  });
-
-  if (!attached && !serviceWorker.controller) {
-    finalize(false);
-    return null;
-  }
-
-  return {
-    promise,
-    cancel() {
-      finalize(false);
-    },
-  };
-}
-
-async function collectServiceWorkerRegistrationsForReload(serviceWorker) {
-  if (!serviceWorker) {
-    return [];
-  }
-
-  const registrations = [];
-  const pushRegistration = (registration) => {
-    if (registration) {
-      registrations.push(registration);
-    }
-  };
-
-  try {
-    if (typeof serviceWorker.getRegistrations === 'function') {
-      const regs = await serviceWorker.getRegistrations();
-      if (Array.isArray(regs)) {
-        regs.forEach(pushRegistration);
-      }
-    } else if (typeof serviceWorker.getRegistration === 'function') {
-      const reg = await serviceWorker.getRegistration();
-      pushRegistration(reg);
-    } else if (serviceWorker.ready && typeof serviceWorker.ready.then === 'function') {
-      try {
-        const readyReg = await serviceWorker.ready;
-        pushRegistration(readyReg);
-      } catch (readyError) {
-        console.warn('Failed to await active service worker', readyError);
-      }
-    }
-  } catch (queryError) {
-    console.warn('Failed to query service worker registrations', queryError);
-  }
-
-  return registrations;
-}
+// Re-exported for legacy compatibility within this file if needed
+// function readLocationPathnameSafe(locationLike) { ... } -> delegated in implementation
+const waitForReloadNavigation = NavigationManager.waitForReloadNavigation;
+const awaitPromiseWithSoftTimeout = NavigationManager.awaitPromiseWithSoftTimeout;
+const tryForceReload = NavigationManager.tryForceReload;
+const collectServiceWorkerRegistrationsForReload = NavigationManager.collectServiceWorkerRegistrationsForReload;
+const createReloadFallback = NavigationManager.createReloadFallback;
 
 async function clearCachesAndReload() {
   const sessionNavigator = typeof navigator !== 'undefined' ? navigator : undefined;
@@ -8035,11 +5806,11 @@ async function clearCachesAndReload() {
 
       const { timedOut, result } = await awaitPromiseWithSoftTimeout(
         reloadAttempt,
-        OFFLINE_RELOAD_TIMEOUT_MS,
+        NavigationManager.OFFLINE_RELOAD_TIMEOUT_MS,
         () => {
           console.warn(
             'Offline module reload timed out; continuing with manual fallback after soft timeout.',
-            { timeoutMs: OFFLINE_RELOAD_TIMEOUT_MS },
+            { timeoutMs: NavigationManager.OFFLINE_RELOAD_TIMEOUT_MS },
           );
         },
         (lateError) => {
@@ -8174,10 +5945,10 @@ async function clearCachesAndReload() {
   try {
     await awaitPromiseWithSoftTimeout(
       serviceWorkerGatePromise,
-      FORCE_RELOAD_CLEANUP_TIMEOUT_MS,
+      NavigationManager.FORCE_RELOAD_CLEANUP_TIMEOUT_MS,
       () => {
         console.warn('Service worker cleanup timed out before reload; continuing anyway.', {
-          timeoutMs: FORCE_RELOAD_CLEANUP_TIMEOUT_MS,
+          timeoutMs: NavigationManager.FORCE_RELOAD_CLEANUP_TIMEOUT_MS,
         });
       },
       (lateError) => {
@@ -8224,170 +5995,30 @@ if (sessionReloadButton) {
   sessionReloadButton.addEventListener("click", clearCachesAndReload);
 }
 
-function exportDiagramSvg() {
-  if (!setupDiagramContainer) return '';
-  const svgEl = setupDiagramContainer.querySelector('svg');
-  if (!svgEl) return '';
 
-  const clone = svgEl.cloneNode(true);
-  const labels = svgEl.querySelectorAll('.edge-label');
-  const cloneLabels = clone.querySelectorAll('.edge-label');
-  labels.forEach((lbl, idx) => {
-    if (cloneLabels[idx]) {
-      // innerHTML isn't consistently supported for SVG <text> elements in all browsers,
-      // which could result in empty connection labels in the exported SVG. Using
-      // textContent ensures the label text is preserved across environments.
-      cloneLabels[idx].textContent = lbl.textContent;
-    }
-  });
-  const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
-  // Always export using the bright theme regardless of the current mode
-  let getDiagramCssFn = typeof getDiagramCss === 'function' ? getDiagramCss : null;
-  if (!getDiagramCssFn && typeof cineFeaturesConnectionDiagram === 'object' && typeof cineFeaturesConnectionDiagram.getDiagramCss === 'function') {
-    getDiagramCssFn = cineFeaturesConnectionDiagram.getDiagramCss;
-  }
-  style.textContent = getDiagramCssFn ? getDiagramCssFn(false) : '';
-  clone.insertBefore(style, clone.firstChild);
-  const serializer = new XMLSerializer();
-  return serializer.serializeToString(clone);
+// Delegate Diagram Export to DiagramExportManager
+const copyTextToClipboardBestEffort = DiagramExportManager.copyTextToClipboardBestEffort;
+
+function exportDiagramSvg() {
+  const getDiagramCssFn = typeof getDiagramCss === 'function' ? getDiagramCss :
+    (typeof cineFeaturesConnectionDiagram === 'object' && typeof cineFeaturesConnectionDiagram.getDiagramCss === 'function')
+      ? cineFeaturesConnectionDiagram.getDiagramCss
+      : null;
+  return DiagramExportManager.exportDiagramSvg(setupDiagramContainer, getDiagramCssFn);
 }
 
-function copyTextToClipboardBestEffort(text) {
-  if (typeof text !== 'string' || !text) {
-    return;
-  }
-
-  if (
-    typeof navigator !== 'undefined' &&
-    navigator &&
-    navigator.clipboard &&
-    typeof navigator.clipboard.writeText === 'function'
-  ) {
-    navigator.clipboard.writeText(text).catch(() => { });
-    return;
-  }
-
-  if (
-    typeof document === 'undefined' ||
-    !document ||
-    !document.body ||
-    typeof document.createElement !== 'function'
-  ) {
-    return;
-  }
-
-  let textarea = null;
-  const previousActiveElement = document.activeElement;
-
-  try {
-    textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.setAttribute('readonly', '');
-    textarea.style.position = 'fixed';
-    textarea.style.top = '-9999px';
-    textarea.style.opacity = '0';
-    document.body.appendChild(textarea);
-
-    try {
-      textarea.focus();
-    } catch {
-      // Ignore focus errors on platforms that disallow programmatic focus.
-    }
-
-    try {
-      textarea.select();
-      if (typeof textarea.setSelectionRange === 'function') {
-        textarea.setSelectionRange(0, textarea.value.length);
-      }
-    } catch {
-      // Ignore selection errors; execCommand may still succeed.
-    }
-
-    if (typeof document.execCommand === 'function') {
-      try {
-        document.execCommand('copy');
-      } catch {
-        // Ignore execCommand failures to avoid breaking the export flow.
-      }
-    }
-  } catch {
-    // Ignore clipboard fallback errors.
-  } finally {
-    if (textarea && textarea.parentNode) {
-      textarea.parentNode.removeChild(textarea);
-    }
-
-    if (
-      previousActiveElement &&
-      typeof previousActiveElement.focus === 'function'
-    ) {
-      try {
-        previousActiveElement.focus();
-      } catch {
-        // Ignore focus restoration errors.
-      }
-    }
-  }
+function handleDownloadDiagramClick(e) {
+  const getDiagramCssFn = typeof getDiagramCss === 'function' ? getDiagramCss :
+    (typeof cineFeaturesConnectionDiagram === 'object' && typeof cineFeaturesConnectionDiagram.getDiagramCss === 'function')
+      ? cineFeaturesConnectionDiagram.getDiagramCss
+      : null;
+  DiagramExportManager.handleDiagramDownload(e, setupDiagramContainer, getDiagramCssFn, safeGetCurrentProjectName('setup'));
 }
 
 const bindDownloadDiagramListener = () => {
   const btn = downloadDiagramButton || document.getElementById('downloadDiagram');
-  if (!btn) return false;
-
-  // Remove existing to avoid double binding if called twice
-  btn.removeEventListener('click', handleDownloadDiagramClick);
-  btn.addEventListener('click', handleDownloadDiagramClick);
-  return true;
+  return DiagramExportManager.bindDownloadDiagramListener(btn, handleDownloadDiagramClick);
 };
-
-function handleDownloadDiagramClick(e) {
-  const source = exportDiagramSvg();
-  if (!source) return;
-
-  copyTextToClipboardBestEffort(source);
-  const pad = n => String(n).padStart(2, '0');
-  const now = new Date();
-  const datePart = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
-  const namePart = (safeGetCurrentProjectName('setup') || 'setup')
-    .replace(/\s+/g, '-').replace(/[^a-z0-9-_]/gi, '');
-  const baseName = `${datePart}_${namePart}_diagram`;
-
-  const saveSvg = () => {
-    const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${baseName}.svg`;
-    a.click();
-    setTimeout(() => {
-      URL.revokeObjectURL(url);
-    }, 60000);
-  };
-
-  if (e.shiftKey) {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0);
-      canvas.toBlob(blob => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${baseName}.jpg`;
-        a.click();
-        setTimeout(() => {
-          URL.revokeObjectURL(url);
-        }, 60000);
-      }, 'image/jpeg', 0.95);
-    };
-    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(source);
-  } else {
-    saveSvg();
-  }
-}
 
 const bindGridSnapListener = () => {
   const btn = gridSnapToggleButton || document.getElementById('gridSnapToggle');
