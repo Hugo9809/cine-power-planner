@@ -233,3 +233,12 @@ export function announceForceReloadOfflineNotice() {
         if (typeof window.alert === 'function') window.alert(notice);
     }
 }
+
+export const NotificationManager = {
+    getNotificationAccentColor,
+    getNotificationTextColor,
+    ensureNotificationContainer,
+    showNotification,
+    announceForceReloadOfflineNotice,
+    resolveForceReloadOfflineNotice
+};

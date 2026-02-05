@@ -9,9 +9,9 @@ Cine Power Planner is a local-first web application for cinema power planning. I
 | :--- | :--- | :--- |
 | `src/modules` | Core application modules | 3 |
 | `src/data` | Data definitions & catalogues | ~21 |
-| `src/scripts/modules/core` | Core logic modules (Navigation, Storage, Preferences, FactoryReset, Session, etc.) | 22 |
+| `src/scripts/modules/core` | Core logic modules (Navigation, Storage Persistence, Preferences, FactoryReset, Session, etc.) | 23 |
 | `src/scripts/modules/features` | Feature implementations (Diagram Export, Backup, etc.) | 15 |
-| `src/scripts/modules/ui` | UI Managers (Loading, AutoBackup, Dialog, Help, Scenario, Settings, Theme, Notifications) | 9 |
+| `src/scripts/modules/ui` | UI Managers (Loading, AutoBackup, Dialog, CameraColor, Help, Scenario, Settings, Theme, Notifications) | 10 |
 | `src/scripts/modules/storage` | Persistence layer (DataVault, StorageRepo) | 7 |
 | `src/scripts/modules/helpers` | Utility functions | 11 |
 | `src/scripts/v2/views` | V2 User Interface Views | 8 |

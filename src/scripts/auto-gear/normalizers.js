@@ -289,23 +289,23 @@ function parseAutoGearDraftNames(value) {
     var parts = hasDelimiters ? raw.split(/[;\n\r]+/) : [raw];
     return parts
         .map(function (part) {
-        var segment = part.trim();
-        if (!segment)
-            return null;
-        var signMatch = segment.match(/^([+-])\s*(.+)$/);
-        var listType = signMatch ? (signMatch[1] === '-' ? 'remove' : 'add') : null;
-        var content = signMatch ? signMatch[2].trim() : segment;
-        if (!content)
-            return null;
-        var quantityMatch = content.match(/^(\d+)\s*[x×]\s*(.+)$/i);
-        if (quantityMatch) {
-            var name_1 = quantityMatch[2].trim();
-            if (!name_1)
+            var segment = part.trim();
+            if (!segment)
                 return null;
-            return { name: name_1, quantity: normalizeAutoGearQuantity(quantityMatch[1]), listType: listType };
-        }
-        return { name: content, listType: listType };
-    })
+            var signMatch = segment.match(/^([+-])\s*(.+)$/);
+            var listType = signMatch ? (signMatch[1] === '-' ? 'remove' : 'add') : null;
+            var content = signMatch ? signMatch[2].trim() : segment;
+            if (!content)
+                return null;
+            var quantityMatch = content.match(/^(\d+)\s*[x×]\s*(.+)$/i);
+            if (quantityMatch) {
+                var name_1 = quantityMatch[2].trim();
+                if (!name_1)
+                    return null;
+                return { name: name_1, quantity: normalizeAutoGearQuantity(quantityMatch[1]), listType: listType };
+            }
+            return { name: content, listType: listType };
+        })
         .filter(Boolean);
 }
 /**
@@ -1134,6 +1134,15 @@ var AUTO_GEAR_CONDITION_LOGIC_FIELDS = {
     controllers: 'controllersLogic',
     distance: 'distanceLogic',
 };
+
+var AUTO_GEAR_CONDITION_KEYS = [
+    'always',
+    'scenarios',
+    'shootingDays',
+    'cameraWeight'
+].concat(Object.keys(AUTO_GEAR_CONDITION_LOGIC_FIELDS));
+
+var AUTO_GEAR_REPEATABLE_CONDITIONS = new Set();
 function normalizeAutoGearConditionLogic(value) {
     if (typeof value !== 'string')
         return 'all';
@@ -1573,9 +1582,11 @@ function snapshotAutoGearRuleForFingerprint(rule) {
     var normalized = normalizeAutoGearRule(rule);
     if (!normalized)
         return null;
-    var mapItems = function (items) { return items
-        .map(autoGearItemSnapshot)
-        .sort(function (a, b) { return autoGearItemSortKey(a).localeCompare(autoGearItemSortKey(b)); }); };
+    var mapItems = function (items) {
+        return items
+            .map(autoGearItemSnapshot)
+            .sort(function (a, b) { return autoGearItemSortKey(a).localeCompare(autoGearItemSortKey(b)); });
+    };
     return {
         label: normalized.label || '',
         always: normalized.always ? 1 : 0,
@@ -1765,6 +1776,11 @@ var AUTO_GEAR_NORMALIZER_EXPORTS = {
     normalizeAutoGearBackupEntry: normalizeAutoGearBackupEntry,
     normalizeAutoGearMonitorDefaults: normalizeAutoGearMonitorDefaults,
     AUTO_GEAR_MONITOR_DEFAULT_TYPES: AUTO_GEAR_MONITOR_DEFAULT_TYPES,
+    AUTO_GEAR_CONDITION_LOGIC_FIELDS: AUTO_GEAR_CONDITION_LOGIC_FIELDS,
+    AUTO_GEAR_CONDITION_LOGIC_VALUES: AUTO_GEAR_CONDITION_LOGIC_VALUES,
+    AUTO_GEAR_SHOOTING_DAY_MODES: AUTO_GEAR_SHOOTING_DAY_MODES,
+    AUTO_GEAR_CONDITION_KEYS: AUTO_GEAR_CONDITION_KEYS,
+    AUTO_GEAR_REPEATABLE_CONDITIONS: AUTO_GEAR_REPEATABLE_CONDITIONS,
 };
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = AUTO_GEAR_NORMALIZER_EXPORTS;
